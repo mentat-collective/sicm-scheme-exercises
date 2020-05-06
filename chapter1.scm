@@ -2,9 +2,18 @@
 ;;
 ;; ## Section 1.4
 ;;
-;; 1/2 mv^2. This is the Lagrangian for a free particle, though I have
-;; no idea "why". Nor would I have thought about it had the text not
-;; said "we know you don't know why"...
+;; 1/2 mv^2. This is the Lagrangian for a free particle, though I have no idea
+;; "why". Nor would I have thought about it had the text not said "we know you
+;; don't know why"...
+;;
+;; Now it's 2020, and I totally know why. The Lagrangian is defined this way
+;; because there's no potential, no other forces acting on the particle; so all
+;; it has is its kinetic energy.
+;;
+;; WHY is the Lagrangian defined this way? Because, when we can split the
+;; functions into one that depends on velocity ("kinetic energy") and a
+;; potential that depends only on position, it just works out this way.
+
 (define ((L-free-particle mass) local)
   (let ((v (velocity local)))
     (* 1/2 mass (dot-product v v))))
@@ -132,7 +141,8 @@
     (- (* 1/2 m (square v)) (* 1/2 k (square q)))))
 
 ;; Defines a window:
-(define win2 (frame 0. :pi/2 0. 1.2))
+(define win2
+  (frame 0. :pi/2 0. 1.2))
 
 ;; new version of this that prints:
 (define ((parametric-path-action Lagrangian t0 q0 t1 q1)
@@ -145,7 +155,7 @@
     (Lagrangian-action Lagrangian path t0 t1)))
 
 ;; And boom, we find a path (and get to watch a pretty chart):
-(define q
+(define (run-q)
   (find-path (L-harmonic 1.0 1.0) 0. 1. :pi/2 0. 3))
 
 ;; ## Exercise 1.6
@@ -174,6 +184,7 @@
 ;;
 ;; This version of parametric-path-action lets us add an offset to
 ;; some initial points after the interpolation.
+
 (define ((parametric-path-action*
           Lagrangian t0 q0 offset0 t1 q1 offset1)
          intermediate-qs)
