@@ -211,4 +211,4 @@
 ;; This runs (and graphs!) the motion of a free particle using the
 ;; fucked up path.
 (define (one-six)
-  (find-path* (L-free-particle 3) 0. 1. 1. 10. 2. 1. 3))
+  (find-path* (L-free-particle 3.0) 0. 1. 1. 10. 2. 1. 3))
