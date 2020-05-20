@@ -1,0 +1,54 @@
+;; Utilities I want to share between exercises.
+
+;; Lagrangian helpers
+
+(define ((L-free-particle mass) local)
+  (let ((v (velocity local)))
+    (* 1/2 mass (dot-product v v))))
+
+;; This function lets us change a function that only transforms coordinates into
+;; a function that can transform an entire path of (up t, q, Dq).
+;;
+;; I THINK this overrides an internal definition, so we may want to delete it.
+;; We'll see.
+(define ((F->C F) local)
+  (up (time local)
+      (F local)
+      (+ (((partial 0) F) local)
+         (* (((partial 1) F) local)
+            (velocity local)))))
+
+;; Total time derivatives!
+;;
+;; These came from exercise 1.28.
+
+;; Let's make a function that can make a G, so we can confirm that we've got the
+;; right equation at all.
+(define (G G0 G1)
+  (+ G0 (* G1 Qdot)))
+
+;; And another here, to show off the properties G is supposed to have, so we can
+;; compare.
+(define (G-properties G0 G1 q)
+  (let ((full-G (G G0 G1))
+        (path (lambda (G)
+                (let ((f (compose G (Gamma q))))
+                  (f 't)))))
+    (up (path full-G)
+        (path ((partial 0) G1))
+        (path ((partial 1) G0))
+        (path ((partial 1) G1)))))
+
+;; Then, some functions to generate a G from the book, given an F.
+(define (check-f1 F q)
+  ((D (compose F (Gamma q))) 't))
+
+;; And an alternative way to calculate the same thing.
+(define (check-f2 F q)
+  (let ((DtF (+ ((partial 0) F)
+                (* ((partial 1) F) Qdot))))
+    ((compose DtF (Gamma q)) 't)))
+
+(define (check-f F q)
+  (se (up (check-f1 F q)
+          (check-f2 F q))))

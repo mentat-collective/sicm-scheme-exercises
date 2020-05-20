@@ -1,35 +1,6 @@
 ;; Total time derivatives!
 
-;; Let's make a function that can make a G, so we can confirm that we've got the
-;; right equation at all.
-(define (G G0 G1)
-  (+ G0 (* G1 Qdot)))
-
-;; And another here, to show off the properties G is supposed to have, so we can
-;; compare.
-(define (G-properties G0 G1 q)
-  (let ((full-G (G G0 G1))
-        (path (lambda (G)
-                (let ((f (compose G (Gamma q))))
-                  (f 't)))))
-    (up (path full-G)
-        (path ((partial 0) G1))
-        (path ((partial 1) G0))
-        (path ((partial 1) G1)))))
-
-;; Then, some functions to generate a G from the book, given an F.
-(define (check-f1 F q)
-  ((D (compose F (Gamma q))) 't))
-
-;; And an alternative way to calculate the same thing.
-(define (check-f2 F q)
-  (let ((DtF (+ ((partial 0) F)
-                (* ((partial 1) F) Qdot))))
-    ((compose DtF (Gamma q)) 't)))
-
-(define (check-f F q)
-  (se (up (check-f1 F q)
-          (check-f2 F q))))
+(load "utils.scm")
 
 ;; part a, nice, easy to guess.
 (define ((FA m) local)

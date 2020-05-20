@@ -1,5 +1,7 @@
 ;; The uneven dumbbell, 1.21.
 
+(load "utils.scm")
+
 ;; takes in any number of up tuples and zips them into a new list of up-tuples
 ;; by taking each element.
 (define (up-zip . ups)
@@ -63,13 +65,6 @@
   (se (f 't)))
 
 ;; part c - make a change of coordinates.
-
-(define ((F->C F) local)
-  (up (time local)
-      (F local)
-      (+ (((partial 0) F) local)
-         (* (((partial 1) F) local)
-            (velocity local)))))
 
 (define ((cm-theta->rect m0 m1) local)
   (let* ((q (coordinate local))
