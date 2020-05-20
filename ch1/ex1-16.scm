@@ -58,7 +58,8 @@
   (compose (L-central-rectangular m U) (F->C p->r)))
 
 (define (L-central-spherical m U)
-  (compose (L-central-rectangular m U) (F->C spherical->rect)))
+  (compose (L-central-rectangular m U)
+           (F->C spherical->rect)))
 
 ;; Confirm the polar coordinate version...
 (show-expression
@@ -73,3 +74,11 @@
   (up 't
       (up 'r 'theta 'phi)
       (up 'rdot 'thetadot 'phidot))))
+
+
+;; rectangular, for fun:
+(show-expression
+ ((L-central-rectangular 'm (literal-function 'U))
+  (up 't
+      (up 'x 'y 'z)
+      (up 'xdot 'ydot 'zdot))))
