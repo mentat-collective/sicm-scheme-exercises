@@ -33,9 +33,9 @@ post primers and lessons on interesting topics in math, physics, machine
 learning or artificial intelligence, with a heavy emphasis on locking down the
 intuition behind the ideas over mere symbol shuffling.
 
-<iframe src="https://roadtoreality.substack.com/embed" width="480" height="320" style="border:1px solid #EEE; background:white;" frameborder="0" scrolling="no"></iframe>
+Check it out here: https://roadtoreality.substack.com
 
-## Other Resources
+## Other SICM Resources
 
 - The [course website](https://groups.csail.mit.edu/mac/users/gjs/6946/) for
   MIT's 6.946, ["Classical Mechanics: A Computational
@@ -57,14 +57,18 @@ intuition behind the ideas over mere symbol shuffling.
 - [SICMUtils](https://github.com/littleredcomputer/sicmutils) a Clojure
   implementation of the `scmutils` / `mechanics` library. Clojure is brilliant.
   I may include some examples of code using this library as I go.
+- My Dockerhub pages for the
+  [`mit-scheme`](https://hub.docker.com/repository/docker/sritchie/mit-scheme)
+  and [`mechanics`](https://hub.docker.com/repository/docker/sritchie/mechanics)
+  Docker images.
 
 ## Running Mechanics
 
 You can interact with any of the utilities or solutions I've written using the
 `bin/mechanics` program in this repository. `bin/mechanics` holds a full,
-working installation of SCMUtils and MIT Scheme, packaged up inside of a Docker
-container. To make this work, you'll need, at minimum, a working installation of
-[Docker](https://www.docker.com/).
+working installation of `mechanics` and MIT Scheme, packaged up inside of a
+Docker container. To make this work, you'll need, at minimum, a working
+installation of [Docker](https://www.docker.com/).
 
 If you want to see graphics (which of course you do!), you'll need an X11 window
 system installed. For LaTeX rendering, you'll need the `xdvi` program, which
@@ -113,7 +117,7 @@ bin/mechanics
 
 The first time you run this it should take a while, as you'll have to download
 all of the Docker image requirements. Eventually you'll see an MIT Scheme REPL
-with the whole `scmutils` library loaded:
+with the whole `mechanics` library loaded:
 
 ```
 127.0.0.1 being added to access control list
@@ -303,25 +307,84 @@ so you don't get caught out by the differences.
 
 ## Native SCMUtils Installation on OS X
 
-This is a little more involved, but I figured I'd document it here, since I had
-to figure it out.
+This method of installation is a little more involved, but if you decide that
+you want to skip the Docker route and install `mechanics` and MIT Scheme
+natively on OS X, these are the steps.
 
-- The instructions are [here](http://groups.csail.mit.edu/mac/users/gjs/6946/installation.html), but let's get through them more carefully.
-    - Install MIT Scheme: https://www.gnu.org/software/mit-scheme/
-        - `ln -s /Applications/MIT-Scheme.app/Contents/Resources/mit-scheme ~/bin/mit-scheme` to get this all available.
-        - `export MITSCHEME_LIBRARY_PATH=/Applications/MIT-Scheme.app/Contents/Resources` will get you going. Make sure to add this to `~/.spacemacs.d/.spacemacs.env` or refresh your env if you live in Spacemacs.
-        - Set up emacs to run Scheme by setting `scheme-program-name` to `mit-scheme`.
-        - Here's another guide on emacs and sicm: http://redsymbol.net/articles/using-gnu-emacs-with-scmutils/
-    - Install SCMUtils!
-        - Make sure you have all the crap working from the first step, so that you can type `mit-scheme` successfully.
-        - The download link lives here, in step 4: http://groups.csail.mit.edu/mac/users/gjs/6946/installation.html
-        - Unzip, etc, go into the folder and run `install.sh`
-        - set an alias to `ln -s ~/code/scheme/scmutils/mechanics.sh ~/bin/mechanics`
-            - All this does is set some environment variables, and get the proper packages loaded for you.
-    - Install https://www.xquartz.org/ so your charts work.
-    - MacTeX, next, for symbol rendering: https://tug.org/mactex/mactex-download.html
-    - Again, also make sure, that if your path is cached, to add `/Library/TeX/texbin` so that scheme can see `xdvi` for rendering equations.
+The instructions are
+[here](http://groups.csail.mit.edu/mac/users/gjs/6946/installation.html), but
+let's get through them more carefully.
 
+- Install MIT Scheme: https://www.gnu.org/software/mit-scheme/
+- Rename the ``MIT-Scheme` application in the Applications folder to
+ `MIT-Scheme`, so we don't have to worry about escaping spaces in the terminal.
+- Create a `~/bin` folder and get it on your `$PATH`.
+
+Run the following command to make the `mit-scheme` binary available:
+
+```bash
+ln -s /Applications/MIT-Scheme.app/Contents/Resources/mit-scheme ~/bin/mit-scheme
+```
+
+Add this line to your `~/.bashrc` or `~/.bash_profile`, so that Scheme can see its libraries:
+
+```bash
+export MITSCHEME_LIBRARY_PATH=/Applications/MIT-Scheme.app/Contents/Resources
+```
+
+Test that this all worked by running `mit-scheme` at a fresh terminal. You should see the following:
+
+```
+$ mit-scheme
+MIT/GNU Scheme running under OS X
+Type `^C' (control-C) followed by `H' to obtain information about interrupts.
+
+Copyright (C) 2019 Massachusetts Institute of Technology
+This is free software; see the source for copying conditions. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+Image saved on Saturday August 10, 2019 at 6:28:48 PM
+  Release 10.1.10 || Microcode 15.3 || Runtime 15.7 || SF 4.41 || LIAR/x86-64 4.118
+
+1 ]=>
+```
+
+Once that's working, it's time to install the SCMUtils / Mechanics library.
+
+### Manual SCMUtils Installation
+
+The download link for the library lives at the [SICM course
+website](http://groups.csail.mit.edu/mac/users/gjs/6946/installation.html), at
+step 4. Here's the [direct download
+link](http://groups.csail.mit.edu/mac/users/gjs/6946/scmutils-20190830.tar.gz)
+if you prefer that.
+
+The next few steps come from the instructions at the course site:
+
+- Expand this gzipped tar archive by executing `tar xzf
+  scmutils-20190830.tar.gz`. This will make a directory named
+  `scmutils-20190830`.
+- Run `cd scmutils-20190830 && ./install.sh` to install `scmutils` into your
+  local Scheme installation's resource directory.
+- Copy the starter script into `~/bin` by running `cp mechanics.sh ~/bin/mechanics`.
+
+Test it all out by running `mechanics`. You should see the following:
+
+```
+$ mechanics
+MIT/GNU Scheme running under OS X
+Type `^C' (control-C) followed by `H' to obtain information about interrupts.
+
+Copyright (C) 2019 Massachusetts Institute of Technology
+This is free software; see the source for copying conditions. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+Image saved on Friday August 30, 2019 at 11:20:36 PM
+  Release 10.1.10 || Microcode 15.3 || Runtime 15.7 || SF 4.41 || LIAR/x86-64 4.118 || SOS 1.8 || XML 1.0 || Edwin 3.117 || X11 1.3 || X11-Screen 1.0 || ScmUtils Mechanics.Summer 2019
+
+1 ]=>
+```
+
+You're all set now, and can refer back to previous sections for instructions on
+how to install X11 and LaTeX, work with the exercises, or configure Emacs.
 
 ## Thank you!
 
