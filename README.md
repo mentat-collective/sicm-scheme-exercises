@@ -5,6 +5,8 @@ Structure and Interpretation of Classical Mechanics](https://amzn.to/2LUx62M).
 You can get a copy of the book on [Amazon](https://amzn.to/2LUx62M), or follow
 along using this beautiful [HTML version](https://tgvaughan.github.io/sicm/).
 
+![SICM](https://user-images.githubusercontent.com/69635/82737385-077cf280-9cee-11ea-84cd-38f5e569d60c.png)
+
 I'm working through the exercises for each chapter using [MIT
 Scheme](https://www.gnu.org/software/mit-scheme/), and the `scmutils` library
 (also called `mechanics` by the authors) that Sussman and Wisdom developed for
@@ -102,7 +104,7 @@ git clone https://github.com/sritchie/sicm.git && cd sicm
 bin/mechanics
 ```
 
-THe first time you run this it should take a while, as you'll have to download
+The first time you run this it should take a while, as you'll have to download
 all of the Docker image requirements. Eventually you'll see an MIT Scheme REPL
 with the whole `scmutils` library loaded:
 
