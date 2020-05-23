@@ -58,8 +58,8 @@ Check it out here: https://roadtoreality.substack.com
   implementation of the `scmutils` / `mechanics` library. Clojure is brilliant.
   I may include some examples of code using this library as I go.
 - My Dockerhub pages for the
-  [`mit-scheme`](https://hub.docker.com/repository/docker/sritchie/mit-scheme)
-  and [`mechanics`](https://hub.docker.com/repository/docker/sritchie/mechanics)
+  [`mit-scheme`](https://hub.docker.com/r/sritchie/mit-scheme)
+  and [`mechanics`](https://hub.docker.com/r/sritchie/mechanics)
   Docker images.
 
 ## Running Mechanics
