@@ -12,8 +12,8 @@ along using this beautiful [HTML version](https://tgvaughan.github.io/sicm/).
 
 I'm working through the exercises for each chapter using [MIT
 Scheme](https://www.gnu.org/software/mit-scheme/), and the `scmutils` library
-(also called `mechanics` by the authors) that Sussman and Wisdom developed for
-the textbook.
+(also called `mechanics` by the authors and me) that Sussman and Wisdom
+developed for the textbook.
 
 Each chapter gets its own folder, named `ch1`, `ch2`, etc. Inside each folder
 I've included a file for each exercise that required code or benefited from
@@ -24,6 +24,16 @@ code, and recreate my work in any of the exercises. I've provided a working copy
 of the `mechanics` library in this repository in `bin/mechanics`. There's a
 small amount of work you'll have to do to make the script run, but I've covered
 that below under ["Running the Code"](#running-the-code).
+
+## The Road to Reality
+
+If you like this sort of thing, you might also consider subscribing to ["The
+Road to Reality"](https://roadtoreality.substack.com/), a newsletter where I
+post primers and lessons on interesting topics in math, physics, machine
+learning or artificial intelligence, with a heavy emphasis on locking down the
+intuition behind the ideas over mere symbol shuffling.
+
+<iframe src="https://roadtoreality.substack.com/embed" width="480" height="320" style="border:1px solid #EEE; background:white;" frameborder="0" scrolling="no"></iframe>
 
 ## Other Resources
 
@@ -47,12 +57,6 @@ that below under ["Running the Code"](#running-the-code).
 - [SICMUtils](https://github.com/littleredcomputer/sicmutils) a Clojure
   implementation of the `scmutils` / `mechanics` library. Clojure is brilliant.
   I may include some examples of code using this library as I go.
-
-If you like this sort of thing, you might also consider subscribing to ["The
-Road to Reality"](https://roadtoreality.substack.com/), a newsletter where I
-post primers and lessons on interesting topics in math, physics, machine
-learning or artificial intelligence, with a heavy emphasis on locking down the
-intuition behind the ideas over mere symbol shuffling.
 
 ## Running Mechanics
 
