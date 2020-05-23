@@ -5,7 +5,10 @@ Structure and Interpretation of Classical Mechanics](https://amzn.to/2LUx62M).
 You can get a copy of the book on [Amazon](https://amzn.to/2LUx62M), or follow
 along using this beautiful [HTML version](https://tgvaughan.github.io/sicm/).
 
-![SICM](https://user-images.githubusercontent.com/69635/82737385-077cf280-9cee-11ea-84cd-38f5e569d60c.png)
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/69635/82737469-6478a880-9cee-11ea-9559-aa0e85a60a5c.png" alt="SICM Cover"/>
+</p>
+
 
 I'm working through the exercises for each chapter using [MIT
 Scheme](https://www.gnu.org/software/mit-scheme/), and the `scmutils` library
