@@ -1,5 +1,15 @@
 ;; Utilities I want to share between exercises.
 
+;; Printing
+
+;; Prints the TeX string to screen.
+(define (->tex expr)
+  (let* ((tex-string (expression->tex-string
+                      ((prepare-for-printing expr simplify))))
+         (len (string-length tex-string))
+         (unboxed (substring tex-string 8 (- len 1))))
+    (write-string unboxed)))
+
 ;; Lagrangian helpers
 
 (define ((L-free-particle mass) local)

@@ -1,6 +1,6 @@
 ;; Galilean Invariance
 
-(load "utils.scm")
+(load "ch1/utils.scm")
 
 ;; I'll do this for a single particle, since it's annoying to get the sum going
 ;; for many; and the lagrangian is additive, so no problem.

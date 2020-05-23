@@ -1,6 +1,6 @@
 ;; The uneven dumbbell, 1.21.
 
-(load "utils.scm")
+(load "ch1/utils.scm")
 
 ;; takes in any number of up tuples and zips them into a new list of up-tuples
 ;; by taking each element.

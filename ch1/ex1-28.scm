@@ -1,6 +1,6 @@
 ;; Total time derivatives!
 
-(load "utils.scm")
+(load "ch1/utils.scm")
 
 ;; part a, nice, easy to guess.
 (define ((FA m) local)

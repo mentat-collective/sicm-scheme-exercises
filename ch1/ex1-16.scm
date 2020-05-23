@@ -1,7 +1,7 @@
 ;; messing around to make sure I understand what I'm seeing in the coordinate
 ;; transforms on page 45.
 
-(load "utils.scm")
+(load "ch1/utils.scm")
 
 (define (p->r local)
   (let* ((polar-tuple (coordinate local))

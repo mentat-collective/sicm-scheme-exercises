@@ -14,7 +14,7 @@
 ;; functions into one that depends on velocity ("kinetic energy") and a
 ;; potential that depends only on position, it just works out this way.
 
-(load "utils.scm")
+(load "ch1/utils.scm")
 
 ;; * would give you matrix multiplication. If you multiply an "up" by
 ;; a "down" that's equal to the dot product. So "up" is a row vector,
