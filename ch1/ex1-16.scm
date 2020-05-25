@@ -50,7 +50,8 @@
 
 ;; BOOM, now we can compose these things!
 (define (L-central-polar m U)
-  (compose (L-central-rectangular m U) (F->C p->r)))
+  (compose (L-central-rectangular m U)
+           (F->C p->r)))
 
 (define (L-central-spherical m U)
   (compose (L-central-rectangular m U)

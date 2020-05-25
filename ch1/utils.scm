@@ -2,13 +2,27 @@
 
 ;; Printing
 
-;; Prints the TeX string to screen.
-(define (->tex expr)
+;; Generates a properly formatted string of LaTeX.
+(define (->tex* expr)
   (let* ((tex-string (expression->tex-string
                       ((prepare-for-printing expr simplify))))
-         (len (string-length tex-string))
-         (unboxed (substring tex-string 8 (- len 1))))
-    (write-string unboxed)))
+         (len (string-length tex-string)))
+    (substring tex-string 10 (- len 3))))
+
+;; Prints the TeX representation of the supplied expression to the screen.
+(define (->tex expr)
+  (write-string
+   (string-append "\\[ " (->tex* expr) " \\]")))
+
+(define (->tex-equation expr #!optional label)
+  (write-string
+   (string-append
+    "\\begin{equation}\n"
+    (->tex* expr)
+    (if (default-object? label)
+        ""
+        (string-append "\n\\label{" label "}"))
+    "\n\\end{equation}")))
 
 ;; Lagrangian helpers
 

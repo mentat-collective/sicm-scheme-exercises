@@ -241,13 +241,15 @@ Scheme from the project root every time.
 Here's the better version:
 
 ```elisp
+(defun mechanics-local ()
+  (interactive)
+  (run-scheme "mechanics"))
+
 (defun mechanics ()
   (interactive)
-  (let ((default-directory
-          (if (string= (file-name-extension buffer-file-name) "ml")
-              (concat default-directory "..")
-            default-directory))))
-  (call-interactively #'run-scheme (vector "mechanics")))
+  (let ((default-directory (or (projectile-project-root)
+                               default-directory)))
+    (call-interactively #'mechanics-local)))
 ```
 
 This will attempt to use Projectile to launch Scheme in the root of your
