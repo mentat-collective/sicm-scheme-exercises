@@ -62,7 +62,7 @@ You can even reference these with equation numbers, like Equation \eqref{eq:mast
 
 Here's a test of $a = bc$ and more $$ \alpha_t $$ equations:
 
-$and again$ this is a thing.
+And again this is a thing:
 
 \[
 e^{i\pi} = -1
@@ -78,4 +78,4 @@ This is the rest of the goods.
 
 * Chapter 2
 
-Testing a second's output.
+Testing a second chapter's output.
