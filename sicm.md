@@ -822,7 +822,7 @@ Notation Appendix. This is all about getting cozy with scheme, and with the vari
         \left[ \matrix{ \displaystyle{ \left( \matrix{ \displaystyle{ 2 x {y}^{3}} \cr \cr \displaystyle{ 0}} \right)} \cr \cr \displaystyle{ \left( \matrix{ \displaystyle{ 3 {x}^{2} {y}^{2}} \cr \cr \displaystyle{ 1}} \right)}} \right]
         \end{equation}
 
-    4.  Compute \\(D F(a, b)\\), \\(D G(3, 5)\\) and \\(DH(3a^2 5b^3)\\)
+    4.  Compute \\(DF(a, b)\\), \\(DG(3, 5)\\) and \\(DH(3a^2, 5b^3)\\)
 
         ```scheme
         (->tex-equation
@@ -853,4 +853,15 @@ Notation Appendix. This is all about getting cozy with scheme, and with the vari
     (define H* (compose F* G*))
     ```
 
-    to be really pro, I'd make a function that takes these as arguments and prints a nice formatted exercise output.
+    to be really pro, I'd make a function that takes these as arguments and prints a nice formatted exercise output. Let's do the final exercise, for fun:
+
+    ```scheme
+    (->tex-equation
+     (up ((D F*) (up 'a 'b))
+         ((D G*) (up 3 5))
+         ((D H*) (up (* 3 (square 'a)) (* 5 (cube 'b))))))
+    ```
+
+    \begin{equation}
+    \left( \matrix{ \displaystyle{ \left[ \matrix{ \displaystyle{ 2 a {b}^{3}} \cr \cr \displaystyle{ 3 {a}^{2} {b}^{2}}} \right]} \cr \cr \displaystyle{ \left[ \matrix{ \displaystyle{ \left( \matrix{ \displaystyle{ 750} \cr \cr \displaystyle{ 0}} \right)} \cr \cr \displaystyle{ \left( \matrix{ \displaystyle{ 675} \cr \cr \displaystyle{ 1}} \right)}} \right]} \cr \cr \displaystyle{ \left[ \matrix{ \displaystyle{ 210937500 {a}^{6} {b}^{27}} \cr \cr \displaystyle{ 284765625 {a}^{8} {b}^{24}}} \right]}} \right)
+    \end{equation}
