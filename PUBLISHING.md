@@ -140,3 +140,52 @@ meantime, you can install the plugin locally with these instructions.
    if you see any equations rendering!
 
 I'll update this with a link once I get the plugin up on the Chrome Web Store.
+
+## Creating Github Markdown with Equations
+
+The Github-flavored markdown that `ox-gfm` emits turns all LaTeX fragments into
+the standard `\( equation surrounded by parens \)` or `\[ square braces \]`.
+Github renders markdown by treating those as escapes for the parens or braces...
+and because the backslash is missing, Mathjax won't render equations.
+
+We can add some customization to org-mode to get it to add an extra backslash
+escape, which will force Github's renderer to show the equations properly.
+
+Here's what I had to do to get this working:
+
+```emacs-lisp
+  (defmacro ->> (&rest body)
+    (let ((result (pop body)))
+      (dolist (form body result)
+        (setq result (append form (list result))))))
+
+  (defun replace-in-string (what with in)
+    (replace-regexp-in-string (regexp-quote what) with in nil 'literal))
+
+
+  (defun org-gfm-latex-fragment (latex-fragment contents info)
+    "Transcode SRC-BLOCK element into Github Flavored Markdown
+format. CONTENTS is nil.  INFO is a plist used as a communication
+channel."
+
+    (let* ((latex-frag (org-element-property :value latex-fragment)))
+      (message "Got it!")
+      (message latex-frag)
+      "face"))
+
+  (defun my-latex-filter-gfm-macro (text backend info)
+    "Replace \\R with \\mathbb{R}"
+    (when (org-export-derived-backend-p backend 'gfm)
+      (->> text
+           (replace-in-string "\\(" "\\\\(")
+           (replace-in-string "\\)" "\\\\)")
+           (replace-in-string "\\[" "\\\\[")
+           (replace-in-string "\\]" "\\\\]"))))
+
+  (add-to-list 'org-export-filter-latex-fragment-functions
+               'my-latex-filter-gfm-macro)
+```
+
+If you add that to your emacs initialization code, you'll find that `ox-gfm`
+Does the Right Thing when you try to export to Github-flavored markdown, and
+equations show up looking great.
