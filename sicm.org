@@ -17,7 +17,7 @@ out to Github flavored Markdown, or to a PDF.
 
 First, let's get some code loaded up and written.
 
-#+begin_src scheme :results none
+#+begin_src scheme :results output :cache yes
 (load "ch1/utils.scm")
 
 (define (p->r local)
@@ -38,6 +38,10 @@ First, let's get some code loaded up and written.
         (* r (cos theta)))))
 #+end_src
 
+#+RESULTS[5da5d9a6077ed92b78a82134c01be067bb14e09c]:
+: ;Loading "ch1/utils.scm"... done
+: #| "" |#
+
 This block will generate a LaTeX version of the code I've supplied:
 
 #+begin_src scheme :results value raw :exports both :cache yes
@@ -54,9 +58,10 @@ c\left( t \right) + Dz\left( t \right)
 \label{eq:masterpiece}
 \end{equation}
 
+
 You can even reference these with equation numbers, like Equation \eqref{eq:masterpiece} above.
 
-#+begin_src scheme :results value :exports both
+#+begin_src scheme :results value :exports both :cache yes
 (up 1 2 't)
 #+end_src
 
@@ -67,7 +72,7 @@ You can even reference these with equation numbers, like Equation \eqref{eq:mast
 
 *** Equations
 
-Here's a test of $a = bc$ and more $$ \alpha_t $$ equations:
+Here's (a test) of $a = bc$ and more $$ \alpha_t $$ equations:
 
 And again this is a thing:
 
@@ -82,6 +87,7 @@ e^{i\pi} = -1
 *** Concluding.
 
 This is the rest of the goods.
+
 
 **** Exercise 1.1, p5 and 1.2, p8
 
