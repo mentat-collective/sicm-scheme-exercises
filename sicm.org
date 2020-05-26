@@ -58,6 +58,7 @@ c\left( t \right) + Dz\left( t \right)
 \label{eq:masterpiece}
 \end{equation}
 
+with some hand simplification,
 
 You can even reference these with equation numbers, like Equation \eqref{eq:masterpiece} above.
 
@@ -378,8 +379,162 @@ Fermat Optics. It's in the foldede section in the blue notebook. Do it again!
 *** 7.4.5: Stability of the Inverted Vertical Equilibrium
 ** 7.5: Summary
 ** 7.6: Projects
-* * 8: Scheme
-* * 9: Our Notation
+* 8: Scheme
+* 9: Our Notation
 
-**** Exercise 9.1
-**** Exercise 9.2
+Notation Appendix. This is all about getting cozy with scheme, and with the
+various idiosyncracies of the tuple and functional notation.
+
+**** Exercise 9.1 Chain Rule
+     :PROPERTIES:
+     :header-args: :tangle ch9/ex9-1.scm
+     :END:
+
+You're supposed to do these by hand, so I'll do that in the textbook. But here,
+let's redo them on the machine.
+
+#+begin_src scheme :exports none
+(load "ch1/utils.scm")
+#+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"... done
+: #| check-f |#
+
+***** Compute $\partial_0 F(x, y)$ and $\partial_1 F(x, y)$
+
+First, let's define the functions we need.
+
+#+begin_src scheme
+(define (F x y)
+  (* (square x)
+     (cube y)))
+
+(define (G x y)
+  (up (F x y) y))
+
+(define (H x y)
+  (F (F x y) y))
+#+end_src
+
+#+RESULTS:
+: #| F |#
+:
+: #| G |#
+:
+: #| H |#
+
+ You can do this with explicit partials:
+
+#+begin_src scheme :results value raw :exports both :cache yes
+(let ((f (down ((partial 0) F) ((partial 1) F))))
+  (->tex-equation
+   (f 'x 'y)))
+#+end_src
+
+#+RESULTS[be9a90487e3a5e53f5a9c479dd79dbd76bd0e18c]:
+\begin{equation}
+\left[ \matrix{ \displaystyle{ 2 x {y}^{3}} \cr \cr \displaystyle{ 3 {x}^{2} {y}^{2}}} \right]
+\end{equation}
+
+Or with the $D$ symbol:
+
+#+begin_src scheme :results value raw :exports both :cache yes
+(->tex-equation
+ ((D F) 'x 'y))
+#+end_src
+
+#+RESULTS[ad5e3457e7a32bea193ba2301f548b99b871656c]:
+\begin{equation}
+\left[ \matrix{ \displaystyle{ 2 x {y}^{3}} \cr \cr \displaystyle{ 3 {x}^{2} {y}^{2}}} \right]
+\end{equation}
+
+Or, we could show that they're equivalent this way:
+
+#+begin_src scheme :results value raw :exports both :cache yes
+(let ((f (down ((partial 0) F) ((partial 1) F))))
+  (->tex-equation
+   (- ((D F) 'x 'y)
+      (f 'x 'y))))
+#+end_src
+
+#+RESULTS[0409e2cdf711957d7bcfc514a7d127cc790f8835]:
+\begin{equation}
+\left[ \matrix{ \displaystyle{ 0} \cr \cr \displaystyle{ 0}} \right]
+\end{equation}
+
+***** Compute $\partial_0 F(F(x, y), y)$ and $\partial_1 F(F(x, y), y)$
+
+$H$ is already that composition, so:
+
+#+begin_src scheme :results value raw :exports both :cache yes
+(->tex-equation
+ ((D H) 'x 'y))
+#+end_src
+
+#+RESULTS[50be975d97eed6c38ed1ec502c4f297eace9f3df]:
+\begin{equation}
+\left[ \matrix{ \displaystyle{ 4 {x}^{3} {y}^{9}} \cr \cr \displaystyle{ 9 {x}^{4} {y}^{8}}} \right]
+\end{equation}
+
+***** Compute $\partial_0 G(x, y)$ and $\partial_1 G(x, y)$
+
+#+begin_src scheme :results value raw :exports both :cache yes
+(->tex-equation
+ ((D G) 'x 'y))
+#+end_src
+
+#+RESULTS[5038860f9e86fa99d00b56d9e39ac93ee1c9667b]:
+\begin{equation}
+\left[ \matrix{ \displaystyle{ \left( \matrix{ \displaystyle{ 2 x {y}^{3}} \cr \cr \displaystyle{ 0}} \right)} \cr \cr \displaystyle{ \left( \matrix{ \displaystyle{ 3 {x}^{2} {y}^{2}} \cr \cr \displaystyle{ 1}} \right)}} \right]
+\end{equation}
+
+***** Compute $DF(a, b)$, $DG(3, 5)$ and $DH(3a^2 5b^3)$
+
+#+begin_src scheme :results value raw :exports both :cache yes
+(->tex-equation
+ (up ((D F) 'a 'b)
+     ((D G) 3 5)
+     ((D H) (* 3 (square 'a)) (* 5 (cube 'b)))))
+#+end_src
+
+#+RESULTS[58f6814dcdb27cedc271a73e19fc1d9c414a2bef]:
+\begin{equation}
+\left( \matrix{ \displaystyle{ \left[ \matrix{ \displaystyle{ 2 a {b}^{3}} \cr \cr \displaystyle{ 3 {a}^{2} {b}^{2}}} \right]} \cr \cr \displaystyle{ \left[ \matrix{ \displaystyle{ \left( \matrix{ \displaystyle{ 750} \cr \cr \displaystyle{ 0}} \right)} \cr \cr \displaystyle{ \left( \matrix{ \displaystyle{ 675} \cr \cr \displaystyle{ 1}} \right)}} \right]} \cr \cr \displaystyle{ \left[ \matrix{ \displaystyle{ 210937500 {a}^{6} {b}^{27}} \cr \cr \displaystyle{ 284765625 {a}^{8} {b}^{24}}} \right]}} \right)
+\end{equation}
+
+**** Exercise 9.2: Computing Derivatives
+     :PROPERTIES:
+     :header-args: :tangle ch9/ex9-2.scm
+     :END:
+
+#+begin_src scheme :exports none
+(load "ch1/utils.scm")
+#+end_src
+
+A further exercise is to try defining the functions so that they use explicit
+tuples, so you can compose them:
+
+#+begin_src scheme
+(define (F* v)
+  (let ((x (ref v 0))
+        (y (ref v 1)))
+    (* (square x) (cube y))))
+
+(define (G* v)
+  (let ((x (ref v 0))
+        (y (ref v 1)))
+    (up (F* v) y)))
+
+(define H* (compose F* G*))
+#+end_src
+
+#+RESULTS:
+: #| F* |#
+:
+: #| G* |#
+:
+: #| H* |#
+
+to be really pro, I'd make a function that takes these as arguments and prints a
+nice formatted exercise output.
