@@ -199,7 +199,7 @@ And again this is a thing:
 
 \[ e^{i\pi} = -1 \]
 
-\[ \int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2} \]
+<img src="https://render.githubusercontent.com/render/math?math=\int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}">
 
 ### Concluding.<a id="sec-1-0-2"></a>
 
