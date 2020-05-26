@@ -2,9 +2,13 @@
 ;;
 ;; ## Section 1.4
 ;;
-;; 1/2 mv^2. This is the Lagrangian for a free particle, though I have no idea
+;; $1/2 mv^2$. This is the Lagrangian for a free particle, though I have no idea
 ;; "why". Nor would I have thought about it had the text not said "we know you
 ;; don't know why"...
+;;
+;; Testing LaTeX rendering:
+;;
+;; \[ 1/2 mv^2 \]
 ;;
 ;; Now it's 2020, and I totally know why. The Lagrangian is defined this way
 ;; because there's no potential, no other forces acting on the particle; so all
