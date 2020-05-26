@@ -193,13 +193,13 @@ You can even reference these with equation numbers, like Equation \eqref{eq:mast
 
 ### Equations<a id="sec-1-0-1"></a>
 
-Here's a test of \(a = bc\) and more \[ \alpha_t \] equations:
+Here's a test of \\(a = bc\\) and more \\[ \alpha_t \\] equations:
 
 And again this is a thing:
 
 \[ e^{i\pi} = -1 \]
 
-<img src="https://render.githubusercontent.com/render/math?math=\int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}">
+\[ \int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2} \]
 
 ### Concluding.<a id="sec-1-0-2"></a>
 
