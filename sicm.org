@@ -22,7 +22,7 @@ there. Let's see how it goes!
 
 Discuss the section here. This is a test of a new heading style.
 
-Here's a nice image:
+Here's a nice image of some action getting minimized:
 
 [[https://www.dropbox.com/s/9a5o5yjd5a47ozx/2020-05-27%2013.01.09.gif?dl=1]]
 

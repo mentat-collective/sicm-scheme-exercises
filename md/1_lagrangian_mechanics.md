@@ -72,9 +72,9 @@
 
 Discuss the section here. This is a test of a new heading style.
 
-Here's a nice image:
+Here's a nice image of some action getting minimized:
 
-<https://www.dropbox.com/s/9a5o5yjd5a47ozx/2020-05-27%2013.01.09.gif?dl=1>
+![img](https://www.dropbox.com/s/9a5o5yjd5a47ozx/2020-05-27%2013.01.09.gif?dl=1)
 
 ### Exercise 1.1, p5 and 1.2, p8<a id="sec-1-0-1"></a>
 
