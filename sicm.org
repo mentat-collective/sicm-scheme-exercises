@@ -18,7 +18,7 @@ there. Let's see how it goes!
 
 ** Configuration Spaces
 
-Discuss the section here.
+Discuss the section here. This is a test of a new heading style.
 
 **** Exercise 1.1, p5 and 1.2, p8
 
