@@ -1,5 +1,5 @@
   - [Configuration Spaces](#sec-1)
-    - [Exercise 1.1, p5 and 1.2, p8](#sec-1-1)
+      - [Exercise 1.1, p5 and 1.2, p8](#sec-1-0-1)
   - [1.2: Generalized Coordinates](#sec-2)
     - [Exercise 1.3](#sec-2-1)
     - [Exercise 1.4](#sec-2-2)
@@ -72,7 +72,7 @@
 
 Discuss the section here.
 
-## Exercise 1.1, p5 and 1.2, p8<a id="sec-1-1"></a>
+### Exercise 1.1, p5 and 1.2, p8<a id="sec-1-0-1"></a>
 
 For each of the mechanical systems described below, give the number of degrees of freedom of the configuration space.
 

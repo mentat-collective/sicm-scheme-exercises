@@ -20,7 +20,7 @@ there. Let's see how it goes!
 
 Discuss the section here.
 
-*** Exercise 1.1, p5 and 1.2, p8
+**** Exercise 1.1, p5 and 1.2, p8
 
 For each of the mechanical systems described below, give the number of degrees
 of freedom of the configuration space.
