@@ -2,6 +2,7 @@
 #+subtitle: Computational Physics!
 #+date: 2020-05-26
 
+
 Welcome to my tour of Structure and Interpretation of Classical Mechanics. I'm
 working on this book to develop my sense of the best way to do research in
 public; this book is heavy on math, programming and visualization, and should
@@ -10,16 +11,19 @@ stress the normal tools.
 I'm attempting to take notes in on org-mode file, and generate all my code from
 there. Let's see how it goes!
 
-* 1: Lagrangian Mechanics
+* 0: Org-Mode Demo
+  :PROPERTIES:
+  :header-args: :eval no-export
+  :END:
 
 This is an example of how we might structure an org-mode file that can export
 out to Github flavored Markdown, or to a PDF.
 
-First, let's get some code loaded up and written.
+First, let's get some code loaded up and written. Here's a block that converts
+polar coordinates to rectangular coordinates.
 
-#+begin_src scheme :results output :cache yes
-(load "ch1/utils.scm")
-
+#+name: p->r
+#+begin_src scheme :eval no
 (define (p->r local)
   (let* ((polar-tuple (coordinate local))
          (r (ref polar-tuple 0))
@@ -27,7 +31,22 @@ First, let's get some code loaded up and written.
          (x (* r (cos phi)))
          (y (* r (sin phi))))
     (up x y)))
+#+end_src
 
+This is some good stuff.
+
+#+begin_src scheme :results output :noweb yes :comments both
+(load "ch1/utils.scm")
+
+<<p->r>>
+
+<<spherical->rect>>
+#+end_src
+
+And another, that gets us from spherical to rectangular.
+
+#+name: spherical->rect
+#+begin_src scheme :eval no
 (define (spherical->rect local)
   (let* ((spherical-tuple (coordinate local))
          (r (ref spherical-tuple 0))
@@ -38,7 +57,7 @@ First, let's get some code loaded up and written.
         (* r (cos theta)))))
 #+end_src
 
-#+RESULTS[5da5d9a6077ed92b78a82134c01be067bb14e09c]:
+#+RESULTS[f4f039075baf66ba4fe071844815bfcffe281eaa]:
 : ;Loading "ch1/utils.scm"... done
 : #| "" |#
 
@@ -57,8 +76,6 @@ This block will generate a LaTeX version of the code I've supplied:
 c\left( t \right) + Dz\left( t \right)
 \label{eq:masterpiece}
 \end{equation}
-
-with some hand simplification,
 
 You can even reference these with equation numbers, like Equation \eqref{eq:masterpiece} above.
 
@@ -85,21 +102,33 @@ e^{i\pi} = -1
 \int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}
 \]
 
-*** Concluding.
+* 1: Lagrangian Mechanics
+  :PROPERTIES:
+  :header-args: :eval no-export :cache yes
+  :END:
 
-This is the rest of the goods.
-
-
-**** Exercise 1.1, p5 and 1.2, p8
+*** Exercise 1.1, p5 and 1.2, p8
 
 For each of the mechanical systems described below, give the number of degrees
 of freedom of the configuration space. (Exercise 1.2 asks about the generalized
 coordinates of each, so I'll note those here too.)
 
-1. 18 for three juggling pins - 3 position, 3 angles for each. OR 15 total, if
-   you assume that the pin is symmetric; then you just need two degrees of tilt.
-2. Spherical pendulum,hanging from a fixed support has **two degrees of
-   freedom**, one for each angle.
+***** Three juggling pins.
+
+**18 degrees of freedom** for three juggling pins - 3 position, 3 angles for
+each. OR **15** total, if you assume that the pin is symmetric; then you just
+need two degrees of tilt.
+
+***** A spherical pendulum
+
+*Consisting of a point mass (the pendulum bob) hanging from a rigid massless rod
+attached to a fixed support point. The pendulum bob may move in any direction
+subject to the constraint imposed by the rigid rod. The point mass is subject to
+the uniform force of gravity.*
+
+Spherical pendulum,hanging from a fixed support has **two degrees of freedom**,
+one for each angle.
+
 3. Spherical DOUBLE pendulum has **four degrees of freedom**; two angles from
    previous, plus two more angles for the second pendulum off of the first.
 4. Point mass sliding without friction on a rigid curved wire == **1 degree of
@@ -381,13 +410,16 @@ Fermat Optics. It's in the foldede section in the blue notebook. Do it again!
 ** 7.6: Projects
 * 8: Scheme
 * 9: Our Notation
+  :PROPERTIES:
+  :header-args: :eval never-export
+  :END:
 
 Notation Appendix. This is all about getting cozy with scheme, and with the
 various idiosyncracies of the tuple and functional notation.
 
 **** Exercise 9.1 Chain Rule
      :PROPERTIES:
-     :header-args: :tangle ch9/ex9-1.scm
+     :header-args+: :tangle ch9/ex9-1.scm :comments org
      :END:
 
 You're supposed to do these by hand, so I'll do that in the textbook. But here,
@@ -505,7 +537,7 @@ $H$ is already that composition, so:
 
 **** Exercise 9.2: Computing Derivatives
      :PROPERTIES:
-     :header-args: :tangle ch9/ex9-2.scm
+     :header-args+: :tangle ch9/ex9-2.scm :comments org
      :END:
 
 #+begin_src scheme :exports none
@@ -546,7 +578,7 @@ nice formatted exercise output. Let's do the final exercise, for fun:
      ((D H*) (up (* 3 (square 'a)) (* 5 (cube 'b))))))
 #+end_src
 
-#+RESULTS[2985ee902da9e52704d8960555db1fd8311a4339]:
+#+RESULTS[cd4f5c223d1859bb16d66bba402758a0d247e740]:
 \begin{equation}
 \left( \matrix{ \displaystyle{ \left[ \matrix{ \displaystyle{ 2 a {b}^{3}} \cr \cr \displaystyle{ 3 {a}^{2} {b}^{2}}} \right]} \cr \cr \displaystyle{ \left[ \matrix{ \displaystyle{ \left( \matrix{ \displaystyle{ 750} \cr \cr \displaystyle{ 0}} \right)} \cr \cr \displaystyle{ \left( \matrix{ \displaystyle{ 675} \cr \cr \displaystyle{ 1}} \right)}} \right]} \cr \cr \displaystyle{ \left[ \matrix{ \displaystyle{ 210937500 {a}^{6} {b}^{27}} \cr \cr \displaystyle{ 284765625 {a}^{8} {b}^{24}}} \right]}} \right)
 \end{equation}
