@@ -24,7 +24,7 @@ Discuss the section here. This is a test of a new heading style.
 
 Here's a nice image:
 
-[[./media/path_least_action.gif]]
+[[https://www.dropbox.com/home/blog/gifs?preview=2020-05-27+13.01.09.gif]]
 
 **** Exercise 1.1, p5 and 1.2, p8
 

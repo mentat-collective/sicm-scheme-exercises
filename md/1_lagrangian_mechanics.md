@@ -68,13 +68,13 @@
   - [Summary](#sec-11)
   - [Projects](#sec-12)
 
-# Configuration Spaces     :ATTACH:<a id="sec-1"></a>
+# Configuration Spaces<a id="sec-1"></a>
 
 Discuss the section here. This is a test of a new heading style.
 
 Here's a nice image:
 
-![img](./media/path_least_action.gif)
+![img](https://www.dropbox.com/home/blog/gifs?preview=2020-05-27+13.01.09.gif)
 
 ### Exercise 1.1, p5 and 1.2, p8<a id="sec-1-0-1"></a>
 
