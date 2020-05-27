@@ -202,12 +202,29 @@ handle rendering no problem, but LaTeX itself will choke.)
 
 ## Embedding Gifs
 
-If you do this on Dropbox, you need to:
+### Giphy
+
+This should be super easy. Upload, then drop in the image. Make sure to use
+`.gif`, not `.gifv`.
+
+### Dropbox
+
+This does NOT work now, since Dropbox seems to grab the gif and rewrite it. But
+here's what I've learned. If you do this on Dropbox, you need to:
 
 - Get the link!
 - add `?dl=1` to the end of the URL
 
-Then the image will embed properly.
+Then the image will embed properly. You'll also have to add this to your emacs config:
+
+```emacs-lisp
+;; This adds support for embedding dropbox images
+(add-to-list 'org-html-inline-image-rules
+               `("https" . ,(format "\\.%s\\'"
+                                    (regexp-opt
+                                     '("gif?dl=1")
+                                     t))))
+```
 
 ## Debugging
 
