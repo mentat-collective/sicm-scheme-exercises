@@ -200,6 +200,15 @@ This led to a bug discovery! I've included the modified file in
 up and down tuples. (Without this change, MathJax and XDVI will be able to
 handle rendering no problem, but LaTeX itself will choke.)
 
+## Embedding Gifs
+
+If you do this on Dropbox, you need to:
+
+- Get the link!
+- add `?dl=1` to the end of the URL
+
+Then the image will embed properly.
+
 ## Debugging
 
 If you use `org-journal`, you may have to modify `org-journal-is-journal` to be
