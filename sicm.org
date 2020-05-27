@@ -1,7 +1,7 @@
 #+title: Structure and Interpretation of Classical Mechanics
 #+subtitle: Computational Physics!
+#+startup: indent
 #+date: 2020-05-26
-
 
 Welcome to my tour of Structure and Interpretation of Classical Mechanics. I'm
 working on this book to develop my sense of the best way to do research in
@@ -11,231 +11,111 @@ stress the normal tools.
 I'm attempting to take notes in on org-mode file, and generate all my code from
 there. Let's see how it goes!
 
-* 0: Org-Mode Demo
+* Lagrangian Mechanics
   :PROPERTIES:
   :header-args: :eval no-export
   :END:
 
-This is an example of how we might structure an org-mode file that can export
-out to Github flavored Markdown, or to a PDF.
+** Configuration Spaces
 
-First, let's get some code loaded up and written. Here's a block that converts
-polar coordinates to rectangular coordinates.
-
-#+name: p->r
-#+begin_src scheme :eval no
-(define (p->r local)
-  (let* ((polar-tuple (coordinate local))
-         (r (ref polar-tuple 0))
-         (phi (ref polar-tuple 1))
-         (x (* r (cos phi)))
-         (y (* r (sin phi))))
-    (up x y)))
-#+end_src
-
-This is some good stuff.
-
-#+begin_src scheme :results output :noweb yes :comments both
-(load "ch1/utils.scm")
-
-<<p->r>>
-
-<<spherical->rect>>
-#+end_src
-
-And another, that gets us from spherical to rectangular.
-
-#+name: spherical->rect
-#+begin_src scheme :eval no
-(define (spherical->rect local)
-  (let* ((spherical-tuple (coordinate local))
-         (r (ref spherical-tuple 0))
-         (theta (ref spherical-tuple 1))
-         (phi (ref spherical-tuple 2)))
-    (up (* r (sin theta) (cos phi))
-        (* r (sin theta) (sin phi))
-        (* r (cos theta)))))
-#+end_src
-
-#+RESULTS[f4f039075baf66ba4fe071844815bfcffe281eaa]:
-: ;Loading "ch1/utils.scm"... done
-: #| "" |#
-
-This block will generate a LaTeX version of the code I've supplied:
-
-#+begin_src scheme :results value raw :exports both :cache yes
-(->tex-equation
- ((+ (literal-function 'c)
-     (D (literal-function 'z)))
-  't)
- "eq:masterpiece")
-#+end_src
-
-#+RESULTS[b383d2f5d6c252ac04a5f44aaeaec678132b8449]:
-\begin{equation}
-c\left( t \right) + Dz\left( t \right)
-\label{eq:masterpiece}
-\end{equation}
-
-You can even reference these with equation numbers, like Equation \eqref{eq:masterpiece} above.
-
-#+begin_src scheme :results value :exports both :cache yes
-(up 1 2 't)
-#+end_src
-
-#+RESULTS:
-: #|
-: (up 1 2 t)
-: |#
-
-*** Equations
-
-Here's (a test) of $a = bc$ and more $$ \alpha_t $$ equations:
-
-And again this is a thing:
-
-\[
-e^{i\pi} = -1
-\]
-
-\[
-\int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}
-\]
-
-* 1: Lagrangian Mechanics
-  :PROPERTIES:
-  :header-args: :eval no-export :cache yes
-  :END:
+Discuss the section here.
 
 *** Exercise 1.1, p5 and 1.2, p8
 
 For each of the mechanical systems described below, give the number of degrees
-of freedom of the configuration space. (Exercise 1.2 asks about the generalized
-coordinates of each, so I'll note those here too.)
+of freedom of the configuration space.
 
-***** Three juggling pins.
+(Exercise 1.2 asks about the generalized coordinates of each, so I'll note those
+here too.)
 
-**18 degrees of freedom** for three juggling pins - 3 position, 3 angles for
-each. OR **15** total, if you assume that the pin is symmetric; then you just
-need two degrees of tilt.
+1. Three juggling pins.
 
-***** A spherical pendulum
+   **18 degrees of freedom** for three juggling pins - 3 position, 3 angles for
+   each. OR **15** total, if you assume that the pin is symmetric; then you just
+   need two degrees of tilt.
 
-*Consisting of a point mass (the pendulum bob) hanging from a rigid massless rod
-attached to a fixed support point. The pendulum bob may move in any direction
-subject to the constraint imposed by the rigid rod. The point mass is subject to
-the uniform force of gravity.*
+2. A spherical pendulum consisting of a point mass (the pendulum bob) hanging
+   from a rigid massless rod attached to a fixed support point. The pendulum bob
+   may move in any direction subject to the constraint imposed by the rigid rod.
+   The point mass is subject to the uniform force of gravity.
 
-Spherical pendulum,hanging from a fixed support has **two degrees of freedom**,
-one for each angle.
+   Spherical pendulum,hanging from a fixed support has **two degrees of
+   freedom**, one for each angle.
 
 3. Spherical DOUBLE pendulum has **four degrees of freedom**; two angles from
    previous, plus two more angles for the second pendulum off of the first.
-4. Point mass sliding without friction on a rigid curved wire == **1 degree of
-   freedom**, distance along the wire.
-5. Axisymmetric top has **TWO degrees of freedom**, for the angles off of
+
+   A spherical double pendulum, consisting of one point mass hanging from a
+   rigid massless rod attached to a second point mass hanging from a second
+   massless rod attached to a fixed support point. The point masses are subject
+   to the uniform force of gravity.
+
+4. A point mass sliding without friction on a rigid curved wire.
+
+   **1 degree of freedom**, distance along the wire.
+
+5. A top consisting of a rigid axisymmetric body with one point on the symmetry
+   axis of the body attached to a fixed support, subject to a uniform
+   gravitational force.
+
+   Axisymmetric top has **TWO degrees of freedom**, for the angles off of
    vertical. But then we can't talk about its speed, so that's a little strange.
    I guess it has an angular momentum as a property, but that's not a
    coordinate.
-6. Same system, not axisymmetric, now has **THREE degrees of freedom**, one more
-   for the angle of the top's rotation.
 
-**** Exercise 1.3
+6. The same as e, but not axisymmetric.
+
+   We now have **THREE degrees of freedom**, one more for the angle of the top's
+   rotation.
+
+** 1.2: Generalized Coordinates
+
+*** Exercise 1.3
 
 Fermat Optics. It's in the foldede section in the blue notebook. Do it again!
 
-**** Exercise 1.4
-**** Exercise 1.5
-**** Exercise 1.6
-**** Exercise 1.7
-**** Exercise 1.8
-**** Exercise 1.9
-**** Exercise 1.10
-**** Exercise 1.11
-**** Exercise 1.12
-**** Exercise 1.13
-**** Exercise 1.14
-**** Exercise 1.15
-**** Exercise 1.16
-**** Exercise 1.17
-**** Exercise 1.18
-**** Exercise 1.19
-**** Exercise 1.20
-**** Exercise 1.21
-**** Exercise 1.22
-**** Exercise 1.23
-**** Exercise 1.24
-**** Exercise 1.25
-**** Exercise 1.26
-**** Exercise 1.27
-**** Exercise 1.28
-**** Exercise 1.29
-**** Exercise 1.30
-**** Exercise 1.31
-**** Exercise 1.32
-**** Exercise 1.33
-**** Exercise 1.34
-**** Exercise 1.35
-**** Exercise 1.36
-**** Exercise 1.37
-**** Exercise 1.38
-**** Exercise 1.39
-**** Exercise 1.40
-**** Exercise 1.41
-**** Exercise 1.42
-**** Exercise 1.43
-**** Exercise 1.44
-**** Exercise 2.1
-**** Exercise 2.2
-**** Exercise 2.3
-**** Exercise 2.4
-**** Exercise 2.5
-**** Exercise 2.6
-**** Exercise 2.7
-**** Exercise 2.8
-**** Exercise 2.9
-**** Exercise 2.10
-**** Exercise 2.11
-**** Exercise 2.12
-**** Exercise 2.13
-**** Exercise 2.14
-**** Exercise 2.15
-**** Exercise 2.16
-**** Exercise 2.17
-**** Exercise 2.18
-**** Exercise 2.19
-**** Exercise 2.20
-**** Exercise 3.0
-**** Exercise 3.1
-**** Exercise 3.2
-**** Exercise 3.3
-**** Exercise 3.4
-**** Exercise 3.5
-**** Exercise 3.6
-**** Exercise 3.7
-**** Exercise 3.8
-**** Exercise 3.9
-**** Exercise 3.10
-**** Exercise 3.11
-**** Exercise 3.12
-**** Exercise 3.13
-**** Exercise 3.14
-**** Exercise 3.15
-**** Exercise 3.16
-**** Exercise 4.0
-**** Exercise 4.1
-**** Exercise 4.2
-**** Exercise 4.3
-**** Exercise 4.4
-**** Exercise 4.5
-**** Exercise 4.6
-**** Exercise 4.7
-**** Exercise 4.8
-**** Exercise 4.9
-**** Exercise 4.10
+*** Exercise 1.4
+*** Exercise 1.5
+*** Exercise 1.6
+*** Exercise 1.7
+*** Exercise 1.8
+*** Exercise 1.9
+*** Exercise 1.10
+*** Exercise 1.11
+*** Exercise 1.12
+*** Exercise 1.13
+*** Exercise 1.14
+*** Exercise 1.15
+*** Exercise 1.16
+*** Exercise 1.17
+*** Exercise 1.18
+*** Exercise 1.19
+*** Exercise 1.20
+*** Exercise 1.21
+*** Exercise 1.22
+*** Exercise 1.23
+*** Exercise 1.24
+*** Exercise 1.25
+*** Exercise 1.26
+*** Exercise 1.27
+*** Exercise 1.28
+*** Exercise 1.29
+*** Exercise 1.30
+*** Exercise 1.31
+*** Exercise 1.32
+*** Exercise 1.33
+*** Exercise 1.34
+*** Exercise 1.35
+*** Exercise 1.36
+*** Exercise 1.37
+*** Exercise 1.38
+*** Exercise 1.39
+*** Exercise 1.40
+*** Exercise 1.41
+*** Exercise 1.42
+*** Exercise 1.43
+*** Exercise 1.44
 
-** 1.1: Configuration Spaces
-** 1.2: Generalized Coordinates
 ** 1.3: The Principle of Stationary Action
 ** 1.4: Computing Actions
 ** 1.5: The Euler–Lagrange Equations
@@ -260,7 +140,7 @@ Fermat Optics. It's in the foldede section in the blue notebook. Do it again!
 *** 1.10.3: Nonholonomic Systems
 ** 1.11: Summary
 ** 1.12: Projects
-* 2: Rigid Bodies
+* Rigid Bodies
 ** 2.1: Rotational Kinetic Energy
 ** 2.2: Kinematics of Rotation
 ** 2.3: Moments of Inertia
@@ -281,7 +161,7 @@ Fermat Optics. It's in the foldede section in the blue notebook. Do it again!
 *** 2.12.1: Motion in Terms of Quaternions
 ** 2.13: Summary
 ** 2.14: Projects
-* 3: Hamiltonian Mechanics
+* Hamiltonian Mechanics
 ** 3.1: Hamilton's Equations
 *** 3.1.1: The Legendre Transformation
 *** 3.1.2: Hamilton's Equations from the Action Principle
@@ -303,7 +183,7 @@ Fermat Optics. It's in the foldede section in the blue notebook. Do it again!
 ** 3.9: Standard Map
 ** 3.10: Summary
 ** 3.11: Projects
-* 4: Phase Space Structure
+* Phase Space Structure
 ** 4.1: Emergence of the Divided Phase Space
 ** 4.2: Linear Stability
 *** 4.2.1: Equilibria of Differential Equations
@@ -319,7 +199,7 @@ Fermat Optics. It's in the foldede section in the blue notebook. Do it again!
 *** 4.6.2: Dissolution of Invariant Curves
 ** 4.7: Summary
 ** 4.8: Projects
-* 5: Canonical Transformations
+* Canonical Transformations
 
 **** Exercise 5.1
 **** Exercise 5.2
@@ -358,7 +238,9 @@ Fermat Optics. It's in the foldede section in the blue notebook. Do it again!
 ** 5.6: Reduced Phase Space
 ** 5.7: Summary
 ** 5.8: Projects
-* 6: Canonical Evolution
+* Canonical Evolution
+
+** Hamilton–Jacobi Equation
 
 **** Exercise 6.1
 **** Exercise 6.2
@@ -373,51 +255,53 @@ Fermat Optics. It's in the foldede section in the blue notebook. Do it again!
 **** Exercise 6.11
 **** Exercise 6.12
 
-** 6.1: Hamilton–Jacobi Equation
-*** 6.1.1: Harmonic Oscillator
-*** 6.1.2: Hamilton–Jacobi Solution of the Kepler Problem
-*** 6.1.3: F2 and the Lagrangian
-*** 6.1.4: The Action Generates Time Evolution
-** 6.2: Time Evolution is Canonical
-*** 6.2.1: Another View of Time Evolution
-*** 6.2.2: Yet Another View of Time Evolution
-** 6.3: Lie Transforms
-** 6.4: Lie Series
-** 6.5: Exponential Identities
-** 6.6: Summary
-** 6.7: Projects
-* 7: Canonical Perturbation Theory
+*** Harmonic Oscillator
+*** Hamilton–Jacobi Solution of the Kepler Problem
+*** F2 and the Lagrangian
+*** The Action Generates Time Evolution
+** Time Evolution is Canonical
+*** Another View of Time Evolution
+*** Yet Another View of Time Evolution
+** Lie Transforms
+** Lie Series
+** Exponential Identities
+** Summary
+** Projects
+* Canonical Perturbation Theory
 
-**** Exercise 7.1
-**** Exercise 7.2
-**** Exercise 7.3
-**** Exercise 7.4
-**** Exercise 7.5
+** Perturbation Theory with Lie Series
 
-** 7.1: Perturbation Theory with Lie Series
-** 7.2: Pendulum as a Perturbed Rotor
+*** Exercise 7.1
+*** Exercise 7.2
+*** Exercise 7.3
+*** Exercise 7.4
+*** Exercise 7.5
+
+** Pendulum as a Perturbed Rotor
 *** 7.2.1: Higher Order
 *** 7.2.2: Eliminating Secular Terms
-** 7.3: Many Degrees of Freedom
+** Many Degrees of Freedom
 *** 7.3.1: Driven Pendulum as a Perturbed Rotor
-** 7.4: Nonlinear Resonance
-*** 7.4.1: Pendulum Approximation
-*** 7.4.2: Reading the Hamiltonian
-*** 7.4.3: Resonance-Overlap Criterion
-*** 7.4.4: Higher-Order Perturbation Theory
-*** 7.4.5: Stability of the Inverted Vertical Equilibrium
-** 7.5: Summary
-** 7.6: Projects
-* 8: Scheme
-* 9: Our Notation
+** Nonlinear Resonance
+*** Pendulum Approximation
+*** Reading the Hamiltonian
+*** Resonance-Overlap Criterion
+*** Higher-Order Perturbation Theory
+*** Stability of the Inverted Vertical Equilibrium
+** Summary
+** Projects
+* Scheme
+* Our Notation
   :PROPERTIES:
   :header-args: :eval never-export
   :END:
 
+** Exercises
+
 Notation Appendix. This is all about getting cozy with scheme, and with the
 various idiosyncracies of the tuple and functional notation.
 
-**** Exercise 9.1 Chain Rule
+*** Exercise 9.1 Chain Rule
      :PROPERTIES:
      :header-args+: :tangle ch9/ex9-1.scm :comments org
      :END:
@@ -535,7 +419,7 @@ $H$ is already that composition, so:
 \left( \matrix{ \displaystyle{ \left[ \matrix{ \displaystyle{ 2 a {b}^{3}} \cr \cr \displaystyle{ 3 {a}^{2} {b}^{2}}} \right]} \cr \cr \displaystyle{ \left[ \matrix{ \displaystyle{ \left( \matrix{ \displaystyle{ 750} \cr \cr \displaystyle{ 0}} \right)} \cr \cr \displaystyle{ \left( \matrix{ \displaystyle{ 675} \cr \cr \displaystyle{ 1}} \right)}} \right]} \cr \cr \displaystyle{ \left[ \matrix{ \displaystyle{ 210937500 {a}^{6} {b}^{27}} \cr \cr \displaystyle{ 284765625 {a}^{8} {b}^{24}}} \right]}} \right)
 \end{equation}
 
-**** Exercise 9.2: Computing Derivatives
+*** Exercise 9.2: Computing Derivatives
      :PROPERTIES:
      :header-args+: :tangle ch9/ex9-2.scm :comments org
      :END:
@@ -582,3 +466,94 @@ nice formatted exercise output. Let's do the final exercise, for fun:
 \begin{equation}
 \left( \matrix{ \displaystyle{ \left[ \matrix{ \displaystyle{ 2 a {b}^{3}} \cr \cr \displaystyle{ 3 {a}^{2} {b}^{2}}} \right]} \cr \cr \displaystyle{ \left[ \matrix{ \displaystyle{ \left( \matrix{ \displaystyle{ 750} \cr \cr \displaystyle{ 0}} \right)} \cr \cr \displaystyle{ \left( \matrix{ \displaystyle{ 675} \cr \cr \displaystyle{ 1}} \right)}} \right]} \cr \cr \displaystyle{ \left[ \matrix{ \displaystyle{ 210937500 {a}^{6} {b}^{27}} \cr \cr \displaystyle{ 284765625 {a}^{8} {b}^{24}}} \right]}} \right)
 \end{equation}
+
+* Org-Mode Demo
+  :PROPERTIES:
+  :header-args: :eval no-export
+  :END:
+
+This is an example of how we might structure an org-mode file that can export
+out to Github flavored Markdown, or to a PDF.
+
+First, let's get some code loaded up and written. Here's a block that converts
+polar coordinates to rectangular coordinates.
+
+#+name: p->r
+#+begin_src scheme :eval no
+(define (p->r local)
+  (let* ((polar-tuple (coordinate local))
+         (r (ref polar-tuple 0))
+         (phi (ref polar-tuple 1))
+         (x (* r (cos phi)))
+         (y (* r (sin phi))))
+    (up x y)))
+#+end_src
+
+This is some good stuff.
+
+#+begin_src scheme :results output :noweb yes :comments both
+(load "ch1/utils.scm")
+
+<<p->r>>
+
+<<spherical->rect>>
+#+end_src
+
+And another, that gets us from spherical to rectangular.
+
+#+name: spherical->rect
+#+begin_src scheme :eval no
+(define (spherical->rect local)
+  (let* ((spherical-tuple (coordinate local))
+         (r (ref spherical-tuple 0))
+         (theta (ref spherical-tuple 1))
+         (phi (ref spherical-tuple 2)))
+    (up (* r (sin theta) (cos phi))
+        (* r (sin theta) (sin phi))
+        (* r (cos theta)))))
+#+end_src
+
+#+RESULTS[f4f039075baf66ba4fe071844815bfcffe281eaa]:
+: ;Loading "ch1/utils.scm"... done
+: #| "" |#
+
+This block will generate a LaTeX version of the code I've supplied:
+
+#+begin_src scheme :results value raw :exports both :cache yes
+(->tex-equation
+ ((+ (literal-function 'c)
+     (D (literal-function 'z)))
+  't)
+ "eq:masterpiece")
+#+end_src
+
+#+RESULTS[b383d2f5d6c252ac04a5f44aaeaec678132b8449]:
+\begin{equation}
+c\left( t \right) + Dz\left( t \right)
+\label{eq:masterpiece}
+\end{equation}
+
+You can even reference these with equation numbers, like Equation \eqref{eq:masterpiece} above.
+
+#+begin_src scheme :results value :exports both :cache yes
+(up 1 2 't)
+#+end_src
+
+#+RESULTS:
+: #|
+: (up 1 2 t)
+: |#
+
+*** Equations
+
+Here's (a test) of $a = bc$ and more $$ \alpha_t $$ equations:
+
+And again this is a thing:
+
+\[
+e^{i\pi} = -1
+\]
+
+\[
+\int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}
+\]
