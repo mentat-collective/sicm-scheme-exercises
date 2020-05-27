@@ -87,3 +87,7 @@ And again this is a thing:
 \\[ e^{i\pi} = -1 \\]
 
 \\[ \int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2} \\]
+
+\\(\vec{x} \dot (\vec{x} \times \vec{v}) = \vec{v} \dot (\vec{x} \times \vec{v}) = 0\\)
+
+\\(\vec{x} \cdot (\vec{x} \times \vec{v}) = \vec{v} \dot (\vec{x} \times \vec{b}) = 0\\)

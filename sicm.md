@@ -147,6 +147,10 @@ I'm attempting to take notes in on org-mode file, and generate all my code from 
 
 Discuss the section here. This is a test of a new heading style.
 
+Here's a nice image:
+
+![img](./media/path_least_action.gif)
+
 1.  Exercise 1.1, p5 and 1.2, p8
 
     For each of the mechanical systems described below, give the number of degrees of freedom of the configuration space.
@@ -918,3 +922,7 @@ And again this is a thing:
 \\[ e^{i\pi} = -1 \\]
 
 \\[ \int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2} \\]
+
+\\(\vec{x} \dot (\vec{x} \times \vec{v}) = \vec{v} \dot (\vec{x} \times \vec{v}) = 0\\)
+
+\\(\vec{x} \cdot (\vec{x} \times \vec{v}) = \vec{v} \dot (\vec{x} \times \vec{b}) = 0\\)
