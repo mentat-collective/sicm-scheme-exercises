@@ -2,6 +2,8 @@
 
 ;; Printing
 
+(load "ch1/exdisplay.scm")
+
 ;; Generates a properly formatted string of LaTeX.
 (define (->tex* expr)
   (let* ((tex-string (expression->tex-string

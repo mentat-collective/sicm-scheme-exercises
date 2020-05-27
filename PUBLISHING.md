@@ -189,3 +189,28 @@ channel."
 If you add that to your emacs initialization code, you'll find that `ox-gfm`
 Does the Right Thing when you try to export to Github-flavored markdown, and
 equations show up looking great.
+
+## Custom LaTeX Processing
+
+I modified `exdisplay.scm` to use proper LaTeX environment style, like
+`\begin{pmatrix}\end{pmatrix}` instead of `\matrix{}`.
+
+This led to a bug discovery! I've included the modified file in
+`ch1/exdisplay.scm`. This has the bugfix, and the upgraded `matrix` printing for
+up and down tuples. (Without this change, MathJax and XDVI will be able to
+handle rendering no problem, but LaTeX itself will choke.)
+
+## Debugging
+
+If you use `org-journal`, you may have to modify `org-journal-is-journal` to be
+this:
+
+```emacs-lisp
+(defun org-journal-is-journal ()
+  "Determine if file is a journal file."
+  (when (buffer-file-name)
+    (string-match (org-journal-dir-and-file-format->pattern)
+                  (buffer-file-name))))
+```
+
+You'll know if you see that error. So annoying!

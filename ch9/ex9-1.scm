@@ -6,7 +6,6 @@
 ;; You're supposed to do these by hand, so I'll do that in the textbook. But here,
 ;; let's redo them on the machine.
 
-
 (load "ch1/utils.scm")
 
 ;; Compute $\partial_0 F(x, y)$ and $\partial_1 F(x, y)$

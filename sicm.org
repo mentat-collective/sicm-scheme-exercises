@@ -1,6 +1,7 @@
+# -*- eval: (org-num-mode 1); -*-
 #+title: Structure and Interpretation of Classical Mechanics
 #+subtitle: Computational Physics!
-#+startup: indent
+#+startup: indent num
 #+date: 2020-05-26
 
 Welcome to my tour of Structure and Interpretation of Classical Mechanics. I'm
@@ -14,6 +15,7 @@ there. Let's see how it goes!
 * Lagrangian Mechanics
   :PROPERTIES:
   :header-args: :eval no-export
+  :EXPORT_FILE_NAME: md/1_lagrangian_mechanics
   :END:
 
 ** Configuration Spaces
@@ -68,137 +70,191 @@ here too.)
    We now have **THREE degrees of freedom**, one more for the angle of the top's
    rotation.
 
-** 1.2: Generalized Coordinates
+** Generalized Coordinates
 
-*** Exercise 1.3
+**** Exercise 1.3
 
 Fermat Optics. It's in the foldede section in the blue notebook. Do it again!
 
-*** Exercise 1.4
-*** Exercise 1.5
-*** Exercise 1.6
-*** Exercise 1.7
-*** Exercise 1.8
-*** Exercise 1.9
-*** Exercise 1.10
-*** Exercise 1.11
-*** Exercise 1.12
-*** Exercise 1.13
-*** Exercise 1.14
-*** Exercise 1.15
-*** Exercise 1.16
-*** Exercise 1.17
-*** Exercise 1.18
-*** Exercise 1.19
-*** Exercise 1.20
-*** Exercise 1.21
-*** Exercise 1.22
-*** Exercise 1.23
-*** Exercise 1.24
-*** Exercise 1.25
-*** Exercise 1.26
-*** Exercise 1.27
-*** Exercise 1.28
-*** Exercise 1.29
-*** Exercise 1.30
-*** Exercise 1.31
-*** Exercise 1.32
-*** Exercise 1.33
-*** Exercise 1.34
-*** Exercise 1.35
-*** Exercise 1.36
-*** Exercise 1.37
-*** Exercise 1.38
-*** Exercise 1.39
-*** Exercise 1.40
-*** Exercise 1.41
-*** Exercise 1.42
-*** Exercise 1.43
-*** Exercise 1.44
+**** Exercise 1.4
+**** Exercise 1.5
+**** Exercise 1.6
+**** Exercise 1.7
+**** Exercise 1.8
+**** Exercise 1.9
+**** Exercise 1.10
+**** Exercise 1.11
+**** Exercise 1.12
+**** Exercise 1.13
+**** Exercise 1.14
+**** Exercise 1.15
+**** Exercise 1.16
+**** Exercise 1.17
+**** Exercise 1.18
+**** Exercise 1.19
+**** Exercise 1.20
+**** Exercise 1.21
+**** Exercise 1.22
+**** Exercise 1.23
+**** Exercise 1.24
+**** Exercise 1.25
+**** Exercise 1.26
+**** Exercise 1.27
+**** Exercise 1.28
+**** Exercise 1.29
+**** Exercise 1.30
+**** Exercise 1.31
+**** Exercise 1.32
+**** Exercise 1.33
+**** Exercise 1.34
+**** Exercise 1.35
+**** Exercise 1.36
+**** Exercise 1.37
+**** Exercise 1.38
+**** Exercise 1.39
+**** Exercise 1.40
+**** Exercise 1.41
+**** Exercise 1.42
+**** Exercise 1.43
+**** Exercise 1.44
 
-** 1.3: The Principle of Stationary Action
-** 1.4: Computing Actions
-** 1.5: The Euler–Lagrange Equations
-*** 1.5.1 Derivation of the Lagrange Equations
-*** 1.5.2 Computing Lagrange's Equations
-** 1.6: How to Find Lagrangians
-*** 1.6.1: Coordinate Transformations
-*** 1.6.2: Systems with Rigid Constraints
-*** 1.6.3: Constraints as Coordinate Transformations
-*** 1.6.4: The Lagrangian Is Not Unique
-** 1.7: Evolution of Dynamical State
-** 1.8: Conserved Quantities
-*** 1.8.1: Conserved Momenta
-*** 1.8.2: Energy Conservation
-*** 1.8.3: Central Forces in Three Dimensions
-*** 1.8.4: The Restricted Three-Body Problem
-*** 1.8.5: Noether's Theorem
-** 1.9: Abstraction of Path Functions
-** 1.10: Constrained Motion
-*** 1.10.1: Coordinate Constraints
-*** 1.10.2: Derivative Constraints
-*** 1.10.3: Nonholonomic Systems
-** 1.11: Summary
-** 1.12: Projects
+** The Principle of Stationary Action
+** Computing Actions
+** The Euler–Lagrange Equations
+*** Derivation of the Lagrange Equations
+*** Computing Lagrange's Equations
+** How to Find Lagrangians
+*** Coordinate Transformations
+*** Systems with Rigid Constraints
+*** Constraints as Coordinate Transformations
+*** The Lagrangian Is Not Unique
+** Evolution of Dynamical State
+** Conserved Quantities
+*** Conserved Momenta
+*** Energy Conservation
+*** Central Forces in Three Dimensions
+*** The Restricted Three-Body Problem
+*** Noether's Theorem
+** Abstraction of Path Functions
+** Constrained Motion
+*** Coordinate Constraints
+*** Derivative Constraints
+*** Nonholonomic Systems
+** Summary
+** Projects
 * Rigid Bodies
-** 2.1: Rotational Kinetic Energy
-** 2.2: Kinematics of Rotation
-** 2.3: Moments of Inertia
-** 2.4: Inertia Tensor
-** 2.5: Principal Moments of Inertia
-** 2.6: Vector Angular Momentum
-** 2.7: Euler Angles
-** 2.8: Motion of a Free Rigid Body
-*** 2.8.1: Computing the Motion of Free Rigid Bodies
-*** 2.8.2: Qualitative Features
-** 2.9: Euler's Equations
-** 2.10: Axisymmetric Tops
-** 2.11: Spin-Orbit Coupling
-*** 2.11.1: Development of the Potential Energy
-*** 2.11.2: Rotation of the Moon and Hyperion
-*** 2.11.3: Spin-Orbit Resonances
-** 2.12: Nonsingular Coordinates and Quaternions
-*** 2.12.1: Motion in Terms of Quaternions
-** 2.13: Summary
-** 2.14: Projects
+** Rotational Kinetic Energy
+
+**** Exercise 2.1
+**** Exercise 2.2
+**** Exercise 2.3
+**** Exercise 2.4
+**** Exercise 2.5
+**** Exercise 2.6
+**** Exercise 2.7
+**** Exercise 2.8
+**** Exercise 2.9
+**** Exercise 2.10
+**** Exercise 2.11
+**** Exercise 2.12
+**** Exercise 2.13
+**** Exercise 2.14
+**** Exercise 2.15
+**** Exercise 2.16
+**** Exercise 2.17
+**** Exercise 2.18
+**** Exercise 2.19
+**** Exercise 2.20
+
+** Kinematics of Rotation
+** Moments of Inertia
+** Inertia Tensor
+** Principal Moments of Inertia
+** Vector Angular Momentum
+** Euler Angles
+** Motion of a Free Rigid Body
+*** Computing the Motion of Free Rigid Bodies
+*** Qualitative Features
+** Euler's Equations
+** Axisymmetric Tops
+** Spin-Orbit Coupling
+*** Development of the Potential Energy
+*** Rotation of the Moon and Hyperion
+*** Spin-Orbit Resonances
+** Nonsingular Coordinates and Quaternions
+*** Motion in Terms of Quaternions
+** Summary
+** Projects
 * Hamiltonian Mechanics
-** 3.1: Hamilton's Equations
-*** 3.1.1: The Legendre Transformation
-*** 3.1.2: Hamilton's Equations from the Action Principle
-*** 3.1.3: A Wiring Diagram
-** 3.2: Poisson Brackets
-** 3.3: One Degree of Freedom
-** 3.4: Phase Space Reduction
-*** 3.4.1: Lagrangian Reduction
-** 3.5: Phase Space Evolution
-*** 3.5.1: Phase-Space Description Is Not Unique
-** 3.6: Surfaces of Section
-*** 3.6.1: Periodically Driven Systems
-*** 3.6.2: Computing Stroboscopic Surfaces of Section
-*** 3.6.3: Autonomous Systems
-*** 3.6.4: Computing Hénon–Heiles Surfaces of Section
-*** 3.6.5: Non-Axisymmetric Top
-** 3.7: Exponential Divergence
-** 3.8: Liouville's Theorem
-** 3.9: Standard Map
-** 3.10: Summary
-** 3.11: Projects
+** Hamilton's Equations
+
+**** Exercise 3.0
+**** Exercise 3.1
+**** Exercise 3.2
+**** Exercise 3.3
+**** Exercise 3.4
+**** Exercise 3.5
+**** Exercise 3.6
+**** Exercise 3.7
+**** Exercise 3.8
+**** Exercise 3.9
+**** Exercise 3.10
+**** Exercise 3.11
+**** Exercise 3.12
+**** Exercise 3.13
+**** Exercise 3.14
+**** Exercise 3.15
+**** Exercise 3.16
+
+*** The Legendre Transformation
+*** Hamilton's Equations from the Action Principle
+*** A Wiring Diagram
+** Poisson Brackets
+** One Degree of Freedom
+** Phase Space Reduction
+*** Lagrangian Reduction
+** Phase Space Evolution
+*** Phase-Space Description Is Not Unique
+** Surfaces of Section
+*** Periodically Driven Systems
+*** Computing Stroboscopic Surfaces of Section
+*** Autonomous Systems
+*** Computing Hénon–Heiles Surfaces of Section
+*** Non-Axisymmetric Top
+** Exponential Divergence
+** Liouville's Theorem
+** Standard Map
+** Summary
+** Projects
 * Phase Space Structure
-** 4.1: Emergence of the Divided Phase Space
-** 4.2: Linear Stability
-*** 4.2.1: Equilibria of Differential Equations
-*** 4.2.2: Fixed Points of Maps
-*** 4.2.3: Relations Among Exponents
-** 4.3: Homoclinic Tangle
-*** 4.3.1: Computation of Stable and Unstable Manifolds
-** 4.4: Integrable Systems
-** 4.5: Poincaré–Birkhoff Theorem
-*** 4.5.1: Computing the Poincaré–Birkhoff Construction
-** 4.6: Invariant Curves
-*** 4.6.1: Finding Invariant Curves
-*** 4.6.2: Dissolution of Invariant Curves
-** 4.7: Summary
-** 4.8: Projects
+** Emergence of the Divided Phase Space
+
+**** Exercise 4.0
+**** Exercise 4.1
+**** Exercise 4.2
+**** Exercise 4.3
+**** Exercise 4.4
+**** Exercise 4.5
+**** Exercise 4.6
+**** Exercise 4.7
+**** Exercise 4.8
+**** Exercise 4.9
+**** Exercise 4.10
+
+** Linear Stability
+*** Equilibria of Differential Equations
+*** Fixed Points of Maps
+*** Relations Among Exponents
+** Homoclinic Tangle
+*** Computation of Stable and Unstable Manifolds
+** Integrable Systems
+** Poincaré–Birkhoff Theorem
+*** Computing the Poincaré–Birkhoff Construction
+** Invariant Curves
+*** Finding Invariant Curves
+*** Dissolution of Invariant Curves
+** Summary
+** Projects
 * Canonical Transformations
 
 **** Exercise 5.1
@@ -222,22 +278,22 @@ Fermat Optics. It's in the foldede section in the blue notebook. Do it again!
 **** Exercise 5.19
 **** Exercise 5.20
 
-** 5.1: Point Transformations
-** 5.2: General Canonical Transformations
-*** 5.2.1: Time-Dependent Transformations
-*** 5.2.2: Abstracting the Canonical Condition
-** 5.3: Invariants of Canonical Transformations
-** 5.4: Generating Functions
-*** 5.4.1: F1 Generates Canonical Transformations
-*** 5.4.2: Generating Functions and Integral Invariants
-*** 5.4.3: Types of Generating Functions
-*** 5.4.4: Point Transformations
-*** 5.4.5: Total Time Derivatives
-** 5.5: Extended Phase Space
-*** 5.5.1: Poincaré–Cartan Integral Invariant
-** 5.6: Reduced Phase Space
-** 5.7: Summary
-** 5.8: Projects
+** Point Transformations
+** General Canonical Transformations
+*** Time-Dependent Transformations
+*** Abstracting the Canonical Condition
+** Invariants of Canonical Transformations
+** Generating Functions
+*** F1 Generates Canonical Transformations
+*** Generating Functions and Integral Invariants
+*** Types of Generating Functions
+*** Point Transformations
+*** Total Time Derivatives
+** Extended Phase Space
+*** Poincaré–Cartan Integral Invariant
+** Reduced Phase Space
+** Summary
+** Projects
 * Canonical Evolution
 
 ** Hamilton–Jacobi Equation
@@ -271,17 +327,17 @@ Fermat Optics. It's in the foldede section in the blue notebook. Do it again!
 
 ** Perturbation Theory with Lie Series
 
-*** Exercise 7.1
-*** Exercise 7.2
-*** Exercise 7.3
-*** Exercise 7.4
-*** Exercise 7.5
+**** Exercise 7.1
+**** Exercise 7.2
+**** Exercise 7.3
+**** Exercise 7.4
+**** Exercise 7.5
 
 ** Pendulum as a Perturbed Rotor
-*** 7.2.1: Higher Order
-*** 7.2.2: Eliminating Secular Terms
+*** Higher Order
+*** Eliminating Secular Terms
 ** Many Degrees of Freedom
-*** 7.3.1: Driven Pendulum as a Perturbed Rotor
+*** Driven Pendulum as a Perturbed Rotor
 ** Nonlinear Resonance
 *** Pendulum Approximation
 *** Reading the Hamiltonian
@@ -296,12 +352,16 @@ Fermat Optics. It's in the foldede section in the blue notebook. Do it again!
   :header-args: :eval never-export
   :END:
 
+** Summary
+
+Notes about this section.
+
 ** Exercises
 
 Notation Appendix. This is all about getting cozy with scheme, and with the
 various idiosyncracies of the tuple and functional notation.
 
-*** Exercise 9.1 Chain Rule
+**** Exercise 9.1 Chain Rule
      :PROPERTIES:
      :header-args+: :tangle ch9/ex9-1.scm :comments org
      :END:
@@ -314,7 +374,9 @@ let's redo them on the machine.
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"... done
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
 : #| check-f |#
 
 ***** Compute $\partial_0 F(x, y)$ and $\partial_1 F(x, y)$
@@ -348,9 +410,9 @@ First, let's define the functions we need.
    (f 'x 'y)))
 #+end_src
 
-#+RESULTS[be9a90487e3a5e53f5a9c479dd79dbd76bd0e18c]:
+#+RESULTS[b8eaf52d98e5903b52306509dcdc8f8eeb97144c]:
 \begin{equation}
-\left[ \matrix{ \displaystyle{ 2 x {y}^{3}} \cr \cr \displaystyle{ 3 {x}^{2} {y}^{2}}} \right]
+\begin{bmatrix} \displaystyle{ 2 x {y}^{3}} \cr \cr \displaystyle{ 3 {x}^{2} {y}^{2}}\end{bmatrix}
 \end{equation}
 
 Or with the $D$ symbol:
@@ -360,9 +422,9 @@ Or with the $D$ symbol:
  ((D F) 'x 'y))
 #+end_src
 
-#+RESULTS[ad5e3457e7a32bea193ba2301f548b99b871656c]:
+#+RESULTS[f3fba605ac97a3ebd30b4a96aca31eed921e2e93]:
 \begin{equation}
-\left[ \matrix{ \displaystyle{ 2 x {y}^{3}} \cr \cr \displaystyle{ 3 {x}^{2} {y}^{2}}} \right]
+\begin{bmatrix} \displaystyle{ 2 x {y}^{3}} \cr \cr \displaystyle{ 3 {x}^{2} {y}^{2}}\end{bmatrix}
 \end{equation}
 
 Or, we could show that they're equivalent this way:
@@ -374,9 +436,9 @@ Or, we could show that they're equivalent this way:
       (f 'x 'y))))
 #+end_src
 
-#+RESULTS[0409e2cdf711957d7bcfc514a7d127cc790f8835]:
+#+RESULTS[bbfc31a98ddca1b434403a34cefb730e354f1be8]:
 \begin{equation}
-\left[ \matrix{ \displaystyle{ 0} \cr \cr \displaystyle{ 0}} \right]
+\begin{bmatrix} \displaystyle{ 0} \cr \cr \displaystyle{ 0}\end{bmatrix}
 \end{equation}
 
 ***** Compute $\partial_0 F(F(x, y), y)$ and $\partial_1 F(F(x, y), y)$
@@ -388,9 +450,9 @@ $H$ is already that composition, so:
  ((D H) 'x 'y))
 #+end_src
 
-#+RESULTS[50be975d97eed6c38ed1ec502c4f297eace9f3df]:
+#+RESULTS[22a0dfcbcf713d36b0f899b6baac6dbf1ec4b56d]:
 \begin{equation}
-\left[ \matrix{ \displaystyle{ 4 {x}^{3} {y}^{9}} \cr \cr \displaystyle{ 9 {x}^{4} {y}^{8}}} \right]
+\begin{bmatrix} \displaystyle{ 4 {x}^{3} {y}^{9}} \cr \cr \displaystyle{ 9 {x}^{4} {y}^{8}}\end{bmatrix}
 \end{equation}
 
 ***** Compute $\partial_0 G(x, y)$ and $\partial_1 G(x, y)$
@@ -400,9 +462,9 @@ $H$ is already that composition, so:
  ((D G) 'x 'y))
 #+end_src
 
-#+RESULTS[5038860f9e86fa99d00b56d9e39ac93ee1c9667b]:
+#+RESULTS[548f447f81ffe817f686965fb5fdc1d0cbecc5f9]:
 \begin{equation}
-\left[ \matrix{ \displaystyle{ \left( \matrix{ \displaystyle{ 2 x {y}^{3}} \cr \cr \displaystyle{ 0}} \right)} \cr \cr \displaystyle{ \left( \matrix{ \displaystyle{ 3 {x}^{2} {y}^{2}} \cr \cr \displaystyle{ 1}} \right)}} \right]
+\begin{bmatrix} \displaystyle{ \begin{pmatrix} \displaystyle{ 2 x {y}^{3}} \cr \cr \displaystyle{ 0}\end{pmatrix}} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{ 3 {x}^{2} {y}^{2}} \cr \cr \displaystyle{ 1}\end{pmatrix}}\end{bmatrix}
 \end{equation}
 
 ***** Compute $DF(a, b)$, $DG(3, 5)$ and $DH(3a^2, 5b^3)$
@@ -414,12 +476,12 @@ $H$ is already that composition, so:
      ((D H) (* 3 (square 'a)) (* 5 (cube 'b)))))
 #+end_src
 
-#+RESULTS[58f6814dcdb27cedc271a73e19fc1d9c414a2bef]:
+#+RESULTS[e0ef4bfc15551f9d05baeb3970cd8dafaf02db65]:
 \begin{equation}
-\left( \matrix{ \displaystyle{ \left[ \matrix{ \displaystyle{ 2 a {b}^{3}} \cr \cr \displaystyle{ 3 {a}^{2} {b}^{2}}} \right]} \cr \cr \displaystyle{ \left[ \matrix{ \displaystyle{ \left( \matrix{ \displaystyle{ 750} \cr \cr \displaystyle{ 0}} \right)} \cr \cr \displaystyle{ \left( \matrix{ \displaystyle{ 675} \cr \cr \displaystyle{ 1}} \right)}} \right]} \cr \cr \displaystyle{ \left[ \matrix{ \displaystyle{ 210937500 {a}^{6} {b}^{27}} \cr \cr \displaystyle{ 284765625 {a}^{8} {b}^{24}}} \right]}} \right)
+\begin{pmatrix} \displaystyle{ \begin{bmatrix} \displaystyle{ 2 a {b}^{3}} \cr \cr \displaystyle{ 3 {a}^{2} {b}^{2}}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ \begin{pmatrix} \displaystyle{ 750} \cr \cr \displaystyle{ 0}\end{pmatrix}} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{ 675} \cr \cr \displaystyle{ 1}\end{pmatrix}}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ 210937500 {a}^{6} {b}^{27}} \cr \cr \displaystyle{ 284765625 {a}^{8} {b}^{24}}\end{bmatrix}}\end{pmatrix}
 \end{equation}
 
-*** Exercise 9.2: Computing Derivatives
+**** Exercise 9.2: Computing Derivatives
      :PROPERTIES:
      :header-args+: :tangle ch9/ex9-2.scm :comments org
      :END:
@@ -462,9 +524,9 @@ nice formatted exercise output. Let's do the final exercise, for fun:
      ((D H*) (up (* 3 (square 'a)) (* 5 (cube 'b))))))
 #+end_src
 
-#+RESULTS[cd4f5c223d1859bb16d66bba402758a0d247e740]:
+#+RESULTS[1e43354828c8ce0ba497bcc6bd9e64c4f4e20419]:
 \begin{equation}
-\left( \matrix{ \displaystyle{ \left[ \matrix{ \displaystyle{ 2 a {b}^{3}} \cr \cr \displaystyle{ 3 {a}^{2} {b}^{2}}} \right]} \cr \cr \displaystyle{ \left[ \matrix{ \displaystyle{ \left( \matrix{ \displaystyle{ 750} \cr \cr \displaystyle{ 0}} \right)} \cr \cr \displaystyle{ \left( \matrix{ \displaystyle{ 675} \cr \cr \displaystyle{ 1}} \right)}} \right]} \cr \cr \displaystyle{ \left[ \matrix{ \displaystyle{ 210937500 {a}^{6} {b}^{27}} \cr \cr \displaystyle{ 284765625 {a}^{8} {b}^{24}}} \right]}} \right)
+\begin{pmatrix} \displaystyle{ \begin{bmatrix} \displaystyle{ 2 a {b}^{3}} \cr \cr \displaystyle{ 3 {a}^{2} {b}^{2}}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ \begin{pmatrix} \displaystyle{ 750} \cr \cr \displaystyle{ 0}\end{pmatrix}} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{ 675} \cr \cr \displaystyle{ 1}\end{pmatrix}}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ 210937500 {a}^{6} {b}^{27}} \cr \cr \displaystyle{ 284765625 {a}^{8} {b}^{24}}\end{bmatrix}}\end{pmatrix}
 \end{equation}
 
 * Org-Mode Demo

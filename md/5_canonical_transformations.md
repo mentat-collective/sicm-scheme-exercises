@@ -18,22 +18,22 @@
       - [Exercise 5.18](#sec-0-0-18)
       - [Exercise 5.19](#sec-0-0-19)
       - [Exercise 5.20](#sec-0-0-20)
-  - [5.1: Point Transformations](#sec-1)
-  - [5.2: General Canonical Transformations](#sec-2)
-    - [5.2.1: Time-Dependent Transformations](#sec-2-1)
-    - [5.2.2: Abstracting the Canonical Condition](#sec-2-2)
-  - [5.3: Invariants of Canonical Transformations](#sec-3)
-  - [5.4: Generating Functions](#sec-4)
-    - [5.4.1: F1 Generates Canonical Transformations](#sec-4-1)
-    - [5.4.2: Generating Functions and Integral Invariants](#sec-4-2)
-    - [5.4.3: Types of Generating Functions](#sec-4-3)
-    - [5.4.4: Point Transformations](#sec-4-4)
-    - [5.4.5: Total Time Derivatives](#sec-4-5)
-  - [5.5: Extended Phase Space](#sec-5)
-    - [5.5.1: Poincaré–Cartan Integral Invariant](#sec-5-1)
-  - [5.6: Reduced Phase Space](#sec-6)
-  - [5.7: Summary](#sec-7)
-  - [5.8: Projects](#sec-8)
+  - [Point Transformations](#sec-1)
+  - [General Canonical Transformations](#sec-2)
+    - [Time-Dependent Transformations](#sec-2-1)
+    - [Abstracting the Canonical Condition](#sec-2-2)
+  - [Invariants of Canonical Transformations](#sec-3)
+  - [Generating Functions](#sec-4)
+    - [F1 Generates Canonical Transformations](#sec-4-1)
+    - [Generating Functions and Integral Invariants](#sec-4-2)
+    - [Types of Generating Functions](#sec-4-3)
+    - [Point Transformations](#sec-4-4)
+    - [Total Time Derivatives](#sec-4-5)
+  - [Extended Phase Space](#sec-5)
+    - [Poincaré–Cartan Integral Invariant](#sec-5-1)
+  - [Reduced Phase Space](#sec-6)
+  - [Summary](#sec-7)
+  - [Projects](#sec-8)
 
 ### Exercise 5.1<a id="sec-0-0-1"></a>
 
@@ -75,34 +75,34 @@
 
 ### Exercise 5.20<a id="sec-0-0-20"></a>
 
-# 5.1: Point Transformations<a id="sec-1"></a>
+# Point Transformations<a id="sec-1"></a>
 
-# 5.2: General Canonical Transformations<a id="sec-2"></a>
+# General Canonical Transformations<a id="sec-2"></a>
 
-## 5.2.1: Time-Dependent Transformations<a id="sec-2-1"></a>
+## Time-Dependent Transformations<a id="sec-2-1"></a>
 
-## 5.2.2: Abstracting the Canonical Condition<a id="sec-2-2"></a>
+## Abstracting the Canonical Condition<a id="sec-2-2"></a>
 
-# 5.3: Invariants of Canonical Transformations<a id="sec-3"></a>
+# Invariants of Canonical Transformations<a id="sec-3"></a>
 
-# 5.4: Generating Functions<a id="sec-4"></a>
+# Generating Functions<a id="sec-4"></a>
 
-## 5.4.1: F1 Generates Canonical Transformations<a id="sec-4-1"></a>
+## F1 Generates Canonical Transformations<a id="sec-4-1"></a>
 
-## 5.4.2: Generating Functions and Integral Invariants<a id="sec-4-2"></a>
+## Generating Functions and Integral Invariants<a id="sec-4-2"></a>
 
-## 5.4.3: Types of Generating Functions<a id="sec-4-3"></a>
+## Types of Generating Functions<a id="sec-4-3"></a>
 
-## 5.4.4: Point Transformations<a id="sec-4-4"></a>
+## Point Transformations<a id="sec-4-4"></a>
 
-## 5.4.5: Total Time Derivatives<a id="sec-4-5"></a>
+## Total Time Derivatives<a id="sec-4-5"></a>
 
-# 5.5: Extended Phase Space<a id="sec-5"></a>
+# Extended Phase Space<a id="sec-5"></a>
 
-## 5.5.1: Poincaré–Cartan Integral Invariant<a id="sec-5-1"></a>
+## Poincaré–Cartan Integral Invariant<a id="sec-5-1"></a>
 
-# 5.6: Reduced Phase Space<a id="sec-6"></a>
+# Reduced Phase Space<a id="sec-6"></a>
 
-# 5.7: Summary<a id="sec-7"></a>
+# Summary<a id="sec-7"></a>
 
-# 5.8: Projects<a id="sec-8"></a>
+# Projects<a id="sec-8"></a>
