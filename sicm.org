@@ -746,9 +746,15 @@ not symmetric.
 :header-args+: :tangle ch1/ex1-29.scm :comments org
 :END:
 
-#+begin_src scheme
+#+begin_src scheme :exports none
 (load "ch1/utils.scm")
 #+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
 
 I'll do this for a single particle, since it's annoying to get the sum going
 for many; and the lagrangian is additive, so no problem.
@@ -767,53 +773,73 @@ for many; and the lagrangian is additive, so no problem.
            (F->C uniform-translate-shift->rect)))
 #+end_src
 
+#+RESULTS:
+: #| uniform-translate-shift->rect |#
+:
+: #| L-translate-shift |#
+
 First, confirm that if we have a constant, we get what we expected from paper.
 
-#+begin_src scheme
+#+begin_src scheme :results value raw :exports both :cache yes
 (let* ((q (up (literal-function 'xprime)
               (lambda (t) 'Delta_x)
               (lambda (t) 'Delta_v)))
        (f (compose (L-translate-shift 'm) (Gamma q))))
-  (se (f 't)))
+  (->tex-equation (f 't)))
 #+end_src
+
+#+RESULTS[5d2b4de08cfab4779bf7cdab31d518191b40a4d2]:
+\begin{equation}
+{{1}\over {2}} {{\Delta}_{v}}^{2} m + {\Delta}_{v} m D{x}^\prime\left( t \right) + {{1}\over {2}} m {\left( D{x}^\prime\left( t \right) \right)}^{2}
+\end{equation}
 
 We can change this a little to see the extra terms; substract off the free
 particle lagrangian, to see the extra stuff.
 
-#+begin_src scheme
+#+begin_src scheme :results value raw :exports both :cache yes
 (let* ((q (up (literal-function 'xprime)
               (lambda (t) 'Delta_x)
               (lambda (t) 'Delta_v)))
        (L (- (L-translate-shift 'm)
              (L-free-particle 'm)))
        (f (compose L (Gamma q))))
-  (se (f 't)))
+  (->tex-equation (f 't)))
 #+end_src
 
+#+RESULTS[c17004e61fec7edb3835203cdc99c562940bee7c]:
+\begin{equation}
+{{1}\over {2}} {{\Delta}_{v}}^{2} m + {\Delta}_{v} m D{x}^\prime\left( t \right)
+\end{equation}
 
 Here's the gnarly version with both entries as actual functions. Can this be a
-total time derivative? It CANNOT be, because we have a (D Delta_v(t))^2 term in
-there, and we know that total time derivatives have to be linear in the
-velocities. The function F would have had to have a velocity in it, which is not
-allowed.
+total time derivative? It CANNOT be, because we have a $(D \Delta_v(t))^2$ term
+in there, and we know that total time derivatives have to be linear in the
+velocities. The function $F$ would have had to have a velocity in it, which is
+not allowed.
 
-#+begin_src scheme
+#+begin_src scheme :results value raw :exports both :cache yes
 (let* ((q (up (literal-function 'xprime)
               (literal-function 'Delta_x)
               (literal-function 'Delta_v)))
        (L (- (L-translate-shift 'm)
              (L-free-particle 'm)))
        (f (compose L (Gamma q))))
-  (se (f 't)))
+  (->tex-equation (f 't)))
 #+end_src
 
-Let's simplify by making the delta v constant and see if there's anything so obvious about Delta_x.
+#+RESULTS[ded4f6dec25954c9b7536153e1db8db0315cb399]:
+\begin{equation}
+{{1}\over {2}} m {t}^{2} {\left( D{\Delta}_{v}\left( t \right) \right)}^{2} + m t D{x}^\prime\left( t \right) D{\Delta}_{v}\left( t \right) + m t D{\Delta}_{v}\left( t \right) {\Delta}_{v}\left( t \right) + m t D{\Delta}_{v}\left( t \right) D{\Delta}_{x}\left( t \right) + m D{x}^\prime\left( t \right) {\Delta}_{v}\left( t \right) + m D{x}^\prime\left( t \right) D{\Delta}_{x}\left( t \right) - {{1}\over {2}} m {\left( D{\Delta}_{v}\left( t \right) \right)}^{2} + {{1}\over {2}} m {\left( {\Delta}_{v}\left( t \right) \right)}^{2} + m {\Delta}_{v}\left( t \right) D{\Delta}_{x}\left( t \right)
+\end{equation}
 
-We know that we have a total derivative when 'Delta_x is constant, and we know
+Let's simplify by making the $\Delta_v$ constant and see if there's anything so
+obvious about $\Delta_x$.
+
+We know that we have a total derivative when $\Delta_x$ is constant, and we know
 that total time derivatives are linear, so let's substract off the total time
 derivative and see what happens:
 
-#+begin_src scheme
+#+begin_src scheme :results value raw :exports both :cache yes
 (let* ((q (lambda (dx)
             (up (literal-function 'xprime)
                 dx
@@ -822,13 +848,19 @@ derivative and see what happens:
              (L-free-particle 'm)))
        (f (lambda (dx)
             (compose L (Gamma (q dx))))))
-  (se ((- (f (literal-function 'Delta_x))
-          (f (lambda (t) 'Delta_x)))
-       't)))
+  (->tex-equation
+   ((- (f (literal-function 'Delta_x))
+       (f (lambda (t) 'Delta_x)))
+    't)))
 #+end_src
 
-Take a look. there is a quadratic velocity term in here! We have D(Delta_x) *
-D(x_prime). This is not allowed in a total time derivative.
+#+RESULTS[1a9463beb2f26c1661f1978633ca830ba12f73ec]:
+\begin{equation}
+{\Delta}_{v} m D{\Delta}_{x}\left( t \right) + m D{x}^\prime\left( t \right) D{\Delta}_{x}\left( t \right)
+\end{equation}
+
+Take a look. there is a quadratic velocity term in here! We have $D \Delta_x(t)
+D x'(t)$. This is not allowed in a total time derivative.
 
 SO, only if the shift and uniform translation are constant do we not affect the
 Lagrangian value.

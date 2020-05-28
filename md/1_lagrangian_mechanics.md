@@ -756,10 +756,6 @@ For part e, I wrote this in the notebook - it is effectively identical to the su
 
 ### Exercise 1.29: Galilean Invariance<a id="sec-2-0-27"></a>
 
-```scheme
-(load "ch1/utils.scm")
-```
-
 I'll do this for a single particle, since it's annoying to get the sum going for many; and the lagrangian is additive, so no problem.
 
 ```scheme
@@ -783,8 +779,12 @@ First, confirm that if we have a constant, we get what we expected from paper.
               (lambda (t) 'Delta_x)
               (lambda (t) 'Delta_v)))
        (f (compose (L-translate-shift 'm) (Gamma q))))
-  (se (f 't)))
+  (->tex-equation (f 't)))
 ```
+
+\begin{equation}
+{{1}\over {2}} {{\Delta}_{v}}^{2} m + {\Delta}_{v} m D{x}^\prime\left( t \right) + {{1}\over {2}} m {\left( D{x}^\prime\left( t \right) \right)}^{2}
+\end{equation}
 
 We can change this a little to see the extra terms; substract off the free particle lagrangian, to see the extra stuff.
 
@@ -795,10 +795,14 @@ We can change this a little to see the extra terms; substract off the free parti
        (L (- (L-translate-shift 'm)
              (L-free-particle 'm)))
        (f (compose L (Gamma q))))
-  (se (f 't)))
+  (->tex-equation (f 't)))
 ```
 
-Here's the gnarly version with both entries as actual functions. Can this be a total time derivative? It CANNOT be, because we have a (D Delta<sub>v</sub>(t))<sup>2</sup> term in there, and we know that total time derivatives have to be linear in the velocities. The function F would have had to have a velocity in it, which is not allowed.
+\begin{equation}
+{{1}\over {2}} {{\Delta}_{v}}^{2} m + {\Delta}_{v} m D{x}^\prime\left( t \right)
+\end{equation}
+
+Here's the gnarly version with both entries as actual functions. Can this be a total time derivative? It CANNOT be, because we have a \\((D \Delta_v(t))^2\\) term in there, and we know that total time derivatives have to be linear in the velocities. The function \\(F\\) would have had to have a velocity in it, which is not allowed.
 
 ```scheme
 (let* ((q (up (literal-function 'xprime)
@@ -807,12 +811,16 @@ Here's the gnarly version with both entries as actual functions. Can this be a t
        (L (- (L-translate-shift 'm)
              (L-free-particle 'm)))
        (f (compose L (Gamma q))))
-  (se (f 't)))
+  (->tex-equation (f 't)))
 ```
 
-Let's simplify by making the delta v constant and see if there's anything so obvious about Delta<sub>x</sub>.
+\begin{equation}
+{{1}\over {2}} m {t}^{2} {\left( D{\Delta}_{v}\left( t \right) \right)}^{2} + m t D{x}^\prime\left( t \right) D{\Delta}_{v}\left( t \right) + m t D{\Delta}_{v}\left( t \right) {\Delta}_{v}\left( t \right) + m t D{\Delta}_{v}\left( t \right) D{\Delta}_{x}\left( t \right) + m D{x}^\prime\left( t \right) {\Delta}_{v}\left( t \right) + m D{x}^\prime\left( t \right) D{\Delta}_{x}\left( t \right) - {{1}\over {2}} m {\left( D{\Delta}_{v}\left( t \right) \right)}^{2} + {{1}\over {2}} m {\left( {\Delta}_{v}\left( t \right) \right)}^{2} + m {\Delta}_{v}\left( t \right) D{\Delta}_{x}\left( t \right)
+\end{equation}
 
-We know that we have a total derivative when 'Delta<sub>x</sub> is constant, and we know that total time derivatives are linear, so let's substract off the total time derivative and see what happens:
+Let's simplify by making the \\(\Delta_v\\) constant and see if there's anything so obvious about \\(\Delta_x\\).
+
+We know that we have a total derivative when \\(\Delta_x\\) is constant, and we know that total time derivatives are linear, so let's substract off the total time derivative and see what happens:
 
 ```scheme
 (let* ((q (lambda (dx)
@@ -823,12 +831,17 @@ We know that we have a total derivative when 'Delta<sub>x</sub> is constant, and
              (L-free-particle 'm)))
        (f (lambda (dx)
             (compose L (Gamma (q dx))))))
-  (se ((- (f (literal-function 'Delta_x))
-          (f (lambda (t) 'Delta_x)))
-       't)))
+  (->tex-equation
+   ((- (f (literal-function 'Delta_x))
+       (f (lambda (t) 'Delta_x)))
+    't)))
 ```
 
-Take a look. there is a quadratic velocity term in here! We have D(Delta<sub>x</sub>) \* D(x<sub>prime</sub>). This is not allowed in a total time derivative.
+\begin{equation}
+{\Delta}_{v} m D{\Delta}_{x}\left( t \right) + m D{x}^\prime\left( t \right) D{\Delta}_{x}\left( t \right)
+\end{equation}
+
+Take a look. there is a quadratic velocity term in here! We have \\(D \Delta_x(t) D x'(t)\\). This is not allowed in a total time derivative.
 
 SO, only if the shift and uniform translation are constant do we not affect the Lagrangian value.
 
