@@ -11,20 +11,25 @@
          (len (string-length tex-string)))
     (substring tex-string 10 (- len 3))))
 
+;; Prints the string as a LaTeX code block.
+(define (->write-tex tex-string)
+  (write-string
+   (string-append "\\[ " tex-string " \\]")))
+
 ;; Prints the TeX representation of the supplied expression to the screen.
 (define (->tex expr)
-  (write-string
-   (string-append "\\[ " (->tex* expr) " \\]")))
+  (->write-tex (->tex* expr)))
 
+;; Prints an equation code block containing the expression as LaTeX.
 (define (->tex-equation expr #!optional label)
-  (write-string
+  (->write-tex
    (string-append
-    "\\[\\begin{equation}\n"
+    "\\begin{equation}\n"
     (->tex* expr)
     (if (default-object? label)
         ""
         (string-append "\n\\label{" label "}"))
-    "\n\\end{equation}\\]")))
+    "\n\\end{equation}")))
 
 ;; Lagrangian helpers
 

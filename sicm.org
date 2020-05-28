@@ -817,7 +817,7 @@ in there, and we know that total time derivatives have to be linear in the
 velocities. The function $F$ would have had to have a velocity in it, which is
 not allowed.
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src scheme :results value :exports both :cache yes
 (let* ((q (up (literal-function 'xprime)
               (literal-function 'Delta_x)
               (literal-function 'Delta_v)))
@@ -827,10 +827,10 @@ not allowed.
   (->tex-equation (f 't)))
 #+end_src
 
-#+RESULTS[ded4f6dec25954c9b7536153e1db8db0315cb399]:
-\[\begin{equation}
-{{1}\over {2}} m {t}^{2} {\left( D{\Delta}_{v}\left( t \right) \right)}^{2} + m t D{x}^\prime\left( t \right) D{\Delta}_{v}\left( t \right) + m t D{\Delta}_{v}\left( t \right) {\Delta}_{v}\left( t \right) + m t D{\Delta}_{v}\left( t \right) D{\Delta}_{x}\left( t \right) + m D{x}^\prime\left( t \right) {\Delta}_{v}\left( t \right) + m D{x}^\prime\left( t \right) D{\Delta}_{x}\left( t \right) - {{1}\over {2}} m {\left( D{\Delta}_{v}\left( t \right) \right)}^{2} + {{1}\over {2}} m {\left( {\Delta}_{v}\left( t \right) \right)}^{2} + m {\Delta}_{v}\left( t \right) D{\Delta}_{x}\left( t \right)
-\end{equation}\]
+#+RESULTS[2165ae892478aaceeb15c7867181de0712309279]:
+: \[\begin{equation}
+: {{1}\over {2}} m {t}^{2} {\left( D{\Delta}_{v}\left( t \right) \right)}^{2} + m t D{x}^\prime\left( t \right) D{\Delta}_{v}\left( t \right) + m t D{\Delta}_{v}\left( t \right) {\Delta}_{v}\left( t \right) + m t D{\Delta}_{v}\left( t \right) D{\Delta}_{x}\left( t \right) + m D{x}^\prime\left( t \right) {\Delta}_{v}\left( t \right) + m D{x}^\prime\left( t \right) D{\Delta}_{x}\left( t \right) - {{1}\over {2}} m {\left( D{\Delta}_{v}\left( t \right) \right)}^{2} + {{1}\over {2}} m {\left( {\Delta}_{v}\left( t \right) \right)}^{2} + m {\Delta}_{v}\left( t \right) D{\Delta}_{x}\left( t \right)
+: \end{equation}\]
 
 Let's simplify by making the $\Delta_v$ constant and see if there's anything so
 obvious about $\Delta_x$.

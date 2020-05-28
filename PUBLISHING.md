@@ -162,25 +162,15 @@ Here's what I had to do to get this working:
   (defun replace-in-string (what with in)
     (replace-regexp-in-string (regexp-quote what) with in nil 'literal))
 
-
-  (defun org-gfm-latex-fragment (latex-fragment contents info)
-    "Transcode SRC-BLOCK element into Github Flavored Markdown
-format. CONTENTS is nil.  INFO is a plist used as a communication
-channel."
-
-    (let* ((latex-frag (org-element-property :value latex-fragment)))
-      (message "Got it!")
-      (message latex-frag)
-      "face"))
-
   (defun my-latex-filter-gfm-macro (text backend info)
-    "Replace \\R with \\mathbb{R}"
     (when (org-export-derived-backend-p backend 'gfm)
       (->> text
            (replace-in-string "\\(" "\\\\(")
            (replace-in-string "\\)" "\\\\)")
            (replace-in-string "\\[" "\\\\[")
-           (replace-in-string "\\]" "\\\\]"))))
+           (replace-in-string "\\]" "\\\\]")
+           (replace-in-string "_" "\\_")
+           )))
 
   (add-to-list 'org-export-filter-latex-fragment-functions
                'my-latex-filter-gfm-macro)
