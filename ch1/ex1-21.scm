@@ -1,15 +1,28 @@
+;; Exercise 1.21
+;; :PROPERTIES:
+;; :header-args+: :tangle ch1/ex1-21.scm :comments org
+;; :END:
+
 ;; The uneven dumbbell, 1.21.
+
 
 (load "ch1/utils.scm")
 
-;; takes in any number of up tuples and zips them into a new list of up-tuples
-;; by taking each element.
+
+
+;; Takes in any number of up tuples and zips them into a new list of up-tuples by
+;; taking each element.
+
+
 (define (up-zip . ups)
   (apply vector-map up (map up->vector ups)))
+
+
 
 ;; I spent some time trying to make a nice API... but without map, filter,
 ;; reduce etc on tuples it is quite annoying. So let's go ad hoc first and see
 ;; what happens.
+
 
 (define (KE-particle m v)
   (* 1/2 m (square v)))
@@ -46,7 +59,6 @@
           (KE-particle m1 qdot_1))
        (constraint q_0 q_1 F l))))
 
-
 (define q-rect
   (up (literal-function 'x_0)
       (literal-function 'y_0)
@@ -54,17 +66,28 @@
       (literal-function 'y_1)
       (literal-function 'F)))
 
+
+
 ;; This shows the lagrangian itself, which answers part b:
+
+
 (let* ((L (L-free-constrained 'm_0 'm_1 'l))
        (f (compose L (Gamma q-rect))))
   (se (f 't)))
 
+
+
 ;; Here are the lagrange equations, confirming part b.
+
+
 (let* ((L (L-free-constrained 'm_0 'm_1 'l))
        (f ((Lagrange-equations L) q-rect)))
   (se (f 't)))
 
-;; part c - make a change of coordinates.
+
+
+;; Part c - make a change of coordinates.
+
 
 (define ((cm-theta->rect m0 m1) local)
   (let* ((q (coordinate local))
@@ -92,7 +115,11 @@
   (compose (L-free-constrained m0 m1 l)
            (F->C (cm-theta->rect m0 m1))))
 
+
+
 ;; This shows the lagrangian itself, after the coordinate transformation:
+
+
 (let* ((q (up (literal-function 'x_cm)
               (literal-function 'y_cm)
               (literal-function 'theta)
@@ -102,7 +129,11 @@
        (f (compose L (Gamma q))))
   (se (f 't)))
 
+
+
 ;; Here are the lagrange equations for part c.
+
+
 (let* ((q (up (literal-function 'x_cm)
               (literal-function 'y_cm)
               (literal-function 'theta)
@@ -113,8 +144,11 @@
   (se (f 't)))
 
 
+
 ;; For part d, we can substitute the constant value of c to get simplified
 ;; equations.
+
+
 (let* ((q (up (literal-function 'x_cm)
               (literal-function 'y_cm)
               (literal-function 'theta)
@@ -123,7 +157,3 @@
        (L (L-free-constrained-new 'm_0 'm_1 'l))
        (f ((Lagrange-equations L) q)))
   (se (f 't)))
-
-;; for part e, I wrote this in the notebook - it is effectively identical to the
-;; substitution that is happening on the computer, so I'm going to ignore this.
-;; You just get more cancellations.

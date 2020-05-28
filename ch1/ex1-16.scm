@@ -1,5 +1,11 @@
-;; messing around to make sure I understand what I'm seeing in the coordinate
+;; Exercise 1.16
+;; :PROPERTIES:
+;; :header-args+: :tangle ch1/ex1-16.scm :comments org
+;; :END:
+
+;; Messing around to make sure I understand what I'm seeing in the coordinate
 ;; transforms on page 45.
+
 
 (load "ch1/utils.scm")
 
@@ -21,14 +27,21 @@
         (* r (cos theta)))))
 
 
-;; check polar:
+
+;; Check polar:
+
+
 (show-expression
  ((F->C p->r)
   (up 't
       (up 'r 'phi)
       (up 'rdot 'phidot))))
 
+
+
 ;; spherical coordinate change, check velocities:
+
+
 (show-expression
  ((F->C spherical->rect)
   (up 't
@@ -41,14 +54,22 @@
                  (up 'r 'theta 'phi)
                  (up 'rdot 'thetadot 'phidot))) 2) 0)))
 
+
+
 ;; get the Langrangian from page 41:
+
+
 (define ((L-central-rectangular m U) local)
   (let ((q (coordinate local))
         (v (velocity local)))
     (- (* 1/2 m (square v))
        (U (sqrt (square q))))))
 
+
+
 ;; BOOM, now we can compose these things!
+
+
 (define (L-central-polar m U)
   (compose (L-central-rectangular m U)
            (F->C p->r)))
@@ -57,14 +78,22 @@
   (compose (L-central-rectangular m U)
            (F->C spherical->rect)))
 
+
+
 ;; Confirm the polar coordinate version...
+
+
 (show-expression
  ((L-central-polar 'm (literal-function 'U))
   (up 't
       (up 'r 'phi)
       (up 'rdot 'phidot))))
 
+
+
 ;; BOOM, much better than calculating by hand!
+
+
 (show-expression
  ((L-central-spherical 'm (literal-function 'U))
   (up 't
@@ -72,7 +101,11 @@
       (up 'rdot 'thetadot 'phidot))))
 
 
+
+
 ;; rectangular, for fun:
+
+
 (show-expression
  ((L-central-rectangular 'm (literal-function 'U))
   (up 't

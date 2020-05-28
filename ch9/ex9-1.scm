@@ -6,6 +6,7 @@
 ;; You're supposed to do these by hand, so I'll do that in the textbook. But here,
 ;; let's redo them on the machine.
 
+
 (load "ch1/utils.scm")
 
 ;; Compute $\partial_0 F(x, y)$ and $\partial_1 F(x, y)$
@@ -41,9 +42,9 @@
 
 
 
-;; #+RESULTS[be9a90487e3a5e53f5a9c479dd79dbd76bd0e18c]:
+;; #+RESULTS[b8eaf52d98e5903b52306509dcdc8f8eeb97144c]:
 ;; \begin{equation}
-;; \left[ \matrix{ \displaystyle{ 2 x {y}^{3}} \cr \cr \displaystyle{ 3 {x}^{2} {y}^{2}}} \right]
+;; \begin{bmatrix} \displaystyle{ 2 x {y}^{3}} \cr \cr \displaystyle{ 3 {x}^{2} {y}^{2}}\end{bmatrix}
 ;; \end{equation}
 
 ;; Or with the $D$ symbol:
@@ -54,9 +55,9 @@
 
 
 
-;; #+RESULTS[ad5e3457e7a32bea193ba2301f548b99b871656c]:
+;; #+RESULTS[f3fba605ac97a3ebd30b4a96aca31eed921e2e93]:
 ;; \begin{equation}
-;; \left[ \matrix{ \displaystyle{ 2 x {y}^{3}} \cr \cr \displaystyle{ 3 {x}^{2} {y}^{2}}} \right]
+;; \begin{bmatrix} \displaystyle{ 2 x {y}^{3}} \cr \cr \displaystyle{ 3 {x}^{2} {y}^{2}}\end{bmatrix}
 ;; \end{equation}
 
 ;; Or, we could show that they're equivalent this way:

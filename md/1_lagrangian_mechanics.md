@@ -6,7 +6,7 @@
       - [Exercise 1.5](#sec-2-0-3)
       - [Exercise 1.6](#sec-2-0-4)
       - [Exercise 1.7](#sec-2-0-5)
-      - [Exercise 1.8](#sec-2-0-6)
+      - [Exercise 1.8: Implementing Delta](#sec-2-0-6)
       - [Exercise 1.9](#sec-2-0-7)
       - [Exercise 1.10](#sec-2-0-8)
       - [Exercise 1.11](#sec-2-0-9)
@@ -26,8 +26,8 @@
       - [Exercise 1.25](#sec-2-0-23)
       - [Exercise 1.26](#sec-2-0-24)
       - [Exercise 1.27](#sec-2-0-25)
-      - [Exercise 1.28](#sec-2-0-26)
-      - [Exercise 1.29](#sec-2-0-27)
+      - [Exercise 1.28: Total Time Derivatives](#sec-2-0-26)
+      - [Exercise 1.29: Galilean Invariance](#sec-2-0-27)
       - [Exercise 1.30](#sec-2-0-28)
       - [Exercise 1.31](#sec-2-0-29)
       - [Exercise 1.32](#sec-2-0-30)
@@ -120,7 +120,35 @@ Fermat Optics. It's in the foldede section in the blue notebook. Do it again!
 
 ### Exercise 1.7<a id="sec-2-0-5"></a>
 
-### Exercise 1.8<a id="sec-2-0-6"></a>
+### Exercise 1.8: Implementing Delta<a id="sec-2-0-6"></a>
+
+This FEELS weird&#x2026; but we want something that is&#x2026; well, let's see.
+
+```scheme
+(define (((delta eta) f) q)
+  (let (g (lambda (eps)
+            (f (q + (* eps eta)))))
+    ((D g) 0)))
+```
+
+Why does this work? WELL&#x2026; we need a way to force the limit in.
+
+this is a PATH function, remember. This takes a path function, then passes it into \\(\Gamma\\), and composes THAT with F. F is a function from the local tuple to some output variable. You can imagine it as the Langrangian, for example.
+
+The local tuple type defined here can take any number of path components.
+
+```scheme
+(define (f q)
+  (let* ((Local (Up Real (UP* Real) (UP* Real)))
+         (F (literal-function 'F (-> Local Real))))
+    (compose F (Gamma q))))
+```
+
+This is a path function that returns a 2d path; we can use this as an example.
+
+```scheme
+(define q (literal-function 'q (-> Real (Up Real Real))))
+```
 
 ### Exercise 1.9<a id="sec-2-0-7"></a>
 
@@ -136,7 +164,215 @@ Fermat Optics. It's in the foldede section in the blue notebook. Do it again!
 
 ### Exercise 1.15<a id="sec-2-0-13"></a>
 
+This one was a serious doozy. I plan on going through and co
+
+Checking that composition distributes over multiplication&#x2026;
+
+```scheme
+(define f (literal-function 'f))
+(define g (literal-function 'g))
+(define h (literal-function 'h))
+```
+
+looks good! These are the same expression.
+
+```scheme
+((compose (* f g) h) 't)
+((* (compose f h) (compose g h)) 't)
+```
+
+This is the general form of a path transformation; big surprise, this is very close to the code on page 46. I'm going to keep my version, since I don't want to get too confused, here.
+
+```scheme
+(define ((F->C F) local)
+  (let ((t (time local))
+        (x (coordinate local))
+        (v (velocity local)))
+    (up t
+        (F t x)
+        (+ (((partial 0) F) t x)
+           (* (((partial 1) F) t x)
+              v)))))
+```
+
+Here's a literal function we can play with.
+
+```scheme
+(define F*
+  (literal-function 'F (-> (X Real Real) Real)))
+```
+
+Okay, boom, this is the literal function.
+
+```scheme
+(define q-prime
+  (literal-function 'q-prime))
+```
+
+This is the manual generation of q from q-prime.
+
+```scheme
+(define ((to-q F) qp)
+  (lambda (t) (F t (qp t))))
+```
+
+We can check that these are now equal. This uses C to get us to q
+
+```scheme
+((compose (F->C F*) (Gamma q-prime)) 't)
+```
+
+And this does it by passing in q manually.
+
+```scheme
+((Gamma ((to-q F*) q-prime)) 't)
+```
+
+I can convert the proof to code, no problem, by showing that these sides are equal.
+
+YES!! the final step of my proof was the note that these are equal. THIS IS HUGE!!!
+
+```scheme
+((compose (lambda (x) (ref x 1)) ((partial 1) (F->C F*)) (Gamma q-prime)) 't)
+((compose (lambda (x) (ref x 2)) ((partial 2) (F->C F*)) (Gamma q-prime)) 't)
+```
+
+Just for fun, note that this successfully pushes things inside gamma.
+
+```scheme
+(let ((L (literal-function 'L (-> (UP Real Real Real) Real)))
+      (C (F->C F*)))
+  ((Gamma ((to-q ((partial 1) F*)) q-prime)) 't))
+
+(define (p->r t polar-tuple)
+  (let* ((r (ref polar-tuple 0))
+         (phi (ref polar-tuple 1))
+         (x (* r (cos phi)))
+         (y (* r (sin phi))))
+    (up x y)))
+
+(literal-function 'q-prime (-> Real (UP Real Real)))((Gamma ((to-q p->r) )) 't)
+```
+
+trying again. get a function:
+
+```scheme
+(define q
+  ;; time to x y.
+  (literal-function 'q (-> Real (UP Real Real))))
+
+(define (C local)
+  (up (time local)
+     (square (coordinate local))
+     (velocity local)))
+
+((compose C (Gamma q)) 't)
+```
+
+That's good for now.
+
 ### Exercise 1.16<a id="sec-2-0-14"></a>
+
+Messing around to make sure I understand what I'm seeing in the coordinate transforms on page 45.
+
+```scheme
+(load "ch1/utils.scm")
+
+(define (p->r local)
+  (let* ((polar-tuple (coordinate local))
+         (r (ref polar-tuple 0))
+         (phi (ref polar-tuple 1))
+         (x (* r (cos phi)))
+         (y (* r (sin phi))))
+    (up x y)))
+
+(define (spherical->rect local)
+  (let* ((spherical-tuple (coordinate local))
+         (r (ref spherical-tuple 0))
+         (theta (ref spherical-tuple 1))
+         (phi (ref spherical-tuple 2)))
+    (up (* r (sin theta) (cos phi))
+        (* r (sin theta) (sin phi))
+        (* r (cos theta)))))
+```
+
+Check polar:
+
+```scheme
+(show-expression
+ ((F->C p->r)
+  (up 't
+      (up 'r 'phi)
+      (up 'rdot 'phidot))))
+```
+
+spherical coordinate change, check velocities:
+
+```scheme
+(show-expression
+ ((F->C spherical->rect)
+  (up 't
+      (up 'r 'theta 'phi)
+      (up 'rdot 'thetadot 'phidot))))
+
+(show-expression
+ (square (ref (ref ((F->C spherical->rect)
+             (up 't
+                 (up 'r 'theta 'phi)
+                 (up 'rdot 'thetadot 'phidot))) 2) 0)))
+```
+
+get the Langrangian from page 41:
+
+```scheme
+(define ((L-central-rectangular m U) local)
+  (let ((q (coordinate local))
+        (v (velocity local)))
+    (- (* 1/2 m (square v))
+       (U (sqrt (square q))))))
+```
+
+BOOM, now we can compose these things!
+
+```scheme
+(define (L-central-polar m U)
+  (compose (L-central-rectangular m U)
+           (F->C p->r)))
+
+(define (L-central-spherical m U)
+  (compose (L-central-rectangular m U)
+           (F->C spherical->rect)))
+```
+
+Confirm the polar coordinate version&#x2026;
+
+```scheme
+(show-expression
+ ((L-central-polar 'm (literal-function 'U))
+  (up 't
+      (up 'r 'phi)
+      (up 'rdot 'phidot))))
+```
+
+BOOM, much better than calculating by hand!
+
+```scheme
+(show-expression
+ ((L-central-spherical 'm (literal-function 'U))
+  (up 't
+      (up 'r 'theta 'phi)
+      (up 'rdot 'thetadot 'phidot))))
+```
+
+rectangular, for fun:
+
+```scheme
+(show-expression
+ ((L-central-rectangular 'm (literal-function 'U))
+  (up 't
+      (up 'x 'y 'z)
+      (up 'xdot 'ydot 'zdot))))
+```
 
 ### Exercise 1.17<a id="sec-2-0-15"></a>
 
@@ -147,6 +383,154 @@ Fermat Optics. It's in the foldede section in the blue notebook. Do it again!
 ### Exercise 1.20<a id="sec-2-0-18"></a>
 
 ### Exercise 1.21<a id="sec-2-0-19"></a>
+
+The uneven dumbbell, 1.21.
+
+```scheme
+(load "ch1/utils.scm")
+```
+
+Takes in any number of up tuples and zips them into a new list of up-tuples by taking each element.
+
+```scheme
+(define (up-zip . ups)
+  (apply vector-map up (map up->vector ups)))
+```
+
+I spent some time trying to make a nice API&#x2026; but without map, filter, reduce etc on tuples it is quite annoying. So let's go ad hoc first and see what happens.
+
+```scheme
+(define (KE-particle m v)
+  (* 1/2 m (square v)))
+```
+
+```scheme
+;; gets the particle itself
+(define ((extract-particle pieces) local i)
+  (let* ((q (coordinate local))
+         (qdot (velocity local))
+         (indices (apply up (iota pieces (* i pieces))))
+         (extract (lambda (tuple)
+                    (vector-map (lambda (i) (ref tuple i))
+                                indices))))
+    (up (time q)
+        (extract q)
+        (extract qdot))))
+
+(define (constraint q0 q1 F l)
+  (* (/ F (* 2 l))
+     (- (square (- q1 q0))
+        (square l))))
+
+(define ((L-free-constrained m0 m1 l) local)
+  (let* ((extract (extract-particle 2))
+         (p0 (extract local 0))
+         (q_0 (coordinate p0))
+         (qdot_0 (velocity p0))
+
+         (p1 (extract local 1))
+         (q_1 (coordinate p1))
+         (qdot_1 (velocity p1))
+
+         (F (ref (coordinate local) 4)))
+    (- (+ (KE-particle m0 qdot_0)
+          (KE-particle m1 qdot_1))
+       (constraint q_0 q_1 F l))))
+
+(define q-rect
+  (up (literal-function 'x_0)
+      (literal-function 'y_0)
+      (literal-function 'x_1)
+      (literal-function 'y_1)
+      (literal-function 'F)))
+```
+
+This shows the lagrangian itself, which answers part b:
+
+```scheme
+(let* ((L (L-free-constrained 'm_0 'm_1 'l))
+       (f (compose L (Gamma q-rect))))
+  (se (f 't)))
+```
+
+Here are the lagrange equations, confirming part b.
+
+```scheme
+(let* ((L (L-free-constrained 'm_0 'm_1 'l))
+       (f ((Lagrange-equations L) q-rect)))
+  (se (f 't)))
+```
+
+Part c - make a change of coordinates.
+
+```scheme
+(define ((cm-theta->rect m0 m1) local)
+  (let* ((q (coordinate local))
+         (x_cm (ref q 0))
+         (y_cm (ref q 1))
+         (theta (ref q 2))
+         (c (ref q 3))
+         (F (ref q 4))
+         (total-mass (+ m0 m1))
+         (m0-distance (* c (/ m1 total-mass)))
+         (m1-distance (* c (/ m0 total-mass))))
+    (up (- x_cm (* m0-distance (cos theta)))
+        (- y_cm (* m0-distance (sin theta)))
+        (+ x_cm (* m1-distance (cos theta)))
+        (+ y_cm (* m1-distance (sin theta)))
+        F)))
+
+(se
+ ((F->C (cm-theta->rect 'm_0 'm_1))
+  (up 't
+      (up 'x_cm 'y_cm 'theta 'c 'F)
+      (up 'xdot_cm 'ydot_cm 'thetadot 'cdot 'Fdot))))
+
+(define (L-free-constrained-new m0 m1 l)
+  (compose (L-free-constrained m0 m1 l)
+           (F->C (cm-theta->rect m0 m1))))
+```
+
+This shows the lagrangian itself, after the coordinate transformation:
+
+```scheme
+(let* ((q (up (literal-function 'x_cm)
+              (literal-function 'y_cm)
+              (literal-function 'theta)
+              (literal-function 'c)
+              (literal-function 'F)))
+       (L (L-free-constrained-new 'm_0 'm_1 'l))
+       (f (compose L (Gamma q))))
+  (se (f 't)))
+```
+
+Here are the lagrange equations for part c.
+
+```scheme
+(let* ((q (up (literal-function 'x_cm)
+              (literal-function 'y_cm)
+              (literal-function 'theta)
+              (literal-function 'c)
+              (literal-function 'F)))
+       (L (L-free-constrained-new 'm_0 'm_1 'l))
+       (f ((Lagrange-equations L) q)))
+  (se (f 't)))
+```
+
+For part d, we can substitute the constant value of c to get simplified equations.
+
+```scheme
+(let* ((q (up (literal-function 'x_cm)
+              (literal-function 'y_cm)
+              (literal-function 'theta)
+              (lambda (t) 'l)
+              (literal-function 'F)))
+       (L (L-free-constrained-new 'm_0 'm_1 'l))
+       (f ((Lagrange-equations L) q)))
+  (se (f 't)))
+```
+
+For part e, I wrote this in the notebook - it is effectively identical to the substitution that is happening on the computer, so I'm going to ignore this. You just get more cancellations.
 
 ### Exercise 1.22<a id="sec-2-0-20"></a>
 
@@ -160,9 +544,293 @@ Fermat Optics. It's in the foldede section in the blue notebook. Do it again!
 
 ### Exercise 1.27<a id="sec-2-0-25"></a>
 
-### Exercise 1.28<a id="sec-2-0-26"></a>
+### Exercise 1.28: Total Time Derivatives<a id="sec-2-0-26"></a>
 
-### Exercise 1.29<a id="sec-2-0-27"></a>
+```scheme
+(load "ch1/utils.scm")
+```
+
+1.  part A
+
+    nice, easy to guess.
+
+    ```scheme
+    (define ((FA m) local)
+      (let ((x (coordinate local)))
+        (* m x)))
+    ```
+
+    Show the function of t, and confirm that both methods are equivalent.
+
+    ```scheme
+    (check-f (FA 'm)
+             (literal-function 'x))
+    ```
+
+2.  Part B
+
+    NOT a total time derivative.
+
+    Define G directly:
+
+    ```scheme
+    (define ((GB m) local)
+      (let* ((t (time local))
+             (v_x (velocity local))
+             (GB0 0)
+             (GB1 (* m (cos t))))
+        (+ GB0 (* GB1 v_x))))
+    ```
+
+    And show the full G, for fun:
+
+    ```scheme
+    (let ((f (compose (GB 'm) (Gamma (literal-function 'x)))))
+      (se (f 't)))
+    ```
+
+    It's easier to confirm that this is not a total time derivative by checking the partials.
+
+    ```scheme
+    (define (GB-properties m)
+      (let ((GB0 (lambda (local) 0))
+            (GB1 (lambda (local)
+                   (* m (cos (time local))))))
+        (G-properties GB0 GB1 (literal-function 'x))))
+    ```
+
+    It's clear here that the second and third tuple entries aren't equal, so we don't have a total time derivative.
+
+    ```scheme
+    (se (GB-properties 'm))
+    ```
+
+3.  Part C
+
+    no problem, we've got a total time derivative on our hands.
+
+    ```scheme
+    (define (FC local)
+      (let ((t (time local))
+            (x (coordinate local)))
+        (* x (cos t))))
+
+    (check-f FC (literal-function 'x))
+
+    (define GC-properties
+      (let ((GC0 (lambda (local)
+                   (* -1
+                      (coordinate local)
+                      (sin (time local)))))
+            (GC1 (lambda (local)
+                   (cos (time local)))))
+        (G-properties GC0 GC1 (literal-function 'x))))
+    ```
+
+    Boom, the second and third entries are equal, as we'd expect.
+
+    ```scheme
+    (se GC-properties)
+    ```
+
+4.  Part D
+
+    This is NOT a total time derivative; you can tell by taking the partials of each side, G0 and G1, as we'll see here.
+
+    ```scheme
+    (define GD-properties
+      (let ((GD0 (lambda (local)
+                   (* (coordinate local)
+                      (sin (time local)))))
+            (GD1 (lambda (local)
+                   (cos (time local)))))
+        (G-properties GD0 GD1 (literal-function 'x))))
+    ```
+
+    The partials for each side don't match.
+
+    ```scheme
+    (se GD-properties)
+    ```
+
+5.  Part E
+
+    This is strange to me, because I thought that this thing had to produce a tuple.
+
+    OH, but the secret is that Qdot is also a tuple, so you contract them together.
+
+    Here's the function F that we can use to derive it:
+
+    ```scheme
+    (define (FE local)
+      (let* ((t (time local))
+             (q (coordinate local))
+             (x (ref q 0))
+             (y (ref q 1)))
+        (* (+ (square x) (square y))
+           (cos t))))
+    ```
+
+    Boom, total time derivative!
+
+    ```scheme
+    (check-f FE (up (literal-function 'x)
+                    (literal-function 'y)))
+    ```
+
+    And let's show that we pass the tests by decomposing this into G0 and G1:
+
+    ```scheme
+    (define GE-properties
+      (let (
+            ;; any piece of the function without a velocity multiplied.
+            (GE0 (lambda (local)
+                   (let* ((t (time local))
+                          (q (coordinate local))
+                          (x (ref q 0))
+                          (y (ref q 1)))
+                     (* -1
+                        (+ (square x) (square y))
+                        (sin t)))))
+
+            ;; The pieces multiplied by velocities, split into a down tuple of
+            ;; components, one for each of the coordinate components.
+            (GE1 (lambda (local)
+                   (let* ((t (time local))
+                          (q (coordinate local))
+                          (x (ref q 0))
+                          (y (ref q 1)))
+                     (down
+                      (* 2 x (cos t))
+                      (* 2 y (cos t)))))))
+        (G-properties GE0 GE1 (up (literal-function 'x)
+                                  (literal-function 'y)))))
+    ```
+
+    BOOM!
+
+    We've recovered F; the partials are equal, and the final matrix is symmetric.
+
+    ```scheme
+    (se GE-properties)
+    ```
+
+6.  Part F
+
+    This one is interesting, since the second partial is a tuple. This is not so obvious to me, so first let's check the properties:
+
+    ```scheme
+    (define GF-properties
+      (let (
+            ;; any piece of the function without a velocity multiplied.
+            (GF0 (lambda (local)
+                   (let* ((t (time local))
+                          (q (coordinate local))
+                          (x (ref q 0))
+                          (y (ref q 1)))
+                     (* -1
+                        (+ (square x) (square y))
+                        (sin t)))))
+
+            ;; The pieces multiplied by velocities, split into a down tuple of
+            ;; components, one for each of the coordinate components.
+            (GF1 (lambda (local)
+                   (let* ((t (time local))
+                          (q (coordinate local))
+                          (x (ref q 0))
+                          (y (ref q 1)))
+                     (down
+                      (+ (cube y) (* 2 x (cos t)))
+                      (+ x (* 2 y (cos t))))))))
+        (G-properties GF0 GF1 (up (literal-function 'x)
+                                  (literal-function 'y)))))
+    ```
+
+    AND it looks like we DO have a total time derivative, maybe. We certainly pass the first test here, since the second and third tuple entries are equal.
+
+    BUT we fail the second test; the hessian that we get from ((partial 1) G1) is not symmetric.
+
+    ```scheme
+    (se GF-properties)
+    ```
+
+### Exercise 1.29: Galilean Invariance<a id="sec-2-0-27"></a>
+
+```scheme
+(load "ch1/utils.scm")
+```
+
+I'll do this for a single particle, since it's annoying to get the sum going for many; and the lagrangian is additive, so no problem.
+
+```scheme
+(define (uniform-translate-shift->rect local)
+  (let* ((t (time local))
+         (q (coordinate local))
+         (xprime (ref q 0))
+         (delta_x (ref q 1))
+         (delta_v (ref q 2)))
+    (+ xprime delta_x (* t delta_v))))
+
+(define (L-translate-shift m)
+  (compose (L-free-particle m)
+           (F->C uniform-translate-shift->rect)))
+```
+
+First, confirm that if we have a constant, we get what we expected from paper.
+
+```scheme
+(let* ((q (up (literal-function 'xprime)
+              (lambda (t) 'Delta_x)
+              (lambda (t) 'Delta_v)))
+       (f (compose (L-translate-shift 'm) (Gamma q))))
+  (se (f 't)))
+```
+
+We can change this a little to see the extra terms; substract off the free particle lagrangian, to see the extra stuff.
+
+```scheme
+(let* ((q (up (literal-function 'xprime)
+              (lambda (t) 'Delta_x)
+              (lambda (t) 'Delta_v)))
+       (L (- (L-translate-shift 'm)
+             (L-free-particle 'm)))
+       (f (compose L (Gamma q))))
+  (se (f 't)))
+```
+
+Here's the gnarly version with both entries as actual functions. Can this be a total time derivative? It CANNOT be, because we have a (D Delta<sub>v</sub>(t))<sup>2</sup> term in there, and we know that total time derivatives have to be linear in the velocities. The function F would have had to have a velocity in it, which is not allowed.
+
+```scheme
+(let* ((q (up (literal-function 'xprime)
+              (literal-function 'Delta_x)
+              (literal-function 'Delta_v)))
+       (L (- (L-translate-shift 'm)
+             (L-free-particle 'm)))
+       (f (compose L (Gamma q))))
+  (se (f 't)))
+```
+
+Let's simplify by making the delta v constant and see if there's anything so obvious about Delta<sub>x</sub>.
+
+We know that we have a total derivative when 'Delta<sub>x</sub> is constant, and we know that total time derivatives are linear, so let's substract off the total time derivative and see what happens:
+
+```scheme
+(let* ((q (lambda (dx)
+            (up (literal-function 'xprime)
+                dx
+                (lambda (t) 'Delta_v))))
+       (L (- (L-translate-shift 'm)
+             (L-free-particle 'm)))
+       (f (lambda (dx)
+            (compose L (Gamma (q dx))))))
+  (se ((- (f (literal-function 'Delta_x))
+          (f (lambda (t) 'Delta_x)))
+       't)))
+```
+
+Take a look. there is a quadratic velocity term in here! We have D(Delta<sub>x</sub>) \* D(x<sub>prime</sub>). This is not allowed in a total time derivative.
+
+SO, only if the shift and uniform translation are constant do we not affect the Lagrangian value.
 
 ### Exercise 1.30<a id="sec-2-0-28"></a>
 
