@@ -93,7 +93,7 @@ where it runs. To set this up,
 - launch XQuartz from `/Applications/Utilities/Xquartz`,
 - go into the Preferences menu and navigate to the Security tab
 - make sure that both "Authenticate Connections" and "Allow connections from
-  network clients** is checked
+  network clients" is checked
 
 ### Linux Prerequisites
 
