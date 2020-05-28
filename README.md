@@ -107,7 +107,7 @@ Live](https://www.tug.org/texlive/) distribution.
 
 ### Starting a REPL
 
-Once you have Docker installed, clone this repository onto your machine,
+Once you have Docker installed and running, clone this repository onto your machine,
 navigate into the folder and run `bin/mechanics`:
 
 ```
