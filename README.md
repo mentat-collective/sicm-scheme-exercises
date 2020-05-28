@@ -93,7 +93,7 @@ where it runs. To set this up,
 - launch XQuartz from `/Applications/Utilities/Xquartz`,
 - go into the Preferences menu and navigate to the Security tab
 - make sure that both "Authenticate Connections" and "Allow connections from
-  network clients" is checked
+  network clients** is checked
 
 ### Linux Prerequisites
 
@@ -107,7 +107,7 @@ Live](https://www.tug.org/texlive/) distribution.
 
 ### Starting a REPL
 
-Once you have Docker installed, clone this repository onto your machine,
+Once you have Docker installed and running, clone this repository onto your machine,
 navigate into the folder and run `bin/mechanics`:
 
 ```
