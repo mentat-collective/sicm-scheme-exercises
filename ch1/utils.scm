@@ -19,12 +19,12 @@
 (define (->tex-equation expr #!optional label)
   (write-string
    (string-append
-    "\\begin{equation}\n"
+    "\\[\\begin{equation}\n"
     (->tex* expr)
     (if (default-object? label)
         ""
         (string-append "\n\\label{" label "}"))
-    "\n\\end{equation}")))
+    "\n\\end{equation}\\]")))
 
 ;; Lagrangian helpers
 
