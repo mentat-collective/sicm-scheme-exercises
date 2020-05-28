@@ -15,7 +15,7 @@ Notation Appendix. This is all about getting cozy with scheme, and with the vari
 
 You're supposed to do these by hand, so I'll do that in the textbook. But here, let's redo them on the machine.
 
-1.  Compute \\(\partial_0 F(x, y)\\) and \\(\partial_1 F(x, y)\\)
+1.  Compute \\(\partial\_0 F(x, y)\\) and \\(\partial\_1 F(x, y)\\)
 
     First, let's define the functions we need.
 
@@ -67,7 +67,7 @@ You're supposed to do these by hand, so I'll do that in the textbook. But here, 
     \begin{bmatrix} \displaystyle{ 0} \cr \cr \displaystyle{ 0}\end{bmatrix}
     \end{equation}
 
-2.  Compute \\(\partial_0 F(F(x, y), y)\\) and \\(\partial_1 F(F(x, y), y)\\)
+2.  Compute \\(\partial\_0 F(F(x, y), y)\\) and \\(\partial\_1 F(F(x, y), y)\\)
 
     \\(H\\) is already that composition, so:
 
@@ -80,7 +80,7 @@ You're supposed to do these by hand, so I'll do that in the textbook. But here, 
     \begin{bmatrix} \displaystyle{ 4 {x}^{3} {y}^{9}} \cr \cr \displaystyle{ 9 {x}^{4} {y}^{8}}\end{bmatrix}
     \end{equation}
 
-3.  Compute \\(\partial_0 G(x, y)\\) and \\(\partial_1 G(x, y)\\)
+3.  Compute \\(\partial\_0 G(x, y)\\) and \\(\partial\_1 G(x, y)\\)
 
     ```scheme
     (->tex-equation

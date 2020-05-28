@@ -802,7 +802,7 @@ We can change this a little to see the extra terms; substract off the free parti
 {{1}\over {2}} {{\Delta}_{v}}^{2} m + {\Delta}_{v} m D{x}^\prime\left( t \right)
 \end{equation}
 
-Here's the gnarly version with both entries as actual functions. Can this be a total time derivative? It CANNOT be, because we have a \\((D \Delta_v(t))^2\\) term in there, and we know that total time derivatives have to be linear in the velocities. The function \\(F\\) would have had to have a velocity in it, which is not allowed.
+Here's the gnarly version with both entries as actual functions. Can this be a total time derivative? It CANNOT be, because we have a \\((D \Delta\_v(t))^2\\) term in there, and we know that total time derivatives have to be linear in the velocities. The function \\(F\\) would have had to have a velocity in it, which is not allowed.
 
 ```scheme
 (let* ((q (up (literal-function 'xprime)
@@ -818,9 +818,9 @@ Here's the gnarly version with both entries as actual functions. Can this be a t
 {{1}\over {2}} m {t}^{2} {\left( D{\Delta}_{v}\left( t \right) \right)}^{2} + m t D{x}^\prime\left( t \right) D{\Delta}_{v}\left( t \right) + m t D{\Delta}_{v}\left( t \right) {\Delta}_{v}\left( t \right) + m t D{\Delta}_{v}\left( t \right) D{\Delta}_{x}\left( t \right) + m D{x}^\prime\left( t \right) {\Delta}_{v}\left( t \right) + m D{x}^\prime\left( t \right) D{\Delta}_{x}\left( t \right) - {{1}\over {2}} m {\left( D{\Delta}_{v}\left( t \right) \right)}^{2} + {{1}\over {2}} m {\left( {\Delta}_{v}\left( t \right) \right)}^{2} + m {\Delta}_{v}\left( t \right) D{\Delta}_{x}\left( t \right)
 \end{equation}
 
-Let's simplify by making the \\(\Delta_v\\) constant and see if there's anything so obvious about \\(\Delta_x\\).
+Let's simplify by making the \\(\Delta\_v\\) constant and see if there's anything so obvious about \\(\Delta\_x\\).
 
-We know that we have a total derivative when \\(\Delta_x\\) is constant, and we know that total time derivatives are linear, so let's substract off the total time derivative and see what happens:
+We know that we have a total derivative when \\(\Delta\_x\\) is constant, and we know that total time derivatives are linear, so let's substract off the total time derivative and see what happens:
 
 ```scheme
 (let* ((q (lambda (dx)
@@ -841,7 +841,7 @@ We know that we have a total derivative when \\(\Delta_x\\) is constant, and we 
 {\Delta}_{v} m D{\Delta}_{x}\left( t \right) + m D{x}^\prime\left( t \right) D{\Delta}_{x}\left( t \right)
 \end{equation}
 
-Take a look. there is a quadratic velocity term in here! We have \\(D \Delta_x(t) D x'(t)\\). This is not allowed in a total time derivative.
+Take a look. there is a quadratic velocity term in here! We have \\(D \Delta\_x(t) D x'(t)\\). This is not allowed in a total time derivative.
 
 SO, only if the shift and uniform translation are constant do we not affect the Lagrangian value.
 
