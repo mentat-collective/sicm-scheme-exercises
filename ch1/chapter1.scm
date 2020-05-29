@@ -1,29 +1,5 @@
-;; Structure and Interpretation of Classical Mechanics
-;;
-;; ## Section 1.4
-;;
-;; $1/2 mv^2$. This is the Lagrangian for a free particle, though I have no idea
-;; "why". Nor would I have thought about it had the text not said "we know you
-;; don't know why"...
-;;
-;; Testing LaTeX rendering:
-;;
-;; \[ 1/2 mv^2 \]
-;;
-;; Now it's 2020, and I totally know why. The Lagrangian is defined this way
-;; because there's no potential, no other forces acting on the particle; so all
-;; it has is its kinetic energy.
-;;
-;; WHY is the Lagrangian defined this way? Because, when we can split the
-;; functions into one that depends on velocity ("kinetic energy") and a
-;; potential that depends only on position, it just works out this way.
-
 (load "ch1/utils.scm")
 
-;; * would give you matrix multiplication. If you multiply an "up" by
-;; a "down" that's equal to the dot product. So "up" is a row vector,
-;; down is a column vector.
-;;
 ;; Suppose we let q denote a coordinate path function that maps time
 ;; to position components:
 
@@ -170,86 +146,6 @@
 
 (define (run-q)
   (find-path (L-harmonic 1.0 1.0) 0. 1. :pi/2 0. 3))
-
-;; ## Exercise 1.6
-;;
-;; Suppose we try to obtain a path by minimizing an action for an
-;; impossible problem. For example, suppose we have a free particle
-;; and we impose endpoint conditions on the velocities as well as the
-;; positions that are inconsistent with the particle being free. Does
-;; the formalism protect itself from such an unpleasant attack? You
-;; may find it illuminating to program it and see what happens.
-;;
-;; Answer: I did this one based on some stuff I found online, by
-;; forcing the linear interpolation, then adding an offset to the
-;; start and finish.
-;;
-;; If we just impose endpoint velocity conditions... well, that should have no
-;; effect at all, because those don't show up in the constraints. They can
-;; change instantly.
-;;
-;; What does matter is the positions. If we have some instantaneous
-;; acceleration, that won't make sense. So let's add some points to the
-;; interpolation to see what happens.
-;;
-;; https://physics.stackexchange.com/questions/186439/minimizing-the-lagrangian-action-of-an-impossible-problem/186461#186461
-;;
-
-(define (((parametric-path-action* win)
-          Lagrangian t0 q0 offset0 t1 q1 offset1)
-         intermediate-qs)
-  (let ((intermediate-qs* (append (list (- q0 offset0))
-                                  intermediate-qs
-                                  (list (+ q1 offset1)))))
-    (let ((path (make-path t0 q0 t1 q1 intermediate-qs*)))
-      ;; display path
-      (graphics-clear win)
-      (plot-function win path t0 t1 (/ (- t1 t0) 100))
-      ;; compute action
-      (Lagrangian-action Lagrangian path t0 t1))))
-
-;; Version of find path that allows for an offset to the initial and
-;; final points.
-
-(define ((find-path* win) L t0 q0 offset0 t1 q1 offset1 n)
-  (let ((initial-qs (linear-interpolants q0 q1 n)))
-    (let* ((action (parametric-path-action* win))
-           (minimizing-qs
-            (multidimensional-minimize
-             (action L t0 q0 offset0 t1 q1 offset1)
-             initial-qs)))
-      (make-path t0 q0 t1 q1 minimizing-qs))))
-
-;; This runs (and graphs!) the motion of a free particle using the
-;; fucked up path.
-(define (one-six offset0 offset1 n)
-  (let* ((tmax 10)
-         (win (frame -1 (+ tmax 1) 0. (+ 1.2 offset0 offset1)))
-         (find (find-path* win))
-         (L (L-free-particle 3.0))
-         (path (find L
-                     0. 1. offset0
-                     tmax 0. offset1
-                     n)))
-    (Lagrangian-action L path 0 tmax)))
-
-;; The multidimensional-minimize function can DO it, but only if you provide few
-;; enough points that it can fit a polynomial that jumps to your crappy point,
-;; then immediately back down.
-;;
-;; And the action is not actually a minimum; the numerical procedure has just converged. Test this by running
-#|
-(one-six 0 0 3)
-#| .15725897444366888 |#
-
-(one-six 0.2 0 3)
-#| .1790654438254211 |#
-|#
-
-;; This version of parametric-path-action lets us add an offset to
-;; some initial points after the interpolation.
-
-;; Exercise 1.7, done in Roam.
 
 ;; Page 31, Orbital Motion example
 

@@ -1,13 +1,12 @@
-;; Exercise 1.21
+;; Exercise 1.21: A dumbbell
 ;; :PROPERTIES:
 ;; :header-args+: :tangle ch1/ex1-21.scm :comments org
 ;; :END:
 
-;; The uneven dumbbell, 1.21.
+;; The uneven dumbbell.
 
 
 (load "ch1/utils.scm")
-
 
 
 ;; Takes in any number of up tuples and zips them into a new list of up-tuples by
@@ -18,7 +17,6 @@
   (apply vector-map up (map up->vector ups)))
 
 
-
 ;; I spent some time trying to make a nice API... but without map, filter,
 ;; reduce etc on tuples it is quite annoying. So let's go ad hoc first and see
 ;; what happens.
@@ -26,7 +24,6 @@
 
 (define (KE-particle m v)
   (* 1/2 m (square v)))
-
 ;; gets the particle itself
 (define ((extract-particle pieces) local i)
   (let* ((q (coordinate local))
@@ -67,7 +64,6 @@
       (literal-function 'F)))
 
 
-
 ;; This shows the lagrangian itself, which answers part b:
 
 
@@ -76,14 +72,12 @@
   (se (f 't)))
 
 
-
 ;; Here are the lagrange equations, confirming part b.
 
 
 (let* ((L (L-free-constrained 'm_0 'm_1 'l))
        (f ((Lagrange-equations L) q-rect)))
   (se (f 't)))
-
 
 
 ;; Part c - make a change of coordinates.
@@ -116,7 +110,6 @@
            (F->C (cm-theta->rect m0 m1))))
 
 
-
 ;; This shows the lagrangian itself, after the coordinate transformation:
 
 
@@ -130,7 +123,6 @@
   (se (f 't)))
 
 
-
 ;; Here are the lagrange equations for part c.
 
 
@@ -142,7 +134,6 @@
        (L (L-free-constrained-new 'm_0 'm_1 'l))
        (f ((Lagrange-equations L) q)))
   (se (f 't)))
-
 
 
 ;; For part d, we can substitute the constant value of c to get simplified

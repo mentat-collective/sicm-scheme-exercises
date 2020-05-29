@@ -7,7 +7,6 @@
 (load "ch1/utils.scm")
 
 
-
 ;; #+RESULTS:
 ;; : ;Loading "ch1/utils.scm"...
 ;; : ;  Loading "ch1/exdisplay.scm"... done
@@ -31,7 +30,6 @@
            (F->C uniform-translate-shift->rect)))
 
 
-
 ;; #+RESULTS:
 ;; : #| uniform-translate-shift->rect |#
 ;; :
@@ -47,11 +45,10 @@
   (->tex-equation (f 't)))
 
 
-
 ;; #+RESULTS[5d2b4de08cfab4779bf7cdab31d518191b40a4d2]:
-;; \begin{equation}
+;; \[\begin{equation}
 ;; {{1}\over {2}} {{\Delta}_{v}}^{2} m + {\Delta}_{v} m D{x}^\prime\left( t \right) + {{1}\over {2}} m {\left( D{x}^\prime\left( t \right) \right)}^{2}
-;; \end{equation}
+;; \end{equation}\]
 
 ;; We can change this a little to see the extra terms; substract off the free
 ;; particle lagrangian, to see the extra stuff.
@@ -66,11 +63,10 @@
   (->tex-equation (f 't)))
 
 
-
 ;; #+RESULTS[c17004e61fec7edb3835203cdc99c562940bee7c]:
-;; \begin{equation}
+;; \[\begin{equation}
 ;; {{1}\over {2}} {{\Delta}_{v}}^{2} m + {\Delta}_{v} m D{x}^\prime\left( t \right)
-;; \end{equation}
+;; \end{equation}\]
 
 ;; Here's the gnarly version with both entries as actual functions. Can this be a
 ;; total time derivative? It CANNOT be, because we have a $(D \Delta_v(t))^2$ term
@@ -88,11 +84,10 @@
   (->tex-equation (f 't)))
 
 
-
 ;; #+RESULTS[ded4f6dec25954c9b7536153e1db8db0315cb399]:
-;; \begin{equation}
+;; \[ \begin{equation}
 ;; {{1}\over {2}} m {t}^{2} {\left( D{\Delta}_{v}\left( t \right) \right)}^{2} + m t D{x}^\prime\left( t \right) D{\Delta}_{v}\left( t \right) + m t D{\Delta}_{v}\left( t \right) {\Delta}_{v}\left( t \right) + m t D{\Delta}_{v}\left( t \right) D{\Delta}_{x}\left( t \right) + m D{x}^\prime\left( t \right) {\Delta}_{v}\left( t \right) + m D{x}^\prime\left( t \right) D{\Delta}_{x}\left( t \right) - {{1}\over {2}} m {\left( D{\Delta}_{v}\left( t \right) \right)}^{2} + {{1}\over {2}} m {\left( {\Delta}_{v}\left( t \right) \right)}^{2} + m {\Delta}_{v}\left( t \right) D{\Delta}_{x}\left( t \right)
-;; \end{equation}
+;; \end{equation} \]
 
 ;; Let's simplify by making the $\Delta_v$ constant and see if there's anything so
 ;; obvious about $\Delta_x$.

@@ -1,4 +1,4 @@
-;; Exercise 1.16
+;; Exercise 1.16: Central force motion
 ;; :PROPERTIES:
 ;; :header-args+: :tangle ch1/ex1-16.scm :comments org
 ;; :END:
@@ -27,7 +27,6 @@
         (* r (cos theta)))))
 
 
-
 ;; Check polar:
 
 
@@ -36,7 +35,6 @@
   (up 't
       (up 'r 'phi)
       (up 'rdot 'phidot))))
-
 
 
 ;; spherical coordinate change, check velocities:
@@ -55,7 +53,6 @@
                  (up 'rdot 'thetadot 'phidot))) 2) 0)))
 
 
-
 ;; get the Langrangian from page 41:
 
 
@@ -64,7 +61,6 @@
         (v (velocity local)))
     (- (* 1/2 m (square v))
        (U (sqrt (square q))))))
-
 
 
 ;; BOOM, now we can compose these things!
@@ -79,7 +75,6 @@
            (F->C spherical->rect)))
 
 
-
 ;; Confirm the polar coordinate version...
 
 
@@ -90,7 +85,6 @@
       (up 'rdot 'phidot))))
 
 
-
 ;; BOOM, much better than calculating by hand!
 
 
@@ -99,7 +93,6 @@
   (up 't
       (up 'r 'theta 'phi)
       (up 'rdot 'thetadot 'phidot))))
-
 
 
 

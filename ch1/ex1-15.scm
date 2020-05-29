@@ -1,4 +1,4 @@
-;; Exercise 1.15
+;; Exercise 1.15: Equivalence
 ;; :PROPERTIES:
 ;; :header-args+: :tangle ch1/ex1-15.scm :comments org
 ;; :END:
@@ -13,13 +13,11 @@
 (define h (literal-function 'h))
 
 
-
 ;; looks good! These are the same expression.
 
 
 ((compose (* f g) h) 't)
 ((* (compose f h) (compose g h)) 't)
-
 
 
 ;; This is the general form of a path transformation; big surprise, this is very
@@ -38,13 +36,11 @@
               v)))))
 
 
-
 ;; Here's a literal function we can play with.
 
 
 (define F*
   (literal-function 'F (-> (X Real Real) Real)))
-
 
 
 ;; Okay, boom, this is the literal function.
@@ -54,13 +50,11 @@
   (literal-function 'q-prime))
 
 
-
 ;; This is the manual generation of q from q-prime.
 
 
 (define ((to-q F) qp)
   (lambda (t) (F t (qp t))))
-
 
 
 ;; We can check that these are now equal. This uses C to get us to q
@@ -69,12 +63,10 @@
 ((compose (F->C F*) (Gamma q-prime)) 't)
 
 
-
 ;; And this does it by passing in q manually.
 
 
 ((Gamma ((to-q F*) q-prime)) 't)
-
 
 
 ;; I can convert the proof to code, no problem, by showing that these sides are equal.
@@ -85,7 +77,6 @@
 
 ((compose (lambda (x) (ref x 1)) ((partial 1) (F->C F*)) (Gamma q-prime)) 't)
 ((compose (lambda (x) (ref x 2)) ((partial 2) (F->C F*)) (Gamma q-prime)) 't)
-
 
 
 ;; Just for fun, note that this successfully pushes things inside gamma.
@@ -103,7 +94,6 @@
     (up x y)))
 
 (literal-function 'q-prime (-> Real (UP Real Real)))((Gamma ((to-q p->r) )) 't)
-
 
 
 

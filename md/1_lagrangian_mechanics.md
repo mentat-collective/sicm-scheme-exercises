@@ -1,48 +1,48 @@
   - [Configuration Spaces](#sec-1)
-      - [Exercise 1.1, p5 and 1.2, p8](#sec-1-0-1)
+      - [Exercises 1.1: Degrees of Freedom and 1.2: Generalized Coordinates](#sec-1-0-1)
   - [Generalized Coordinates](#sec-2)
-      - [Exercise 1.3](#sec-2-0-1)
-      - [Exercise 1.4](#sec-2-0-2)
-      - [Exercise 1.5](#sec-2-0-3)
-      - [Exercise 1.6](#sec-2-0-4)
-      - [Exercise 1.7](#sec-2-0-5)
-      - [Exercise 1.8: Implementing Delta](#sec-2-0-6)
-      - [Exercise 1.9](#sec-2-0-7)
-      - [Exercise 1.10](#sec-2-0-8)
-      - [Exercise 1.11](#sec-2-0-9)
-      - [Exercise 1.12](#sec-2-0-10)
-      - [Exercise 1.13](#sec-2-0-11)
-      - [Exercise 1.14](#sec-2-0-12)
-      - [Exercise 1.15](#sec-2-0-13)
-      - [Exercise 1.16](#sec-2-0-14)
-      - [Exercise 1.17](#sec-2-0-15)
-      - [Exercise 1.18](#sec-2-0-16)
-      - [Exercise 1.19](#sec-2-0-17)
-      - [Exercise 1.20](#sec-2-0-18)
-      - [Exercise 1.21](#sec-2-0-19)
-      - [Exercise 1.22](#sec-2-0-20)
-      - [Exercise 1.23](#sec-2-0-21)
-      - [Exercise 1.24](#sec-2-0-22)
-      - [Exercise 1.25](#sec-2-0-23)
-      - [Exercise 1.26](#sec-2-0-24)
-      - [Exercise 1.27](#sec-2-0-25)
+      - [Exercise 1.3: Fermat optics](#sec-2-0-1)
+      - [Exercise 1.4: Lagrangian actions](#sec-2-0-2)
+      - [Exercise 1.5: Solution process](#sec-2-0-3)
+      - [Exercise 1.6: Minimizing action](#sec-2-0-4)
+      - [Exercise 1.7: Properties of \\(\delta\\)](#sec-2-0-5)
+      - [Exercise 1.8: Implementation of \\(\delta\\)](#sec-2-0-6)
+      - [Exercise 1.9: Lagrange's equations](#sec-2-0-7)
+      - [Exercise 1.10: Higher-derivative Lagrangians](#sec-2-0-8)
+      - [Exercise 1.11: Kepler's third law](#sec-2-0-9)
+      - [Exercise 1.12: Lagrange's equations (code)](#sec-2-0-10)
+      - [Exercise 1.13: Higher-derivative Lagrangians (code)](#sec-2-0-11)
+      - [Exercise 1.14: Coordinate-independence of Lagrange equations](#sec-2-0-12)
+      - [Exercise 1.15: Equivalence](#sec-2-0-13)
+      - [Exercise 1.16: Central force motion](#sec-2-0-14)
+      - [Exercise 1.17: Bead on a helical wire](#sec-2-0-15)
+      - [Exercise 1.18: Bead on a triaxial surface](#sec-2-0-16)
+      - [Exercise 1.19: Two-bar linkage](#sec-2-0-17)
+      - [Exercise 1.20: Sliding pendulum](#sec-2-0-18)
+      - [Exercise 1.21: A dumbbell](#sec-2-0-19)
+      - [Exercise 1.22: Driven pendulum](#sec-2-0-20)
+      - [Exercise 1.23: Fill in the details](#sec-2-0-21)
+      - [Exercise 1.24: Constraint forces](#sec-2-0-22)
+      - [Exercise 1.25: Foucalt pendulum Lagrangian](#sec-2-0-23)
+      - [Exercise 1.26: Properties of \\(D\_t\\)](#sec-2-0-24)
+      - [Exercise 1.27: Lagrange equations for total time derivatives](#sec-2-0-25)
       - [Exercise 1.28: Total Time Derivatives](#sec-2-0-26)
       - [Exercise 1.29: Galilean Invariance](#sec-2-0-27)
-      - [Exercise 1.30](#sec-2-0-28)
-      - [Exercise 1.31](#sec-2-0-29)
-      - [Exercise 1.32](#sec-2-0-30)
-      - [Exercise 1.33](#sec-2-0-31)
-      - [Exercise 1.34](#sec-2-0-32)
-      - [Exercise 1.35](#sec-2-0-33)
-      - [Exercise 1.36](#sec-2-0-34)
-      - [Exercise 1.37](#sec-2-0-35)
-      - [Exercise 1.38](#sec-2-0-36)
-      - [Exercise 1.39](#sec-2-0-37)
-      - [Exercise 1.40](#sec-2-0-38)
-      - [Exercise 1.41](#sec-2-0-39)
-      - [Exercise 1.42](#sec-2-0-40)
-      - [Exercise 1.43](#sec-2-0-41)
-      - [Exercise 1.44](#sec-2-0-42)
+      - [Exercise 1.30: Orbits in a central potential](#sec-2-0-28)
+      - [Exercise 1.31: Foucault pendulum evolution](#sec-2-0-29)
+      - [Exercise 1.32: Time-dependent constraints](#sec-2-0-30)
+      - [Exercise 1.33: Falling off a log](#sec-2-0-31)
+      - [Exercise 1.34: Driven spherical pendulum](#sec-2-0-32)
+      - [Exercise 1.35: Restricted equations of motion](#sec-2-0-33)
+      - [Exercise 1.36: Noether integral](#sec-2-0-34)
+      - [Exercise 1.37: Velocity transformation](#sec-2-0-35)
+      - [Exercise 1.38: Properties of \\(E\\)](#sec-2-0-36)
+      - [Exercise 1.39: Combining Lagrangians](#sec-2-0-37)
+      - [Exercise 1.40: Bead on a triaxial surface](#sec-2-0-38)
+      - [Exercise 1.41: Motion of a tiny golf ball](#sec-2-0-39)
+      - [Exercise 1.42: Augmented Lagrangian](#sec-2-0-40)
+      - [Exercise 1.43: A numerical investigation](#sec-2-0-41)
+      - [Exercise 1.44: Double pendulum behavior](#sec-2-0-42)
   - [The Principle of Stationary Action](#sec-3)
   - [Computing Actions](#sec-4)
   - [The Euler–Lagrange Equations](#sec-5)
@@ -76,7 +76,7 @@ Here's a nice image of some action getting minimized:
 
 ![img](https://i.imgur.com/AJBpDgU.gif)
 
-### Exercise 1.1, p5 and 1.2, p8<a id="sec-1-0-1"></a>
+### Exercises 1.1: Degrees of Freedom and 1.2: Generalized Coordinates<a id="sec-1-0-1"></a>
 
 For each of the mechanical systems described below, give the number of degrees of freedom of the configuration space.
 
@@ -108,19 +108,85 @@ For each of the mechanical systems described below, give the number of degrees o
 
 # Generalized Coordinates<a id="sec-2"></a>
 
-### Exercise 1.3<a id="sec-2-0-1"></a>
+### Exercise 1.3: Fermat optics<a id="sec-2-0-1"></a>
 
-Fermat Optics. It's in the foldede section in the blue notebook. Do it again!
+Fermat Optics. It's in the folded section in the blue notebook. Do it again!
 
-### Exercise 1.4<a id="sec-2-0-2"></a>
+### Exercise 1.4: Lagrangian actions<a id="sec-2-0-2"></a>
 
-### Exercise 1.5<a id="sec-2-0-3"></a>
+### Exercise 1.5: Solution process<a id="sec-2-0-3"></a>
 
-### Exercise 1.6<a id="sec-2-0-4"></a>
+### Exercise 1.6: Minimizing action<a id="sec-2-0-4"></a>
 
-### Exercise 1.7<a id="sec-2-0-5"></a>
+The problem asks:
 
-### Exercise 1.8: Implementing Delta<a id="sec-2-0-6"></a>
+> Suppose we try to obtain a path by minimizing an action for an impossible problem. For example, suppose we have a free particle and we impose endpoint conditions on the velocities as well as the positions that are inconsistent with the particle being free. Does the formalism protect itself from such an unpleasant attack? You may find it illuminating to program it and see what happens.
+
+I spent some time thinking about this, because when I attacked this book five years ago this problem clearly tripped me up.
+
+Let's say you take, as they suggest, some path, and impose velocity constraints on the endpoints in addition to the position constraints.
+
+Usually, you constrain the coordinates at each endpoint and force a path that minimizes the action between two times. So what does it mean to impose velocity conditions? The key is to realize that on the computer, you're forcing a path to be composed of a bunch of discrete points. If you can force a point into the path that is NOT controlled by the optimizer, then you can force a velocity at some point in the path that makes no sense for minimal action.
+
+```scheme
+(define (((parametric-path-action* win)
+          Lagrangian t0 q0 offset0 t1 q1 offset1)
+         intermediate-qs)
+  (let ((intermediate-qs* (append (list (- q0 offset0))
+                                  intermediate-qs
+                                  (list (+ q1 offset1)))))
+    (let ((path (make-path t0 q0 t1 q1 intermediate-qs*)))
+      ;; display path
+      (graphics-clear win)
+      (plot-function win path t0 t1 (/ (- t1 t0) 100))
+      ;; compute action
+      (Lagrangian-action Lagrangian path t0 t1))))
+
+;; Version of find path that allows for an offset to the initial and
+;; final points.
+
+(define ((find-path* win) L t0 q0 offset0 t1 q1 offset1 n)
+  (let ((initial-qs (linear-interpolants q0 q1 n)))
+    (let* ((action (parametric-path-action* win))
+           (minimizing-qs
+            (multidimensional-minimize
+             (action L t0 q0 offset0 t1 q1 offset1)
+             initial-qs)))
+      (make-path t0 q0 t1 q1 minimizing-qs))))
+
+;; This runs (and graphs!) the motion of a free particle using the
+;; fucked up path.
+(define (one-six offset0 offset1 n)
+  (let* ((tmax 10)
+         (win (frame -1 (+ tmax 1) 0. (+ 1.2 offset0 offset1)))
+         (find (find-path* win))
+         (L (L-free-particle 3.0))
+         (path (find L
+                     0. 1. offset0
+                     tmax 0. offset1
+                     n)))
+    (Lagrangian-action L path 0 tmax)))
+```
+
+What happens when you program this? You get a funky, wiggly path like this: (insert the gif!)
+
+And you can show that the action you calculate is NOT in fact the minimum. Here's an interface that says "take 3 interpolated points, and force an offset point of a small amount into the action.
+
+```scheme
+(one-six 0 0 3)
+```
+
+```scheme
+(one-six 0.2 0 3)
+```
+
+You <span class="underline"><span class="underline">still</span></span> can get the process to converge! But that is only because you're not minimizing action with respect to some Lagrangian anymore; you're minimizing the action of two constraints. You have the Lagrangian, and then the warring goal of the polynomial interpolation. At some point, the minimizer breaks as you almost certainly oscillate between two paths, as each constraint tugs at you.
+
+If you make the impulse too big, then the war is too hardcore and the process never converges. But it's important to note here the details of the optimizer. The only reason this can "work" is settings on the optimizer.
+
+### Exercise 1.7: Properties of \\(\delta\\)<a id="sec-2-0-5"></a>
+
+### Exercise 1.8: Implementation of \\(\delta\\)<a id="sec-2-0-6"></a>
 
 This FEELS weird&#x2026; but we want something that is&#x2026; well, let's see.
 
@@ -150,19 +216,19 @@ This is a path function that returns a 2d path; we can use this as an example.
 (define q (literal-function 'q (-> Real (Up Real Real))))
 ```
 
-### Exercise 1.9<a id="sec-2-0-7"></a>
+### Exercise 1.9: Lagrange's equations<a id="sec-2-0-7"></a>
 
-### Exercise 1.10<a id="sec-2-0-8"></a>
+### Exercise 1.10: Higher-derivative Lagrangians<a id="sec-2-0-8"></a>
 
-### Exercise 1.11<a id="sec-2-0-9"></a>
+### Exercise 1.11: Kepler's third law<a id="sec-2-0-9"></a>
 
-### Exercise 1.12<a id="sec-2-0-10"></a>
+### Exercise 1.12: Lagrange's equations (code)<a id="sec-2-0-10"></a>
 
-### Exercise 1.13<a id="sec-2-0-11"></a>
+### Exercise 1.13: Higher-derivative Lagrangians (code)<a id="sec-2-0-11"></a>
 
-### Exercise 1.14<a id="sec-2-0-12"></a>
+### Exercise 1.14: Coordinate-independence of Lagrange equations<a id="sec-2-0-12"></a>
 
-### Exercise 1.15<a id="sec-2-0-13"></a>
+### Exercise 1.15: Equivalence<a id="sec-2-0-13"></a>
 
 This one was a serious doozy. I plan on going through and co
 
@@ -271,7 +337,7 @@ trying again. get a function:
 
 That's good for now.
 
-### Exercise 1.16<a id="sec-2-0-14"></a>
+### Exercise 1.16: Central force motion<a id="sec-2-0-14"></a>
 
 Messing around to make sure I understand what I'm seeing in the coordinate transforms on page 45.
 
@@ -374,17 +440,17 @@ rectangular, for fun:
       (up 'xdot 'ydot 'zdot))))
 ```
 
-### Exercise 1.17<a id="sec-2-0-15"></a>
+### Exercise 1.17: Bead on a helical wire<a id="sec-2-0-15"></a>
 
-### Exercise 1.18<a id="sec-2-0-16"></a>
+### Exercise 1.18: Bead on a triaxial surface<a id="sec-2-0-16"></a>
 
-### Exercise 1.19<a id="sec-2-0-17"></a>
+### Exercise 1.19: Two-bar linkage<a id="sec-2-0-17"></a>
 
-### Exercise 1.20<a id="sec-2-0-18"></a>
+### Exercise 1.20: Sliding pendulum<a id="sec-2-0-18"></a>
 
-### Exercise 1.21<a id="sec-2-0-19"></a>
+### Exercise 1.21: A dumbbell<a id="sec-2-0-19"></a>
 
-The uneven dumbbell, 1.21.
+The uneven dumbbell.
 
 ```scheme
 (load "ch1/utils.scm")
@@ -532,17 +598,17 @@ For part d, we can substitute the constant value of c to get simplified equation
 
 For part e, I wrote this in the notebook - it is effectively identical to the substitution that is happening on the computer, so I'm going to ignore this. You just get more cancellations.
 
-### Exercise 1.22<a id="sec-2-0-20"></a>
+### Exercise 1.22: Driven pendulum<a id="sec-2-0-20"></a>
 
-### Exercise 1.23<a id="sec-2-0-21"></a>
+### Exercise 1.23: Fill in the details<a id="sec-2-0-21"></a>
 
-### Exercise 1.24<a id="sec-2-0-22"></a>
+### Exercise 1.24: Constraint forces<a id="sec-2-0-22"></a>
 
-### Exercise 1.25<a id="sec-2-0-23"></a>
+### Exercise 1.25: Foucalt pendulum Lagrangian<a id="sec-2-0-23"></a>
 
-### Exercise 1.26<a id="sec-2-0-24"></a>
+### Exercise 1.26: Properties of \\(D\_t\\)<a id="sec-2-0-24"></a>
 
-### Exercise 1.27<a id="sec-2-0-25"></a>
+### Exercise 1.27: Lagrange equations for total time derivatives<a id="sec-2-0-25"></a>
 
 ### Exercise 1.28: Total Time Derivatives<a id="sec-2-0-26"></a>
 
@@ -810,7 +876,7 @@ Here's the gnarly version with both entries as actual functions. Can this be a t
   (->tex-equation (f 't)))
 ```
 
-\\[\begin{equation} {{1}\over {2}} m {t}^{2} {\left( D{\Delta}\_{v}\left( t \right) \right)}^{2} + m t D{x}^\prime\left( t \right) D{\Delta}\_{v}\left( t \right) + m t D{\Delta}\_{v}\left( t \right) {\Delta}\_{v}\left( t \right) + m t D{\Delta}\_{v}\left( t \right) D{\Delta}\_{x}\left( t \right) + m D{x}^\prime\left( t \right) {\Delta}\_{v}\left( t \right) + m D{x}^\prime\left( t \right) D{\Delta}\_{x}\left( t \right) - {{1}\over {2}} m {\left( D{\Delta}\_{v}\left( t \right) \right)}^{2} + {{1}\over {2}} m {\left( {\Delta}\_{v}\left( t \right) \right)}^{2} + m {\Delta}\_{v}\left( t \right) D{\Delta}\_{x}\left( t \right) \end{equation}\\]
+\\[ \begin{equation} {{1}\over {2}} m {t}^{2} {\left( D{\Delta}\_{v}\left( t \right) \right)}^{2} + m t D{x}^\prime\left( t \right) D{\Delta}\_{v}\left( t \right) + m t D{\Delta}\_{v}\left( t \right) {\Delta}\_{v}\left( t \right) + m t D{\Delta}\_{v}\left( t \right) D{\Delta}\_{x}\left( t \right) + m D{x}^\prime\left( t \right) {\Delta}\_{v}\left( t \right) + m D{x}^\prime\left( t \right) D{\Delta}\_{x}\left( t \right) - {{1}\over {2}} m {\left( D{\Delta}\_{v}\left( t \right) \right)}^{2} + {{1}\over {2}} m {\left( {\Delta}\_{v}\left( t \right) \right)}^{2} + m {\Delta}\_{v}\left( t \right) D{\Delta}\_{x}\left( t \right) \end{equation} \\]
 
 Let's simplify by making the \\(\Delta\_v\\) constant and see if there's anything so obvious about \\(\Delta\_x\\).
 
@@ -837,39 +903,47 @@ Take a look. there is a quadratic velocity term in here! We have \\(D \Delta\_x(
 
 SO, only if the shift and uniform translation are constant do we not affect the Lagrangian value.
 
-### Exercise 1.30<a id="sec-2-0-28"></a>
+### Exercise 1.30: Orbits in a central potential<a id="sec-2-0-28"></a>
 
-### Exercise 1.31<a id="sec-2-0-29"></a>
+### Exercise 1.31: Foucault pendulum evolution<a id="sec-2-0-29"></a>
 
-### Exercise 1.32<a id="sec-2-0-30"></a>
+### Exercise 1.32: Time-dependent constraints<a id="sec-2-0-30"></a>
 
-### Exercise 1.33<a id="sec-2-0-31"></a>
+### Exercise 1.33: Falling off a log<a id="sec-2-0-31"></a>
 
-### Exercise 1.34<a id="sec-2-0-32"></a>
+### Exercise 1.34: Driven spherical pendulum<a id="sec-2-0-32"></a>
 
-### Exercise 1.35<a id="sec-2-0-33"></a>
+### Exercise 1.35: Restricted equations of motion<a id="sec-2-0-33"></a>
 
-### Exercise 1.36<a id="sec-2-0-34"></a>
+### Exercise 1.36: Noether integral<a id="sec-2-0-34"></a>
 
-### Exercise 1.37<a id="sec-2-0-35"></a>
+### Exercise 1.37: Velocity transformation<a id="sec-2-0-35"></a>
 
-### Exercise 1.38<a id="sec-2-0-36"></a>
+### Exercise 1.38: Properties of \\(E\\)<a id="sec-2-0-36"></a>
 
-### Exercise 1.39<a id="sec-2-0-37"></a>
+### Exercise 1.39: Combining Lagrangians<a id="sec-2-0-37"></a>
 
-### Exercise 1.40<a id="sec-2-0-38"></a>
+This one is so awesome. Can't wait to get to this problem.
 
-### Exercise 1.41<a id="sec-2-0-39"></a>
+### Exercise 1.40: Bead on a triaxial surface<a id="sec-2-0-38"></a>
 
-### Exercise 1.42<a id="sec-2-0-40"></a>
+### Exercise 1.41: Motion of a tiny golf ball<a id="sec-2-0-39"></a>
 
-### Exercise 1.43<a id="sec-2-0-41"></a>
+### Exercise 1.42: Augmented Lagrangian<a id="sec-2-0-40"></a>
 
-### Exercise 1.44<a id="sec-2-0-42"></a>
+### Exercise 1.43: A numerical investigation<a id="sec-2-0-41"></a>
+
+### Exercise 1.44: Double pendulum behavior<a id="sec-2-0-42"></a>
 
 # The Principle of Stationary Action<a id="sec-3"></a>
 
 # Computing Actions<a id="sec-4"></a>
+
+\\({1 \over 2} mv^2\\). This is the Lagrangian for a free particle, though I have no idea "why". Nor would I have thought about it had the text not said "we know you don't know why"&#x2026;
+
+Now it's 2020, and I totally know why. The Lagrangian is defined this way because there's no potential, no other forces acting on the particle; so all it has is its kinetic energy.
+
+WHY is the Lagrangian defined this way? Because, when we can split the functions into one that depends on velocity ("kinetic energy") and a potential that depends only on position, it just works out this way.
 
 # The Euler–Lagrange Equations<a id="sec-5"></a>
 

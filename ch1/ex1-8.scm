@@ -1,4 +1,4 @@
-;; Exercise 1.8: Implementing Delta
+;; Exercise 1.8: Implementation of $\delta$
 ;; :PROPERTIES:
 ;; :header-args+: :tangle ch1/ex1-8.scm :comments org
 ;; :END:
@@ -10,7 +10,6 @@
   (let (g (lambda (eps)
             (f (q + (* eps eta)))))
     ((D g) 0)))
-
 
 
 ;; Why does this work? WELL... we need a way to force the limit in.
@@ -26,7 +25,6 @@
   (let* ((Local (Up Real (UP* Real) (UP* Real)))
          (F (literal-function 'F (-> Local Real))))
     (compose F (Gamma q))))
-
 
 
 ;; This is a path function that returns a 2d path; we can use this as an example.

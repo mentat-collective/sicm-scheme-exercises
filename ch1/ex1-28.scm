@@ -5,7 +5,6 @@
 
 
 (load "ch1/utils.scm")
-
 ;; part A
 
 ;; nice, easy to guess.
@@ -16,13 +15,11 @@
     (* m x)))
 
 
-
 ;; Show the function of t, and confirm that both methods are equivalent.
 
 
 (check-f (FA 'm)
          (literal-function 'x))
-
 ;; Part B
 
 ;; NOT a total time derivative.
@@ -38,13 +35,11 @@
     (+ GB0 (* GB1 v_x))))
 
 
-
 ;; And show the full G, for fun:
 
 
 (let ((f (compose (GB 'm) (Gamma (literal-function 'x)))))
   (se (f 't)))
-
 
 
 
@@ -59,13 +54,11 @@
     (G-properties GB0 GB1 (literal-function 'x))))
 
 
-
 ;; It's clear here that the second and third tuple entries aren't equal, so we
 ;; don't have a total time derivative.
 
 
 (se (GB-properties 'm))
-
 ;; Part C
 
 ;; no problem, we've got a total time derivative on our hands.
@@ -88,12 +81,10 @@
     (G-properties GC0 GC1 (literal-function 'x))))
 
 
-
 ;; Boom, the second and third entries are equal, as we'd expect.
 
 
 (se GC-properties)
-
 ;; Part D
 
 ;; This is NOT a total time derivative; you can tell by taking the partials
@@ -109,12 +100,10 @@
     (G-properties GD0 GD1 (literal-function 'x))))
 
 
-
 ;; The partials for each side don't match.
 
 
 (se GD-properties)
-
 ;; Part E
 
 ;; This is strange to me, because I thought that this thing had to produce a tuple.
@@ -133,13 +122,11 @@
        (cos t))))
 
 
-
 ;; Boom, total time derivative!
 
 
 (check-f FE (up (literal-function 'x)
                 (literal-function 'y)))
-
 
 
 ;; And let's show that we pass the tests by decomposing this into G0 and G1:
@@ -171,14 +158,12 @@
                               (literal-function 'y)))))
 
 
-
 ;; BOOM!
 
 ;; We've recovered F; the partials are equal, and the final matrix is symmetric.
 
 
 (se GE-properties)
-
 ;; Part F
 
 ;; This one is interesting, since the second partial is a tuple. This is not so
@@ -209,7 +194,6 @@
                   (+ x (* 2 y (cos t))))))))
     (G-properties GF0 GF1 (up (literal-function 'x)
                               (literal-function 'y)))))
-
 
 
 ;; AND it looks like we DO have a total time derivative, maybe. We certainly pass
