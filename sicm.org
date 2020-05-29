@@ -28,21 +28,18 @@ the first place.
 
 The functional notation is:
 
-#+begin_export latex
 \begin{equation}
-D (\partial_2 L \circ \Gamma[q]) - (\partial_1 L \circ \Gamma[q]) = 0
+  D (\partial_2 L \circ \Gamma[q]) - (\partial_1 L \circ \Gamma[q]) = 0
 \end{equation}
-#+end_export
 
 Compare that to the traditional notation:
 
-#+begin_export latex
 \begin{equation}
   \frac{d}{dt} \frac{\partial L}{\partial \dot q^i} -\frac{\partial L}{\partial q^i}= 0
 \end{equation}
-#+end_export
 
-They have a nice riff on how this is totally ambiguous.
+They have a nice riff on how this is totally ambiguous. $\Gamma$ is not a great
+way to go.
 
 * Lagrangian Mechanics
   :PROPERTIES:
@@ -1107,6 +1104,7 @@ Lagrangian value.
 ** Projects
 **** Exercise 1.43: A numerical investigation
 **** Exercise 1.44: Double pendulum behavior
+
 
 
 * Rigid Bodies

@@ -1,0 +1,58 @@
+# -*- eval: (org-num-mode 1); org-download-image-dir: "images"; -*-
+#+title: Structure and Interpretation of Classical Mechanics
+#+subtitle: Computational Physics!
+#+startup: indent num
+#+date: 2020-05-26
+
+* How to Use This Setup
+
+Some notes on how to use this wild setup.
+
+** Inserting LaTeX
+
+LaTeX support is pretty good! If you can manage to make an equation:
+
+\begin{equation}
+  \Gamma[q]
+\end{equation}
+
+Then you can type `C-c '` inside the block, and you'll get to the SAME
+environment you would have found if you'd inserted an actual LaTeX block.
+
+That is a nicer way to work, honestly, because then inline previewing works too.
+
+** Snippets
+
+I've cloned this [[https://github.com/madsdk/yasnippets-latex][repository]] into my ~~/.spacemacs.d~. To get these to work in
+LaTeX, I had to:
+
+- place the contents of the ~snippets~ folder that repo into
+  ~snippets/text-mode~
+- ~mkdir org-mode latex-mode~
+- Copy the dotfiles from the text-mode folder into each subfolder:
+
+#+begin_src bash
+cp text-mode/.yas-parents latex-mode
+cp text-mode/.yas-make-groups latex-mode
+cp text-mode/.yas-ignore-filenames-as-triggers latex-mode
+mv text-mode/.yas-parents org-mode
+mv text-mode/.yas-make-groups org-mode
+mv text-mode/.yas-ignore-filenames-as-triggers org-mode
+#+end_src
+
+This makes the snippets accessible. Now that I have this, I can type ~eq~, then
+at the end type ~M-/~ for ~hippie-expand~ and get a nice equation block. So
+good!
+
+* Things I want
+
+** References via RefTex
+
+I haven't done this yet, but it would be excellent to be able to set up
+references using Reftex. I've never done this properly. Nice opportunity here,
+when I already have a number of references to other guides that I want to share.
+
+** Equations INSIDE org-mode
+
+cdlatex is the answer here. This is not so bad right now, I can always go into
+the latex context, but this might make it more natural.
