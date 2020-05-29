@@ -34,12 +34,6 @@ D (\partial_2 L \circ \Gamma[q]) - (\partial_1 L \circ \Gamma[q]) = 0
 \end{equation}
 #+end_export
 
-Unwrapped as latex, for example:
-
-#+begin_export latex
-D (\partial_2 L \circ \Gamma[q]) - (\partial_1 L \circ \Gamma[q]) = 0
-#+end_export
-
 Compare that to the traditional notation:
 
 #+begin_export latex
@@ -61,12 +55,13 @@ getting minimized:
 
 [[https://i.imgur.com/AJBpDgU.gif]]
 
+https://i.imgur.com/AJBpDgU.gif
 
 
-#+DOWNLOADED: file:///Users/samritchie/Downloads/IMG_9172.jpg @ 2020-05-29 09:28:44
+#+DOWNLOADED: https://i.imgur.com/AJBpDgU.gif @ 2020-05-29 10:12:19
 #+attr_org: :width 400px
-[[file:images/Lagrangian_Mechanics/2020-05-29_09-28-44_IMG_9172.jpg]]
-
+#+attr_html: :width 80% :align center
+[[file:images/Lagrangian_Mechanics/2020-05-29_10-12-19_AJBpDgU.gif]]
 
 
 ** Configuration Spaces

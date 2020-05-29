@@ -6,12 +6,6 @@ The functional notation is:
 D (\partial\_2 L \circ \Gamma[q]) - (\partial\_1 L \circ \Gamma[q]) = 0
 \end{equation}
 
-Unwrapped as latex, for example:
-
-\\[
-D (\partial\_2 L \circ \Gamma[q]) - (\partial\_1 L \circ \Gamma[q]) = 0
-\\]
-
 Compare that to the traditional notation:
 
 \begin{equation}

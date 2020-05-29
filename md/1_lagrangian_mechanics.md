@@ -72,7 +72,9 @@ The book's about motion, how things move. Here's a nice image of some action get
 
 ![img](https://i.imgur.com/AJBpDgU.gif)
 
-![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-05-29_09-28-44_IMG_9172.jpg)
+![img](https://i.imgur.com/AJBpDgU.gif)
+
+![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-05-29_10-12-19_AJBpDgU.gif)
 
 # Configuration Spaces<a id="sec-1"></a>
 
