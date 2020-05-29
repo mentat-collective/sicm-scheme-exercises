@@ -1,4 +1,4 @@
-  - [configuration Spaces](#sec-1)
+  - [Configuration Spaces](#sec-1)
       - [Exercises 1.1: Degrees of Freedom and 1.2: Generalized Coordinates](#sec-1-0-1)
   - [Generalized Coordinates](#sec-2)
   - [The Principle of Stationary Action](#sec-3)
@@ -72,13 +72,9 @@ The book's about motion, how things move. Here's a nice image of some action get
 
 ![img](https://i.imgur.com/AJBpDgU.gif)
 
-![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-05-29_09-41-47_screenshot.png)
-
-![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-05-29_09-38-54_screenshot.png)
-
 ![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-05-29_09-28-44_IMG_9172.jpg)
 
-# configuration Spaces<a id="sec-1"></a>
+# Configuration Spaces<a id="sec-1"></a>
 
 ### Exercises 1.1: Degrees of Freedom and 1.2: Generalized Coordinates<a id="sec-1-0-1"></a>
 

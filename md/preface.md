@@ -2,16 +2,20 @@ The preface is already intriguing. A tour through the new notation, plus some di
 
 The functional notation is:
 
-\\[\begin{equation}
+\begin{equation}
 D (\partial\_2 L \circ \Gamma[q]) - (\partial\_1 L \circ \Gamma[q]) = 0
 \end{equation}
+
+Unwrapped as latex, for example:
+
+\\[
+D (\partial\_2 L \circ \Gamma[q]) - (\partial\_1 L \circ \Gamma[q]) = 0
 \\]
 
 Compare that to the traditional notation:
 
-\\[\begin{equation}
+\begin{equation}
   \frac{d}{dt} \frac{\partial L}{\partial \dot q^i} -\frac{\partial L}{\partial q^i}= 0
 \end{equation}
-\\]
 
 They have a nice riff on how this is totally ambiguous.

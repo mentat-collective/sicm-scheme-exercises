@@ -34,6 +34,12 @@ D (\partial_2 L \circ \Gamma[q]) - (\partial_1 L \circ \Gamma[q]) = 0
 \end{equation}
 #+end_export
 
+Unwrapped as latex, for example:
+
+#+begin_export latex
+D (\partial_2 L \circ \Gamma[q]) - (\partial_1 L \circ \Gamma[q]) = 0
+#+end_export
+
 Compare that to the traditional notation:
 
 #+begin_export latex
@@ -56,17 +62,6 @@ getting minimized:
 [[https://i.imgur.com/AJBpDgU.gif]]
 
 
-#+DOWNLOADED: screenshot @ 2020-05-29 09:41:47
-#+attr_org: :width 400px
-#+attr_html: :width 80% :align center
-[[file:images/Lagrangian_Mechanics/2020-05-29_09-41-47_screenshot.png]]
-
-
-#+DOWNLOADED: screenshot @ 2020-05-29 09:38:54
-
-#+attr_org: :width 400px
-[[file:images/Lagrangian_Mechanics/2020-05-29_09-38-54_screenshot.png]]
-
 
 #+DOWNLOADED: file:///Users/samritchie/Downloads/IMG_9172.jpg @ 2020-05-29 09:28:44
 #+attr_org: :width 400px
@@ -74,7 +69,7 @@ getting minimized:
 
 
 
-** configuration Spaces
+** Configuration Spaces
 
 **** Exercises 1.1: Degrees of Freedom and 1.2: Generalized Coordinates
 
