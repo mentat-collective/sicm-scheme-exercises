@@ -1,4 +1,4 @@
-  - [Configuration Spaces](#sec-1)
+  - [configuration Spaces](#sec-1)
       - [Exercises 1.1: Degrees of Freedom and 1.2: Generalized Coordinates](#sec-1-0-1)
   - [Generalized Coordinates](#sec-2)
   - [The Principle of Stationary Action](#sec-3)
@@ -72,7 +72,9 @@ The book's about motion, how things move. Here's a nice image of some action get
 
 ![img](https://i.imgur.com/AJBpDgU.gif)
 
-# Configuration Spaces<a id="sec-1"></a>
+![img](images/Lagrangian_Mechanics/2020-05-29_09-28-44_IMG_9172.jpg)
+
+# configuration Spaces<a id="sec-1"></a>
 
 ### Exercises 1.1: Degrees of Freedom and 1.2: Generalized Coordinates<a id="sec-1-0-1"></a>
 
@@ -110,7 +112,9 @@ The book's about motion, how things move. Here's a nice image of some action get
 
 ### Exercise 1.3: Fermat optics<a id="sec-3-0-1"></a>
 
-Fermat Optics. It's in the folded section in the blue notebook. Do it again!
+The problem states:
+
+> Fermat observed that the laws of reflection and refraction could be accounted for by the following facts: Light travels in a straight line in any particular medium with a velocity that depends upon the medium. The path taken by a ray from a source to a destination through any sequence of media is a path of least total time, compared to neighboring paths. Show that these facts imply the laws of reflection and refraction.
 
 # Computing Actions<a id="sec-4"></a>
 

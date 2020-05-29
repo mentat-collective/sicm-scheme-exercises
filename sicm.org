@@ -1,7 +1,8 @@
-# -*- eval: (org-num-mode 1); -*-
+# -*- eval: (org-num-mode 1); org-download-image-dir: "images"; -*-
 #+title: Structure and Interpretation of Classical Mechanics
 #+subtitle: Computational Physics!
 #+startup: indent num
+#+attr_org: :width 600px
 #+date: 2020-05-26
 
 Welcome to my tour of Structure and Interpretation of Classical Mechanics. I'm
@@ -47,6 +48,7 @@ They have a nice riff on how this is totally ambiguous.
 * Lagrangian Mechanics
   :PROPERTIES:
   :header-args: :eval no-export :padline no
+  :EXPORT_FILE_NAME: md/1_lagrangian_mechanics
   :END:
 
 The book's about motion, how things move. Here's a nice image of some action
@@ -54,7 +56,14 @@ getting minimized:
 
 [[https://i.imgur.com/AJBpDgU.gif]]
 
-** Configuration Spaces
+
+#+DOWNLOADED: file:///Users/samritchie/Downloads/IMG_9172.jpg @ 2020-05-29 09:28:44
+#+attr_org: :width 400px
+[[file:images/Lagrangian_Mechanics/2020-05-29_09-28-44_IMG_9172.jpg]]
+
+
+
+** configuration Spaces
 
 **** Exercises 1.1: Degrees of Freedom and 1.2: Generalized Coordinates
 
@@ -112,7 +121,16 @@ here too.)
 
 **** Exercise 1.3: Fermat optics
 
-Fermat Optics. It's in the folded section in the blue notebook. Do it again!
+The problem states:
+
+#+begin_quote
+Fermat observed that the laws of reflection and refraction could be accounted
+for by the following facts: Light travels in a straight line in any particular
+medium with a velocity that depends upon the medium. The path taken by a ray
+from a source to a destination through any sequence of media is a path of least
+total time, compared to neighboring paths. Show that these facts imply the laws
+of reflection and refraction.
+#+end_quote
 
 ** Computing Actions
 
