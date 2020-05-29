@@ -47,11 +47,11 @@ You're supposed to do these by hand, so I'll do that in the textbook. But here, 
 
     ```scheme
     (->tex-equation
-     ((D F) 'x 'y))
+     ((D F) 'Delta_x 'y))
     ```
 
     \begin{equation}
-    \begin{bmatrix} \displaystyle{ 2 x {y}^{3}} \cr \cr \displaystyle{ 3 {x}^{2} {y}^{2}}\end{bmatrix}
+    \begin{bmatrix} \displaystyle{ 2 {\Delta}\_{x} {y}^{3}} \cr \cr \displaystyle{ 3 {{\Delta}\_{x}}^{2} {y}^{2}}\end{bmatrix}
     \end{equation}
 
     Or, we could show that they're equivalent this way:
