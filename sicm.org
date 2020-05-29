@@ -59,15 +59,6 @@ getting minimized:
 [[file:images/Lagrangian_Mechanics/2020-05-29_10-12-19_AJBpDgU.gif]]
 
 
-And some thing I drew:
-
-#+DOWNLOADED: screenshot @ 2020-05-29 10:14:10
-#+attr_org: :width 400px
-#+attr_html: :width 80% :align center
-[[file:images/Lagrangian_Mechanics/2020-05-29_10-14-10_screenshot.png]]
-And here we go:
-
-
 ** Configuration Spaces
 
 **** Exercises 1.1: Degrees of Freedom and 1.2: Generalized Coordinates
