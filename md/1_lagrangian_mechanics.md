@@ -70,11 +70,11 @@
 
 The book's about motion, how things move. Here's a nice image of some action getting minimized:
 
-![img](https://i.imgur.com/AJBpDgU.gif)
-
-![img](https://i.imgur.com/AJBpDgU.gif)
-
 ![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-05-29_10-12-19_AJBpDgU.gif)
+
+And some thing I drew:
+
+![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-05-29_10-14-10_screenshot.png) And here we go:
 
 # Configuration Spaces<a id="sec-1"></a>
 
