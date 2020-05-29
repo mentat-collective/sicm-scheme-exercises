@@ -6,3 +6,6 @@ ltximg
 
 sicm.tex
 sicm.pdf
+
+# For output from auctex.
+auto

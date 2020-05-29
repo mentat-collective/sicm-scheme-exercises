@@ -22,7 +22,7 @@
 
 ;; Prints an equation code block containing the expression as LaTeX.
 (define (->tex-equation expr #!optional label)
-  (->write-tex
+  (write-string
    (string-append
     "\\begin{equation}\n"
     (->tex* expr)

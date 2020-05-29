@@ -440,6 +440,12 @@ rectangular, for fun:
       (up 'xdot 'ydot 'zdot))))
 ```
 
+From a note to Vinay. Langrangian coordinate transformation from spherical -> rectangular on paper, which of course is a total nightmare, writing vx<sup>2</sup> + vy<sup>2</sup> + vz<sup>2</sup> and simplifying. BUT then, of course, you write down the spherical => rectangular position change&#x2026;
+
+the explicit link to function composition, and how the new lagrangian is (Lagrangian A + A<-B + B<-C)&#x2026; really drives home how invertible coordinate transforms can stack associatively through function composition. the lesson is, prove that the code works, then trust the program to go to crazy coordinate systems.
+
+they add in a very simple-to-write coordinate transform that has one of the angles depend on t. and then compose that in, and boom, basically for free you're in rotating spherical coords.
+
 ### Exercise 1.17: Bead on a helical wire<a id="sec-2-0-15"></a>
 
 ### Exercise 1.18: Bead on a triaxial surface<a id="sec-2-0-16"></a>

@@ -141,7 +141,7 @@ meantime, you can install the plugin locally with these instructions.
 
 I'll update this with a link once I get the plugin up on the Chrome Web Store.
 
-## Creating Github Markdown with Equations
+## Creating Github Markdown with LaTeX
 
 The Github-flavored markdown that `ox-gfm` emits turns all LaTeX fragments into
 the standard `\( equation surrounded by parens \)` or `\[ square braces \]`.
@@ -162,23 +162,52 @@ Here's what I had to do to get this working:
   (defun replace-in-string (what with in)
     (replace-regexp-in-string (regexp-quote what) with in nil 'literal))
 
-  (defun my-latex-filter-gfm-macro (text backend info)
-    (when (org-export-derived-backend-p backend 'gfm)
-      (->> text
-           (replace-in-string "\\(" "\\\\(")
-           (replace-in-string "\\)" "\\\\)")
-           (replace-in-string "\\[" "\\\\[")
-           (replace-in-string "\\]" "\\\\]")
-           (replace-in-string "_" "\\_")
-           )))
+(defun escape-gfm-latex-characters (text)
+    (->> text
+         (replace-in-string "\\(" "\\\\(")
+         (replace-in-string "\\)" "\\\\)")
+         (replace-in-string "\\[" "\\\\[")
+         (replace-in-string "\\]" "\\\\]")
+         (replace-in-string "_" "\\_")))
 
-  (add-to-list 'org-export-filter-latex-fragment-functions
-               'my-latex-filter-gfm-macro)
+  (defun org-gfm-latex-filter (text backend info)
+    "Properly escape code so it gets rendered."
+    (when (org-export-derived-backend-p backend 'gfm)
+      (escape-gfm-latex-characters text)))
+
+  (require 'ox)
+
+  ;; These are required to get proper escaping in github-flavored markdown for
+  ;; latex snippets and embedded equations and environments.
+  (add-to-list 'org-export-filter-latex-fragment-functions 'gfm-latex-filter)
+  (add-to-list 'org-export-filter-latex-environment-functions 'gfm-latex-filter)
+
+  ;; Override the built-in stuff in org-md-export-block, since I don't want to
+  ;; declare my own backend and
+  (defun org-md-export-block (export-block contents info)
+    "Transcode a EXPORT-BLOCK element from Org to Markdown.
+CONTENTS is nil. INFO is a plist holding contextual information."
+    (let ((prop-type (org-element-property :type export-block)))
+      (message contents)
+      (cond ((string= prop-type "LATEX")
+             (escape-gfm-latex-characters
+              (org-remove-indentation (org-element-property :value export-block))))
+
+            ;; this is the default markdown behavior.
+            ((member prop-type '("MARKDOWN" "MD"))
+             (org-remove-indentation (org-element-property :value export-block)))
+
+            ;; Also include the default for HTML export blocks.
+            (t (org-export-with-backend 'html export-block contents info)))))
 ```
 
 If you add that to your emacs initialization code, you'll find that `ox-gfm`
 Does the Right Thing when you try to export to Github-flavored markdown, and
 equations show up looking great.
+
+I also had to override the default markdown processing, so that it would emit latex blocks:
+
+
 
 ## Custom LaTeX Processing
 
