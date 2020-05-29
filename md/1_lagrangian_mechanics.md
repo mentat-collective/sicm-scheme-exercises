@@ -1,84 +1,82 @@
   - [Configuration Spaces](#sec-1)
       - [Exercises 1.1: Degrees of Freedom and 1.2: Generalized Coordinates](#sec-1-0-1)
   - [Generalized Coordinates](#sec-2)
-      - [Exercise 1.3: Fermat optics](#sec-2-0-1)
-      - [Exercise 1.4: Lagrangian actions](#sec-2-0-2)
-      - [Exercise 1.5: Solution process](#sec-2-0-3)
-      - [Exercise 1.6: Minimizing action](#sec-2-0-4)
-      - [Exercise 1.7: Properties of \\(\delta\\)](#sec-2-0-5)
-      - [Exercise 1.8: Implementation of \\(\delta\\)](#sec-2-0-6)
-      - [Exercise 1.9: Lagrange's equations](#sec-2-0-7)
-      - [Exercise 1.10: Higher-derivative Lagrangians](#sec-2-0-8)
-      - [Exercise 1.11: Kepler's third law](#sec-2-0-9)
-      - [Exercise 1.12: Lagrange's equations (code)](#sec-2-0-10)
-      - [Exercise 1.13: Higher-derivative Lagrangians (code)](#sec-2-0-11)
-      - [Exercise 1.14: Coordinate-independence of Lagrange equations](#sec-2-0-12)
-      - [Exercise 1.15: Equivalence](#sec-2-0-13)
-      - [Exercise 1.16: Central force motion](#sec-2-0-14)
-      - [Exercise 1.17: Bead on a helical wire](#sec-2-0-15)
-      - [Exercise 1.18: Bead on a triaxial surface](#sec-2-0-16)
-      - [Exercise 1.19: Two-bar linkage](#sec-2-0-17)
-      - [Exercise 1.20: Sliding pendulum](#sec-2-0-18)
-      - [Exercise 1.21: A dumbbell](#sec-2-0-19)
-      - [Exercise 1.22: Driven pendulum](#sec-2-0-20)
-      - [Exercise 1.23: Fill in the details](#sec-2-0-21)
-      - [Exercise 1.24: Constraint forces](#sec-2-0-22)
-      - [Exercise 1.25: Foucalt pendulum Lagrangian](#sec-2-0-23)
-      - [Exercise 1.26: Properties of \\(D\_t\\)](#sec-2-0-24)
-      - [Exercise 1.27: Lagrange equations for total time derivatives](#sec-2-0-25)
-      - [Exercise 1.28: Total Time Derivatives](#sec-2-0-26)
-      - [Exercise 1.29: Galilean Invariance](#sec-2-0-27)
-      - [Exercise 1.30: Orbits in a central potential](#sec-2-0-28)
-      - [Exercise 1.31: Foucault pendulum evolution](#sec-2-0-29)
-      - [Exercise 1.32: Time-dependent constraints](#sec-2-0-30)
-      - [Exercise 1.33: Falling off a log](#sec-2-0-31)
-      - [Exercise 1.34: Driven spherical pendulum](#sec-2-0-32)
-      - [Exercise 1.35: Restricted equations of motion](#sec-2-0-33)
-      - [Exercise 1.36: Noether integral](#sec-2-0-34)
-      - [Exercise 1.37: Velocity transformation](#sec-2-0-35)
-      - [Exercise 1.38: Properties of \\(E\\)](#sec-2-0-36)
-      - [Exercise 1.39: Combining Lagrangians](#sec-2-0-37)
-      - [Exercise 1.40: Bead on a triaxial surface](#sec-2-0-38)
-      - [Exercise 1.41: Motion of a tiny golf ball](#sec-2-0-39)
-      - [Exercise 1.42: Augmented Lagrangian](#sec-2-0-40)
-      - [Exercise 1.43: A numerical investigation](#sec-2-0-41)
-      - [Exercise 1.44: Double pendulum behavior](#sec-2-0-42)
   - [The Principle of Stationary Action](#sec-3)
+      - [Exercise 1.3: Fermat optics](#sec-3-0-1)
   - [Computing Actions](#sec-4)
+      - [Exercise 1.4: Lagrangian actions](#sec-4-0-1)
+      - [Exercise 1.5: Solution process](#sec-4-0-2)
+      - [Exercise 1.6: Minimizing action](#sec-4-0-3)
   - [The Euler–Lagrange Equations](#sec-5)
     - [Derivation of the Lagrange Equations](#sec-5-1)
+      - [Exercise 1.7: Properties of \\(\delta\\)](#sec-5-1-1)
+      - [Exercise 1.8: Implementation of \\(\delta\\)](#sec-5-1-2)
+      - [Exercise 1.9: Lagrange's equations](#sec-5-1-3)
+      - [Exercise 1.10: Higher-derivative Lagrangians](#sec-5-1-4)
     - [Computing Lagrange's Equations](#sec-5-2)
+      - [Exercise 1.11: Kepler's third law](#sec-5-2-1)
+      - [Exercise 1.12: Lagrange's equations (code)](#sec-5-2-2)
+      - [Exercise 1.13: Higher-derivative Lagrangians (code)](#sec-5-2-3)
   - [How to Find Lagrangians](#sec-6)
+      - [Exercise 1.14: Coordinate-independence of Lagrange equations](#sec-6-0-1)
     - [Coordinate Transformations](#sec-6-1)
+      - [Exercise 1.15: Equivalence](#sec-6-1-1)
+      - [Exercise 1.16: Central force motion](#sec-6-1-2)
     - [Systems with Rigid Constraints](#sec-6-2)
+      - [Exercise 1.17: Bead on a helical wire](#sec-6-2-1)
+      - [Exercise 1.18: Bead on a triaxial surface](#sec-6-2-2)
+      - [Exercise 1.19: Two-bar linkage](#sec-6-2-3)
+      - [Exercise 1.20: Sliding pendulum](#sec-6-2-4)
+      - [Exercise 1.21: A dumbbell](#sec-6-2-5)
+      - [Exercise 1.22: Driven pendulum](#sec-6-2-6)
+      - [Exercise 1.23: Fill in the details](#sec-6-2-7)
+      - [Exercise 1.24: Constraint forces](#sec-6-2-8)
     - [Constraints as Coordinate Transformations](#sec-6-3)
+      - [Exercise 1.25: Foucalt pendulum Lagrangian](#sec-6-3-1)
     - [The Lagrangian Is Not Unique](#sec-6-4)
+      - [Exercise 1.26: Properties of \\(D\_t\\)](#sec-6-4-1)
+      - [Exercise 1.27: Lagrange equations for total time derivatives](#sec-6-4-2)
+      - [Exercise 1.28: Total Time Derivatives](#sec-6-4-3)
+      - [Exercise 1.29: Galilean Invariance](#sec-6-4-4)
   - [Evolution of Dynamical State](#sec-7)
+      - [Exercise 1.30: Orbits in a central potential](#sec-7-0-1)
+      - [Exercise 1.31: Foucault pendulum evolution](#sec-7-0-2)
   - [Conserved Quantities](#sec-8)
     - [Conserved Momenta](#sec-8-1)
     - [Energy Conservation](#sec-8-2)
+      - [Exercise 1.32: Time-dependent constraints](#sec-8-2-1)
+      - [Exercise 1.33: Falling off a log](#sec-8-2-2)
     - [Central Forces in Three Dimensions](#sec-8-3)
     - [The Restricted Three-Body Problem](#sec-8-4)
+      - [Exercise 1.34: Driven spherical pendulum](#sec-8-4-1)
+      - [Exercise 1.35: Restricted equations of motion](#sec-8-4-2)
     - [Noether's Theorem](#sec-8-5)
+      - [Exercise 1.36: Noether integral](#sec-8-5-1)
   - [Abstraction of Path Functions](#sec-9)
+      - [Exercise 1.37: Velocity transformation](#sec-9-0-1)
+      - [Exercise 1.38: Properties of \\(E\\)](#sec-9-0-2)
   - [Constrained Motion](#sec-10)
     - [Coordinate Constraints](#sec-10-1)
+      - [Exercise 1.39: Combining Lagrangians](#sec-10-1-1)
+      - [Exercise 1.40: Bead on a triaxial surface](#sec-10-1-2)
+      - [Exercise 1.41: Motion of a tiny golf ball](#sec-10-1-3)
     - [Derivative Constraints](#sec-10-2)
+      - [Exercise 1.42: Augmented Lagrangian](#sec-10-2-1)
     - [Nonholonomic Systems](#sec-10-3)
   - [Summary](#sec-11)
   - [Projects](#sec-12)
+      - [Exercise 1.43: A numerical investigation](#sec-12-0-1)
+      - [Exercise 1.44: Double pendulum behavior](#sec-12-0-2)
 
-# Configuration Spaces<a id="sec-1"></a>
-
-Discuss the section here. This is a test of a new heading style.
-
-Here's a nice image of some action getting minimized:
+The book's about motion, how things move. Here's a nice image of some action getting minimized:
 
 ![img](https://i.imgur.com/AJBpDgU.gif)
 
+# Configuration Spaces<a id="sec-1"></a>
+
 ### Exercises 1.1: Degrees of Freedom and 1.2: Generalized Coordinates<a id="sec-1-0-1"></a>
 
-For each of the mechanical systems described below, give the number of degrees of freedom of the configuration space.
+> For each of the mechanical systems described below, give the number of degrees of freedom of the configuration space.
 
 (Exercise 1.2 asks about the generalized coordinates of each, so I'll note those here too.)
 
@@ -108,15 +106,25 @@ For each of the mechanical systems described below, give the number of degrees o
 
 # Generalized Coordinates<a id="sec-2"></a>
 
-### Exercise 1.3: Fermat optics<a id="sec-2-0-1"></a>
+# The Principle of Stationary Action<a id="sec-3"></a>
+
+### Exercise 1.3: Fermat optics<a id="sec-3-0-1"></a>
 
 Fermat Optics. It's in the folded section in the blue notebook. Do it again!
 
-### Exercise 1.4: Lagrangian actions<a id="sec-2-0-2"></a>
+# Computing Actions<a id="sec-4"></a>
 
-### Exercise 1.5: Solution process<a id="sec-2-0-3"></a>
+\\({1 \over 2} mv^2\\). This is the Lagrangian for a free particle, though I have no idea "why". Nor would I have thought about it had the text not said "we know you don't know why"&#x2026;
 
-### Exercise 1.6: Minimizing action<a id="sec-2-0-4"></a>
+Now it's 2020, and I totally know why. The Lagrangian is defined this way because there's no potential, no other forces acting on the particle; so all it has is its kinetic energy.
+
+WHY is the Lagrangian defined this way? Because, when we can split the functions into one that depends on velocity ("kinetic energy") and a potential that depends only on position, it just works out this way.
+
+### Exercise 1.4: Lagrangian actions<a id="sec-4-0-1"></a>
+
+### Exercise 1.5: Solution process<a id="sec-4-0-2"></a>
+
+### Exercise 1.6: Minimizing action<a id="sec-4-0-3"></a>
 
 The problem asks:
 
@@ -184,9 +192,13 @@ You <span class="underline"><span class="underline">still</span></span> can get 
 
 If you make the impulse too big, then the war is too hardcore and the process never converges. But it's important to note here the details of the optimizer. The only reason this can "work" is settings on the optimizer.
 
-### Exercise 1.7: Properties of \\(\delta\\)<a id="sec-2-0-5"></a>
+# The Euler–Lagrange Equations<a id="sec-5"></a>
 
-### Exercise 1.8: Implementation of \\(\delta\\)<a id="sec-2-0-6"></a>
+## Derivation of the Lagrange Equations<a id="sec-5-1"></a>
+
+### Exercise 1.7: Properties of \\(\delta\\)<a id="sec-5-1-1"></a>
+
+### Exercise 1.8: Implementation of \\(\delta\\)<a id="sec-5-1-2"></a>
 
 This FEELS weird&#x2026; but we want something that is&#x2026; well, let's see.
 
@@ -216,19 +228,25 @@ This is a path function that returns a 2d path; we can use this as an example.
 (define q (literal-function 'q (-> Real (Up Real Real))))
 ```
 
-### Exercise 1.9: Lagrange's equations<a id="sec-2-0-7"></a>
+### Exercise 1.9: Lagrange's equations<a id="sec-5-1-3"></a>
 
-### Exercise 1.10: Higher-derivative Lagrangians<a id="sec-2-0-8"></a>
+### Exercise 1.10: Higher-derivative Lagrangians<a id="sec-5-1-4"></a>
 
-### Exercise 1.11: Kepler's third law<a id="sec-2-0-9"></a>
+## Computing Lagrange's Equations<a id="sec-5-2"></a>
 
-### Exercise 1.12: Lagrange's equations (code)<a id="sec-2-0-10"></a>
+### Exercise 1.11: Kepler's third law<a id="sec-5-2-1"></a>
 
-### Exercise 1.13: Higher-derivative Lagrangians (code)<a id="sec-2-0-11"></a>
+### Exercise 1.12: Lagrange's equations (code)<a id="sec-5-2-2"></a>
 
-### Exercise 1.14: Coordinate-independence of Lagrange equations<a id="sec-2-0-12"></a>
+### Exercise 1.13: Higher-derivative Lagrangians (code)<a id="sec-5-2-3"></a>
 
-### Exercise 1.15: Equivalence<a id="sec-2-0-13"></a>
+# How to Find Lagrangians<a id="sec-6"></a>
+
+### Exercise 1.14: Coordinate-independence of Lagrange equations<a id="sec-6-0-1"></a>
+
+## Coordinate Transformations<a id="sec-6-1"></a>
+
+### Exercise 1.15: Equivalence<a id="sec-6-1-1"></a>
 
 This one was a serious doozy. I plan on going through and co
 
@@ -337,7 +355,7 @@ trying again. get a function:
 
 That's good for now.
 
-### Exercise 1.16: Central force motion<a id="sec-2-0-14"></a>
+### Exercise 1.16: Central force motion<a id="sec-6-1-2"></a>
 
 Messing around to make sure I understand what I'm seeing in the coordinate transforms on page 45.
 
@@ -446,15 +464,17 @@ the explicit link to function composition, and how the new lagrangian is (Lagran
 
 they add in a very simple-to-write coordinate transform that has one of the angles depend on t. and then compose that in, and boom, basically for free you're in rotating spherical coords.
 
-### Exercise 1.17: Bead on a helical wire<a id="sec-2-0-15"></a>
+## Systems with Rigid Constraints<a id="sec-6-2"></a>
 
-### Exercise 1.18: Bead on a triaxial surface<a id="sec-2-0-16"></a>
+### Exercise 1.17: Bead on a helical wire<a id="sec-6-2-1"></a>
 
-### Exercise 1.19: Two-bar linkage<a id="sec-2-0-17"></a>
+### Exercise 1.18: Bead on a triaxial surface<a id="sec-6-2-2"></a>
 
-### Exercise 1.20: Sliding pendulum<a id="sec-2-0-18"></a>
+### Exercise 1.19: Two-bar linkage<a id="sec-6-2-3"></a>
 
-### Exercise 1.21: A dumbbell<a id="sec-2-0-19"></a>
+### Exercise 1.20: Sliding pendulum<a id="sec-6-2-4"></a>
+
+### Exercise 1.21: A dumbbell<a id="sec-6-2-5"></a>
 
 The uneven dumbbell.
 
@@ -604,19 +624,23 @@ For part d, we can substitute the constant value of c to get simplified equation
 
 For part e, I wrote this in the notebook - it is effectively identical to the substitution that is happening on the computer, so I'm going to ignore this. You just get more cancellations.
 
-### Exercise 1.22: Driven pendulum<a id="sec-2-0-20"></a>
+### Exercise 1.22: Driven pendulum<a id="sec-6-2-6"></a>
 
-### Exercise 1.23: Fill in the details<a id="sec-2-0-21"></a>
+### Exercise 1.23: Fill in the details<a id="sec-6-2-7"></a>
 
-### Exercise 1.24: Constraint forces<a id="sec-2-0-22"></a>
+### Exercise 1.24: Constraint forces<a id="sec-6-2-8"></a>
 
-### Exercise 1.25: Foucalt pendulum Lagrangian<a id="sec-2-0-23"></a>
+## Constraints as Coordinate Transformations<a id="sec-6-3"></a>
 
-### Exercise 1.26: Properties of \\(D\_t\\)<a id="sec-2-0-24"></a>
+### Exercise 1.25: Foucalt pendulum Lagrangian<a id="sec-6-3-1"></a>
 
-### Exercise 1.27: Lagrange equations for total time derivatives<a id="sec-2-0-25"></a>
+## The Lagrangian Is Not Unique<a id="sec-6-4"></a>
 
-### Exercise 1.28: Total Time Derivatives<a id="sec-2-0-26"></a>
+### Exercise 1.26: Properties of \\(D\_t\\)<a id="sec-6-4-1"></a>
+
+### Exercise 1.27: Lagrange equations for total time derivatives<a id="sec-6-4-2"></a>
+
+### Exercise 1.28: Total Time Derivatives<a id="sec-6-4-3"></a>
 
 ```scheme
 (load "ch1/utils.scm")
@@ -826,7 +850,7 @@ For part e, I wrote this in the notebook - it is effectively identical to the su
     (se GF-properties)
     ```
 
-### Exercise 1.29: Galilean Invariance<a id="sec-2-0-27"></a>
+### Exercise 1.29: Galilean Invariance<a id="sec-6-4-4"></a>
 
 I'll do this for a single particle, since it's annoying to get the sum going for many; and the lagrangian is additive, so no problem.
 
@@ -909,65 +933,11 @@ Take a look. there is a quadratic velocity term in here! We have \\(D \Delta\_x(
 
 SO, only if the shift and uniform translation are constant do we not affect the Lagrangian value.
 
-### Exercise 1.30: Orbits in a central potential<a id="sec-2-0-28"></a>
-
-### Exercise 1.31: Foucault pendulum evolution<a id="sec-2-0-29"></a>
-
-### Exercise 1.32: Time-dependent constraints<a id="sec-2-0-30"></a>
-
-### Exercise 1.33: Falling off a log<a id="sec-2-0-31"></a>
-
-### Exercise 1.34: Driven spherical pendulum<a id="sec-2-0-32"></a>
-
-### Exercise 1.35: Restricted equations of motion<a id="sec-2-0-33"></a>
-
-### Exercise 1.36: Noether integral<a id="sec-2-0-34"></a>
-
-### Exercise 1.37: Velocity transformation<a id="sec-2-0-35"></a>
-
-### Exercise 1.38: Properties of \\(E\\)<a id="sec-2-0-36"></a>
-
-### Exercise 1.39: Combining Lagrangians<a id="sec-2-0-37"></a>
-
-This one is so awesome. Can't wait to get to this problem.
-
-### Exercise 1.40: Bead on a triaxial surface<a id="sec-2-0-38"></a>
-
-### Exercise 1.41: Motion of a tiny golf ball<a id="sec-2-0-39"></a>
-
-### Exercise 1.42: Augmented Lagrangian<a id="sec-2-0-40"></a>
-
-### Exercise 1.43: A numerical investigation<a id="sec-2-0-41"></a>
-
-### Exercise 1.44: Double pendulum behavior<a id="sec-2-0-42"></a>
-
-# The Principle of Stationary Action<a id="sec-3"></a>
-
-# Computing Actions<a id="sec-4"></a>
-
-\\({1 \over 2} mv^2\\). This is the Lagrangian for a free particle, though I have no idea "why". Nor would I have thought about it had the text not said "we know you don't know why"&#x2026;
-
-Now it's 2020, and I totally know why. The Lagrangian is defined this way because there's no potential, no other forces acting on the particle; so all it has is its kinetic energy.
-
-WHY is the Lagrangian defined this way? Because, when we can split the functions into one that depends on velocity ("kinetic energy") and a potential that depends only on position, it just works out this way.
-
-# The Euler–Lagrange Equations<a id="sec-5"></a>
-
-## Derivation of the Lagrange Equations<a id="sec-5-1"></a>
-
-## Computing Lagrange's Equations<a id="sec-5-2"></a>
-
-# How to Find Lagrangians<a id="sec-6"></a>
-
-## Coordinate Transformations<a id="sec-6-1"></a>
-
-## Systems with Rigid Constraints<a id="sec-6-2"></a>
-
-## Constraints as Coordinate Transformations<a id="sec-6-3"></a>
-
-## The Lagrangian Is Not Unique<a id="sec-6-4"></a>
-
 # Evolution of Dynamical State<a id="sec-7"></a>
+
+### Exercise 1.30: Orbits in a central potential<a id="sec-7-0-1"></a>
+
+### Exercise 1.31: Foucault pendulum evolution<a id="sec-7-0-2"></a>
 
 # Conserved Quantities<a id="sec-8"></a>
 
@@ -975,22 +945,48 @@ WHY is the Lagrangian defined this way? Because, when we can split the functions
 
 ## Energy Conservation<a id="sec-8-2"></a>
 
+### Exercise 1.32: Time-dependent constraints<a id="sec-8-2-1"></a>
+
+### Exercise 1.33: Falling off a log<a id="sec-8-2-2"></a>
+
 ## Central Forces in Three Dimensions<a id="sec-8-3"></a>
 
 ## The Restricted Three-Body Problem<a id="sec-8-4"></a>
 
+### Exercise 1.34: Driven spherical pendulum<a id="sec-8-4-1"></a>
+
+### Exercise 1.35: Restricted equations of motion<a id="sec-8-4-2"></a>
+
 ## Noether's Theorem<a id="sec-8-5"></a>
 
+### Exercise 1.36: Noether integral<a id="sec-8-5-1"></a>
+
 # Abstraction of Path Functions<a id="sec-9"></a>
+
+### Exercise 1.37: Velocity transformation<a id="sec-9-0-1"></a>
+
+### Exercise 1.38: Properties of \\(E\\)<a id="sec-9-0-2"></a>
 
 # Constrained Motion<a id="sec-10"></a>
 
 ## Coordinate Constraints<a id="sec-10-1"></a>
 
+### Exercise 1.39: Combining Lagrangians<a id="sec-10-1-1"></a>
+
+### Exercise 1.40: Bead on a triaxial surface<a id="sec-10-1-2"></a>
+
+### Exercise 1.41: Motion of a tiny golf ball<a id="sec-10-1-3"></a>
+
 ## Derivative Constraints<a id="sec-10-2"></a>
+
+### Exercise 1.42: Augmented Lagrangian<a id="sec-10-2-1"></a>
 
 ## Nonholonomic Systems<a id="sec-10-3"></a>
 
 # Summary<a id="sec-11"></a>
 
 # Projects<a id="sec-12"></a>
+
+### Exercise 1.43: A numerical investigation<a id="sec-12-0-1"></a>
+
+### Exercise 1.44: Double pendulum behavior<a id="sec-12-0-2"></a>

@@ -10,7 +10,11 @@ public; this book is heavy on math, programming and visualization, and should
 stress the normal tools.
 
 I'm attempting to take notes in on org-mode file, and generate all my code from
-there. Let's see how it goes.
+there.
+
+I don't think I have the heart, or the time, to really do high-class notes of
+every single section; but I am going to do each of the exercises, and explore
+some of the code-based concepts in each section.
 
 * Preface
 :PROPERTIES:
@@ -21,23 +25,43 @@ The preface is already intriguing. A tour through the new notation, plus some
 discussion of why a programming language is the best route in to this stuff.
 Both of these are extremely powerful ideas, and why I was pulled to this book in
 the first place.
+
+The functional notation is:
+
+#+begin_export latex
+\begin{equation}
+D (\partial_2 L \circ \Gamma[q]) - (\partial_1 L \circ \Gamma[q]) = 0
+\end{equation}
+#+end_export
+
+Compare that to the traditional notation:
+
+#+begin_export latex
+\begin{equation}
+  \frac{d}{dt} \frac{\partial L}{\partial \dot q^i} -\frac{\partial L}{\partial q^i}= 0
+\end{equation}
+#+end_export
+
+They have a nice riff on how this is totally ambiguous.
+
 * Lagrangian Mechanics
   :PROPERTIES:
   :header-args: :eval no-export :padline no
   :END:
 
-** Configuration Spaces
-
-Discuss the section here. This is a test of a new heading style.
-
-Here's a nice image of some action getting minimized:
+The book's about motion, how things move. Here's a nice image of some action
+getting minimized:
 
 [[https://i.imgur.com/AJBpDgU.gif]]
 
+** Configuration Spaces
+
 **** Exercises 1.1: Degrees of Freedom and 1.2: Generalized Coordinates
 
+#+begin_quote
 For each of the mechanical systems described below, give the number of degrees
 of freedom of the configuration space.
+#+end_quote
 
 (Exercise 1.2 asks about the generalized coordinates of each, so I'll note those
 here too.)
@@ -84,9 +108,24 @@ here too.)
 
 ** Generalized Coordinates
 
+** The Principle of Stationary Action
+
 **** Exercise 1.3: Fermat optics
 
 Fermat Optics. It's in the folded section in the blue notebook. Do it again!
+
+** Computing Actions
+
+${1 \over 2} mv^2$. This is the Lagrangian for a free particle, though I have no idea
+"why". Nor would I have thought about it had the text not said "we know you don't know why"...
+
+Now it's 2020, and I totally know why. The Lagrangian is defined this way
+because there's no potential, no other forces acting on the particle; so all it
+has is its kinetic energy.
+
+WHY is the Lagrangian defined this way? Because, when we can split the functions
+into one that depends on velocity ("kinetic energy") and a potential that
+depends only on position, it just works out this way.
 
 **** Exercise 1.4: Lagrangian actions
 **** Exercise 1.5: Solution process
@@ -188,7 +227,13 @@ If you make the impulse too big, then the war is too hardcore and the process
 never converges. But it's important to note here the details of the optimizer.
 The only reason this can "work" is settings on the optimizer.
 
+
+** The Euler–Lagrange Equations
+
+*** Derivation of the Lagrange Equations
+
 **** Exercise 1.7: Properties of $\delta$
+
 **** Exercise 1.8: Implementation of $\delta$
 :PROPERTIES:
 :header-args+: :tangle ch1/ex1-8.scm :comments org
@@ -225,11 +270,23 @@ This is a path function that returns a 2d path; we can use this as an example.
 #+end_src
 
 **** Exercise 1.9: Lagrange's equations
+
 **** Exercise 1.10: Higher-derivative Lagrangians
+
+*** Computing Lagrange's Equations
+
 **** Exercise 1.11: Kepler's third law
+
 **** Exercise 1.12: Lagrange's equations (code)
+
 **** Exercise 1.13: Higher-derivative Lagrangians (code)
+
+** How to Find Lagrangians
+
 **** Exercise 1.14: Coordinate-independence of Lagrange equations
+
+*** Coordinate Transformations
+
 **** Exercise 1.15: Equivalence
 :PROPERTIES:
 :header-args+: :tangle ch1/ex1-15.scm :comments org
@@ -345,6 +402,7 @@ trying again. get a function:
 #+end_src
 
 That's good for now.
+
 
 **** Exercise 1.16: Central force motion
 :PROPERTIES:
@@ -469,10 +527,18 @@ they add in a very simple-to-write coordinate transform that has one of the
 angles depend on t. and then compose that in, and boom, basically for free
 you're in rotating spherical coords.
 
+
+*** Systems with Rigid Constraints
+
 **** Exercise 1.17: Bead on a helical wire
+
 **** Exercise 1.18: Bead on a triaxial surface
+
 **** Exercise 1.19: Two-bar linkage
+
 **** Exercise 1.20: Sliding pendulum
+
+
 **** Exercise 1.21: A dumbbell
 :PROPERTIES:
 :header-args+: :tangle ch1/ex1-21.scm :comments org
@@ -632,12 +698,24 @@ For part e, I wrote this in the notebook - it is effectively identical to the
 substitution that is happening on the computer, so I'm going to ignore this. You
 just get more cancellations.
 
+
 **** Exercise 1.22: Driven pendulum
+
 **** Exercise 1.23: Fill in the details
+
 **** Exercise 1.24: Constraint forces
+
+*** Constraints as Coordinate Transformations
+
 **** Exercise 1.25: Foucalt pendulum Lagrangian
+
+*** The Lagrangian Is Not Unique
+
 **** Exercise 1.26: Properties of $D_t$
+
 **** Exercise 1.27: Lagrange equations for total time derivatives
+
+
 **** Exercise 1.28: Total Time Derivatives
 :PROPERTIES:
 :header-args+: :tangle ch1/ex1-28.scm :comments org
@@ -859,6 +937,7 @@ not symmetric.
 (se GF-properties)
 #+end_src
 
+
 **** Exercise 1.29: Galilean Invariance
 :PROPERTIES:
 :header-args+: :tangle ch1/ex1-29.scm :comments org
@@ -983,61 +1062,39 @@ D x'(t)$. This is not allowed in a total time derivative.
 SO, only if the shift and uniform translation are constant do we not affect the
 Lagrangian value.
 
+
+
+** Evolution of Dynamical State
 **** Exercise 1.30: Orbits in a central potential
 **** Exercise 1.31: Foucault pendulum evolution
-**** Exercise 1.32: Time-dependent constraints
-**** Exercise 1.33: Falling off a log
-**** Exercise 1.34: Driven spherical pendulum
-**** Exercise 1.35: Restricted equations of motion
-**** Exercise 1.36: Noether integral
-**** Exercise 1.37: Velocity transformation
-**** Exercise 1.38: Properties of $E$
-**** Exercise 1.39: Combining Lagrangians
-
-This one is so awesome. Can't wait to get to this problem.
-
-**** Exercise 1.40: Bead on a triaxial surface
-**** Exercise 1.41: Motion of a tiny golf ball
-**** Exercise 1.42: Augmented Lagrangian
-**** Exercise 1.43: A numerical investigation
-**** Exercise 1.44: Double pendulum behavior
-
-** The Principle of Stationary Action
-** Computing Actions
-
-${1 \over 2} mv^2$. This is the Lagrangian for a free particle, though I have no idea
-"why". Nor would I have thought about it had the text not said "we know you don't know why"...
-
-Now it's 2020, and I totally know why. The Lagrangian is defined this way
-because there's no potential, no other forces acting on the particle; so all it
-has is its kinetic energy.
-
-WHY is the Lagrangian defined this way? Because, when we can split the functions
-into one that depends on velocity ("kinetic energy") and a potential that
-depends only on position, it just works out this way.
-
-** The Euler–Lagrange Equations
-*** Derivation of the Lagrange Equations
-*** Computing Lagrange's Equations
-** How to Find Lagrangians
-*** Coordinate Transformations
-*** Systems with Rigid Constraints
-*** Constraints as Coordinate Transformations
-*** The Lagrangian Is Not Unique
-** Evolution of Dynamical State
 ** Conserved Quantities
 *** Conserved Momenta
 *** Energy Conservation
+**** Exercise 1.32: Time-dependent constraints
+**** Exercise 1.33: Falling off a log
 *** Central Forces in Three Dimensions
 *** The Restricted Three-Body Problem
+**** Exercise 1.34: Driven spherical pendulum
+**** Exercise 1.35: Restricted equations of motion
 *** Noether's Theorem
+**** Exercise 1.36: Noether integral
 ** Abstraction of Path Functions
+**** Exercise 1.37: Velocity transformation
+**** Exercise 1.38: Properties of $E$
 ** Constrained Motion
 *** Coordinate Constraints
+**** Exercise 1.39: Combining Lagrangians
+**** Exercise 1.40: Bead on a triaxial surface
+**** Exercise 1.41: Motion of a tiny golf ball
 *** Derivative Constraints
+**** Exercise 1.42: Augmented Lagrangian
 *** Nonholonomic Systems
 ** Summary
 ** Projects
+**** Exercise 1.43: A numerical investigation
+**** Exercise 1.44: Double pendulum behavior
+
+
 * Rigid Bodies
 ** Rotational Kinetic Energy
 

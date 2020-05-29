@@ -4,7 +4,7 @@
 
 ltximg
 
-sicm.tex
+*.tex
 sicm.pdf
 
 # For output from auctex.
