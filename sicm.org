@@ -2,7 +2,6 @@
 #+title: Structure and Interpretation of Classical Mechanics
 #+subtitle: Computational Physics!
 #+startup: indent num
-#+attr_org: :width 600px
 #+date: 2020-05-26
 
 Welcome to my tour of Structure and Interpretation of Classical Mechanics. I'm
@@ -55,6 +54,18 @@ The book's about motion, how things move. Here's a nice image of some action
 getting minimized:
 
 [[https://i.imgur.com/AJBpDgU.gif]]
+
+
+#+DOWNLOADED: screenshot @ 2020-05-29 09:41:47
+#+attr_org: :width 400px
+#+attr_html: :width 80% :align center
+[[file:images/Lagrangian_Mechanics/2020-05-29_09-41-47_screenshot.png]]
+
+
+#+DOWNLOADED: screenshot @ 2020-05-29 09:38:54
+
+#+attr_org: :width 400px
+[[file:images/Lagrangian_Mechanics/2020-05-29_09-38-54_screenshot.png]]
 
 
 #+DOWNLOADED: file:///Users/samritchie/Downloads/IMG_9172.jpg @ 2020-05-29 09:28:44
