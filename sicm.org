@@ -1099,7 +1099,6 @@ Lagrangian value.
 
 * Phase Space Structure
 
-** Emergence of the Divided Phase Space
 ** Exercise 4.0
 ** Exercise 4.1
 ** Exercise 4.2
@@ -1286,7 +1285,7 @@ $H$ is already that composition, so:
 \begin{pmatrix} \displaystyle{ \begin{bmatrix} \displaystyle{ 2 a {b}^{3}} \cr \cr \displaystyle{ 3 {a}^{2} {b}^{2}}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ \begin{pmatrix} \displaystyle{ 750} \cr \cr \displaystyle{ 0}\end{pmatrix}} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{ 675} \cr \cr \displaystyle{ 1}\end{pmatrix}}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ 210937500 {a}^{6} {b}^{27}} \cr \cr \displaystyle{ 284765625 {a}^{8} {b}^{24}}\end{bmatrix}}\end{pmatrix}
 \end{equation}
 
-**** Exercise 9.2: Computing Derivatives
+** Exercise 9.2: Computing Derivatives
      :PROPERTIES:
      :header-args+: :tangle ch9/ex9-2.scm :comments org
      :END:

@@ -1,5 +1,5 @@
   - [Exercise 9.1 Chain Rule](#sec-1)
-      - [Exercise 9.2: Computing Derivatives](#sec-1-0-1)
+  - [Exercise 9.2: Computing Derivatives](#sec-2)
 
 Notation Appendix. This is all about getting cozy with scheme, and with the various idiosyncracies of the tuple and functional notation.
 
@@ -96,7 +96,7 @@ You're supposed to do these by hand, so I'll do that in the textbook. But here, 
     \begin{pmatrix} \displaystyle{ \begin{bmatrix} \displaystyle{ 2 a {b}^{3}} \cr \cr \displaystyle{ 3 {a}^{2} {b}^{2}}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ \begin{pmatrix} \displaystyle{ 750} \cr \cr \displaystyle{ 0}\end{pmatrix}} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{ 675} \cr \cr \displaystyle{ 1}\end{pmatrix}}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ 210937500 {a}^{6} {b}^{27}} \cr \cr \displaystyle{ 284765625 {a}^{8} {b}^{24}}\end{bmatrix}}\end{pmatrix}
     \end{equation}
 
-### Exercise 9.2: Computing Derivatives<a id="sec-1-0-1"></a>
+# Exercise 9.2: Computing Derivatives<a id="sec-2"></a>
 
 A further exercise is to try defining the functions so that they use explicit tuples, so you can compose them:
 

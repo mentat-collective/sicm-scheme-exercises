@@ -88,18 +88,17 @@
   - [Exercise 3.15](#sec-3-15)
   - [Exercise 3.16](#sec-3-16)
 - [Phase Space Structure](#sec-4)
-  - [Emergence of the Divided Phase Space](#sec-4-1)
-  - [Exercise 4.0](#sec-4-2)
-  - [Exercise 4.1](#sec-4-3)
-  - [Exercise 4.2](#sec-4-4)
-  - [Exercise 4.3](#sec-4-5)
-  - [Exercise 4.4](#sec-4-6)
-  - [Exercise 4.5](#sec-4-7)
-  - [Exercise 4.6](#sec-4-8)
-  - [Exercise 4.7](#sec-4-9)
-  - [Exercise 4.8](#sec-4-10)
-  - [Exercise 4.9](#sec-4-11)
-  - [Exercise 4.10](#sec-4-12)
+  - [Exercise 4.0](#sec-4-1)
+  - [Exercise 4.1](#sec-4-2)
+  - [Exercise 4.2](#sec-4-3)
+  - [Exercise 4.3](#sec-4-4)
+  - [Exercise 4.4](#sec-4-5)
+  - [Exercise 4.5](#sec-4-6)
+  - [Exercise 4.6](#sec-4-7)
+  - [Exercise 4.7](#sec-4-8)
+  - [Exercise 4.8](#sec-4-9)
+  - [Exercise 4.9](#sec-4-10)
+  - [Exercise 4.10](#sec-4-11)
 - [Canonical Transformations](#sec-5)
   - [Exercise 5.1](#sec-5-1)
   - [Exercise 5.2](#sec-5-2)
@@ -142,6 +141,7 @@
   - [Exercise 7.5](#sec-7-5)
 - [Our Notation](#sec-8)
   - [Exercise 9.1 Chain Rule](#sec-8-1)
+  - [Exercise 9.2: Computing Derivatives](#sec-8-2)
 - [Org-Mode Demo](#sec-9)
     - [Equations](#sec-9-0-1)
 
@@ -1120,29 +1120,27 @@ SO, only if the shift and uniform translation are constant do we not affect the 
 
 # Phase Space Structure<a id="sec-4"></a>
 
-## Emergence of the Divided Phase Space<a id="sec-4-1"></a>
+## Exercise 4.0<a id="sec-4-1"></a>
 
-## Exercise 4.0<a id="sec-4-2"></a>
+## Exercise 4.1<a id="sec-4-2"></a>
 
-## Exercise 4.1<a id="sec-4-3"></a>
+## Exercise 4.2<a id="sec-4-3"></a>
 
-## Exercise 4.2<a id="sec-4-4"></a>
+## Exercise 4.3<a id="sec-4-4"></a>
 
-## Exercise 4.3<a id="sec-4-5"></a>
+## Exercise 4.4<a id="sec-4-5"></a>
 
-## Exercise 4.4<a id="sec-4-6"></a>
+## Exercise 4.5<a id="sec-4-6"></a>
 
-## Exercise 4.5<a id="sec-4-7"></a>
+## Exercise 4.6<a id="sec-4-7"></a>
 
-## Exercise 4.6<a id="sec-4-8"></a>
+## Exercise 4.7<a id="sec-4-8"></a>
 
-## Exercise 4.7<a id="sec-4-9"></a>
+## Exercise 4.8<a id="sec-4-9"></a>
 
-## Exercise 4.8<a id="sec-4-10"></a>
+## Exercise 4.9<a id="sec-4-10"></a>
 
-## Exercise 4.9<a id="sec-4-11"></a>
-
-## Exercise 4.10<a id="sec-4-12"></a>
+## Exercise 4.10<a id="sec-4-11"></a>
 
 # Canonical Transformations<a id="sec-5"></a>
 
@@ -1321,36 +1319,36 @@ You're supposed to do these by hand, so I'll do that in the textbook. But here, 
     \begin{pmatrix} \displaystyle{ \begin{bmatrix} \displaystyle{ 2 a {b}^{3}} \cr \cr \displaystyle{ 3 {a}^{2} {b}^{2}}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ \begin{pmatrix} \displaystyle{ 750} \cr \cr \displaystyle{ 0}\end{pmatrix}} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{ 675} \cr \cr \displaystyle{ 1}\end{pmatrix}}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ 210937500 {a}^{6} {b}^{27}} \cr \cr \displaystyle{ 284765625 {a}^{8} {b}^{24}}\end{bmatrix}}\end{pmatrix}
     \end{equation}
 
-1.  Exercise 9.2: Computing Derivatives
+## Exercise 9.2: Computing Derivatives<a id="sec-8-2"></a>
 
-    A further exercise is to try defining the functions so that they use explicit tuples, so you can compose them:
+A further exercise is to try defining the functions so that they use explicit tuples, so you can compose them:
 
-    ```scheme
-    (define (F* v)
-      (let ((x (ref v 0))
-            (y (ref v 1)))
-        (* (square x) (cube y))))
+```scheme
+(define (F* v)
+  (let ((x (ref v 0))
+        (y (ref v 1)))
+    (* (square x) (cube y))))
 
-    (define (G* v)
-      (let ((x (ref v 0))
-            (y (ref v 1)))
-        (up (F* v) y)))
+(define (G* v)
+  (let ((x (ref v 0))
+        (y (ref v 1)))
+    (up (F* v) y)))
 
-    (define H* (compose F* G*))
-    ```
+(define H* (compose F* G*))
+```
 
-    to be really pro, I'd make a function that takes these as arguments and prints a nice formatted exercise output. Let's do the final exercise, for fun:
+to be really pro, I'd make a function that takes these as arguments and prints a nice formatted exercise output. Let's do the final exercise, for fun:
 
-    ```scheme
-    (->tex-equation
-     (up ((D F*) (up 'a 'b))
-         ((D G*) (up 3 5))
-         ((D H*) (up (* 3 (square 'a)) (* 5 (cube 'b))))))
-    ```
+```scheme
+(->tex-equation
+ (up ((D F*) (up 'a 'b))
+     ((D G*) (up 3 5))
+     ((D H*) (up (* 3 (square 'a)) (* 5 (cube 'b))))))
+```
 
-    \begin{equation}
-    \begin{pmatrix} \displaystyle{ \begin{bmatrix} \displaystyle{ 2 a {b}^{3}} \cr \cr \displaystyle{ 3 {a}^{2} {b}^{2}}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ \begin{pmatrix} \displaystyle{ 750} \cr \cr \displaystyle{ 0}\end{pmatrix}} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{ 675} \cr \cr \displaystyle{ 1}\end{pmatrix}}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ 210937500 {a}^{6} {b}^{27}} \cr \cr \displaystyle{ 284765625 {a}^{8} {b}^{24}}\end{bmatrix}}\end{pmatrix}
-    \end{equation}
+\begin{equation}
+\begin{pmatrix} \displaystyle{ \begin{bmatrix} \displaystyle{ 2 a {b}^{3}} \cr \cr \displaystyle{ 3 {a}^{2} {b}^{2}}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ \begin{pmatrix} \displaystyle{ 750} \cr \cr \displaystyle{ 0}\end{pmatrix}} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{ 675} \cr \cr \displaystyle{ 1}\end{pmatrix}}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ 210937500 {a}^{6} {b}^{27}} \cr \cr \displaystyle{ 284765625 {a}^{8} {b}^{24}}\end{bmatrix}}\end{pmatrix}
+\end{equation}
 
 # Org-Mode Demo<a id="sec-9"></a>
 
