@@ -1,80 +1,58 @@
-  - [Configuration Spaces](#sec-1)
-      - [Exercises 1.1: Degrees of Freedom and 1.2: Generalized Coordinates](#sec-1-0-1)
-  - [Generalized Coordinates](#sec-2)
-  - [The Principle of Stationary Action](#sec-3)
-      - [Exercise 1.3: Fermat optics](#sec-3-0-1)
-  - [Computing Actions](#sec-4)
-      - [Exercise 1.4: Lagrangian actions](#sec-4-0-1)
-      - [Exercise 1.5: Solution process](#sec-4-0-2)
-      - [Exercise 1.6: Minimizing action](#sec-4-0-3)
-  - [The Euler–Lagrange Equations](#sec-5)
-    - [Derivation of the Lagrange Equations](#sec-5-1)
-      - [Exercise 1.7: Properties of \\(\delta\\)](#sec-5-1-1)
-      - [Exercise 1.8: Implementation of \\(\delta\\)](#sec-5-1-2)
-      - [Exercise 1.9: Lagrange's equations](#sec-5-1-3)
-      - [Exercise 1.10: Higher-derivative Lagrangians](#sec-5-1-4)
-    - [Computing Lagrange's Equations](#sec-5-2)
-      - [Exercise 1.11: Kepler's third law](#sec-5-2-1)
-      - [Exercise 1.12: Lagrange's equations (code)](#sec-5-2-2)
-      - [Exercise 1.13: Higher-derivative Lagrangians (code)](#sec-5-2-3)
-  - [How to Find Lagrangians](#sec-6)
-      - [Exercise 1.14: Coordinate-independence of Lagrange equations](#sec-6-0-1)
-    - [Coordinate Transformations](#sec-6-1)
-      - [Exercise 1.15: Equivalence](#sec-6-1-1)
-      - [Exercise 1.16: Central force motion](#sec-6-1-2)
-    - [Systems with Rigid Constraints](#sec-6-2)
-      - [Exercise 1.17: Bead on a helical wire](#sec-6-2-1)
-      - [Exercise 1.18: Bead on a triaxial surface](#sec-6-2-2)
-      - [Exercise 1.19: Two-bar linkage](#sec-6-2-3)
-      - [Exercise 1.20: Sliding pendulum](#sec-6-2-4)
-      - [Exercise 1.21: A dumbbell](#sec-6-2-5)
-      - [Exercise 1.22: Driven pendulum](#sec-6-2-6)
-      - [Exercise 1.23: Fill in the details](#sec-6-2-7)
-      - [Exercise 1.24: Constraint forces](#sec-6-2-8)
-    - [Constraints as Coordinate Transformations](#sec-6-3)
-      - [Exercise 1.25: Foucalt pendulum Lagrangian](#sec-6-3-1)
-    - [The Lagrangian Is Not Unique](#sec-6-4)
-      - [Exercise 1.26: Properties of \\(D\_t\\)](#sec-6-4-1)
-      - [Exercise 1.27: Lagrange equations for total time derivatives](#sec-6-4-2)
-      - [Exercise 1.28: Total Time Derivatives](#sec-6-4-3)
-      - [Exercise 1.29: Galilean Invariance](#sec-6-4-4)
-  - [Evolution of Dynamical State](#sec-7)
-      - [Exercise 1.30: Orbits in a central potential](#sec-7-0-1)
-      - [Exercise 1.31: Foucault pendulum evolution](#sec-7-0-2)
-  - [Conserved Quantities](#sec-8)
-    - [Conserved Momenta](#sec-8-1)
-    - [Energy Conservation](#sec-8-2)
-      - [Exercise 1.32: Time-dependent constraints](#sec-8-2-1)
-      - [Exercise 1.33: Falling off a log](#sec-8-2-2)
-    - [Central Forces in Three Dimensions](#sec-8-3)
-    - [The Restricted Three-Body Problem](#sec-8-4)
-      - [Exercise 1.34: Driven spherical pendulum](#sec-8-4-1)
-      - [Exercise 1.35: Restricted equations of motion](#sec-8-4-2)
-    - [Noether's Theorem](#sec-8-5)
-      - [Exercise 1.36: Noether integral](#sec-8-5-1)
-  - [Abstraction of Path Functions](#sec-9)
-      - [Exercise 1.37: Velocity transformation](#sec-9-0-1)
-      - [Exercise 1.38: Properties of \\(E\\)](#sec-9-0-2)
-  - [Constrained Motion](#sec-10)
-    - [Coordinate Constraints](#sec-10-1)
-      - [Exercise 1.39: Combining Lagrangians](#sec-10-1-1)
-      - [Exercise 1.40: Bead on a triaxial surface](#sec-10-1-2)
-      - [Exercise 1.41: Motion of a tiny golf ball](#sec-10-1-3)
-    - [Derivative Constraints](#sec-10-2)
-      - [Exercise 1.42: Augmented Lagrangian](#sec-10-2-1)
-    - [Nonholonomic Systems](#sec-10-3)
-  - [Summary](#sec-11)
-  - [Projects](#sec-12)
-      - [Exercise 1.43: A numerical investigation](#sec-12-0-1)
-      - [Exercise 1.44: Double pendulum behavior](#sec-12-0-2)
+  - [Exercise 1.1: Degrees of Freedom and 1.2: Generalized Coordinates](#sec-1)
+  - [Exercise 1.3: Fermat optics](#sec-2)
+  - [Exercise 1.4: Lagrangian actions](#sec-3)
+  - [Exercise 1.5: Solution process](#sec-4)
+  - [Exercise 1.6: Minimizing action](#sec-5)
+  - [Exercise 1.7: Properties of \\(\delta\\)](#sec-6)
+  - [Exercise 1.8: Implementation of \\(\delta\\)](#sec-7)
+  - [Exercise 1.9: Lagrange's equations](#sec-8)
+  - [Exercise 1.10: Higher-derivative Lagrangians](#sec-9)
+  - [Exercise 1.11: Kepler's third law](#sec-10)
+  - [Exercise 1.12: Lagrange's equations (code)](#sec-11)
+  - [Exercise 1.13: Higher-derivative Lagrangians (code)](#sec-12)
+  - [Exercise 1.14: Coordinate-independence of Lagrange equations](#sec-13)
+  - [Exercise 1.15: Equivalence](#sec-14)
+  - [Exercise 1.16: Central force motion](#sec-15)
+  - [Exercise 1.17: Bead on a helical wire](#sec-16)
+  - [Exercise 1.18: Bead on a triaxial surface](#sec-17)
+  - [Exercise 1.19: Two-bar linkage](#sec-18)
+  - [Exercise 1.20: Sliding pendulum](#sec-19)
+  - [Exercise 1.21: A dumbbell](#sec-20)
+  - [Exercise 1.22: Driven pendulum](#sec-21)
+  - [Exercise 1.23: Fill in the details](#sec-22)
+  - [Exercise 1.24: Constraint forces](#sec-23)
+  - [Exercise 1.25: Foucalt pendulum Lagrangian](#sec-24)
+  - [Exercise 1.26: Properties of \\(D\_t\\)](#sec-25)
+  - [Exercise 1.27: Lagrange equations for total time derivatives](#sec-26)
+  - [Exercise 1.28: Total Time Derivatives](#sec-27)
+    - [part A](#sec-27-1)
+    - [Part B](#sec-27-2)
+    - [Part C](#sec-27-3)
+    - [Part D](#sec-27-4)
+    - [Part E](#sec-27-5)
+    - [Part F](#sec-27-6)
+  - [Exercise 1.29: Galilean Invariance](#sec-28)
+  - [Exercise 1.30: Orbits in a central potential](#sec-29)
+  - [Exercise 1.31: Foucault pendulum evolution](#sec-30)
+  - [Exercise 1.32: Time-dependent constraints](#sec-31)
+  - [Exercise 1.33: Falling off a log](#sec-32)
+  - [Exercise 1.34: Driven spherical pendulum](#sec-33)
+  - [Exercise 1.35: Restricted equations of motion](#sec-34)
+  - [Exercise 1.36: Noether integral](#sec-35)
+  - [Exercise 1.37: Velocity transformation](#sec-36)
+  - [Exercise 1.38: Properties of \\(E\\)](#sec-37)
+  - [Exercise 1.39: Combining Lagrangians](#sec-38)
+  - [Exercise 1.40: Bead on a triaxial surface](#sec-39)
+  - [Exercise 1.41: Motion of a tiny golf ball](#sec-40)
+  - [Exercise 1.42: Augmented Lagrangian](#sec-41)
+  - [Exercise 1.43: A numerical investigation](#sec-42)
+  - [Exercise 1.44: Double pendulum behavior](#sec-43)
 
 The book's about motion, how things move. Here's a nice image of some action getting minimized:
 
 ![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-05-29_10-12-19_AJBpDgU.gif)
 
-# Configuration Spaces<a id="sec-1"></a>
-
-### Exercises 1.1: Degrees of Freedom and 1.2: Generalized Coordinates<a id="sec-1-0-1"></a>
+# Exercise 1.1: Degrees of Freedom and 1.2: Generalized Coordinates<a id="sec-1"></a>
 
 > For each of the mechanical systems described below, give the number of degrees of freedom of the configuration space.
 
@@ -104,29 +82,17 @@ The book's about motion, how things move. Here's a nice image of some action get
 
     We now have ****THREE degrees of freedom****, one more for the angle of the top's rotation.
 
-# Generalized Coordinates<a id="sec-2"></a>
-
-# The Principle of Stationary Action<a id="sec-3"></a>
-
-### Exercise 1.3: Fermat optics<a id="sec-3-0-1"></a>
+# Exercise 1.3: Fermat optics<a id="sec-2"></a>
 
 The problem states:
 
 > Fermat observed that the laws of reflection and refraction could be accounted for by the following facts: Light travels in a straight line in any particular medium with a velocity that depends upon the medium. The path taken by a ray from a source to a destination through any sequence of media is a path of least total time, compared to neighboring paths. Show that these facts imply the laws of reflection and refraction.
 
-# Computing Actions<a id="sec-4"></a>
+# Exercise 1.4: Lagrangian actions<a id="sec-3"></a>
 
-\\({1 \over 2} mv^2\\). This is the Lagrangian for a free particle, though I have no idea "why". Nor would I have thought about it had the text not said "we know you don't know why"&#x2026;
+# Exercise 1.5: Solution process<a id="sec-4"></a>
 
-Now it's 2020, and I totally know why. The Lagrangian is defined this way because there's no potential, no other forces acting on the particle; so all it has is its kinetic energy.
-
-WHY is the Lagrangian defined this way? Because, when we can split the functions into one that depends on velocity ("kinetic energy") and a potential that depends only on position, it just works out this way.
-
-### Exercise 1.4: Lagrangian actions<a id="sec-4-0-1"></a>
-
-### Exercise 1.5: Solution process<a id="sec-4-0-2"></a>
-
-### Exercise 1.6: Minimizing action<a id="sec-4-0-3"></a>
+# Exercise 1.6: Minimizing action<a id="sec-5"></a>
 
 The problem asks:
 
@@ -194,13 +160,9 @@ You <span class="underline"><span class="underline">still</span></span> can get 
 
 If you make the impulse too big, then the war is too hardcore and the process never converges. But it's important to note here the details of the optimizer. The only reason this can "work" is settings on the optimizer.
 
-# The Euler–Lagrange Equations<a id="sec-5"></a>
+# Exercise 1.7: Properties of \\(\delta\\)<a id="sec-6"></a>
 
-## Derivation of the Lagrange Equations<a id="sec-5-1"></a>
-
-### Exercise 1.7: Properties of \\(\delta\\)<a id="sec-5-1-1"></a>
-
-### Exercise 1.8: Implementation of \\(\delta\\)<a id="sec-5-1-2"></a>
+# Exercise 1.8: Implementation of \\(\delta\\)<a id="sec-7"></a>
 
 This FEELS weird&#x2026; but we want something that is&#x2026; well, let's see.
 
@@ -230,27 +192,25 @@ This is a path function that returns a 2d path; we can use this as an example.
 (define q (literal-function 'q (-> Real (Up Real Real))))
 ```
 
-### Exercise 1.9: Lagrange's equations<a id="sec-5-1-3"></a>
+# Exercise 1.9: Lagrange's equations<a id="sec-8"></a>
 
-### Exercise 1.10: Higher-derivative Lagrangians<a id="sec-5-1-4"></a>
+# Exercise 1.10: Higher-derivative Lagrangians<a id="sec-9"></a>
 
-## Computing Lagrange's Equations<a id="sec-5-2"></a>
+# Exercise 1.11: Kepler's third law<a id="sec-10"></a>
 
-### Exercise 1.11: Kepler's third law<a id="sec-5-2-1"></a>
+# Exercise 1.12: Lagrange's equations (code)<a id="sec-11"></a>
 
-### Exercise 1.12: Lagrange's equations (code)<a id="sec-5-2-2"></a>
+# Exercise 1.13: Higher-derivative Lagrangians (code)<a id="sec-12"></a>
 
-### Exercise 1.13: Higher-derivative Lagrangians (code)<a id="sec-5-2-3"></a>
+# Exercise 1.14: Coordinate-independence of Lagrange equations<a id="sec-13"></a>
 
-# How to Find Lagrangians<a id="sec-6"></a>
+# Exercise 1.15: Equivalence<a id="sec-14"></a>
 
-### Exercise 1.14: Coordinate-independence of Lagrange equations<a id="sec-6-0-1"></a>
+This one was a serious doozy. I think that this exercise can be a great way to show off the computer algebra system, and show off the steps that I go through to make a proof.
 
-## Coordinate Transformations<a id="sec-6-1"></a>
+But I also want to pull back and stare at the formula. What is going on? What is the meaning of the extra terms? If we can say, for example, that they're a total time derivative, looking at the future, that would be great. There has to be a reason that the Lagrangian doesn't change.
 
-### Exercise 1.15: Equivalence<a id="sec-6-1-1"></a>
-
-This one was a serious doozy. I plan on going through and co
+The same thing happens when you look at a new Lagrangian and see a "fictitious force term" for, say, centrifugal force. There is something going on here.
 
 Checking that composition distributes over multiplication&#x2026;
 
@@ -357,7 +317,7 @@ trying again. get a function:
 
 That's good for now.
 
-### Exercise 1.16: Central force motion<a id="sec-6-1-2"></a>
+# Exercise 1.16: Central force motion<a id="sec-15"></a>
 
 Messing around to make sure I understand what I'm seeing in the coordinate transforms on page 45.
 
@@ -466,17 +426,15 @@ the explicit link to function composition, and how the new lagrangian is (Lagran
 
 they add in a very simple-to-write coordinate transform that has one of the angles depend on t. and then compose that in, and boom, basically for free you're in rotating spherical coords.
 
-## Systems with Rigid Constraints<a id="sec-6-2"></a>
+# Exercise 1.17: Bead on a helical wire<a id="sec-16"></a>
 
-### Exercise 1.17: Bead on a helical wire<a id="sec-6-2-1"></a>
+# Exercise 1.18: Bead on a triaxial surface<a id="sec-17"></a>
 
-### Exercise 1.18: Bead on a triaxial surface<a id="sec-6-2-2"></a>
+# Exercise 1.19: Two-bar linkage<a id="sec-18"></a>
 
-### Exercise 1.19: Two-bar linkage<a id="sec-6-2-3"></a>
+# Exercise 1.20: Sliding pendulum<a id="sec-19"></a>
 
-### Exercise 1.20: Sliding pendulum<a id="sec-6-2-4"></a>
-
-### Exercise 1.21: A dumbbell<a id="sec-6-2-5"></a>
+# Exercise 1.21: A dumbbell<a id="sec-20"></a>
 
 The uneven dumbbell.
 
@@ -626,233 +584,229 @@ For part d, we can substitute the constant value of c to get simplified equation
 
 For part e, I wrote this in the notebook - it is effectively identical to the substitution that is happening on the computer, so I'm going to ignore this. You just get more cancellations.
 
-### Exercise 1.22: Driven pendulum<a id="sec-6-2-6"></a>
+# Exercise 1.22: Driven pendulum<a id="sec-21"></a>
 
-### Exercise 1.23: Fill in the details<a id="sec-6-2-7"></a>
+# Exercise 1.23: Fill in the details<a id="sec-22"></a>
 
-### Exercise 1.24: Constraint forces<a id="sec-6-2-8"></a>
+# Exercise 1.24: Constraint forces<a id="sec-23"></a>
 
-## Constraints as Coordinate Transformations<a id="sec-6-3"></a>
+# Exercise 1.25: Foucalt pendulum Lagrangian<a id="sec-24"></a>
 
-### Exercise 1.25: Foucalt pendulum Lagrangian<a id="sec-6-3-1"></a>
+# Exercise 1.26: Properties of \\(D\_t\\)<a id="sec-25"></a>
 
-## The Lagrangian Is Not Unique<a id="sec-6-4"></a>
+# Exercise 1.27: Lagrange equations for total time derivatives<a id="sec-26"></a>
 
-### Exercise 1.26: Properties of \\(D\_t\\)<a id="sec-6-4-1"></a>
-
-### Exercise 1.27: Lagrange equations for total time derivatives<a id="sec-6-4-2"></a>
-
-### Exercise 1.28: Total Time Derivatives<a id="sec-6-4-3"></a>
+# Exercise 1.28: Total Time Derivatives<a id="sec-27"></a>
 
 ```scheme
 (load "ch1/utils.scm")
 ```
 
-1.  part A
+## part A<a id="sec-27-1"></a>
 
-    nice, easy to guess.
+nice, easy to guess.
 
-    ```scheme
-    (define ((FA m) local)
-      (let ((x (coordinate local)))
-        (* m x)))
-    ```
+```scheme
+(define ((FA m) local)
+  (let ((x (coordinate local)))
+    (* m x)))
+```
 
-    Show the function of t, and confirm that both methods are equivalent.
+Show the function of t, and confirm that both methods are equivalent.
 
-    ```scheme
-    (check-f (FA 'm)
-             (literal-function 'x))
-    ```
+```scheme
+(check-f (FA 'm)
+         (literal-function 'x))
+```
 
-2.  Part B
+## Part B<a id="sec-27-2"></a>
 
-    NOT a total time derivative.
+NOT a total time derivative.
 
-    Define G directly:
+Define G directly:
 
-    ```scheme
-    (define ((GB m) local)
-      (let* ((t (time local))
-             (v_x (velocity local))
-             (GB0 0)
-             (GB1 (* m (cos t))))
-        (+ GB0 (* GB1 v_x))))
-    ```
+```scheme
+(define ((GB m) local)
+  (let* ((t (time local))
+         (v_x (velocity local))
+         (GB0 0)
+         (GB1 (* m (cos t))))
+    (+ GB0 (* GB1 v_x))))
+```
 
-    And show the full G, for fun:
+And show the full G, for fun:
 
-    ```scheme
-    (let ((f (compose (GB 'm) (Gamma (literal-function 'x)))))
-      (se (f 't)))
-    ```
+```scheme
+(let ((f (compose (GB 'm) (Gamma (literal-function 'x)))))
+  (se (f 't)))
+```
 
-    It's easier to confirm that this is not a total time derivative by checking the partials.
+It's easier to confirm that this is not a total time derivative by checking the partials.
 
-    ```scheme
-    (define (GB-properties m)
-      (let ((GB0 (lambda (local) 0))
-            (GB1 (lambda (local)
-                   (* m (cos (time local))))))
-        (G-properties GB0 GB1 (literal-function 'x))))
-    ```
+```scheme
+(define (GB-properties m)
+  (let ((GB0 (lambda (local) 0))
+        (GB1 (lambda (local)
+               (* m (cos (time local))))))
+    (G-properties GB0 GB1 (literal-function 'x))))
+```
 
-    It's clear here that the second and third tuple entries aren't equal, so we don't have a total time derivative.
+It's clear here that the second and third tuple entries aren't equal, so we don't have a total time derivative.
 
-    ```scheme
-    (se (GB-properties 'm))
-    ```
+```scheme
+(se (GB-properties 'm))
+```
 
-3.  Part C
+## Part C<a id="sec-27-3"></a>
 
-    no problem, we've got a total time derivative on our hands.
+no problem, we've got a total time derivative on our hands.
 
-    ```scheme
-    (define (FC local)
-      (let ((t (time local))
-            (x (coordinate local)))
-        (* x (cos t))))
+```scheme
+(define (FC local)
+  (let ((t (time local))
+        (x (coordinate local)))
+    (* x (cos t))))
 
-    (check-f FC (literal-function 'x))
+(check-f FC (literal-function 'x))
 
-    (define GC-properties
-      (let ((GC0 (lambda (local)
-                   (* -1
-                      (coordinate local)
-                      (sin (time local)))))
-            (GC1 (lambda (local)
-                   (cos (time local)))))
-        (G-properties GC0 GC1 (literal-function 'x))))
-    ```
+(define GC-properties
+  (let ((GC0 (lambda (local)
+               (* -1
+                  (coordinate local)
+                  (sin (time local)))))
+        (GC1 (lambda (local)
+               (cos (time local)))))
+    (G-properties GC0 GC1 (literal-function 'x))))
+```
 
-    Boom, the second and third entries are equal, as we'd expect.
+Boom, the second and third entries are equal, as we'd expect.
 
-    ```scheme
-    (se GC-properties)
-    ```
+```scheme
+(se GC-properties)
+```
 
-4.  Part D
+## Part D<a id="sec-27-4"></a>
 
-    This is NOT a total time derivative; you can tell by taking the partials of each side, G0 and G1, as we'll see here.
+This is NOT a total time derivative; you can tell by taking the partials of each side, G0 and G1, as we'll see here.
 
-    ```scheme
-    (define GD-properties
-      (let ((GD0 (lambda (local)
-                   (* (coordinate local)
-                      (sin (time local)))))
-            (GD1 (lambda (local)
-                   (cos (time local)))))
-        (G-properties GD0 GD1 (literal-function 'x))))
-    ```
+```scheme
+(define GD-properties
+  (let ((GD0 (lambda (local)
+               (* (coordinate local)
+                  (sin (time local)))))
+        (GD1 (lambda (local)
+               (cos (time local)))))
+    (G-properties GD0 GD1 (literal-function 'x))))
+```
 
-    The partials for each side don't match.
+The partials for each side don't match.
 
-    ```scheme
-    (se GD-properties)
-    ```
+```scheme
+(se GD-properties)
+```
 
-5.  Part E
+## Part E<a id="sec-27-5"></a>
 
-    This is strange to me, because I thought that this thing had to produce a tuple.
+This is strange to me, because I thought that this thing had to produce a tuple.
 
-    OH, but the secret is that Qdot is also a tuple, so you contract them together.
+OH, but the secret is that Qdot is also a tuple, so you contract them together.
 
-    Here's the function F that we can use to derive it:
+Here's the function F that we can use to derive it:
 
-    ```scheme
-    (define (FE local)
-      (let* ((t (time local))
-             (q (coordinate local))
-             (x (ref q 0))
-             (y (ref q 1)))
-        (* (+ (square x) (square y))
-           (cos t))))
-    ```
+```scheme
+(define (FE local)
+  (let* ((t (time local))
+         (q (coordinate local))
+         (x (ref q 0))
+         (y (ref q 1)))
+    (* (+ (square x) (square y))
+       (cos t))))
+```
 
-    Boom, total time derivative!
+Boom, total time derivative!
 
-    ```scheme
-    (check-f FE (up (literal-function 'x)
-                    (literal-function 'y)))
-    ```
+```scheme
+(check-f FE (up (literal-function 'x)
+                (literal-function 'y)))
+```
 
-    And let's show that we pass the tests by decomposing this into G0 and G1:
+And let's show that we pass the tests by decomposing this into G0 and G1:
 
-    ```scheme
-    (define GE-properties
-      (let (
-            ;; any piece of the function without a velocity multiplied.
-            (GE0 (lambda (local)
-                   (let* ((t (time local))
-                          (q (coordinate local))
-                          (x (ref q 0))
-                          (y (ref q 1)))
-                     (* -1
-                        (+ (square x) (square y))
-                        (sin t)))))
+```scheme
+(define GE-properties
+  (let (
+        ;; any piece of the function without a velocity multiplied.
+        (GE0 (lambda (local)
+               (let* ((t (time local))
+                      (q (coordinate local))
+                      (x (ref q 0))
+                      (y (ref q 1)))
+                 (* -1
+                    (+ (square x) (square y))
+                    (sin t)))))
 
-            ;; The pieces multiplied by velocities, split into a down tuple of
-            ;; components, one for each of the coordinate components.
-            (GE1 (lambda (local)
-                   (let* ((t (time local))
-                          (q (coordinate local))
-                          (x (ref q 0))
-                          (y (ref q 1)))
-                     (down
-                      (* 2 x (cos t))
-                      (* 2 y (cos t)))))))
-        (G-properties GE0 GE1 (up (literal-function 'x)
-                                  (literal-function 'y)))))
-    ```
+        ;; The pieces multiplied by velocities, split into a down tuple of
+        ;; components, one for each of the coordinate components.
+        (GE1 (lambda (local)
+               (let* ((t (time local))
+                      (q (coordinate local))
+                      (x (ref q 0))
+                      (y (ref q 1)))
+                 (down
+                  (* 2 x (cos t))
+                  (* 2 y (cos t)))))))
+    (G-properties GE0 GE1 (up (literal-function 'x)
+                              (literal-function 'y)))))
+```
 
-    BOOM!
+BOOM!
 
-    We've recovered F; the partials are equal, and the final matrix is symmetric.
+We've recovered F; the partials are equal, and the final matrix is symmetric.
 
-    ```scheme
-    (se GE-properties)
-    ```
+```scheme
+(se GE-properties)
+```
 
-6.  Part F
+## Part F<a id="sec-27-6"></a>
 
-    This one is interesting, since the second partial is a tuple. This is not so obvious to me, so first let's check the properties:
+This one is interesting, since the second partial is a tuple. This is not so obvious to me, so first let's check the properties:
 
-    ```scheme
-    (define GF-properties
-      (let (
-            ;; any piece of the function without a velocity multiplied.
-            (GF0 (lambda (local)
-                   (let* ((t (time local))
-                          (q (coordinate local))
-                          (x (ref q 0))
-                          (y (ref q 1)))
-                     (* -1
-                        (+ (square x) (square y))
-                        (sin t)))))
+```scheme
+(define GF-properties
+  (let (
+        ;; any piece of the function without a velocity multiplied.
+        (GF0 (lambda (local)
+               (let* ((t (time local))
+                      (q (coordinate local))
+                      (x (ref q 0))
+                      (y (ref q 1)))
+                 (* -1
+                    (+ (square x) (square y))
+                    (sin t)))))
 
-            ;; The pieces multiplied by velocities, split into a down tuple of
-            ;; components, one for each of the coordinate components.
-            (GF1 (lambda (local)
-                   (let* ((t (time local))
-                          (q (coordinate local))
-                          (x (ref q 0))
-                          (y (ref q 1)))
-                     (down
-                      (+ (cube y) (* 2 x (cos t)))
-                      (+ x (* 2 y (cos t))))))))
-        (G-properties GF0 GF1 (up (literal-function 'x)
-                                  (literal-function 'y)))))
-    ```
+        ;; The pieces multiplied by velocities, split into a down tuple of
+        ;; components, one for each of the coordinate components.
+        (GF1 (lambda (local)
+               (let* ((t (time local))
+                      (q (coordinate local))
+                      (x (ref q 0))
+                      (y (ref q 1)))
+                 (down
+                  (+ (cube y) (* 2 x (cos t)))
+                  (+ x (* 2 y (cos t))))))))
+    (G-properties GF0 GF1 (up (literal-function 'x)
+                              (literal-function 'y)))))
+```
 
-    AND it looks like we DO have a total time derivative, maybe. We certainly pass the first test here, since the second and third tuple entries are equal.
+AND it looks like we DO have a total time derivative, maybe. We certainly pass the first test here, since the second and third tuple entries are equal.
 
-    BUT we fail the second test; the hessian that we get from ((partial 1) G1) is not symmetric.
+BUT we fail the second test; the hessian that we get from ((partial 1) G1) is not symmetric.
 
-    ```scheme
-    (se GF-properties)
-    ```
+```scheme
+(se GF-properties)
+```
 
-### Exercise 1.29: Galilean Invariance<a id="sec-6-4-4"></a>
+# Exercise 1.29: Galilean Invariance<a id="sec-28"></a>
 
 I'll do this for a single particle, since it's annoying to get the sum going for many; and the lagrangian is additive, so no problem.
 
@@ -935,60 +889,32 @@ Take a look. there is a quadratic velocity term in here! We have \\(D \Delta\_x(
 
 SO, only if the shift and uniform translation are constant do we not affect the Lagrangian value.
 
-# Evolution of Dynamical State<a id="sec-7"></a>
+# Exercise 1.30: Orbits in a central potential<a id="sec-29"></a>
 
-### Exercise 1.30: Orbits in a central potential<a id="sec-7-0-1"></a>
+# Exercise 1.31: Foucault pendulum evolution<a id="sec-30"></a>
 
-### Exercise 1.31: Foucault pendulum evolution<a id="sec-7-0-2"></a>
+# Exercise 1.32: Time-dependent constraints<a id="sec-31"></a>
 
-# Conserved Quantities<a id="sec-8"></a>
+# Exercise 1.33: Falling off a log<a id="sec-32"></a>
 
-## Conserved Momenta<a id="sec-8-1"></a>
+# Exercise 1.34: Driven spherical pendulum<a id="sec-33"></a>
 
-## Energy Conservation<a id="sec-8-2"></a>
+# Exercise 1.35: Restricted equations of motion<a id="sec-34"></a>
 
-### Exercise 1.32: Time-dependent constraints<a id="sec-8-2-1"></a>
+# Exercise 1.36: Noether integral<a id="sec-35"></a>
 
-### Exercise 1.33: Falling off a log<a id="sec-8-2-2"></a>
+# Exercise 1.37: Velocity transformation<a id="sec-36"></a>
 
-## Central Forces in Three Dimensions<a id="sec-8-3"></a>
+# Exercise 1.38: Properties of \\(E\\)<a id="sec-37"></a>
 
-## The Restricted Three-Body Problem<a id="sec-8-4"></a>
+# Exercise 1.39: Combining Lagrangians<a id="sec-38"></a>
 
-### Exercise 1.34: Driven spherical pendulum<a id="sec-8-4-1"></a>
+# Exercise 1.40: Bead on a triaxial surface<a id="sec-39"></a>
 
-### Exercise 1.35: Restricted equations of motion<a id="sec-8-4-2"></a>
+# Exercise 1.41: Motion of a tiny golf ball<a id="sec-40"></a>
 
-## Noether's Theorem<a id="sec-8-5"></a>
+# Exercise 1.42: Augmented Lagrangian<a id="sec-41"></a>
 
-### Exercise 1.36: Noether integral<a id="sec-8-5-1"></a>
+# Exercise 1.43: A numerical investigation<a id="sec-42"></a>
 
-# Abstraction of Path Functions<a id="sec-9"></a>
-
-### Exercise 1.37: Velocity transformation<a id="sec-9-0-1"></a>
-
-### Exercise 1.38: Properties of \\(E\\)<a id="sec-9-0-2"></a>
-
-# Constrained Motion<a id="sec-10"></a>
-
-## Coordinate Constraints<a id="sec-10-1"></a>
-
-### Exercise 1.39: Combining Lagrangians<a id="sec-10-1-1"></a>
-
-### Exercise 1.40: Bead on a triaxial surface<a id="sec-10-1-2"></a>
-
-### Exercise 1.41: Motion of a tiny golf ball<a id="sec-10-1-3"></a>
-
-## Derivative Constraints<a id="sec-10-2"></a>
-
-### Exercise 1.42: Augmented Lagrangian<a id="sec-10-2-1"></a>
-
-## Nonholonomic Systems<a id="sec-10-3"></a>
-
-# Summary<a id="sec-11"></a>
-
-# Projects<a id="sec-12"></a>
-
-### Exercise 1.43: A numerical investigation<a id="sec-12-0-1"></a>
-
-### Exercise 1.44: Double pendulum behavior<a id="sec-12-0-2"></a>
+# Exercise 1.44: Double pendulum behavior<a id="sec-43"></a>

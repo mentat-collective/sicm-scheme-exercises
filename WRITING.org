@@ -1,6 +1,4 @@
-# -*- eval: (org-num-mode 1); org-download-image-dir: "images"; -*-
-#+title: Structure and Interpretation of Classical Mechanics
-#+subtitle: Computational Physics!
+# -*- eval: (org-num-mode 1); -*-
 #+startup: indent num
 #+date: 2020-05-26
 
@@ -43,6 +41,15 @@ mv text-mode/.yas-ignore-filenames-as-triggers org-mode
 This makes the snippets accessible. Now that I have this, I can type ~eq~, then
 at the end type ~M-/~ for ~hippie-expand~ and get a nice equation block. So
 good!
+
+I've also added the auto-completion layer to get this going:
+
+#+begin_src emacs-lisp
+(auto-completion :variables
+                    auto-completion-return-key-behavior 'complete
+                    auto-completion-tab-key-behavior 'complete
+                    auto-completion-enable-snippets-in-popup t)
+#+end_src
 
 * Things I want
 

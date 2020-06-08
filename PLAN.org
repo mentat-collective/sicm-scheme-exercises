@@ -1,0 +1,15 @@
+# -*- eval: (org-num-mode 1); -*-
+#+startup: indent num
+#+date: 2020-05-26
+
+* The Plan for Better Publishing
+
+How do we make this setup much better?
+
+** ox-gfm
+
+We need to publish a fork, at least, of the ox-gfm backend, and make it easy to
+use. It would be nice if folks could use this whole bundle of code outside of
+spacemacs, but we also want to provide a nice spacemacs layer.
+
+Here's a nice guide on how to publish to melpa, once I get this working: https://spin.atomicobject.com/2016/05/27/write-emacs-package/

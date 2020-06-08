@@ -44,7 +44,6 @@ way to go.
 * Lagrangian Mechanics
   :PROPERTIES:
   :header-args: :eval no-export :padline no
-  :EXPORT_FILE_NAME: md/1_lagrangian_mechanics
   :END:
 
 The book's about motion, how things move. Here's a nice image of some action
@@ -55,10 +54,7 @@ getting minimized:
 #+attr_html: :width 80% :align center
 [[file:images/Lagrangian_Mechanics/2020-05-29_10-12-19_AJBpDgU.gif]]
 
-
-** Configuration Spaces
-
-**** Exercises 1.1: Degrees of Freedom and 1.2: Generalized Coordinates
+** Exercise 1.1: Degrees of Freedom and 1.2: Generalized Coordinates
 
 #+begin_quote
 For each of the mechanical systems described below, give the number of degrees
@@ -108,11 +104,7 @@ here too.)
    We now have **THREE degrees of freedom**, one more for the angle of the top's
    rotation.
 
-** Generalized Coordinates
-
-** The Principle of Stationary Action
-
-**** Exercise 1.3: Fermat optics
+** Exercise 1.3: Fermat optics
 
 The problem states:
 
@@ -125,22 +117,9 @@ total time, compared to neighboring paths. Show that these facts imply the laws
 of reflection and refraction.
 #+end_quote
 
-** Computing Actions
-
-${1 \over 2} mv^2$. This is the Lagrangian for a free particle, though I have no idea
-"why". Nor would I have thought about it had the text not said "we know you don't know why"...
-
-Now it's 2020, and I totally know why. The Lagrangian is defined this way
-because there's no potential, no other forces acting on the particle; so all it
-has is its kinetic energy.
-
-WHY is the Lagrangian defined this way? Because, when we can split the functions
-into one that depends on velocity ("kinetic energy") and a potential that
-depends only on position, it just works out this way.
-
-**** Exercise 1.4: Lagrangian actions
-**** Exercise 1.5: Solution process
-**** Exercise 1.6: Minimizing action
+** Exercise 1.4: Lagrangian actions
+** Exercise 1.5: Solution process
+** Exercise 1.6: Minimizing action
 :PROPERTIES:
 :header-args+: :tangle ch1/ex1-6.scm :comments org
 :END:
@@ -238,14 +217,9 @@ If you make the impulse too big, then the war is too hardcore and the process
 never converges. But it's important to note here the details of the optimizer.
 The only reason this can "work" is settings on the optimizer.
 
+** Exercise 1.7: Properties of $\delta$
 
-** The Euler–Lagrange Equations
-
-*** Derivation of the Lagrange Equations
-
-**** Exercise 1.7: Properties of $\delta$
-
-**** Exercise 1.8: Implementation of $\delta$
+** Exercise 1.8: Implementation of $\delta$
 :PROPERTIES:
 :header-args+: :tangle ch1/ex1-8.scm :comments org
 :END:
@@ -280,30 +254,31 @@ This is a path function that returns a 2d path; we can use this as an example.
 (define q (literal-function 'q (-> Real (Up Real Real))))
 #+end_src
 
-**** Exercise 1.9: Lagrange's equations
+** Exercise 1.9: Lagrange's equations
 
-**** Exercise 1.10: Higher-derivative Lagrangians
+** Exercise 1.10: Higher-derivative Lagrangians
+** Exercise 1.11: Kepler's third law
+** Exercise 1.12: Lagrange's equations (code)
+** Exercise 1.13: Higher-derivative Lagrangians (code)
+** Exercise 1.14: Coordinate-independence of Lagrange equations
 
-*** Computing Lagrange's Equations
-
-**** Exercise 1.11: Kepler's third law
-
-**** Exercise 1.12: Lagrange's equations (code)
-
-**** Exercise 1.13: Higher-derivative Lagrangians (code)
-
-** How to Find Lagrangians
-
-**** Exercise 1.14: Coordinate-independence of Lagrange equations
-
-*** Coordinate Transformations
-
-**** Exercise 1.15: Equivalence
+** Exercise 1.15: Equivalence
 :PROPERTIES:
 :header-args+: :tangle ch1/ex1-15.scm :comments org
 :END:
 
-This one was a serious doozy. I plan on going through and co
+This one was a serious doozy. I think that this exercise can be a great way to
+show off the computer algebra system, and show off the steps that I go through
+to make a proof.
+
+But I also want to pull back and stare at the formula. What is going on? What is
+the meaning of the extra terms? If we can say, for example, that they're a total
+time derivative, looking at the future, that would be great. There has to be a
+reason that the Lagrangian doesn't change.
+
+The same thing happens when you look at a new Lagrangian and see a "fictitious
+force term" for, say, centrifugal force. There is something going on here.
+
 
 Checking that composition distributes over multiplication...
 
@@ -414,8 +389,7 @@ trying again. get a function:
 
 That's good for now.
 
-
-**** Exercise 1.16: Central force motion
+** Exercise 1.16: Central force motion
 :PROPERTIES:
 :header-args+: :tangle ch1/ex1-16.scm :comments org
 :END:
@@ -538,19 +512,16 @@ they add in a very simple-to-write coordinate transform that has one of the
 angles depend on t. and then compose that in, and boom, basically for free
 you're in rotating spherical coords.
 
+** Exercise 1.17: Bead on a helical wire
 
-*** Systems with Rigid Constraints
+** Exercise 1.18: Bead on a triaxial surface
 
-**** Exercise 1.17: Bead on a helical wire
+** Exercise 1.19: Two-bar linkage
 
-**** Exercise 1.18: Bead on a triaxial surface
-
-**** Exercise 1.19: Two-bar linkage
-
-**** Exercise 1.20: Sliding pendulum
+** Exercise 1.20: Sliding pendulum
 
 
-**** Exercise 1.21: A dumbbell
+** Exercise 1.21: A dumbbell
 :PROPERTIES:
 :header-args+: :tangle ch1/ex1-21.scm :comments org
 :END:
@@ -710,24 +681,19 @@ substitution that is happening on the computer, so I'm going to ignore this. You
 just get more cancellations.
 
 
-**** Exercise 1.22: Driven pendulum
+** Exercise 1.22: Driven pendulum
 
-**** Exercise 1.23: Fill in the details
+** Exercise 1.23: Fill in the details
 
-**** Exercise 1.24: Constraint forces
+** Exercise 1.24: Constraint forces
 
-*** Constraints as Coordinate Transformations
+** Exercise 1.25: Foucalt pendulum Lagrangian
 
-**** Exercise 1.25: Foucalt pendulum Lagrangian
+** Exercise 1.26: Properties of $D_t$
 
-*** The Lagrangian Is Not Unique
+** Exercise 1.27: Lagrange equations for total time derivatives
 
-**** Exercise 1.26: Properties of $D_t$
-
-**** Exercise 1.27: Lagrange equations for total time derivatives
-
-
-**** Exercise 1.28: Total Time Derivatives
+** Exercise 1.28: Total Time Derivatives
 :PROPERTIES:
 :header-args+: :tangle ch1/ex1-28.scm :comments org
 :END:
@@ -736,7 +702,7 @@ just get more cancellations.
 (load "ch1/utils.scm")
 #+end_src
 
-***** part A
+*** part A
 
 nice, easy to guess.
 
@@ -753,7 +719,7 @@ Show the function of t, and confirm that both methods are equivalent.
          (literal-function 'x))
 #+end_src
 
-***** Part B
+*** Part B
 
 NOT a total time derivative.
 
@@ -794,7 +760,7 @@ don't have a total time derivative.
 (se (GB-properties 'm))
 #+end_src
 
-***** Part C
+*** Part C
 
 no problem, we've got a total time derivative on our hands.
 
@@ -823,7 +789,7 @@ Boom, the second and third entries are equal, as we'd expect.
 #+end_src
 
 
-***** Part D
+*** Part D
 
 This is NOT a total time derivative; you can tell by taking the partials
 of each side, G0 and G1, as we'll see here.
@@ -844,7 +810,7 @@ The partials for each side don't match.
 (se GD-properties)
 #+end_src
 
-***** Part E
+*** Part E
 
 This is strange to me, because I thought that this thing had to produce a tuple.
 
@@ -906,7 +872,7 @@ We've recovered F; the partials are equal, and the final matrix is symmetric.
 (se GE-properties)
 #+end_src
 
-***** Part F
+*** Part F
 
 This one is interesting, since the second partial is a tuple. This is not so
 obvious to me, so first let's check the properties:
@@ -949,7 +915,7 @@ not symmetric.
 #+end_src
 
 
-**** Exercise 1.29: Galilean Invariance
+** Exercise 1.29: Galilean Invariance
 :PROPERTIES:
 :header-args+: :tangle ch1/ex1-29.scm :comments org
 :END:
@@ -1073,260 +1039,134 @@ D x'(t)$. This is not allowed in a total time derivative.
 SO, only if the shift and uniform translation are constant do we not affect the
 Lagrangian value.
 
-
-
-** Evolution of Dynamical State
-**** Exercise 1.30: Orbits in a central potential
-**** Exercise 1.31: Foucault pendulum evolution
-** Conserved Quantities
-*** Conserved Momenta
-*** Energy Conservation
-**** Exercise 1.32: Time-dependent constraints
-**** Exercise 1.33: Falling off a log
-*** Central Forces in Three Dimensions
-*** The Restricted Three-Body Problem
-**** Exercise 1.34: Driven spherical pendulum
-**** Exercise 1.35: Restricted equations of motion
-*** Noether's Theorem
-**** Exercise 1.36: Noether integral
-** Abstraction of Path Functions
-**** Exercise 1.37: Velocity transformation
-**** Exercise 1.38: Properties of $E$
-** Constrained Motion
-*** Coordinate Constraints
-**** Exercise 1.39: Combining Lagrangians
-**** Exercise 1.40: Bead on a triaxial surface
-**** Exercise 1.41: Motion of a tiny golf ball
-*** Derivative Constraints
-**** Exercise 1.42: Augmented Lagrangian
-*** Nonholonomic Systems
-** Summary
-** Projects
-**** Exercise 1.43: A numerical investigation
-**** Exercise 1.44: Double pendulum behavior
-
-
+** Exercise 1.30: Orbits in a central potential
+** Exercise 1.31: Foucault pendulum evolution
+** Exercise 1.32: Time-dependent constraints
+** Exercise 1.33: Falling off a log
+** Exercise 1.34: Driven spherical pendulum
+** Exercise 1.35: Restricted equations of motion
+** Exercise 1.36: Noether integral
+** Exercise 1.37: Velocity transformation
+** Exercise 1.38: Properties of $E$
+** Exercise 1.39: Combining Lagrangians
+** Exercise 1.40: Bead on a triaxial surface
+** Exercise 1.41: Motion of a tiny golf ball
+** Exercise 1.42: Augmented Lagrangian
+** Exercise 1.43: A numerical investigation
+** Exercise 1.44: Double pendulum behavior
 
 * Rigid Bodies
-** Rotational Kinetic Energy
 
-**** Exercise 2.1
-**** Exercise 2.2
-**** Exercise 2.3
-**** Exercise 2.4
-**** Exercise 2.5
-**** Exercise 2.6
-**** Exercise 2.7
-**** Exercise 2.8
-**** Exercise 2.9
-**** Exercise 2.10
-**** Exercise 2.11
-**** Exercise 2.12
-**** Exercise 2.13
-**** Exercise 2.14
-**** Exercise 2.15
-**** Exercise 2.16
-**** Exercise 2.17
-**** Exercise 2.18
-**** Exercise 2.19
-**** Exercise 2.20
+** Exercise 2.1
+** Exercise 2.2
+** Exercise 2.3
+** Exercise 2.4
+** Exercise 2.5
+** Exercise 2.6
+** Exercise 2.7
+** Exercise 2.8
+** Exercise 2.9
+** Exercise 2.10
+** Exercise 2.11
+** Exercise 2.12
+** Exercise 2.13
+** Exercise 2.14
+** Exercise 2.15
+** Exercise 2.16
+** Exercise 2.17
+** Exercise 2.18
+** Exercise 2.19
+** Exercise 2.20
 
-** Kinematics of Rotation
-** Moments of Inertia
-** Inertia Tensor
-** Principal Moments of Inertia
-** Vector Angular Momentum
-** Euler Angles
-** Motion of a Free Rigid Body
-*** Computing the Motion of Free Rigid Bodies
-*** Qualitative Features
-** Euler's Equations
-** Axisymmetric Tops
-** Spin-Orbit Coupling
-*** Development of the Potential Energy
-*** Rotation of the Moon and Hyperion
-*** Spin-Orbit Resonances
-** Nonsingular Coordinates and Quaternions
-*** Motion in Terms of Quaternions
-** Summary
-** Projects
 * Hamiltonian Mechanics
-** Hamilton's Equations
 
-**** Exercise 3.0
-**** Exercise 3.1
-**** Exercise 3.2
-**** Exercise 3.3
-**** Exercise 3.4
-**** Exercise 3.5
-**** Exercise 3.6
-**** Exercise 3.7
-**** Exercise 3.8
-**** Exercise 3.9
-**** Exercise 3.10
-**** Exercise 3.11
-**** Exercise 3.12
-**** Exercise 3.13
-**** Exercise 3.14
-**** Exercise 3.15
-**** Exercise 3.16
+** Exercise 3.1
+** Exercise 3.2
+** Exercise 3.3
+** Exercise 3.4
+** Exercise 3.5
+** Exercise 3.6
+** Exercise 3.7
+** Exercise 3.8
+** Exercise 3.9
+** Exercise 3.10
+** Exercise 3.11
+** Exercise 3.12
+** Exercise 3.13
+** Exercise 3.14
+** Exercise 3.15
+** Exercise 3.16
 
-*** The Legendre Transformation
-*** Hamilton's Equations from the Action Principle
-*** A Wiring Diagram
-** Poisson Brackets
-** One Degree of Freedom
-** Phase Space Reduction
-*** Lagrangian Reduction
-** Phase Space Evolution
-*** Phase-Space Description Is Not Unique
-** Surfaces of Section
-*** Periodically Driven Systems
-*** Computing Stroboscopic Surfaces of Section
-*** Autonomous Systems
-*** Computing Hénon–Heiles Surfaces of Section
-*** Non-Axisymmetric Top
-** Exponential Divergence
-** Liouville's Theorem
-** Standard Map
-** Summary
-** Projects
 * Phase Space Structure
+
 ** Emergence of the Divided Phase Space
+** Exercise 4.0
+** Exercise 4.1
+** Exercise 4.2
+** Exercise 4.3
+** Exercise 4.4
+** Exercise 4.5
+** Exercise 4.6
+** Exercise 4.7
+** Exercise 4.8
+** Exercise 4.9
+** Exercise 4.10
 
-**** Exercise 4.0
-**** Exercise 4.1
-**** Exercise 4.2
-**** Exercise 4.3
-**** Exercise 4.4
-**** Exercise 4.5
-**** Exercise 4.6
-**** Exercise 4.7
-**** Exercise 4.8
-**** Exercise 4.9
-**** Exercise 4.10
-
-** Linear Stability
-*** Equilibria of Differential Equations
-*** Fixed Points of Maps
-*** Relations Among Exponents
-** Homoclinic Tangle
-*** Computation of Stable and Unstable Manifolds
-** Integrable Systems
-** Poincaré–Birkhoff Theorem
-*** Computing the Poincaré–Birkhoff Construction
-** Invariant Curves
-*** Finding Invariant Curves
-*** Dissolution of Invariant Curves
-** Summary
-** Projects
 * Canonical Transformations
 
-**** Exercise 5.1
-**** Exercise 5.2
-**** Exercise 5.3
-**** Exercise 5.4
-**** Exercise 5.5
-**** Exercise 5.6
-**** Exercise 5.7
-**** Exercise 5.8
-**** Exercise 5.9
-**** Exercise 5.10
-**** Exercise 5.11
-**** Exercise 5.12
-**** Exercise 5.13
-**** Exercise 5.14
-**** Exercise 5.15
-**** Exercise 5.16
-**** Exercise 5.17
-**** Exercise 5.18
-**** Exercise 5.19
-**** Exercise 5.20
+** Exercise 5.1
+** Exercise 5.2
+** Exercise 5.3
+** Exercise 5.4
+** Exercise 5.5
+** Exercise 5.6
+** Exercise 5.7
+** Exercise 5.8
+** Exercise 5.9
+** Exercise 5.10
+** Exercise 5.11
+** Exercise 5.12
+** Exercise 5.13
+** Exercise 5.14
+** Exercise 5.15
+** Exercise 5.16
+** Exercise 5.17
+** Exercise 5.18
+** Exercise 5.19
+** Exercise 5.20
 
-** Point Transformations
-** General Canonical Transformations
-*** Time-Dependent Transformations
-*** Abstracting the Canonical Condition
-** Invariants of Canonical Transformations
-** Generating Functions
-*** F1 Generates Canonical Transformations
-*** Generating Functions and Integral Invariants
-*** Types of Generating Functions
-*** Point Transformations
-*** Total Time Derivatives
-** Extended Phase Space
-*** Poincaré–Cartan Integral Invariant
-** Reduced Phase Space
-** Summary
-** Projects
 * Canonical Evolution
 
-** Hamilton–Jacobi Equation
+** Exercise 6.1
+** Exercise 6.2
+** Exercise 6.3
+** Exercise 6.4
+** Exercise 6.5
+** Exercise 6.6
+** Exercise 6.7
+** Exercise 6.8
+** Exercise 6.9
+** Exercise 6.10
+** Exercise 6.11
+** Exercise 6.12
 
-**** Exercise 6.1
-**** Exercise 6.2
-**** Exercise 6.3
-**** Exercise 6.4
-**** Exercise 6.5
-**** Exercise 6.6
-**** Exercise 6.7
-**** Exercise 6.8
-**** Exercise 6.9
-**** Exercise 6.10
-**** Exercise 6.11
-**** Exercise 6.12
-
-*** Harmonic Oscillator
-*** Hamilton–Jacobi Solution of the Kepler Problem
-*** F2 and the Lagrangian
-*** The Action Generates Time Evolution
-** Time Evolution is Canonical
-*** Another View of Time Evolution
-*** Yet Another View of Time Evolution
-** Lie Transforms
-** Lie Series
-** Exponential Identities
-** Summary
-** Projects
 * Canonical Perturbation Theory
 
-** Perturbation Theory with Lie Series
+** Exercise 7.1
+** Exercise 7.2
+** Exercise 7.3
+** Exercise 7.4
+** Exercise 7.5
 
-**** Exercise 7.1
-**** Exercise 7.2
-**** Exercise 7.3
-**** Exercise 7.4
-**** Exercise 7.5
-
-** Pendulum as a Perturbed Rotor
-*** Higher Order
-*** Eliminating Secular Terms
-** Many Degrees of Freedom
-*** Driven Pendulum as a Perturbed Rotor
-** Nonlinear Resonance
-*** Pendulum Approximation
-*** Reading the Hamiltonian
-*** Resonance-Overlap Criterion
-*** Higher-Order Perturbation Theory
-*** Stability of the Inverted Vertical Equilibrium
-** Summary
-** Projects
-* Scheme
 * Our Notation
   :PROPERTIES:
   :header-args: :eval never-export
   :END:
 
-** Summary
-
-Notes about this section.
-
-** Exercises
-
 Notation Appendix. This is all about getting cozy with scheme, and with the
 various idiosyncracies of the tuple and functional notation.
 
-**** Exercise 9.1 Chain Rule
+** Exercise 9.1 Chain Rule
      :PROPERTIES:
      :header-args+: :tangle ch9/ex9-1.scm :comments org
      :END:
