@@ -1,0 +1,1 @@
+(define cake 10)
