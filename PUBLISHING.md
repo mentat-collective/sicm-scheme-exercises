@@ -126,20 +126,10 @@ Github](https://chrome.google.com/webstore/detail/mathjax-plugin-for-github/ioem
 to make it work with a more modern MathJax. I've also modified the config to
 work with the LaTeX syntax that org-mode emits.
 
-I'm working on getting this published as a public Chrome extension. In the
-meantime, you can install the plugin locally with these instructions.
-
-1. Click [this
-   link](https://github.com/sritchie/sicm/raw/master/bin/github-mathjax.crx) to
-   download the extension from https://github.com/sritchie/sicm/tree/master/bin
-2. Go to chrome://extensions and click the "Developer Mode" toggle in the top
-   right of the page
-3. Drag the file you just downloaded (github-mathjax.crx) onto the Chrome
-   window, and follow the prompts to install the plugin.
-4. Scroll through https://github.com/sritchie/sicm/blob/master/sicm.md and see
-   if you see any equations rendering!
-
-I'll update this with a link once I get the plugin up on the Chrome Web Store.
+The plugin lives
+[here](https://chrome.google.com/webstore/detail/mathjax-3-plugin-for-gith/peoghobgdhejhcmgoppjpjcidngdfkod).
+Install it in Chrome and you should see nicely LaTeX for all math on the
+markdown files in this repository.
 
 ## Creating Github Markdown with LaTeX
 
