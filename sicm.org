@@ -46,14 +46,6 @@ way to go.
   :header-args: :eval no-export :padline no
   :END:
 
-The book's about motion, how things move. Here's a nice image of some action
-getting minimized:
-
-#+DOWNLOADED: https://i.imgur.com/AJBpDgU.gif @ 2020-05-29 10:12:19
-#+attr_org: :width 400px
-#+attr_html: :width 80% :align center
-[[file:images/Lagrangian_Mechanics/2020-05-29_10-12-19_AJBpDgU.gif]]
-
 ** Exercise 1.1: Degrees of Freedom and 1.2: Generalized Coordinates
 
 #+begin_quote
@@ -490,11 +482,58 @@ And we can run it here:
 
 ** Exercise 1.4: Lagrangian actions
 
-#+DOWNLOADED: https://firebasestorage.googleapis.com/v0/b/firescript-577a2.appspot.com/o/imgs%2Fapp%2Fsritchie%2FVqfQv6wgb-.png?alt=media&token=ee981e3b-28f8-45f7-bc83-5c5835b238cc @ 2020-06-08 11:47:37
-#+attr_org: :width 400px
-#+attr_html: :width 80% :align center
-#+attr_latex: :width 8cm
-[[file:images/Lagrangian_Mechanics/2020-06-08_11-47-37_imgs%2Fapp%2Fsritchie%2FVqfQv6wgb-.png.png]]
+#+begin_quote
+For a free particle an appropriate Lagrangian is
+#+end_quote
+
+\begin{equation}
+\label{eq:14lagrangian}
+L(t, x, v) = {1 \over 2}mv^2
+\end{equation}
+
+#+begin_quote
+Suppose that x is the constant-velocity straight-line path of a free particle,
+such that $x_a = x(t_a)$ and $x_b = x(t_b)$. Show that the action on the
+solution path is
+#+end_quote
+
+\begin{equation}
+\label{eq:14result}
+{m \over 2}{{(x_b - x_a)^2} \over {t_b - t_a}}
+\end{equation}
+
+The velocity is constant between the two points, so it must be equal to the
+difference in position over the difference in time:
+
+\begin{equation}
+\label{eq:constant-v}
+v = {{x(t_b) - x(t_a)} \over {t_b - t_a}} = {{x_b - x_a} \over {t_b - t_a}}
+\end{equation}
+
+The action is equal to:
+
+\begin{equation}
+  \label{eq:2}
+  \begin{split}
+    S[q](t_a, t_b) & = \int_{t_a}^{t_b} L(t, x, v) dx \\
+    & = \int_{t_a}^{t_b} {1 \over 2}mv(t)^2 dx \\
+    & = {m \over 2}{v(t)^2 t} \Bigr|_{t_a}^{t_b} \\
+    & = {m \over 2}{v(t_b)^2 t_b - v(t_a)^2 t_a}
+  \end{split}
+\end{equation}
+
+The velocity is constant, so substitute in equation \eqref{eq:constant-v} and
+simplify:
+
+\begin{equation}
+  \label{eq:4}
+  \begin{split}
+    S[q](t_a, t_b) & = {m \over 2}{({{x_b - x_a} \over {t_b - t_a}})^2 (t_b - t_a)} \\
+    & = {m \over 2}{(x_b - x_a)^2 \over {t_b - t_a}}
+  \end{split}
+\end{equation}
+
+As expected.
 
 ** Paths of Minimum Action
 :PROPERTIES:
@@ -617,6 +656,13 @@ And boom, we find a path (and get to watch a pretty chart):
 (define (run-q)
   (find-path (L-harmonic 1.0 1.0) 0. 1. :pi/2 0. 3))
 #+end_src
+
+Here it is:
+
+#+DOWNLOADED: https://i.imgur.com/AJBpDgU.gif @ 2020-05-29 10:12:19
+#+attr_org: :width 400px
+#+attr_html: :width 80% :align center
+[[file:images/Lagrangian_Mechanics/2020-05-29_10-12-19_AJBpDgU.gif]]
 
 ** Exercise 1.6: Minimizing action
 :PROPERTIES:

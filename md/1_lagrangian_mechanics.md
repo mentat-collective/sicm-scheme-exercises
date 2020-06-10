@@ -58,10 +58,6 @@
   - [Exercise 1.43: A numerical investigation](#sec-45)
   - [Exercise 1.44: Double pendulum behavior](#sec-46)
 
-The book's about motion, how things move. Here's a nice image of some action getting minimized:
-
-![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-05-29_10-12-19_AJBpDgU.gif)
-
 # Exercise 1.1: Degrees of Freedom and 1.2: Generalized Coordinates<a id="sec-1"></a>
 
 > For each of the mechanical systems described below, give the number of degrees of freedom of the configuration space. ([SICM, ex1](https://tgvaughan.github.io/sicm/chapter001.html#Exe_1-1))
@@ -362,7 +358,50 @@ And we can run it here:
 
 # Exercise 1.4: Lagrangian actions<a id="sec-4"></a>
 
-![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-06-08_11-47-37_imgs%2Fapp%2Fsritchie%2FVqfQv6wgb-.png.png)
+> For a free particle an appropriate Lagrangian is
+
+\begin{equation}
+\label{eq:14lagrangian}
+L(t, x, v) = {1 \over 2}mv^2
+\end{equation}
+
+> Suppose that x is the constant-velocity straight-line path of a free particle, such that \\(x\_a = x(t\_a)\\) and \\(x\_b = x(t\_b)\\). Show that the action on the solution path is
+
+\begin{equation}
+\label{eq:14result}
+{m \over 2}{{(x\_b - x\_a)^2} \over {t\_b - t\_a}}
+\end{equation}
+
+The velocity is constant between the two points, so it must be equal to the difference in position over the difference in time:
+
+\begin{equation}
+\label{eq:constant-v}
+v = {{x(t\_b) - x(t\_a)} \over {t\_b - t\_a}} = {{x\_b - x\_a} \over {t\_b - t\_a}}
+\end{equation}
+
+The action is equal to:
+
+\begin{equation}
+  \label{eq:2}
+  \begin{split}
+    S[q](t\_a, t\_b) & = \int\_{t\_a}^{t\_b} L(t, x, v) dx \\
+    & = \int\_{t\_a}^{t\_b} {1 \over 2}mv(t)^2 dx \\
+    & = {m \over 2}{v(t)^2 t} \Bigr|\_{t\_a}^{t\_b} \\
+    & = {m \over 2}{v(t\_b)^2 t\_b - v(t\_a)^2 t\_a}
+  \end{split}
+\end{equation}
+
+The velocity is constant, so substitute in equation \eqref{eq:constant-v}:
+
+\begin{equation}
+  \label{eq:4}
+  \begin{split}
+    S[q](t\_a, t\_b) & = {m \over 2}{({{x\_b - x\_a} \over {t\_b - t\_a}})^2 (t\_b - t\_a)} \\
+    & = {m \over 2}{(x\_b - x\_a)^2 \over {t\_b - t\_a}}
+  \end{split}
+\end{equation}
+
+As expected.
 
 # Paths of Minimum Action<a id="sec-5"></a>
 
@@ -465,6 +504,10 @@ And boom, we find a path (and get to watch a pretty chart):
 (define (run-q)
   (find-path (L-harmonic 1.0 1.0) 0. 1. :pi/2 0. 3))
 ```
+
+Here it is:
+
+![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-05-29_10-12-19_AJBpDgU.gif)
 
 # Exercise 1.6: Minimizing action<a id="sec-7"></a>
 
