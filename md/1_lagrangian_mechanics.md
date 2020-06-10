@@ -125,8 +125,7 @@ We can also solve this with calculus. Because we don't change media, the speed o
 Set \\(x\_1 = 0\\) for convenience, and write the total distance the light travels as a function of \\(x\_p\\):
 
 \begin{equation}
-\label{eq:reflectfn}
-f(x\_p) = {\sqrt{y\_1^2 + x\_p^2} + \sqrt{(x\_2 - x\_p)^2 + y\_2^2}
+f(x\_p) = \sqrt{y\_1^2 + x\_p^2} + \sqrt{(x\_2 - x\_p)^2 + y\_2^2}
 \end{equation}
 
 We can also define this function in Scheme.
@@ -211,7 +210,7 @@ Solve for \\(x\_p\\) and rearrange:
 x\_p = {{y\_1 x\_2} \over {y\_1 + y\_2}}
 \end{equation}
 
-Plug this in to the derivative of the original `total-distance` function, and we get that the derivative equals 0, as expected:
+Plug this in to the derivative of the original `total-distance` function, and we find that the derivative equals 0, as expected:
 
 ```scheme
 (let* ((distance-fn (total-distance 0 'y_1 'x_2 'y_2))

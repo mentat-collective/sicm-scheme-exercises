@@ -188,8 +188,7 @@ Set $x_1 = 0$ for convenience, and write the total distance the light travels as
 a function of $x_p$:
 
 \begin{equation}
-\label{eq:reflectfn}
-f(x_p) = {\sqrt{y_1^2 + x_p^2} + \sqrt{(x_2 - x_p)^2 + y_2^2}
+f(x_p) = \sqrt{y_1^2 + x_p^2} + \sqrt{(x_2 - x_p)^2 + y_2^2}
 \end{equation}
 
 We can also define this function in Scheme.
@@ -295,8 +294,8 @@ Solve for $x_p$ and rearrange:
 x_p = {{y_1 x_2} \over {y_1 + y_2}}
 \end{equation}
 
-Plug this in to the derivative of the original =total-distance= function, and
-we get that the derivative equals 0, as expected:
+Plug this in to the derivative of the original =total-distance= function, and we
+find that the derivative equals 0, as expected:
 
 #+begin_src scheme :results value raw :exports both :cache yes
 (let* ((distance-fn (total-distance 0 'y_1 'x_2 'y_2))
