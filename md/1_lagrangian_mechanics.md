@@ -1,7 +1,11 @@
   - [Exercise 1.1: Degrees of Freedom and 1.2: Generalized Coordinates](#sec-1)
   - [Exercise 1.3: Fermat optics](#sec-2)
     - [Law of Reflection](#sec-2-1)
+      - [Geometry](#sec-2-1-1)
+      - [Calculus](#sec-2-1-2)
     - [Law of Refraction](#sec-2-2)
+      - [Calculus](#sec-2-2-1)
+      - [Geometry](#sec-2-2-2)
   - [Section 1.4: Computing Actions](#sec-3)
   - [Exercise 1.4: Lagrangian actions](#sec-4)
   - [Paths of Minimum Action](#sec-5)
@@ -90,7 +94,7 @@ The book's about motion, how things move. Here's a nice image of some action get
 
 # Exercise 1.3: Fermat optics<a id="sec-2"></a>
 
-The [problem](https://tgvaughan.github.io/sicm/chapter001.html#Exe_1-3) states:
+This problem has us exploring some consequences for optics of the principle of least time. [Exercise 1.3](https://tgvaughan.github.io/sicm/chapter001.html#Exe_1-3) states:
 
 > Fermat observed that the laws of reflection and refraction could be accounted for by the following facts: Light travels in a straight line in any particular medium with a velocity that depends upon the medium. The path taken by a ray from a source to a destination through any sequence of media is a path of least total time, compared to neighboring paths. Show that these facts imply the laws of reflection and refraction.
 
@@ -100,35 +104,41 @@ The [law of reflection](https://en.wikipedia.org/wiki/Reflection_(physics)#Laws_
 
 > For reflection the angle of incidence is equal to the angle of reflection.
 
-We have to show that if we consider all possible paths from a given starting point to a given endpoint, the path of minimum time will give us the law of reflection.
-
-Here's the setup:
+Here's the setup. The horizontal line is a mirror. The law states that \\(\theta\_1 = \theta\_2\\).
 
 ![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-06-10_10-31-24_screenshot.png)
 
-If we force the light to bounce off of a mirror, then we have to figure out where it will hit, where \\(x\_p\\) is, to minimize the time between the start and end points.
+We have to show that if we consider all possible paths from a given starting point to a given endpoint, the path of minimum time will give us the law of reflection.
 
-There are two ways to solve this problem. The first is to remember this fact from the problem definition:
+The *actual* path of minimum time is the straight line that avoids the mirror, of course. If we force the light to bounce off of the mirror, then we have to figure out where it will hit, where \\(x\_p\\) is, to minimize the time between the start and end points.
+
+There are two ways to solve this problem. We can use geometry and visual intuition, or we can use calculus.
+
+### Geometry<a id="sec-2-1-1"></a>
+
+First, recall this fact from the problem text:
 
 > Light travels in a straight line in any particular medium with a velocity that depends upon the medium.
 
-There's no medium change, so if there were no mirror in its path, the light bean would continue in a straight line. Instead of figuring out what the beam will do when it hits the mirror, reflect the endpoint across the mirror and draw a straight line between the start and "end":
+There's no medium change, so if there were no mirror in its path, the light beam would continue in a straight line. Instead of figuring out what the beam will do when it hits the mirror, reflect the endpoint across the mirror and draw a straight line between the start and "end" points:
 
 ![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-06-10_10-36-53_screenshot.png)
 
 The angle that the beam makes with the plane of the mirror is the same on both sides of the mirror.
 
-Now reflect the the "end" point and the segment of the beam that's crossed the mirror back up across the mirror, and you'll find that \\(\theta\_1 = \theta\_2\\). (Pardon my not-to-scale drawing.)
+Now reflect the the "end" point and the segment of the beam that's crossed the mirror back up. By symmetry, \\(\theta\_1 = \theta\_2\\), and we've proved the law of reflection.
 
-We can also solve this with calculus. Because we don't change media, the speed of light \\(c\\) is constant, so minimizing the total distance is equivalent to minimizing the time.
+### Calculus<a id="sec-2-1-2"></a>
+
+We can also solve this with calculus. Because the beam doesn't change media, its speed \\(v\\) stays constant, so minimizing the total distance \\(d\\) is equivalent to minimizing the time \\(t = {d \over v}\\).
 
 Set \\(x\_1 = 0\\) for convenience, and write the total distance the light travels as a function of \\(x\_p\\):
 
 \begin{equation}
-f(x\_p) = \sqrt{y\_1^2 + x\_p^2} + \sqrt{(x\_2 - x\_p)^2 + y\_2^2}
+d(x\_p) = \sqrt{y\_1^2 + x\_p^2} + \sqrt{(x\_2 - x\_p)^2 + y\_2^2}
 \end{equation}
 
-We can also define this function in Scheme.
+For practice, we can also define this function in Scheme.
 
 ```scheme
 (define ((total-distance x1 y1 x2 y2) xp)
@@ -138,7 +148,7 @@ We can also define this function in Scheme.
               (square y2)))))
 ```
 
-Here's the function again, with general \\(t\_1\\):
+Here's the function again, generated from code, with general \\(t\_1\\):
 
 ```scheme
 (->tex-equation
@@ -149,9 +159,13 @@ Here's the function again, with general \\(t\_1\\):
 \sqrt{{{x}\_{1}}^{2} + 2 {x}\_{1} {x}\_{p} + {{x}\_{p}}^{2} + {{y}\_{1}}^{2}} + \sqrt{{{x}\_{1}}^{2} - 2 {x}\_{1} {x}\_{2} + 2 {x}\_{1} {x}\_{p} + {{x}\_{2}}^{2} - 2 {x}\_{2} {x}\_{p} + {{x}\_{p}}^{2} + {{y}\_{2}}^{2}}
 \end{equation}
 
-Now we need to take the derivative with respect to \\(x\_p\\), set it equal to 0 and solve for \\(x\_p\\). That will give us the stationary point of the total distance.
+To find the \\(x\_p\\) that minimizes the total distance,
 
-The derivative will look cleaner if we keep the components of the sum separate. Redefine the function to return a tuple:
+-   take the derivative with respect to \\(x\_p\\),
+-   set it equal to 0 and
+-   solve for \\(x\_p\\).
+
+The derivative will look cleaner in code if we keep the components of the sum separate and prevent Scheme from "simplifying". Redefine the function to return a tuple:
 
 ```scheme
 (define ((total-distance* x1 y1 x2 y2) xp)
@@ -185,18 +199,20 @@ Taking a derivative is easy with `scmutils`. Just wrap the function in `D`:
 \begin{pmatrix} \displaystyle{ {{{x}\_{p}}\over {\sqrt{{{x}\_{p}}^{2} + {{y}\_{1}}^{2}}}}} \cr \cr \displaystyle{ {{ - {x}\_{2} + {x}\_{p}}\over {\sqrt{{{x}\_{2}}^{2} - 2 {x}\_{2} {x}\_{p} + {{x}\_{p}}^{2} + {{y}\_{2}}^{2}}}}}\end{pmatrix}
 \end{equation}
 
-The structure of the problem makes the next step a little annoying. If you look at the first component, you might recognize the \\(\cos \theta\_1\\), the base \\(x\_p\\) of the left triangle over the total length:
+The first component is the base of base \\(x\_p\\) of the left triangle over the total length. This ratio is equal to \\(\cos \theta\_1\\):
 
 ![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-06-10_10-36-53_screenshot.png)
 
-The bottom component is \\(-\cos \theta\_2\\), or \\({- (x\_2 - x\_p)}\\) over the length of the right segment. Add these together and set them equal to 0, and you find that
+The bottom component is \\(-\cos \theta\_2\\), or \\({- (x\_2 - x\_p)}\\) over the length of the right segment. Add these terms together, set them equal to 0 and rearrange:
 
 \begin{equation}
 \label{eq:reflect-laws}
 \cos \theta\_1 = \cos \theta\_2 \implies \theta\_1 = \theta\_2
 \end{equation}
 
-This isn't so obvious from the scheme code, but you can use Scheme to check this result. If the two angles are equal, then the left and right triangles are similar, and the ratio of the base to height is equal:
+This description in terms of the two incident angles isn't so obvious from the Scheme code. Still, you can use Scheme to check this result.
+
+If the two angles are equal, then the left and right triangles are similar, and the ratio of each base to height is equal:
 
 \begin{equation}
 \label{eq:reflect-ratio}
@@ -230,6 +246,60 @@ If a beam of light travels in a way that minimizes total distance (and therefore
 The law of refraction is also called [Snell's law](https://en.wikipedia.org/wiki/Snell%27s_law). Here's the description from the footnote:
 
 > Refraction is described by Snell's law: when light passes from one medium to another, the ratio of the sines of the angles made to the normal to the interface is the inverse of the ratio of the refractive indices of the media. The refractive index is the ratio of the speed of light in the vacuum to the speed of light in the medium.
+
+First we'll tackle this with calculus.
+
+### Calculus<a id="sec-2-2-1"></a>
+
+The setup here is slightly different. We have a light beam traveling from one medium to another and changing speeds at a boundary located \\(a\\) to the right of the starting point. The goal is to figure out the point where the light will hit the boundary, if we assume that the light will take the path of least time.
+
+![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-06-10_12-03-11_screenshot.png)
+
+The refractive index \\(n\_i = {c \over v\_i}\\), the speed of light \\(c\\) in a vacuum over the speed in the material. Rearranging, \\(v\_i = {c \over n\_i}\\).
+
+Time is distance over speed, so the total time that the beam spends between the start and end points as a function of \\(y\_p\\), the point of contact with the boundary, is:
+
+\begin{equation}
+  \begin{split}
+    t(y\_p) & = {c \sqrt{a^2 + y\_p^2}\over v\_1} + {c \sqrt{(x\_2 - x\_p)^2 + y\_2^2} \over v\_2} \\
+    & = {n\_1 \over c} \sqrt{a^2 + y\_p^2} + {n\_2 \over c} \sqrt{(x\_2 - x\_p)^2 + y\_2^2}
+  \end{split}
+\end{equation}
+
+Take the derivative:
+
+\begin{equation}
+  Dt(y\_p) = {1 \over c} \left({n\_1 y\_p \over \sqrt{a^2 + y\_p^2}} - {n\_2 (x\_2 - x\_p) \over \sqrt{(x\_2 - x\_p)^2 + y\_2^2}}\right)
+\end{equation}
+
+Set the derivative equal to 0 and split terms:
+
+\begin{equation}
+\label{eq:almost-snell}
+  {n\_1 y\_p \over \sqrt{a^2 + y\_p^2}} = {n\_2 (x\_2 - x\_p) \over \sqrt{(x\_2 - x\_p)^2 + y\_2^2}}
+\end{equation}
+
+Similar to the law of reflection's result, each term (up to its \\(n\_i\\) multiple) is equal to the height of the left or right triangle over the length of the beam's path on the left or right of the boundary.
+
+Equation \eqref{eq:almost-snell} simplifies to:
+
+\begin{equation}
+  n\_1 \sin \theta\_1 = n\_2 \sin \theta\_2
+\end{equation}
+
+Rearranging yields Snell's law:
+
+\begin{equation}
+{n\_1 \over n\_2} = {\sin \theta\_2 \over \sin \theta\_1}
+\end{equation}
+
+### Geometry<a id="sec-2-2-2"></a>
+
+I won't recreate this here, but the [Feynman Lectures on Physics](https://www.feynmanlectures.caltech.edu/I_26.html), in [Lecture 26](https://www.feynmanlectures.caltech.edu/I_26.html), has a fantastic discussion about, and derivation of, the law of refraction using no calculus, just geometry. I highly recommend you check out that lecture. Feynman lays out a number of examples of how the principle of least time is not just a restatement of the optical rules we already knew.
+
+You can use the idea to guess what shape of mirror you'd want to build to focus many light rays on a single point (a parabola), or how you might force all light rays coming out of a single point to meet up again at another point (build a converging lens).
+
+This whole area of optics and least time has obsessed scientists for hundreds of years. Spend a few minutes [poking around](https://www.feynmanlectures.caltech.edu/I_26.html) and see what you find.
 
 # Section 1.4: Computing Actions<a id="sec-3"></a>
 
