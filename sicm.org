@@ -105,6 +105,9 @@ here too.
    rotation.
 
 ** Exercise 1.3: Fermat optics
+:PROPERTIES:
+:header-args+: :tangle ch1/ex1-3.scm :comments org
+:END:
 
 #+begin_src scheme :exports none
 (load "ch1/utils.scm")

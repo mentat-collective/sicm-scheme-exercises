@@ -3,7 +3,24 @@
 ;; :header-args+: :tangle ch1/ex1-15.scm :comments org
 ;; :END:
 
-;; This one was a serious doozy. I plan on going through and co
+;; NOTE - I have a strong suspicion here that we can show that what is actually
+;; going on is that we end up with a total time derivative that we can ignore. The
+;; final terms at the end that cancel... why is it that they work out the way they
+;; do? It would be nice to try and use the time-derivative test machinery we built
+;; to take a look there.
+
+;; This one was a serious doozy. I think that this exercise can be a great way to
+;; show off the computer algebra system, and show off the steps that I go through
+;; to make a proof.
+
+;; But I also want to pull back and stare at the formula. What is going on? What is
+;; the meaning of the extra terms? If we can say, for example, that they're a total
+;; time derivative, looking at the future, that would be great. There has to be a
+;; reason that the Lagrangian doesn't change.
+
+;; The same thing happens when you look at a new Lagrangian and see a "fictitious
+;; force term" for, say, centrifugal force. There is something going on here.
+
 
 ;; Checking that composition distributes over multiplication...
 

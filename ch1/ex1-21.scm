@@ -5,6 +5,11 @@
 
 ;; The uneven dumbbell.
 
+;; NOTE for when I write this up. This exercise is quite careful to NOT change the
+;; dimension of the configuration space, when it does coordinate transformations.
+;; We show later that you can do that, but that's the reason, good to note, why you
+;; introduce a new variable $c$ that's equal to the distance between the dumbbells.
+
 
 (load "ch1/utils.scm")
 
