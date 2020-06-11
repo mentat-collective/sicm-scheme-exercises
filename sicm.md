@@ -24,6 +24,9 @@
   - [Exercise 1.10: Higher-derivative Lagrangians](#sec-1-11)
   - [Exercise 1.11: Kepler's third law](#sec-1-12)
   - [Exercise 1.12: Lagrange's equations (code)](#sec-1-13)
+    - [Part A: Ideal Planar Pendulum](#sec-1-13-1)
+    - [Part B: 2D Potential](#sec-1-13-2)
+    - [Part C: Particle on a Sphere](#sec-1-13-3)
   - [Exercise 1.13: Higher-derivative Lagrangians (code)](#sec-1-14)
   - [Exercise 1.14: Coordinate-independence of Lagrange equations](#sec-1-15)
   - [Exercise 1.15: Equivalence](#sec-1-16)
@@ -382,10 +385,10 @@ First we'll tackle this with calculus.
     Time is distance over speed, so the total time that the beam spends between the start and end points as a function of \\(y\_p\\), the point of contact with the boundary, is:
 
     \begin{equation}
-      \begin{split}
-        t(y\_p) & = {c \sqrt{a^2 + y\_p^2}\over v\_1} + {c \sqrt{(x\_2 - x\_p)^2 + y\_2^2} \over v\_2} \\
+      \begin{aligned}
+        t(y\_p) & = {c \sqrt{a^2 + y\_p^2}\over v\_1} + {c \sqrt{(x\_2 - x\_p)^2 + y\_2^2} \over v\_2} \cr
         & = {n\_1 \over c} \sqrt{a^2 + y\_p^2} + {n\_2 \over c} \sqrt{(x\_2 - x\_p)^2 + y\_2^2}
-      \end{split}
+      \end{aligned}
     \end{equation}
 
     Take the derivative:
@@ -525,22 +528,22 @@ The action is equal to:
 
 \begin{equation}
   \label{eq:2}
-  \begin{split}
-    S[q](t\_a, t\_b) & = \int\_{t\_a}^{t\_b} L(t, x, v) dx \\
-    & = \int\_{t\_a}^{t\_b} {1 \over 2}mv(t)^2 dx \\
-    & = {m \over 2}{v(t)^2 t} \Bigr|\_{t\_a}^{t\_b} \\
+  \begin{aligned}
+    S[q](t\_a, t\_b) & = \int\_{t\_a}^{t\_b} L(t, x, v) dx \cr
+    & = \int\_{t\_a}^{t\_b} {1 \over 2}mv(t)^2 dx \cr
+    & = {m \over 2}{v(t)^2 t} \Bigr|\_{t\_a}^{t\_b} \cr
     & = {m \over 2}{v(t\_b)^2 t\_b - v(t\_a)^2 t\_a}
-  \end{split}
+  \end{aligned}
 \end{equation}
 
 The velocity is constant, so substitute in equation \eqref{eq:constant-v} and simplify:
 
 \begin{equation}
   \label{eq:4}
-  \begin{split}
-    S[q](t\_a, t\_b) & = {m \over 2}{({{x\_b - x\_a} \over {t\_b - t\_a}})^2 (t\_b - t\_a)} \\
+  \begin{aligned}
+    S[q](t\_a, t\_b) & = {m \over 2}{({{x\_b - x\_a} \over {t\_b - t\_a}})^2 (t\_b - t\_a)} \cr
     & = {m \over 2}{(x\_b - x\_a)^2 \over {t\_b - t\_a}}
-  \end{split}
+  \end{aligned}
 \end{equation}
 
 As expected.
@@ -1127,11 +1130,171 @@ The textbook also gives us this function from \\(t \to (x, y)\\) to test out the
 
 ## Exercise 1.9: Lagrange's equations<a id="sec-1-10"></a>
 
+This exercise has us deriving Lagrange's equations in steps for three different systems.
+
+You should do this on paper, then go look at Exercise 1.12 for the Scheme code that implements each Lagrangian and shows the steps required to get to Lagrange's equations.
+
 ## Exercise 1.10: Higher-derivative Lagrangians<a id="sec-1-11"></a>
 
 ## Exercise 1.11: Kepler's third law<a id="sec-1-12"></a>
 
 ## Exercise 1.12: Lagrange's equations (code)<a id="sec-1-13"></a>
+
+This exercise has us writing code for the three systems described in [Exercise 1.9](https://tgvaughan.github.io/sicm/chapter001.html#Exe_1-9). Before we start, here's a function that will display an up-tuple of:
+
+-   \\(\partial\_1 L \circ \Gamma[q]\\), the generalized force
+-   \\(\partial\_2 L \circ \Gamma[q]\\), the generalized momenta
+-   \\(D(\partial\_2 L \circ \Gamma[q])\\), the derivative of our momenta
+-   The Lagrange equations for the system.
+
+```scheme
+(define (lagrange-equation-steps L q)
+  (let* ((p1 (compose ((partial 1) L) (Gamma q)))
+         (p2 (compose ((partial 2) L) (Gamma q)))
+         (dp2 (D p2)))
+    (->tex-equation
+     ((up p1 p2 dp2 (- dp2 p1))
+      't))))
+```
+
+We'll call this for each system to show the steps required to derive Lagrange's equations.
+
+### Part A: Ideal Planar Pendulum<a id="sec-1-13-1"></a>
+
+From the book:
+
+> An ideal planar pendulum consists of a bob of mass \\(m\\) connected to a pivot by a massless rod of length \\(l\\) subject to uniform gravitational acceleration \\(g\\). A Lagrangian is \\(L(t, \theta, \dot{\theta}) = {1 \over 2} ml^2\dot{\theta}^2 + mgl\cos \theta\\). The formal parameters of \\(L\\) are \\(t\\), \\(\theta\\), and \\(\dot{\theta}\\); \\(\theta\\) measures the angle of the pendulum rod to a plumb line and \\(\dot{\theta}\\) is the angular velocity of the rod.
+
+Here is the Lagrangian described above:
+
+```scheme
+(define ((L-pendulum m g l) local)
+  (let ((theta (coordinate local))
+        (theta_dot (velocity local)))
+    (- (* 1/2 m (square l) (square theta_dot))
+       (* m g l (cos theta)))))
+```
+
+And the steps that lead us to Lagrange's equations:
+
+```scheme
+(lagrange-equation-steps
+ (L-pendulum 'm 'g 'l)
+ (literal-function 'theta))
+```
+
+\begin{equation}
+\begin{pmatrix} \displaystyle{ g l m \sin\left( \theta\left( t \right) \right)} \cr \cr \displaystyle{ {l}^{2} m D\theta\left( t \right)} \cr \cr \displaystyle{ {l}^{2} m {D}^{2}\theta\left( t \right)} \cr \cr \displaystyle{  - g l m \sin\left( \theta\left( t \right) \right) + {l}^{2} m {D}^{2}\theta\left( t \right)}\end{pmatrix}
+\end{equation}
+
+The final Lagrange equation needs some hand simplification. Divide out \\(g\\) and \\(l\\), and include a factor of \\(-1\\) to make things look nice:
+
+```scheme
+(let* ((L (L-pendulum 'm 'g 'l))
+       (theta (literal-function 'theta))
+       (eq ((Lagrange-equations L) theta)))
+  (->tex-equation
+   ((/ eq (* -1 'm 'l))
+    't)))
+```
+
+\begin{equation}
+g \sin\left( \theta\left( t \right) \right) - l {D}^{2}\theta\left( t \right)
+\end{equation}
+
+Much better.
+
+### Part B: 2D Potential<a id="sec-1-13-2"></a>
+
+From the book:
+
+> A particle of mass \\(m\\) moves in a two-dimensional potential \\(V(x, y) = {(x^2 + y^2) \over 2} + x^2 y - {y^3 \over 3}\\), where \\(x\\) and \\(y\\) are rectangular coordinates of the particle. A Lagrangian is \\(L(t;x, y; v\_x, v\_y) = {1 \over 2} m (v\_x^2 + v\_y^2) - V(x, y)\\).
+
+Define the potential \\(V\\) and the Lagrangian separately. The Lagrangian here is actually written in a form general enough that it would work for any number of dimensions in rectangular space, given some potential \\(V\\). This is something to note for later, when we discuss coordinate transformations.
+
+```scheme
+(define (V q)
+  (let ((x (ref q 0))
+        (y (ref q 1)))
+    (- (+ (/ (+ (square x)
+                (square y))
+             2)
+          (* (square x) y))
+       (/ (cube y) 3))))
+
+(define (((L-2d-potential m) V) local)
+  (- (* 1/2 m (square (velocity local)))
+     (V (coordinate local))))
+```
+
+Next, the derivation of the Lagrange equations:
+
+```scheme
+(lagrange-equation-steps
+ ((L-2d-potential 'm) V)
+ (up (literal-function 'x)
+     (literal-function 'y)))
+```
+
+\begin{equation}
+\begin{pmatrix} \displaystyle{ \begin{bmatrix} \displaystyle{  - 2 y\left( t \right) x\left( t \right) - x\left( t \right)} \cr \cr \displaystyle{ {\left( y\left( t \right) \right)}^{2} - {\left( x\left( t \right) \right)}^{2} - y\left( t \right)}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ m Dx\left( t \right)} \cr \cr \displaystyle{ m Dy\left( t \right)}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ m {D}^{2}x\left( t \right)} \cr \cr \displaystyle{ m {D}^{2}y\left( t \right)}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ m {D}^{2}x\left( t \right) + 2 y\left( t \right) x\left( t \right) + x\left( t \right)} \cr \cr \displaystyle{ m {D}^{2}y\left( t \right) - {\left( y\left( t \right) \right)}^{2} + {\left( x\left( t \right) \right)}^{2} + y\left( t \right)}\end{bmatrix}}\end{pmatrix}
+\end{equation}
+
+The final down-tuple gives us the Lagrange equations for \\(x\\) and \\(y\\) respectively.
+
+### Part C: Particle on a Sphere<a id="sec-1-13-3"></a>
+
+From the book:
+
+> A Lagrangian for a particle of mass \\(m\\) constrained to move on a sphere of radius \\(R\\) is \\(L(t; \theta, \phi; \alpha, \beta) = {1 \over 2} m R^2(\alpha^2+(\beta \sin\theta)^2)\\). The angle \\(\theta\\) is the colatitude of the particle and \\(\phi\\) is the longitude; the rate of change of the colatitude is \\(\alpha\\) and the rate of change of the longitude is \\(\beta\\).
+
+Here is the Lagrangian:
+
+```scheme
+(define ((L-sphere m R) local)
+  (let* ((q (coordinate local))
+         (qdot (velocity local))
+         (theta (ref q 0))
+         (alpha (ref qdot 0))
+         (beta (ref qdot 1)))
+    (* 1/2 m (square R)
+       (+ (square alpha)
+          (square (* beta (sin theta)))))))
+```
+
+The final Lagrange equations have a few terms that we can cancel out. Scheme doesn't know that these are meant to be residuals, so it won't cancel out factors that we can see by eye are missing. Here is the full derivation:
+
+```scheme
+(lagrange-equation-steps
+ (L-sphere 'm 'R)
+ (up (literal-function 'theta)
+     (literal-function 'phi)))
+```
+
+\begin{equation}
+\begin{pmatrix} \displaystyle{ \begin{bmatrix} \displaystyle{ {R}^{2} m \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) {\left( D\phi\left( t \right) \right)}^{2}} \cr \cr \displaystyle{ 0}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ {R}^{2} m D\theta\left( t \right)} \cr \cr \displaystyle{ {R}^{2} m {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} D\phi\left( t \right)}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ {R}^{2} m {D}^{2}\theta\left( t \right)} \cr \cr \displaystyle{ 2 {R}^{2} m \sin\left( \theta\left( t \right) \right) D\theta\left( t \right) \cos\left( \theta\left( t \right) \right) D\phi\left( t \right) + {R}^{2} m {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} {D}^{2}\phi\left( t \right)}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{  - {R}^{2} m \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) {\left( D\phi\left( t \right) \right)}^{2} + {R}^{2} m {D}^{2}\theta\left( t \right)} \cr \cr \displaystyle{ 2 {R}^{2} m \sin\left( \theta\left( t \right) \right) D\theta\left( t \right) \cos\left( \theta\left( t \right) \right) D\phi\left( t \right) + {R}^{2} m {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} {D}^{2}\phi\left( t \right)}\end{bmatrix}}\end{pmatrix}
+\end{equation}
+
+Next, get the Lagrange equations in hand and manually simplify each equation by dividing out, respectively, \\(mR^2\\) and \\(mR^2 \sin \theta\\):
+
+```scheme
+(let* ((L (L-sphere 'm 'R))
+       (theta (literal-function 'theta))
+       (q (up theta (literal-function 'phi)))
+       (le ((Lagrange-equations L) q)))
+  (let ((eq1 (ref le 0))
+        (eq2 (ref le 1)))
+    (->tex-equation
+     ((up (/ eq1 (* 'm (square 'R)))
+          (/ eq2 (* (sin theta) 'm (square 'R))))
+      't))))
+```
+
+\begin{equation}
+\begin{pmatrix} \displaystyle{  - \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) {\left( D\phi\left( t \right) \right)}^{2} + {D}^{2}\theta\left( t \right)} \cr \cr \displaystyle{ 2 D\theta\left( t \right) \cos\left( \theta\left( t \right) \right) D\phi\left( t \right) + \sin\left( \theta\left( t \right) \right) {D}^{2}\phi\left( t \right)}\end{pmatrix}
+\end{equation}
+
+Looking good. These are the residuals for \\(\theta\\) and \\(\phi\\), respectively.
 
 ## Exercise 1.13: Higher-derivative Lagrangians (code)<a id="sec-1-14"></a>
 
