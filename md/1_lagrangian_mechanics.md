@@ -9,54 +9,66 @@
   - [Section 1.4: Computing Actions](#sec-3)
   - [Exercise 1.4: Lagrangian actions](#sec-4)
   - [Paths of Minimum Action](#sec-5)
-    - [Finding trajectories that minimize action](#sec-5-1)
+    - [Finding trajectories that minimize the action](#sec-5-1)
   - [Exercise 1.5: Solution process](#sec-6)
   - [Exercise 1.6: Minimizing action](#sec-7)
+    - [Executions](#sec-7-1)
   - [Exercise 1.7: Properties of \\(\delta\\)](#sec-8)
+    - [Variation Product Rule](#sec-8-1)
+    - [Variation Sum Rule](#sec-8-2)
+    - [Variation Scalar Multiplication](#sec-8-3)
+    - [Chain Rule for Variations](#sec-8-4)
+    - [\\(\delta\_\eta\\) commutes with \\(D\\)](#sec-8-5)
   - [Exercise 1.8: Implementation of \\(\delta\\)](#sec-9)
-  - [Orbital Motion](#sec-10)
-  - [Exercise 1.9: Lagrange's equations](#sec-11)
-  - [Exercise 1.10: Higher-derivative Lagrangians](#sec-12)
-  - [Exercise 1.11: Kepler's third law](#sec-13)
-  - [Exercise 1.12: Lagrange's equations (code)](#sec-14)
-  - [Exercise 1.13: Higher-derivative Lagrangians (code)](#sec-15)
-  - [Exercise 1.14: Coordinate-independence of Lagrange equations](#sec-16)
-  - [Exercise 1.15: Equivalence](#sec-17)
-  - [Exercise 1.16: Central force motion](#sec-18)
-  - [Exercise 1.17: Bead on a helical wire](#sec-19)
-  - [Exercise 1.18: Bead on a triaxial surface](#sec-20)
-  - [Exercise 1.19: Two-bar linkage](#sec-21)
-  - [Exercise 1.20: Sliding pendulum](#sec-22)
-  - [Exercise 1.21: A dumbbell](#sec-23)
-  - [Exercise 1.22: Driven pendulum](#sec-24)
-  - [Exercise 1.23: Fill in the details](#sec-25)
-  - [Exercise 1.24: Constraint forces](#sec-26)
-  - [Exercise 1.25: Foucalt pendulum Lagrangian](#sec-27)
-  - [Exercise 1.26: Properties of \\(D\_t\\)](#sec-28)
-  - [Exercise 1.27: Lagrange equations for total time derivatives](#sec-29)
-  - [Exercise 1.28: Total Time Derivatives](#sec-30)
-    - [part A](#sec-30-1)
-    - [Part B](#sec-30-2)
-    - [Part C](#sec-30-3)
-    - [Part D](#sec-30-4)
-    - [Part E](#sec-30-5)
-    - [Part F](#sec-30-6)
-  - [Exercise 1.29: Galilean Invariance](#sec-31)
-  - [Exercise 1.30: Orbits in a central potential](#sec-32)
-  - [Exercise 1.31: Foucault pendulum evolution](#sec-33)
-  - [Exercise 1.32: Time-dependent constraints](#sec-34)
-  - [Exercise 1.33: Falling off a log](#sec-35)
-  - [Exercise 1.34: Driven spherical pendulum](#sec-36)
-  - [Exercise 1.35: Restricted equations of motion](#sec-37)
-  - [Exercise 1.36: Noether integral](#sec-38)
-  - [Exercise 1.37: Velocity transformation](#sec-39)
-  - [Exercise 1.38: Properties of \\(E\\)](#sec-40)
-  - [Exercise 1.39: Combining Lagrangians](#sec-41)
-  - [Exercise 1.40: Bead on a triaxial surface](#sec-42)
-  - [Exercise 1.41: Motion of a tiny golf ball](#sec-43)
-  - [Exercise 1.42: Augmented Lagrangian](#sec-44)
-  - [Exercise 1.43: A numerical investigation](#sec-45)
-  - [Exercise 1.44: Double pendulum behavior](#sec-46)
+    - [Part A: Implement \\(\delta\_\eta\\)](#sec-9-1)
+    - [Part B: Check \\(\delta\_\eta\\)'s properties](#sec-9-2)
+      - [Variation Product Rule](#sec-9-2-1)
+      - [Variation Sum Rule](#sec-9-2-2)
+      - [Variation Scalar Multiplication](#sec-9-2-3)
+      - [Chain Rule for Variations](#sec-9-2-4)
+      - [\\(\delta\_\eta\\) commutes with \\(D\\)](#sec-9-2-5)
+  - [Exercise 1.9: Lagrange's equations](#sec-10)
+  - [Exercise 1.10: Higher-derivative Lagrangians](#sec-11)
+  - [Exercise 1.11: Kepler's third law](#sec-12)
+  - [Exercise 1.12: Lagrange's equations (code)](#sec-13)
+  - [Exercise 1.13: Higher-derivative Lagrangians (code)](#sec-14)
+  - [Exercise 1.14: Coordinate-independence of Lagrange equations](#sec-15)
+  - [Exercise 1.15: Equivalence](#sec-16)
+  - [Exercise 1.16: Central force motion](#sec-17)
+  - [Exercise 1.17: Bead on a helical wire](#sec-18)
+  - [Exercise 1.18: Bead on a triaxial surface](#sec-19)
+  - [Exercise 1.19: Two-bar linkage](#sec-20)
+  - [Exercise 1.20: Sliding pendulum](#sec-21)
+  - [Exercise 1.21: A dumbbell](#sec-22)
+  - [Exercise 1.22: Driven pendulum](#sec-23)
+  - [Exercise 1.23: Fill in the details](#sec-24)
+  - [Exercise 1.24: Constraint forces](#sec-25)
+  - [Exercise 1.25: Foucalt pendulum Lagrangian](#sec-26)
+  - [Exercise 1.26: Properties of \\(D\_t\\)](#sec-27)
+  - [Exercise 1.27: Lagrange equations for total time derivatives](#sec-28)
+  - [Exercise 1.28: Total Time Derivatives](#sec-29)
+    - [part A](#sec-29-1)
+    - [Part B](#sec-29-2)
+    - [Part C](#sec-29-3)
+    - [Part D](#sec-29-4)
+    - [Part E](#sec-29-5)
+    - [Part F](#sec-29-6)
+  - [Exercise 1.29: Galilean Invariance](#sec-30)
+  - [Exercise 1.30: Orbits in a central potential](#sec-31)
+  - [Exercise 1.31: Foucault pendulum evolution](#sec-32)
+  - [Exercise 1.32: Time-dependent constraints](#sec-33)
+  - [Exercise 1.33: Falling off a log](#sec-34)
+  - [Exercise 1.34: Driven spherical pendulum](#sec-35)
+  - [Exercise 1.35: Restricted equations of motion](#sec-36)
+  - [Exercise 1.36: Noether integral](#sec-37)
+  - [Exercise 1.37: Velocity transformation](#sec-38)
+  - [Exercise 1.38: Properties of \\(E\\)](#sec-39)
+  - [Exercise 1.39: Combining Lagrangians](#sec-40)
+  - [Exercise 1.40: Bead on a triaxial surface](#sec-41)
+  - [Exercise 1.41: Motion of a tiny golf ball](#sec-42)
+  - [Exercise 1.42: Augmented Lagrangian](#sec-43)
+  - [Exercise 1.43: A numerical investigation](#sec-44)
+  - [Exercise 1.44: Double pendulum behavior](#sec-45)
 
 # Exercise 1.1: Degrees of Freedom and 1.2: Generalized Coordinates<a id="sec-1"></a>
 
@@ -299,9 +311,7 @@ This whole area of optics and least time has obsessed scientists for hundreds of
 
 # Section 1.4: Computing Actions<a id="sec-3"></a>
 
-This is the first demo of how any of this stuff works, starting on page 15.
-
-Here's our first Lagrangian, super simple.
+This is the first demo of how any of this stuff works, starting on page 15. Here's our first Lagrangian, super simple.
 
 ```scheme
 (define ((L-free-particle mass) local)
@@ -309,7 +319,7 @@ Here's our first Lagrangian, super simple.
     (* 1/2 mass (dot-product v v))))
 ```
 
-Suppose we let q denote a coordinate path function that maps time to position components:
+Suppose we let \\(q\\) denote a coordinate path function that maps time to position components:
 
 ```scheme
 (define q
@@ -318,30 +328,42 @@ Suppose we let q denote a coordinate path function that maps time to position co
       (literal-function 'z)))
 ```
 
-"Gamma" (looks like an L reflected across the origin) takes a coordinate path and returns a function of time that gives the local tuple. Looks like that fucker defaults to 2 levels deep, but you can call (Gamma 4) to get more derivatives.
+\\(\Gamma\\) is a function that takes a coordinate path and returns a function of time that gives the local tuple.
 
-The returned thing is called the "local tuple":
-
-```scheme
-((Gamma q) 't)
-```
-
-This is just (t, q(t), (Dq)(t), &#x2026;.) Where D is the derivative maybe of the vector, which does partial derivatives along each component. (Q: can a component of the coordinate path depend on the others? YES, and that would impose constraints beyond the degrees of freedom.)
+The value \\(\Gamma\\) returns is called the "local tuple":
 
 ```scheme
-((compose (L-free-particle 'm) (Gamma q)) 't)
+(->tex-equation
+ ((Gamma q) 't))
 ```
 
-So this little bastard doesn't depend on the coordinate system you choose, as long as its true that the lagrangian (kinetic energy equation) is the same for all reference frames.
+\begin{equation}
+\begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{ x\left( t \right)} \cr \cr \displaystyle{ y\left( t \right)} \cr \cr \displaystyle{ z\left( t \right)}\end{pmatrix}} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{ Dx\left( t \right)} \cr \cr \displaystyle{ Dy\left( t \right)} \cr \cr \displaystyle{ Dz\left( t \right)}\end{pmatrix}}\end{pmatrix}
+\end{equation}
 
-Lagrangian action! Minimal lagrangian action is key.
+This is just \\((t, q(t), (Dq)(t), ....)\\) Where \\(D\\) is the derivative. (Preview: can a component of the coordinate path depend on the others? YES, and that would impose constraints beyond the degrees of freedom you'd guess by just counting the coordinates.)
+
+Composing the Langrangian with \\(\Gamma\\) gives you a function that computes the Lagrangian at some instant:
+
+```scheme
+(->tex-equation
+ ((compose (L-free-particle 'm) (Gamma q)) 't))
+```
+
+\begin{equation}
+{{1}\over {2}} m {\left( Dz\left( t \right) \right)}^{2} + {{1}\over {2}} m {\left( Dy\left( t \right) \right)}^{2} + {{1}\over {2}} m {\left( Dx\left( t \right) \right)}^{2}
+\end{equation}
+
+This particular formula is written in terms of \\(x, y, z\\) coordinates, but that only came from the definition of \\(q\\). As we'll see later, you could write a coordinate transformation from some other totally different style of coordinates (called "generalized coordinates") and the Lagrangian would look different, but return the same value.
+
+This function calculates the action \\(S[q](t\_1, t\_2)\\):
 
 ```scheme
 (define (Lagrangian-action L q t1 t2)
   (definite-integral (compose L (Gamma q)) t1 t2))
 ```
 
-For a particle with mass 3, between 0 and 10&#x2026; look at page 17 for an example here. This is an example path:
+Here's an example path that a particle might take, moving along a straight line as a function of \\(t\\).
 
 ```scheme
 (define (test-path t)
@@ -350,11 +372,17 @@ For a particle with mass 3, between 0 and 10&#x2026; look at page 17 for an exam
       (+ (* 2 t) 1)))
 ```
 
-And we can run it here:
+    #| test-path |#
+
+Calculate the action for a particle of mass 3, between \\(t\_1 = 0\\) and \\(t\_2 = 10\\):
 
 ```scheme
 (Lagrangian-action (L-free-particle 3) test-path 0.0 10.0)
 ```
+
+    #| 435. |#
+
+This happens to be the minimal action, since the path we provided was a uniform path and the Lagrangian was for a free particle. If we'd provided a different path, we would still get an action. Just not a stationary action. Infinitesimal wiggles would change the action.
 
 # Exercise 1.4: Lagrangian actions<a id="sec-4"></a>
 
@@ -391,7 +419,7 @@ The action is equal to:
   \end{split}
 \end{equation}
 
-The velocity is constant, so substitute in equation \eqref{eq:constant-v}:
+The velocity is constant, so substitute in equation \eqref{eq:constant-v} and simplify:
 
 \begin{equation}
   \label{eq:4}
@@ -405,16 +433,16 @@ As expected.
 
 # Paths of Minimum Action<a id="sec-5"></a>
 
-Next, we'll take the old langrangian calculation for the straight line and fuck with the line by small variations; or some small epsilon multiplied by the effect of some other function added to the original q. Eta baby!
+This section in the textbook implements path variation, so we can see the action change (and increase!) off of the optimal path.
 
-This makes a new function that has zeroes at t1 and t2.
+`make-eta` returns a function that equals 0 at \\(t\_1\\) and \\(t\_2\\):
 
 ```scheme
 (define ((make-eta nu t1 t2) t)
   (* (- t t1) (- t t2) (nu t)))
 ```
 
-Boom, calculate the action AGAIN for a path that's pretty close&#x2026;
+Next, define a function that calculates the Lagrangian for a free particle, like before, but adds in the path variation multiplied by some small scaling factor \\(\epsilon\\).
 
 ```scheme
 (define ((varied-free-particle-action mass q nu t1 t2) epsilon)
@@ -423,26 +451,52 @@ Boom, calculate the action AGAIN for a path that's pretty close&#x2026;
                        (+ q (* epsilon eta))
                        t1
                        t2)))
-
-(let ((action-fn (varied-free-particle-action 3 test-path
-                                              (up sin cos square)
-                                              0.0 10.0)))
-  (action-fn 0.001))
 ```
 
-Now we can do a minimization over -2.0 to 1.0:
+The action for a small variation of \\(v(t) = (\sin(t), \cos(t), t^2)\\) is larger (top entry) vs the non-varied path (bottom entry), as expected.
+
+```scheme
+(define (test-path t)
+  (up (+ (* 4 t) 7)
+      (+ (* 3 t) 5)
+      (+ (* 2 t) 1)))
+
+(let ((action-fn (varied-free-particle-action 3.0 test-path
+                                              (up sin cos square)
+                                              0.0 10.0)))
+  (->tex-equation
+   (up (action-fn 0.001)
+       (action-fn 0))))
+```
+
+\begin{equation}
+\begin{pmatrix} \displaystyle{ 436.2912142857153} \cr \cr \displaystyle{ 435.}\end{pmatrix}
+\end{equation}
+
+What value of \\(\epsilon\\) minimizes the action for the test path?
+
+Search over -2.0 to 1.0:
 
 ```scheme
 (let ((action-fn (varied-free-particle-action
                   3.0 test-path
                   (up sin cos square)
                   0.0 10.0)))
-  (minimize action-fn -2.0 1.0))
+  (->tex-equation
+   (minimize action-fn -2.0 1.0)))
 ```
 
-## Finding trajectories that minimize action<a id="sec-5-1"></a>
+\begin{equation}
+5.134781488891349e-15\left( 435., 5 \right)
+\end{equation}
 
-First build up a function that hits all the listed points.
+The result shows that the minimum action occurs at \\(\epsilon = 0\\), up to numerical precision.
+
+## Finding trajectories that minimize the action<a id="sec-5-1"></a>
+
+Is it possible to use this principle to actually *find* a path, instead of simply checking it?
+
+First we need a function that builds a path. This version generates a path of individual points, bracketed by the supplied start and end points \\((t\_0, q\_0)\\) and \\((t\_1, q\_1)\\). \\(qs\\) is a list of intermediate points.
 
 ```scheme
 (define (make-path t0 q0 t1 q1 qs)
@@ -451,11 +505,19 @@ First build up a function that hits all the listed points.
       (Lagrange-interpolation-function
        (append (list q0) qs (list q1))
        (append (list t0) ts (list t1))))))
+```
 
+This function sort-of-composes `make-path` and `Lagrangian-action`:
+
+```scheme
 (define ((parametric-path-action L t0 q0 t1 q1) qs)
   (let ((path (make-path t0 q0 t1 q1 qs)))
     (Lagrangian-action L path t0 t1)))
+```
 
+Finally, a function that generates a path that minimizes the action:
+
+```scheme
 (define (find-path L t0 q0 t1 q1 n)
   (let ((initial-qs (linear-interpolants q0 q1 n)))
     (let ((minimizing-qs
@@ -465,7 +527,7 @@ First build up a function that hits all the listed points.
       (make-path t0 q0 t1 q1 minimizing-qs))))
 ```
 
-That's pretty sick. Now we can write a version that does some mother fucking plotting. First, a new lagrangian for a spring system. This one's the difference between the kinetic and potential energies of a spring system.
+Let's test it out with a Lagrangian for a one dimensional harmonic oscillator with spring constant \\(k\\):
 
 ```scheme
 (define ((L-harmonic m k) local)
@@ -474,20 +536,37 @@ That's pretty sick. Now we can write a version that does some mother fucking plo
     (- (* 1/2 m (square v)) (* 1/2 k (square q)))))
 ```
 
-# Exercise 1.5: Solution process<a id="sec-6"></a>
-
-watch the progress of the minimization. This is not great design, since we're overwriting the previous function and depending on the closure, but let's follow the text.
-
-Defines a window:
+    #| L-harmonic |#
 
 ```scheme
-(define win2
-  (frame 0. :pi/2 0. 1.2))
+(define win2 (frame 0.0 :pi/2 0 1))
+
+(define harmonic-path
+  (find-path (L-harmonic 1.0 1.0) 0.0 1.0 :pi/2 0.0 3))
+
+(plot-function win2 harmonic-path 0 :pi (/ :pi 100))
 ```
 
-new version of this that prints:
+The path looks like a harmonic oscillator that starts high and bounces down, after \\(\pi \over 2\\) seconds, down to 0.
+
+![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-06-10_14-24-14_screenshot.png)
+
+# Exercise 1.5: Solution process<a id="sec-6"></a>
+
+The goal of this exercise is really just to watch the minimization process that they've given us.
+
+> We can watch the progress of the minimization by modifying the procedure parametric-path-action to plot the path each time the action is computed.
+
+The functions they've provided define a window, and then a version of `parametric-path-action` that updates the graph as it minimizes:
 
 ```scheme
+(define win2 (frame 0.0 :pi/2 0.0 1.2))
+
+(define ((L-harmonic m k) local)
+  (let ((q (coordinate local))
+        (v (velocity local)))
+    (- (* 1/2 m (square v)) (* 1/2 k (square q)))))
+
 (define ((parametric-path-action Lagrangian t0 q0 t1 q1)
          intermediate-qs)
   (let ((path (make-path t0 q0 t1 q1 intermediate-qs)))
@@ -498,14 +577,13 @@ new version of this that prints:
     (Lagrangian-action Lagrangian path t0 t1)))
 ```
 
-And boom, we find a path (and get to watch a pretty chart):
+This final command runs the minimization and updates the graph as it goes.
 
 ```scheme
-(define (run-q)
-  (find-path (L-harmonic 1.0 1.0) 0. 1. :pi/2 0. 3))
+(find-path (L-harmonic 1.0 1.0) 0.0 1.0 :pi/2 0.0 2)
 ```
 
-Here it is:
+The minimization looks like this:
 
 ![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-05-29_10-12-19_AJBpDgU.gif)
 
@@ -515,17 +593,26 @@ The problem asks:
 
 > Suppose we try to obtain a path by minimizing an action for an impossible problem. For example, suppose we have a free particle and we impose endpoint conditions on the velocities as well as the positions that are inconsistent with the particle being free. Does the formalism protect itself from such an unpleasant attack? You may find it illuminating to program it and see what happens.
 
-I spent some time thinking about this, because when I attacked this book five years ago this problem clearly tripped me up.
+I spent a good amount of time thinking about this one. When I attacked this book five years ago I found it very confusing. It makes more sense now that I've moved farther in the book and understand what it's asking us to do.
 
-Let's say you take, as they suggest, some path, and impose velocity constraints on the endpoints in addition to the position constraints.
+Let's say you take, as the authors suggest, some path, and impose velocity constraints on the endpoints in addition to the position constraints.
 
-Usually, you constrain the coordinates at each endpoint and force a path that minimizes the action between two times. So what does it mean to impose velocity conditions? The key is to realize that on the computer, you're forcing a path to be composed of a bunch of discrete points. If you can force a point into the path that is NOT controlled by the optimizer, then you can force a velocity at some point in the path that makes no sense for minimal action.
+Usually, you constrain the coordinates at each endpoint and force a path that minimizes the action between two times. So what does it mean to impose velocity conditions?
+
+The key is to realize that on the computer, you're forcing a path to be composed of a bunch of discrete points. If you can force a point into the path that is NOT controlled by the optimizer, then you can force a velocity at some point in the path that makes no sense for minimal action.
+
+Let's define a new version of `parametric-path-action` that also takes an offset for the initial and final points. We'll force the first and last intermediate point to be equal to the start and end points, plus the offsets.
+
+Then, we can try to find an action-minimizing path, but force the optimizer to deal with not just our endpoint conditions, but these two extra points as well. Forcing two points on each end will force an initial velocity condition.
+
+Here's the implementation:
 
 ```scheme
+
 (define (((parametric-path-action* win)
           Lagrangian t0 q0 offset0 t1 q1 offset1)
          intermediate-qs)
-  (let ((intermediate-qs* (append (list (- q0 offset0))
+  (let ((intermediate-qs* (append (list (+ q0 offset0))
                                   intermediate-qs
                                   (list (+ q1 offset1)))))
     (let ((path (make-path t0 q0 t1 q1 intermediate-qs*)))
@@ -534,10 +621,13 @@ Usually, you constrain the coordinates at each endpoint and force a path that mi
       (plot-function win path t0 t1 (/ (- t1 t0) 100))
       ;; compute action
       (Lagrangian-action Lagrangian path t0 t1))))
+```
 
-;; Version of find path that allows for an offset to the initial and
-;; final points.
+You could try a similar trick by modifying the first and last entries of `intermediate-qs` instead of appending a point, but I suspect that the optimizer would be able to figure out how to offset your offset.
 
+Next, a version of `find-path` that passes the offsets through to the new `parametric-path-action*`:
+
+```scheme
 (define ((find-path* win) L t0 q0 offset0 t1 q1 offset1 n)
   (let ((initial-qs (linear-interpolants q0 q1 n)))
     (let* ((action (parametric-path-action* win))
@@ -546,12 +636,14 @@ Usually, you constrain the coordinates at each endpoint and force a path that mi
              (action L t0 q0 offset0 t1 q1 offset1)
              initial-qs)))
       (make-path t0 q0 t1 q1 minimizing-qs))))
+```
 
-;; This runs (and graphs!) the motion of a free particle using the
-;; fucked up path.
+And finally, a function that can execute runs of our formalism-killing experiment.
+
+```scheme
 (define (one-six offset0 offset1 n)
   (let* ((tmax 10)
-         (win (frame -1 (+ tmax 1) 0. (+ 1.2 offset0 offset1)))
+         (win (frame -1 (+ tmax 1) -0.2 (+ 1.2 offset0 offset1)))
          (find (find-path* win))
          (L (L-free-particle 3.0))
          (path (find L
@@ -561,89 +653,377 @@ Usually, you constrain the coordinates at each endpoint and force a path that mi
     (Lagrangian-action L path 0 tmax)))
 ```
 
-What happens when you program this? You get a funky, wiggly path like this: (insert the gif!)
+`one-six` takes two offsets and runs the minimization routine against `L-free-particle`, moving from position 1 to 0 over 10 seconds. `n` controls the number of interpolation points that the system will use.
 
-And you can show that the action you calculate is NOT in fact the minimum. Here's an interface that says "take 3 interpolated points, and force an offset point of a small amount into the action.
+Internally, remember, `parametric-path-action*` will append two extra fixed offset points to the `n` intermediate points that the optimizer gets to control.
+
+## Executions<a id="sec-7-1"></a>
+
+Let's run the code with 0 offsets and 3 interpolation points. Note that this should *still* distort the path, since we now have two fixed points at the start and end. This is effectively imposing a 0 velocity constraint at the beginning and end.
+
+Here's the code, and its output:
 
 ```scheme
 (one-six 0 0 3)
 ```
 
+![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-06-10_15-10-46_ex1_6_nooffset.gif)
+
+The path ends up looking almost sinusoidal, and takes a while to converge. This is the best polynomial that the system can come up with that matches the 7 points (3 interpolated, 2 offsets, 1 start and 1 end).
+
+Here's a small positive velocity imposed at the beginning:
+
 ```scheme
 (one-six 0.2 0 3)
 ```
 
-You <span class="underline"><span class="underline">still</span></span> can get the process to converge! But that is only because you're not minimizing action with respect to some Lagrangian anymore; you're minimizing the action of two constraints. You have the Lagrangian, and then the warring goal of the polynomial interpolation. At some point, the minimizer breaks as you almost certainly oscillate between two paths, as each constraint tugs at you.
+![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-06-10_15-10-53_ex1_6_02offset.gif)
 
-If you make the impulse too big, then the war is too hardcore and the process never converges. But it's important to note here the details of the optimizer. The only reason this can "work" is settings on the optimizer.
+The system takes longer to converge. Here's a larger impulse of 0.5:
+
+```scheme
+(one-six 0.5 0 3)
+```
+
+![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-06-10_15-11-10_ex1_6_05offset.gif)
+
+And a moderate negative velocity, just for fun:
+
+```scheme
+(one-six -0.5 0 3)
+```
+
+![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-06-10_15-11-27_ex1_6_neg5offset.gif)
+
+The process <span class="underline"><span class="underline">does</span></span> converge, but this is only because we only used 3 intermediate points. If you bump up to 10 points, with this code:
+
+```scheme
+(one-six 20 0 3)
+```
+
+The optimization freezes.
+
+What is going on here? Why does the minimizer converge?
+
+With velocity constraints imposed, we're no longer minimizing the action with respect to some Lagrangian. We're minimizing the action given two constraints. You have the Lagrangian, and then the warring goal of the polynomial interpolation forcing a certain shape on the path. At some point, the minimizer breaks; internally it ends up pinned between two tugging constraints.
+
+If you make the impulse too big or force too many intermediate points, then the war is too hardcore and the process never converges. But it's important to note here the details of the optimizer. This detail doesn't break reality.
+
+If you *do* need to impose velocity conditions, it turns out you can use a Lagrangian that takes acceleration into account. This is discussed in Exercise 1.10.
 
 # Exercise 1.7: Properties of \\(\delta\\)<a id="sec-8"></a>
 
+This exercise asks us to prove various products of the variation operator \\(\delta\_\eta\\). This is a sort of higher-order derivative operator. Apply it to a higher order function \\(f\\), and you'll get a function back that returns the *sensitivity* of \\(f\\) to fluctuations in its input path function. (Confusing? Check out [the textbook](https://tgvaughan.github.io/sicm/chapter001.html#h1-6a).
+
+## Variation Product Rule<a id="sec-8-1"></a>
+
+The product rule for variations states that:
+
+\begin{equation}
+\label{eq:var-prod}
+\delta\_\eta (f g)[q] = \delta\_\eta f[q] g[q] + f[q] \delta\_\eta g[q]
+\end{equation}
+
+Write out the left side explicitly, using the definition of \\(\delta\_\eta\\):
+
+\begin{equation}
+\label{eq:var-prod-proof}
+  \delta\_\eta (f g)[q] = \lim\_{\epsilon \to 0} \left( {f[q + \epsilon\eta]g[q + \epsilon\eta] - f[q]g[q]} \over \epsilon \right)
+\end{equation}
+
+Make the inspired move to add and subtract \\(f[q] g[q + \epsilon \eta]\\) inside the limit, rearrange and factor out the terms that have appeared in common. (Stare at this for a moment to make sure the steps are clear.)
+
+\begin{equation}
+\label{eq:var-prod-proof2}
+\delta\_\eta (f g)[q] = \lim\_{\epsilon \to 0} \left( {g[q + \epsilon\eta](f[q + \epsilon\eta] - f[q])} \over \epsilon \right) + f[q] \lim\_{\epsilon \to 0} \left( {(g[q + \epsilon \eta] - g[q])} \over \epsilon \right)
+\end{equation}
+
+You might recognize that we've now isolated terms that look like \\(\delta\_\eta f[q]\\) and \\(\delta\_\eta g[q]\\), as \\(\epsilon\\) approaches 0. Notice that as this happens, \\(g[q + \epsilon\eta] \to g[q]\\), and the whole expression evaluates to the product rule we were seeking:
+
+\begin{equation}
+\label{eq:var-prod2}
+\delta\_\eta (f g)[q] = \delta\_\eta f[q]\,g[q] + f[q]\,\delta\_\eta g[q]
+\end{equation}
+
+## Variation Sum Rule<a id="sec-8-2"></a>
+
+The sum rule is easier. Our goal is:
+
+\begin{equation}
+\label{eq:var-sum}
+\delta\_\eta (f + g)[q] = \delta\_\eta f[q] + \delta\_\eta g[q]
+\end{equation}
+
+Expand out the definition of the variation operator, regroup terms, allow \\(\epsilon \to 0\\) and notice that we've recovered our goal.
+
+\begin{equation}
+\label{eq:var-sum-proof}
+\begin{aligned}
+  \delta\_\eta (f + g)[q] & = \lim\_{\epsilon \to 0} \left( {(f[q + \epsilon\eta] + g[q + \epsilon\eta]) - (f[q] + g[q])} \over \epsilon \right) \cr
+  & = \lim\_{\epsilon \to 0} \left( {f[q + \epsilon\eta] - f[q]} \over \epsilon \right) + \lim\_{\epsilon \to 0} \left( {g[q + \epsilon\eta] - g[q]} \over \epsilon \right) \cr
+  & = \delta\_\eta f[q] + \delta\_\eta g[q]
+\end{aligned}
+\end{equation}
+
+Done!
+
+## Variation Scalar Multiplication<a id="sec-8-3"></a>
+
+We want to show that \\(\delta\_\eta\\) preserves multiplication by a scalar \\(c\\):
+
+\begin{equation}
+\label{eq:var-scalar}
+\delta\_\eta (c g)[q] = c \delta\_\eta g[q]
+\end{equation}
+
+Expand out the definition of the variation operator:
+
+\begin{equation}
+\label{eq:var-scalar-proof}
+\begin{aligned}
+  \delta\_\eta (c g)[q] & = \lim\_{\epsilon \to 0} \left( {c f[q + \epsilon\eta] - c f[q]} \over \epsilon \right) \cr
+  & = c \lim\_{\epsilon \to 0} \left( {f[q + \epsilon\eta] - f[q]} \over \epsilon \right) \cr
+  & = c \delta\_\eta f[q]
+\end{aligned}
+\end{equation}
+
+Done, since the limit operator preserves scalar multiplication.
+
+## Chain Rule for Variations<a id="sec-8-4"></a>
+
+The chain rule for variations states that:
+
+\begin{equation}
+\label{eq:var-chain}
+\delta\_\eta h[q] = (DF \circ g[q])\, \delta\_\eta g[q] \textrm{ with } h[q] = F \circ g[q]
+\end{equation}
+
+Expand this out using the definition of \\(\delta\_\eta\\):
+
+\begin{equation}
+\label{eq:var-chain-proof}
+  \delta\_\eta (F \circ g[q]) = \lim\_{\epsilon \to 0} \left( {(F \circ g[q + \epsilon\eta]) - (F \circ g[q])} \over \epsilon \right)
+\end{equation}
+
+Now multiply the term inside the limit by \\(1 = {{g[q + \epsilon\eta] - g[q]} \over {g[q + \epsilon\eta] - g[q]}}\\) and factor out the new, more recognizable product that forms:
+
+\begin{equation}
+\label{eq:var-chain-proof2}
+\begin{aligned}
+  \delta\_\eta (F \circ g[q]) & = \lim\_{\epsilon \to 0} \left( {((F \circ g[q + \epsilon\eta]) - (F \circ g[q]))({g[q + \epsilon\eta] - g[q]})} \over {({g[q + \epsilon\eta] - g[q]}) \epsilon} \right) \cr
+  & = \lim\_{\epsilon \to 0} \left( {(F \circ g[q + \epsilon\eta]) - (F \circ g[q])} \over {g[q + \epsilon\eta] - g[q]} \right) \delta\_\eta g[q]
+\end{aligned}
+\end{equation}
+
+The remaining term inside the limit has the form of a derivative of some function \\(f\\) evaluated at a point \\(a\\).
+
+\begin{equation}
+\label{eq:var-chain-proof3}
+Df(a) = \lim\_{b \to a} \left( {f(b) - f(a)} \over {b - a} \right)
+\end{equation}
+
+Where \\(b = g[q + \epsilon \eta]\\) and \\(a = g[q]\\). As \\(\epsilon \to 0\\), \\(F \circ g[q + \epsilon \eta] \to F \circ g[q]\\). We know this because we showed that \\(\delta\_\eta g[q]\\) exists and factored it out.
+
+Remember that that this is all function algebra, so composition here is analogous to function application; so \\(F\\) is indeed the \\(f\\) in equation \eqref{eq:var-chain-proof3}, and the remaining term collapses to \\(DF\\) evaluated at \\(a = g[q]\\):
+
+\begin{equation}
+\label{eq:var-chain-proof4}
+  \delta\_\eta (F \circ g[q]) = (DF \circ g[q])\, \delta\_\eta g[q]
+\end{equation}
+
+## \\(\delta\_\eta\\) commutes with \\(D\\)<a id="sec-8-5"></a>
+
+We need to show the derivative can commute with a normal derivative of the function that \\(f\\) returns after it's passed a path:
+
+\begin{equation}
+\label{eq:var-commute}
+D \delta\_\eta f[q] = \delta\_\eta g[q] \textrm{ with } g[q] = D(f[q])
+\end{equation}
+
+Expand the left side by the definition of \\(\delta\_\eta\\):
+
+\begin{equation}
+\label{eq:var-commute-proof}
+  D (\delta\_\eta f[q]) = D \lim\_{\epsilon \to 0} \left( {(f[q + \epsilon\eta]) - (f[q])} \over \epsilon \right)
+\end{equation}
+
+The derivative \\(D\\) is a linear operator, so we can move it in to the limit and distribute it over subtraction:
+
+\begin{equation}
+\label{eq:var-commute-proof2}
+\begin{aligned}
+  D (\delta\_\eta f[q]) & = \lim\_{\epsilon \to 0} \left( {D(f[q + \epsilon\eta]) - D(f[q])} \over \epsilon \right) \cr
+  & = \delta\_\eta(D(f[q]))
+\end{aligned}
+\end{equation}
+
+Our goal is achieved.
+
 # Exercise 1.8: Implementation of \\(\delta\\)<a id="sec-9"></a>
 
-This FEELS weird&#x2026; but we want something that is&#x2026; well, let's see.
+## Part A: Implement \\(\delta\_\eta\\)<a id="sec-9-1"></a>
+
+The goal here is to implement \\(\delta\_\eta\\) as a procedure. Explicitly:
+
+> Suppose we have a procedure `f` that implements a path-dependent function: for path `q` and time `t` it has the value `((f q) t)`. The procedure delta computes the variation \\(\delta\_\eta f[q](t)\\) as the value of the expression `((((delta eta) f) q) t)`. Complete the definition of `delta`:
+
+After laboriously proving all of the properties above, the actual implementation feels so simple.
+
+The key is equation 1.22 in the book:
+
+\begin{equation}
+\label{eq:1-22}
+\delta\_\eta f[q] = \lim\_{\epsilon \to 0} \left( {g(\epsilon) - g(0)} \over \epsilon \right) = Dg(0)
+\end{equation}
+
+Given \\(g(\epsilon) = f[q + \epsilon \eta]\\). Through the magic of automatic differentiation we can simply write:
 
 ```scheme
 (define (((delta eta) f) q)
-  (let (g (lambda (eps)
-            (f (q + (* eps eta)))))
+  (let ((g (lambda (eps)
+             (f (+ q (* eps eta))))))
     ((D g) 0)))
 ```
 
-Why does this work? WELL&#x2026; we need a way to force the limit in.
+It's almost spooky, that \\(D\\) can somehow figure out what to do here.
 
-this is a PATH function, remember. This takes a path function, then passes it into \\(\Gamma\\), and composes THAT with F. F is a function from the local tuple to some output variable. You can imagine it as the Langrangian, for example.
+## Part B: Check \\(\delta\_\eta\\)'s properties<a id="sec-9-2"></a>
 
-The local tuple type defined here can take any number of path components.
+Part B's problem description gave us a path-dependent function similar to this one:
 
 ```scheme
-(define (f q)
-  (let* ((Local (Up Real (UP* Real) (UP* Real)))
-         (F (literal-function 'F (-> Local Real))))
+(define ((fn sym) q)
+  (let* ((Local (UP Real (UP* Real) (UP* Real)))
+         (F (literal-function sym (-> Local Real))))
     (compose F (Gamma q))))
 ```
 
-This is a path function that returns a 2d path; we can use this as an example.
+I've modified it slightly to take in a symbol, since we'll need to generate multiple functions for a few of the rules.
+
+\\(fn\\) takes a symbol like \\(F\\) and a path function - a function from \\(t\\) to any number of coordinates (see the `UP*`?) - and returns a generic expression for a path dependent function \\(F\\) that acts via \\(F \circ \Gamma[q]\\). \\(F\\) might be a Lagrangian, for example.
+
+The textbook also gives us this function from \\(t \to (x, y)\\) to test out the properties above. I've added an \\(\eta\\) of the same type signature that we can use to add variation to the path.
 
 ```scheme
-(define q (literal-function 'q (-> Real (Up Real Real))))
+(define q (literal-function 'q (-> Real (UP Real Real))))
+(define eta (literal-function 'q (-> Real (UP Real Real))))
 ```
 
-# Orbital Motion<a id="sec-10"></a>
+### Variation Product Rule<a id="sec-9-2-1"></a>
 
-Page 31.
+Equation \eqref{eq:var-prod} states the product rule for variations. Here it is in code. I've implemented the right and left sides and subtracted them. As expected, the result is 0:
 
 ```scheme
-(define ((L-orbital mass mu) local)
-  (let ((q (coordinate local))
-        (qdot (velocity local)))
-    (+ (* 1/2 mass (square qdot))
-       (/ mu (sqrt (square q))))))
-
-(define q2
-  (up (literal-function 'xi)
-      (literal-function 'eta)))
+(let* ((f (fn 'f))
+       (g (fn 'g))
+       (de (delta eta)))
+  (let ((left ((de (* f g)) q))
+        (right (+ (* (g q) ((de f) q))
+                  (* (f q) ((de g) q)))))
+    (->tex-equation
+     ((- left right) 't))))
 ```
 
-To test:
+\begin{equation}
+0
+\end{equation}
+
+### Variation Sum Rule<a id="sec-9-2-2"></a>
+
+The sum rule is similar. Here's the Scheme implementation of equation \eqref{eq:var-sum}:
 
 ```scheme
-((compose ((partial 1) (L-orbital 'm 'mu)) (Gamma q2)) 't)
+(let* ((f (fn 'f))
+       (g (fn 'g))
+       (de (delta eta)))
+  (let ((left ((de (+ f g)) q))
+        (right (+ ((de f) q)
+                  ((de g) q))))
+    (->tex-equation
+     ((- left right) 't))))
 ```
 
-# Exercise 1.9: Lagrange's equations<a id="sec-11"></a>
+\begin{equation}
+0
+\end{equation}
 
-# Exercise 1.10: Higher-derivative Lagrangians<a id="sec-12"></a>
+### Variation Scalar Multiplication<a id="sec-9-2-3"></a>
 
-# Exercise 1.11: Kepler's third law<a id="sec-13"></a>
+Here's equation \eqref{eq:var-scalar} in code. The sides are equal, so their difference is 0:
 
-# Exercise 1.12: Lagrange's equations (code)<a id="sec-14"></a>
+```scheme
+(let* ((g (fn 'g))
+       (de (delta eta)))
+  (let ((left ((de (* 'c g)) q))
+        (right (* 'c ((de g) q))))
+    (->tex-equation
+     ((- left right) 't))))
+```
 
-# Exercise 1.13: Higher-derivative Lagrangians (code)<a id="sec-15"></a>
+\begin{equation}
+0
+\end{equation}
 
-# Exercise 1.14: Coordinate-independence of Lagrange equations<a id="sec-16"></a>
+### Chain Rule for Variations<a id="sec-9-2-4"></a>
 
-# Exercise 1.15: Equivalence<a id="sec-17"></a>
+To compute the chain rule we'll need a version of `fn` that takes the derivative of the inner function:
+
+```scheme
+(define ((Dfn sym) q)
+  (let* ((Local (UP Real (UP* Real) (UP* Real)))
+         (F (literal-function sym (-> Local Real))))
+    (compose (D F) (Gamma q))))
+```
+
+For the Scheme implementation, remember that both `fn` and `Dfn` have \\(\Gamma\\) baked in. The \\(g\\) in equation \eqref{eq:var-chain} is hardcoded to \\(\Gamma\\) in the function below.
+
+Here's a check that the two sides of equation \eqref{eq:var-chain} are equal:
+
+```scheme
+(let* ((h (fn 'F))
+       (dh (Dfn 'F))
+       (de (delta eta)))
+  (let ((left (de h))
+        (right (* dh (de Gamma))))
+    (->tex-equation
+     (((- left right) q) 't))))
+```
+
+\begin{equation}
+0
+\end{equation}
+
+### \\(\delta\_\eta\\) commutes with \\(D\\)<a id="sec-9-2-5"></a>
+
+Our final test. Here's equation \eqref{eq:var-commute} in code, showing that the derivative commutes with the variation operator:
+
+```scheme
+(let* ((f (fn 'f))
+       (g (compose D f))
+       (de (delta eta)))
+  (let ((left (D ((de f) q)))
+        (right ((de g) q)))
+    (->tex-equation
+     ((- left right) 't))))
+```
+
+\begin{equation}
+0
+\end{equation}
+
+# Exercise 1.9: Lagrange's equations<a id="sec-10"></a>
+
+# Exercise 1.10: Higher-derivative Lagrangians<a id="sec-11"></a>
+
+# Exercise 1.11: Kepler's third law<a id="sec-12"></a>
+
+# Exercise 1.12: Lagrange's equations (code)<a id="sec-13"></a>
+
+# Exercise 1.13: Higher-derivative Lagrangians (code)<a id="sec-14"></a>
+
+# Exercise 1.14: Coordinate-independence of Lagrange equations<a id="sec-15"></a>
+
+# Exercise 1.15: Equivalence<a id="sec-16"></a>
 
 NOTE - I have a strong suspicion here that we can show that what is actually going on is that we end up with a total time derivative that we can ignore. The final terms at the end that cancel&#x2026; why is it that they work out the way they do? It would be nice to try and use the time-derivative test machinery we built to take a look there.
 
@@ -758,7 +1138,7 @@ trying again. get a function:
 
 That's good for now.
 
-# Exercise 1.16: Central force motion<a id="sec-18"></a>
+# Exercise 1.16: Central force motion<a id="sec-17"></a>
 
 Messing around to make sure I understand what I'm seeing in the coordinate transforms on page 45.
 
@@ -867,15 +1247,15 @@ the explicit link to function composition, and how the new lagrangian is (Lagran
 
 they add in a very simple-to-write coordinate transform that has one of the angles depend on t. and then compose that in, and boom, basically for free you're in rotating spherical coords.
 
-# Exercise 1.17: Bead on a helical wire<a id="sec-19"></a>
+# Exercise 1.17: Bead on a helical wire<a id="sec-18"></a>
 
-# Exercise 1.18: Bead on a triaxial surface<a id="sec-20"></a>
+# Exercise 1.18: Bead on a triaxial surface<a id="sec-19"></a>
 
-# Exercise 1.19: Two-bar linkage<a id="sec-21"></a>
+# Exercise 1.19: Two-bar linkage<a id="sec-20"></a>
 
-# Exercise 1.20: Sliding pendulum<a id="sec-22"></a>
+# Exercise 1.20: Sliding pendulum<a id="sec-21"></a>
 
-# Exercise 1.21: A dumbbell<a id="sec-23"></a>
+# Exercise 1.21: A dumbbell<a id="sec-22"></a>
 
 The uneven dumbbell.
 
@@ -1027,25 +1407,25 @@ For part d, we can substitute the constant value of c to get simplified equation
 
 For part e, I wrote this in the notebook - it is effectively identical to the substitution that is happening on the computer, so I'm going to ignore this. You just get more cancellations.
 
-# Exercise 1.22: Driven pendulum<a id="sec-24"></a>
+# Exercise 1.22: Driven pendulum<a id="sec-23"></a>
 
-# Exercise 1.23: Fill in the details<a id="sec-25"></a>
+# Exercise 1.23: Fill in the details<a id="sec-24"></a>
 
-# Exercise 1.24: Constraint forces<a id="sec-26"></a>
+# Exercise 1.24: Constraint forces<a id="sec-25"></a>
 
-# Exercise 1.25: Foucalt pendulum Lagrangian<a id="sec-27"></a>
+# Exercise 1.25: Foucalt pendulum Lagrangian<a id="sec-26"></a>
 
-# Exercise 1.26: Properties of \\(D\_t\\)<a id="sec-28"></a>
+# Exercise 1.26: Properties of \\(D\_t\\)<a id="sec-27"></a>
 
-# Exercise 1.27: Lagrange equations for total time derivatives<a id="sec-29"></a>
+# Exercise 1.27: Lagrange equations for total time derivatives<a id="sec-28"></a>
 
-# Exercise 1.28: Total Time Derivatives<a id="sec-30"></a>
+# Exercise 1.28: Total Time Derivatives<a id="sec-29"></a>
 
 ```scheme
 (load "ch1/utils.scm")
 ```
 
-## part A<a id="sec-30-1"></a>
+## part A<a id="sec-29-1"></a>
 
 nice, easy to guess.
 
@@ -1062,7 +1442,7 @@ Show the function of t, and confirm that both methods are equivalent.
          (literal-function 'x))
 ```
 
-## Part B<a id="sec-30-2"></a>
+## Part B<a id="sec-29-2"></a>
 
 NOT a total time derivative.
 
@@ -1100,7 +1480,7 @@ It's clear here that the second and third tuple entries aren't equal, so we don'
 (se (GB-properties 'm))
 ```
 
-## Part C<a id="sec-30-3"></a>
+## Part C<a id="sec-29-3"></a>
 
 no problem, we've got a total time derivative on our hands.
 
@@ -1128,7 +1508,7 @@ Boom, the second and third entries are equal, as we'd expect.
 (se GC-properties)
 ```
 
-## Part D<a id="sec-30-4"></a>
+## Part D<a id="sec-29-4"></a>
 
 This is NOT a total time derivative; you can tell by taking the partials of each side, G0 and G1, as we'll see here.
 
@@ -1148,7 +1528,7 @@ The partials for each side don't match.
 (se GD-properties)
 ```
 
-## Part E<a id="sec-30-5"></a>
+## Part E<a id="sec-29-5"></a>
 
 This is strange to me, because I thought that this thing had to produce a tuple.
 
@@ -1210,7 +1590,7 @@ We've recovered F; the partials are equal, and the final matrix is symmetric.
 (se GE-properties)
 ```
 
-## Part F<a id="sec-30-6"></a>
+## Part F<a id="sec-29-6"></a>
 
 This one is interesting, since the second partial is a tuple. This is not so obvious to me, so first let's check the properties:
 
@@ -1249,7 +1629,7 @@ BUT we fail the second test; the hessian that we get from ((partial 1) G1) is no
 (se GF-properties)
 ```
 
-# Exercise 1.29: Galilean Invariance<a id="sec-31"></a>
+# Exercise 1.29: Galilean Invariance<a id="sec-30"></a>
 
 I'll do this for a single particle, since it's annoying to get the sum going for many; and the lagrangian is additive, so no problem.
 
@@ -1332,32 +1712,32 @@ Take a look. there is a quadratic velocity term in here! We have \\(D \Delta\_x(
 
 SO, only if the shift and uniform translation are constant do we not affect the Lagrangian value.
 
-# Exercise 1.30: Orbits in a central potential<a id="sec-32"></a>
+# Exercise 1.30: Orbits in a central potential<a id="sec-31"></a>
 
-# Exercise 1.31: Foucault pendulum evolution<a id="sec-33"></a>
+# Exercise 1.31: Foucault pendulum evolution<a id="sec-32"></a>
 
-# Exercise 1.32: Time-dependent constraints<a id="sec-34"></a>
+# Exercise 1.32: Time-dependent constraints<a id="sec-33"></a>
 
-# Exercise 1.33: Falling off a log<a id="sec-35"></a>
+# Exercise 1.33: Falling off a log<a id="sec-34"></a>
 
-# Exercise 1.34: Driven spherical pendulum<a id="sec-36"></a>
+# Exercise 1.34: Driven spherical pendulum<a id="sec-35"></a>
 
-# Exercise 1.35: Restricted equations of motion<a id="sec-37"></a>
+# Exercise 1.35: Restricted equations of motion<a id="sec-36"></a>
 
-# Exercise 1.36: Noether integral<a id="sec-38"></a>
+# Exercise 1.36: Noether integral<a id="sec-37"></a>
 
-# Exercise 1.37: Velocity transformation<a id="sec-39"></a>
+# Exercise 1.37: Velocity transformation<a id="sec-38"></a>
 
-# Exercise 1.38: Properties of \\(E\\)<a id="sec-40"></a>
+# Exercise 1.38: Properties of \\(E\\)<a id="sec-39"></a>
 
-# Exercise 1.39: Combining Lagrangians<a id="sec-41"></a>
+# Exercise 1.39: Combining Lagrangians<a id="sec-40"></a>
 
-# Exercise 1.40: Bead on a triaxial surface<a id="sec-42"></a>
+# Exercise 1.40: Bead on a triaxial surface<a id="sec-41"></a>
 
-# Exercise 1.41: Motion of a tiny golf ball<a id="sec-43"></a>
+# Exercise 1.41: Motion of a tiny golf ball<a id="sec-42"></a>
 
-# Exercise 1.42: Augmented Lagrangian<a id="sec-44"></a>
+# Exercise 1.42: Augmented Lagrangian<a id="sec-43"></a>
 
-# Exercise 1.43: A numerical investigation<a id="sec-45"></a>
+# Exercise 1.43: A numerical investigation<a id="sec-44"></a>
 
-# Exercise 1.44: Double pendulum behavior<a id="sec-46"></a>
+# Exercise 1.44: Double pendulum behavior<a id="sec-45"></a>
