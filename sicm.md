@@ -1293,6 +1293,71 @@ Exercise 1.13 implements this in Scheme.
 
 ## Exercise 1.11: Kepler's third law<a id="sec-1-12"></a>
 
+Lagrangian from the problem:
+
+```scheme
+(define ((L-central-polar m V) local)
+  (let ((q (coordinate local))
+        (qdot (velocity local)))
+    (let ((r (ref q 0))     (phi (ref q 1))
+                            (rdot (ref qdot 0)) (phidot (ref qdot 1)))
+      (- (* 1/2 m
+            (+ (square rdot) (square (* r phidot))) )
+         (V r)))))
+```
+
+Helper function, plus a Scheme version of the reduced mass definition:
+
+```scheme
+(define ((gravitational-energy G m1 m2) r)
+  (- (/ (* G m1 m2) r)))
+
+(define (reduced-mass m1 m2)
+  (/ (* m1 m2)
+     (+ m1 m2)))
+```
+
+The Lagrangian is written in terms of some angle \\(\phi\\) and \\(r\\), the distance between the two particles. \\(q\\) defines a circular path:
+
+```scheme
+(define ((q r omega) t)
+  (let ((phi (* omega t)))
+    (up r phi)))
+```
+
+Let's write the Lagrange equations, given \\(r = a\\) and \\(\omega = n\\):
+
+```scheme
+(let ((eqfn (Lagrange-equations
+             (L-central-polar (reduced-mass 'm1 'm2)
+                              (gravitational-energy 'G 'm1 'm2)))))
+  (->tex-equation
+   ((eqfn (q 'a 'n)) 't)))
+```
+
+\begin{equation}
+\begin{bmatrix} \displaystyle{ {{ - {a}^{3} \cdot m1 \cdot m2 \cdot {n}^{2} + G {m1}^{2} \cdot m2 + G \cdot m1 \cdot {m2}^{2}}\over {{a}^{2} \cdot m1 + {a}^{2} \cdot m2}}} \cr \cr \displaystyle{ 0}\end{bmatrix}
+\end{equation}
+
+If you fiddle with this you should see that you can factor out the reduced mass and an \\(a^2\\) term. The whole equations is zero, so it's fine to multiply the residual by any non-zero factor you like.
+
+```scheme
+(let ((eqfn (Lagrange-equations
+             (L-central-polar (reduced-mass 'm1 'm2)
+                              (gravitational-energy 'G 'm1 'm2)))))
+  (->tex-equation
+   (* ((eqfn (q 'a 'n)) 't)
+      (/ (square 'a)
+         (reduced-mass 'm1 'm2)n))))
+```
+
+And, boom, we see Kepler's third law:
+
+\begin{equation}
+\label{eq:kepler3}
+n^2a^3 = G(m\_1 + m\_2)
+\end{equation}
+
 ## Exercise 1.12: Lagrange's equations (code)<a id="sec-1-13"></a>
 
 This exercise has us writing code for the three systems described in [Exercise 1.9](https://tgvaughan.github.io/sicm/chapter001.html#Exe_1-9). Before we start, here's a function that will display an up-tuple of:
