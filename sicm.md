@@ -22,12 +22,16 @@
     - [Part B: Check \\(\delta\_\eta\\)'s properties](#sec-1-9-2)
   - [Exercise 1.9: Lagrange's equations](#sec-1-10)
   - [Exercise 1.10: Higher-derivative Lagrangians](#sec-1-11)
+    - [Higher dimensions](#sec-1-11-1)
   - [Exercise 1.11: Kepler's third law](#sec-1-12)
   - [Exercise 1.12: Lagrange's equations (code)](#sec-1-13)
     - [Part A: Ideal Planar Pendulum](#sec-1-13-1)
     - [Part B: 2D Potential](#sec-1-13-2)
     - [Part C: Particle on a Sphere](#sec-1-13-3)
   - [Exercise 1.13: Higher-derivative Lagrangians (code)](#sec-1-14)
+    - [Part A: Acceleration-dependent Lagrangian Implementation](#sec-1-14-1)
+    - [Part B: Applying HO-Lagrangians](#sec-1-14-2)
+    - [Part C: Generalized Lagrange Equations](#sec-1-14-3)
   - [Exercise 1.14: Coordinate-independence of Lagrange equations](#sec-1-15)
   - [Exercise 1.15: Equivalence](#sec-1-16)
   - [Exercise 1.16: Central force motion](#sec-1-17)
@@ -1136,6 +1140,157 @@ You should do this on paper, then go look at Exercise 1.12 for the Scheme code t
 
 ## Exercise 1.10: Higher-derivative Lagrangians<a id="sec-1-11"></a>
 
+Exercise:
+
+> Derive Lagrange's equations for Lagrangians that depend on accelerations. In particular, show that the Lagrange equations for Lagrangians of the form \\(L(t, q, \dot{q}, \ddot{q})\\) with \\(\ddot{q}\\) terms are
+>
+> \begin{equation}
+>   D^2(\partial\_3L \circ \Gamma[q]) - D(\partial\_2L \circ \Gamma[q]) + (\partial\_1L \circ \Gamma[q]) = 0
+> \end{equation}
+
+Start with the action:
+
+\begin{equation}
+  \begin{aligned}
+    S[q](t\_a, t\_b) & = \int\_{t\_a}^{t\_b} L(t, x(t), v(t), a(t)) dx \cr
+    & = \int\_{t\_a}^{t\_b} (L \circ \Gamma[q])
+  \end{aligned}
+\end{equation}
+
+apply the variation operator, \\(\delta\_\eta\\):
+
+\begin{equation}
+  \delta\_\eta S[q](t\_a, t\_b) = \int\_{t\_a}^{t\_b} \delta\_\eta (L \circ \Gamma[q])
+\end{equation}
+
+Expand the right side out the chain rule, equation \eqref{eq:var-chain}:
+
+\begin{equation}
+  \int\_{t\_a}^{t\_b} \delta\_\eta (L \circ \Gamma[q])  =\int\_{t\_a}^{t\_b} ((DL) \circ \Gamma[q]) \delta\_\eta\Gamma[q]
+\end{equation}
+
+From equations 1.20 and 1.21 in the book, we know that
+
+\begin{equation}
+\delta\_\eta\Gamma[q] = (0, \eta, D\eta, D^2\eta, \ldots)
+\end{equation}
+
+Expand the chain rule up to the $n$th derivative of the coordinate:
+
+\begin{equation}
+  \begin{aligned}
+    \int\_{t\_a}^{t\_b} & ((DL) \circ \Gamma[q]) \delta\_\eta\Gamma[q] = \cr
+    & \int\_{t\_a}^{t\_b} 0 + (\partial\_1L \circ \Gamma[q])\eta + (\partial\_2L \circ \Gamma[q])D\eta + \ldots + (\partial\_{n + 1}L \circ \Gamma[q])D^n\eta
+  \end{aligned}
+\end{equation}
+
+Our goal now is to isolate the Lagrange equations. Focus on the \\(\partial\_2 L\\) term:
+
+\begin{equation}
+  \int\_{t\_a}^{t\_b} (\partial\_2L \circ \Gamma[q])D\eta
+\end{equation}
+
+Integrate by parts:
+
+\begin{equation}
+  \int\_{t\_a}^{t\_b} (\partial\_2L \circ \Gamma[q])D\eta = (\partial\_2L \circ \Gamma[q])\eta \Bigr|\_{t\_a}^{t\_b} - \int\_{t\_a}^{t\_b} D(\partial\_2L \circ \Gamma[q])\eta
+\end{equation}
+
+The first of the two terms disappears, since, by definition, \\(\eta(t\_a) = \eta(t\_b) = 0\\), leaving us with:
+
+\begin{equation}
+  \int\_{t\_a}^{t\_b} (\partial\_2L \circ \Gamma[q])D\eta = \int\_{t\_a}^{t\_b} D(\partial\_2L \circ \Gamma[q])\eta
+\end{equation}
+
+And reducing the full equation to:
+
+\begin{equation}
+  \begin{aligned}
+    \int\_{t\_a}^{t\_b} & ((DL) \circ \Gamma[q]) \delta\_\eta\Gamma[q] = \cr
+    & \int\_{t\_a}^{t\_b} ((\partial\_1L \circ \Gamma[q]) - D(\partial\_2L \circ \Gamma[q]))\eta + (\partial\_3L \circ \Gamma[q])D^2\eta \cr
+    & + \ldots + (\partial\_{n + 1}L \circ \Gamma[q])D^n\eta
+  \end{aligned}
+\end{equation}
+
+The original Lagrange equations are peeking at us.
+
+We got there by isolating a term multiplied by \\(\eta\\). To do this with the next term, integrate by parts twice:
+
+\begin{equation}
+  \begin{aligned}
+    \int\_{t\_a}^{t\_b} (\partial\_3L \circ \Gamma[q])D^2\eta & = (\partial\_3L \circ \Gamma[q])D\eta \Bigr|\_{t\_a}^{t\_b} - \int\_{t\_a}^{t\_b} D(\partial\_2L \circ \Gamma[q])D\eta \cr
+    & = (\partial\_3L \circ \Gamma[q])D\eta \Bigr|\_{t\_a}^{t\_b} - D(\partial\_2L \circ \Gamma[q])\eta \Bigr|\_{t\_a}^{t\_b} + \int\_{t\_a}^{t\_b} D^2(\partial\_2L \circ \Gamma[q])\eta
+  \end{aligned}
+\end{equation}
+
+The second of the two definite evaluations disappears, since, as before, \\(\eta(t\_a) = \eta(t\_b) = 0\\). The first of the definite evaluations suggests that we need a new constraint to achieve higher-derivative Lagrange equations.
+
+If \\(D\eta(t\_a) = D\eta(t\_b) = 0\\), then the first definite evaluation disappears as well. So, for a Lagrangian that considers acceleration, we have to impose the constraint that that the endpoint velocities stay fixed. The term collapses to:
+
+\begin{equation}
+  \begin{aligned}
+    \int\_{t\_a}^{t\_b} (\partial\_3L \circ \Gamma[q])D^2\eta & = (\partial\_3L \circ \Gamma[q])D\eta \Bigr|\_{t\_a}^{t\_b} - D(\partial\_2L \circ \Gamma[q])\eta \Bigr|\_{t\_a}^{t\_b} + \int\_{t\_a}^{t\_b} D^2(\partial\_2L \circ \Gamma[q])\eta \cr
+    & = \int\_{t\_a}^{t\_b} D^2(\partial\_2L \circ \Gamma[q])\eta
+  \end{aligned}
+\end{equation}
+
+Fold this back in to the full equation:
+
+\begin{equation}
+  \begin{aligned}
+    \int\_{t\_a}^{t\_b} & ((DL) \circ \Gamma[q]) \delta\_\eta\Gamma[q] = \cr
+    & \int\_{t\_a}^{t\_b} ((\partial\_1L \circ \Gamma[q]) - D(\partial\_2L \circ \Gamma[q]) + D^2(\partial\_3L \circ \Gamma[q]))\eta \cr
+    & + \ldots + (\partial\_{n + 1}L \circ \Gamma[q])D^n\eta
+  \end{aligned}
+\end{equation}
+
+For a Lagrangian of the form \\(L(t, q, \dot{q}, \ddot{q})\\), the remaining terms disappear, leaving us with
+
+\begin{equation}
+  \begin{aligned}
+    \delta\_\eta S[q](t\_a, t\_b) & = \int\_{t\_a}^{t\_b} ((DL) \circ \Gamma[q]) \delta\_\eta\Gamma[q] \cr
+    & = \int\_{t\_a}^{t\_b} ((\partial\_1L \circ \Gamma[q]) - D(\partial\_2L \circ \Gamma[q]) + D^2(\partial\_3L \circ \Gamma[q]))\eta
+  \end{aligned}
+\end{equation}
+
+The goal was to find conditions under which the action is stationary, ie, \\(\delta\_\eta S[q](t\_a, t\_b) = 0\\). For arbitrary \\(\eta\\) with fixed endpoints, this can only occur if the non-\\(\eta\\) inside the integral is 0:
+
+\begin{equation}
+(\partial\_1L \circ \Gamma[q]) - D(\partial\_2L \circ \Gamma[q]) + D^2(\partial\_3L \circ \Gamma[q]) = 0
+\end{equation}
+
+This is the result we were seeking.
+
+### Higher dimensions<a id="sec-1-11-1"></a>
+
+To keep going, we have to integrate by parts once more for each new term of the local tuple that the Lagrangian depends on. For each new term we'd find a new constraint:
+
+\begin{equation}
+D^{n-1}\eta(t\_a) = D^{n-1}\eta(t\_b) = 0
+\end{equation}
+
+And a new term in Lagrange's equations:
+
+\begin{equation}
+  (-1)^{n} D^{n}(\partial\_{n+1}L \circ \Gamma[q])
+\end{equation}
+
+The fully general Lagrange's equations are, for a Lagrangian that depends on the local tuple up to the $n$th derivative of \\(q\\), are:
+
+\begin{equation}
+  0 = \sum\_{i = 0}^n(-1)^i D^{i}(\partial\_{i+1}L \circ \Gamma[q])
+\end{equation}
+
+Constrained by, for all \\(i\\) from 0 to \\(n-1\\):
+
+\begin{equation}
+D^i\eta(t\_a) = D^i\eta(t\_b) = 0
+\end{equation}
+
+Equivalently, the constraint is that all derivatives of \\(q\\) from \\(i\\) to \\(n-1\\) must remain constant at \\(t\_a\\) and \\(t\_b\\).
+
+Exercise 1.13 implements this in Scheme.
+
 ## Exercise 1.11: Kepler's third law<a id="sec-1-12"></a>
 
 ## Exercise 1.12: Lagrange's equations (code)<a id="sec-1-13"></a>
@@ -1297,6 +1452,84 @@ Next, get the Lagrange equations in hand and manually simplify each equation by 
 Looking good. These are the residuals for \\(\theta\\) and \\(\phi\\), respectively.
 
 ## Exercise 1.13: Higher-derivative Lagrangians (code)<a id="sec-1-14"></a>
+
+### Part A: Acceleration-dependent Lagrangian Implementation<a id="sec-1-14-1"></a>
+
+Here we go:
+
+```scheme
+(define ((Lagrange-equations3 L) q)
+  (let ((state-path (Gamma q 4)))
+    (+ ((square D) (compose ((partial 3) L) state-path))
+       (- (D (compose ((partial 2) L) state-path)))
+       (compose ((partial 1) L) state-path))))
+```
+
+### Part B: Applying HO-Lagrangians<a id="sec-1-14-2"></a>
+
+Lagrangian from the problem:
+
+```scheme
+(define ((L-1-13 m k) local)
+  (let ((x (coordinate local))
+        (a (acceleration local)))
+    (- (* -1/2 m x a)
+       (* 1/2 k (square x)))))
+```
+
+Testing, with a factor of \\(-1\\) to make it look nice:
+
+```scheme
+(->tex-equation
+ (- (((Lagrange-equations3 (L-1-13 'm 'k))
+      (literal-function 'x)) 't)))
+```
+
+\begin{equation}
+k x\left( t \right) + m {D}^{2}x\left( t \right)
+\end{equation}
+
+### Part C: Generalized Lagrange Equations<a id="sec-1-14-3"></a>
+
+The more general version:
+
+```scheme
+;; Returns n copies of elems appended to each other.
+(define (cycle n elems)
+  (apply append (make-list n elems)))
+
+;; Returns n total elements generated from an infinite cycle of elems.
+(define (alternating n elems)
+  (let* ((l (length elems))
+         (times (quotient (+ n (-1+ l)) l)))
+    (list-head (cycle times elems) n)))
+
+(define ((Lagrange-equations* L n) q)
+  (let ((state-path (Gamma q (1+ n))))
+    (define (term i)
+      ((expt D i)
+       (compose ((partial (1+ i)) L) state-path)))
+    (let ((terms (map term (iota n))))
+      (fold-left (lambda (acc pair)
+                   (+ acc (apply * pair)))
+                 0
+                 (zip (alternating n '(1 -1))
+                      (reverse terms))))))
+```
+
+Check that we get the same result:
+
+```scheme
+(->tex-equation
+ (- (((Lagrange-equations* (L-1-13 'm 'k) 3)
+      (literal-function 'x)) 't)))
+```
+
+\begin{equation}
+k x\left( t \right) + m {D}^{2}x\left( t \right)
+\end{equation}
+
+This looks like a harmonic oscillator.
 
 ## Exercise 1.14: Coordinate-independence of Lagrange equations<a id="sec-1-15"></a>
 
