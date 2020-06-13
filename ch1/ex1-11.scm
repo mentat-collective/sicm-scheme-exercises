@@ -77,4 +77,4 @@
   (->tex-equation
    (* ((eqfn (q 'a 'n)) 't)
       (/ (square 'a)
-         (reduced-mass 'm1 'm2)n))))
+         (reduced-mass 'm1 'm2)))))

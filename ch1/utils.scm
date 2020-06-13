@@ -42,7 +42,7 @@
 ;;
 ;; I THINK this overrides an internal definition, so we may want to delete it.
 ;; We'll see.
-(define ((F->C F) local)
+(define ((F->C-limited F) local)
   (up (time local)
       (F local)
       (+ (((partial 0) F) local)
