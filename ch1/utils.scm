@@ -4,6 +4,24 @@
 
 (load "ch1/exdisplay.scm")
 
+;; string utilities! can't believe I have to write this.
+
+(define (replace-all haystack needle replacement)
+  (let ((haystack (string->list haystack))
+        (replacement (reverse
+                      (string->list replacement)))
+        (needle-len (string-length needle)))
+    (let loop ((haystack haystack) (acc '()))
+      (cond ((null? haystack)
+             (list->string (reverse acc)))
+
+            ((string-prefix? needle (list->string haystack))
+             (loop (list-tail haystack needle-len)
+                   (append replacement acc)))
+
+            (else
+             (loop (cdr haystack) (cons (car haystack) acc)))))))
+
 ;; Generates a properly formatted string of LaTeX.
 (define (->tex* expr)
   (let* ((tex-string (expression->tex-string
@@ -21,15 +39,17 @@
   (->write-tex (->tex* expr)))
 
 ;; Prints an equation code block containing the expression as LaTeX.
+(define (->tex-equation* expr #!optional label)
+  (string-append
+   "\\begin{equation}\n"
+   (->tex* expr)
+   (if (default-object? label)
+       ""
+       (string-append "\n\\label{" label "}"))
+   "\n\\end{equation}"))
+
 (define (->tex-equation expr #!optional label)
-  (write-string
-   (string-append
-    "\\begin{equation}\n"
-    (->tex* expr)
-    (if (default-object? label)
-        ""
-        (string-append "\n\\label{" label "}"))
-    "\n\\end{equation}")))
+  (write-string (->tex-equation* expr label)))
 
 ;; Lagrangian helpers
 
