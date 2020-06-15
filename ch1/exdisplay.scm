@@ -791,6 +791,11 @@ USA.
     (list (tex:unparse-subscript uptable (cons "\\partial" (cdr args)))
 	  (insure-bp uptable 140 (car args))))))
 
+(define (tex:unparse-partial uptable args)
+  (make-box-with-bp
+   140
+   (tex:unparse-subscript uptable (cons "\\partial" args))))
+
 (define (2d:unparse-nth-derivative uptable args)
   (let ((op (2d:unparse-expt uptable (list "D" (cadr args)))))
     (make-box-with-bp
@@ -976,6 +981,7 @@ USA.
     (second-derivative ,tex:unparse-second-derivative)
     (nth-derivative ,tex:unparse-nth-derivative)
     (partial-derivative ,tex:unparse-partial-derivative)
+    (partial ,tex:unparse-partial)
     (subscript ,tex:unparse-subscript)
     (superscript ,tex:unparse-superscript)
     (vector ,tex:unparse-vector)
