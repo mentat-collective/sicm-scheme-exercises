@@ -48,53 +48,99 @@ way to go.
 
 ** Exercise 1.1: Degrees of Freedom and 1.2: Generalized Coordinates
 
+This exercise is designed to get you thinking about the idea of /configuration
+space/. One goal of classical mechanics is to predict the future of a system,
+based on a description of the current state of the system. So how to describe
+the system?
+
+One way would be to track, for every instant of time, a 3-dimensional position
+for every particle in a system, along with velocities in each direction, for a
+total of 6 numbers - or /dimensions/ - per particle.
+
+That's fine for particles moving in straight lines through space, not affecting
+each other. But remember, this is all an accounting trick that we're using to
+represent reality, not reality itself. If there is some more convenient way to
+track the state of the system, we're free to use that as well, provided we can
+recover the original positions and velocities after evolving the system.
+
+Maybe two particles are attached to each other, so their positions in space are
+the same, or offset by a tiny amount. Then it's enough to track:
+
+- the position of one of the particles (3 numbers)
+- the angle and distance of the offset (2 numbers)
+
+What seemed like a system that required 6 numbers actually required 5.
+
+Theo Jansen's incredible [[https://www.youtube.com/watch?v=LewVEF2B_pM][Strandbeesten]] are built out of copies of [[https://en.wikipedia.org/wiki/Jansen%27s_linkage][Jansen's
+Linkage]]. Each of these legs has 11 pipes that flex and bend, but only *one*
+degree of freedom.
+
+#+DOWNLOADED: screenshot @ 2020-06-23 14:48:36
+#+attr_org: :width 400px
+#+attr_html: :width 80% :align center
+#+attr_latex: :width 8cm
+[[file:images/Lagrangian_Mechanics/2020-06-23_14-48-36_screenshot.png]]
+
+
+The first exercise gives us some practice thinking about the redundancy in
+different physical systems.
+
 #+begin_quote
 For each of the mechanical systems described below, give the number of degrees
 of freedom of the configuration space. ([[https://tgvaughan.github.io/sicm/chapter001.html#Exe_1-1][SICM, ex1]])
 #+end_quote
 
-[[https://tgvaughan.github.io/sicm/chapter001.html#Exe_1-2][Exercise 1.2]] asks about the generalized coordinates of each, so I'll note those
-here too.
+[[https://tgvaughan.github.io/sicm/chapter001.html#Exe_1-2][Exercise 1.2]] asks about the "generalized coordinates" of each system. What are
+the actual numbers that we want to track for each system, if not the $3N$
+positions of each of $N$ particles?
+
+#+begin_quote
+For each of the systems in exercise 1.1, specify a system of generalized
+coordinates that can be used to describe the behavior of the system.
+#+end_quote
 
 1. Three juggling pins.
 
-   **18 degrees of freedom** for three juggling pins - 3 position, 3 angles for
-   each. OR **15** total, if you assume that the pin is symmetric; then you just
-   need two degrees of tilt.
+   The system has **18 degrees of freedom**. Each pin requires 3 coordinates to
+   specify its center of mass, and 3 angles for each pin. If you assume that
+   each pin is symmetric about its central axis, then it doesn't matter how far
+   around the pin has rotated and you can make do with **15 degrees of
+   freedom**. 3 positions and 2 angles for each.
 
 2. A spherical pendulum consisting of a point mass (the pendulum bob) hanging
    from a rigid massless rod attached to a fixed support point. The pendulum bob
    may move in any direction subject to the constraint imposed by the rigid rod.
    The point mass is subject to the uniform force of gravity.
 
-   Spherical pendulum,hanging from a fixed support has **two degrees of
-   freedom**, one for each angle.
+   This system has only **2 degrees of freedom**. One for the latitude of the
+   pendulum, and one for the longitude.
 
-3. Spherical DOUBLE pendulum has **four degrees of freedom**; two angles from
-   previous, plus two more angles for the second pendulum off of the first.
-
-   A spherical double pendulum, consisting of one point mass hanging from a
+3. A spherical double pendulum, consisting of one point mass hanging from a
    rigid massless rod attached to a second point mass hanging from a second
    massless rod attached to a fixed support point. The point masses are subject
    to the uniform force of gravity.
 
+   **4 degrees of freedom**; two angles from previous, plus two more angles for
+   the second pendulum off of the first.
+
 4. A point mass sliding without friction on a rigid curved wire.
 
-   **1 degree of freedom**, distance along the wire.
+   **1 degree of freedom**; the distance along the wire.
 
 5. A top consisting of a rigid axisymmetric body with one point on the symmetry
    axis of the body attached to a fixed support, subject to a uniform
    gravitational force.
 
-   Axisymmetric top has **TWO degrees of freedom**, for the angles off of
-   vertical. But then we can't talk about its speed, so that's a little strange.
-   I guess it has an angular momentum as a property, but that's not a
-   coordinate.
+   This system seems to have **2 degrees of freedom**, for the angles off of
+   vertical. It's like a spherical pendulum, but upside down. What I find
+   strange about this answer is that the top does have a rotation speed, which
+   is a measure of how far the top has rotated in time. How can we track this
+   velocity if we don't track the top's spin angle? This may be wrong.
 
-6. The same as e, but not axisymmetric.
+6. The same as *5*, but not axisymmetric.
 
-   We now have **THREE degrees of freedom**, one more for the angle of the top's
-   rotation.
+   A non-symmetric top has **3 degrees of freedom**. 2 from before, and an
+   additional angle to measure how far around the top has rotated.
 
 ** Exercise 1.3: Fermat optics
 :PROPERTIES:
@@ -405,10 +451,15 @@ converging lens).
 
 This whole area of optics and least time has obsessed scientists for hundreds of
 years. Spend a few minutes [[https://www.feynmanlectures.caltech.edu/I_26.html][poking around]] and see what you find.
+
 ** Section 1.4: Computing Actions
 :PROPERTIES:
 :header-args+: :tangle ch1/sec1-4.scm :comments org
 :END:
+
+I don't plan on doing this for every section in the book, but section 1.4 is the
+first place where we're introduced to Scheme, so I followed along and made a few
+notes.
 
 #+begin_src scheme :exports none
 (load "ch1/utils.scm")
@@ -432,6 +483,14 @@ Here's our first Lagrangian, super simple.
 
 #+RESULTS: L-free-particle
 : #| L-free-particle |#
+
+=L-free-particle= is a function that takes some =mass= and returns a /new/
+function. The new function takes an instance of a "local tuple" and returns the
+value of the "Lagrangian". This is the function that you query at every point
+along some evolving path in configuration space. For realizable physical paths,
+the integral of this function should by minimized, or stationary.
+
+Why? That's what we're trying to develop here.
 
 Suppose we let $q$ denote a coordinate path function that maps time to position
 components:
@@ -466,7 +525,7 @@ can a component of the coordinate path depend on the others? YES, and that would
 impose constraints beyond the degrees of freedom you'd guess by just counting
 the coordinates.)
 
-Composing the Langrangian with $\Gamma$ gives you a function that computes the
+Composing the Langrangian with $\Gamma[q]$ gives you a function that computes the
 Lagrangian at some instant:
 
 #+begin_src scheme :results value raw :exports both :cache yes
@@ -506,7 +565,7 @@ as a function of $t$.
       (+ (* 2 t) 1)))
 #+end_src
 
-#+RESULTS:
+#+RESULTS: test-path
 : #| test-path |#
 
 Calculate the action for a particle of mass 3, between $t_1 = 0$ and $t_2 = 10$:
@@ -524,6 +583,9 @@ path, we would still get an action. Just not a stationary action. Infinitesimal
 wiggles would change the action.
 
 ** Exercise 1.4: Lagrangian actions
+
+This exercise has us calculating the actual value of the action along some
+realizable path taken by a free particle.
 
 #+begin_quote
 For a free particle an appropriate Lagrangian is
@@ -545,6 +607,11 @@ solution path is
 {m \over 2}{{(x_b - x_a)^2} \over {t_b - t_a}}
 \end{equation}
 
+I'm not sure I see the point of this exercise, for developing intuition about
+Langrangian mechanics. I think it may be here to make sure we understand that
+we're not minimizing the /function/ $L$. We're minimizing (finding the
+stationary point of) the integral of $L$ between $t_a$ and $t_b$.
+
 The velocity is constant between the two points, so it must be equal to the
 difference in position over the difference in time:
 
@@ -553,7 +620,8 @@ difference in position over the difference in time:
 v = {{x(t_b) - x(t_a)} \over {t_b - t_a}} = {{x_b - x_a} \over {t_b - t_a}}
 \end{equation}
 
-The action is equal to:
+The action is equal to the integral of $L$ evaluated between the two time
+points:
 
 \begin{equation}
   \label{eq:2}
@@ -576,12 +644,16 @@ simplify:
   \end{aligned}
 \end{equation}
 
-As expected.
+Boom, solution achieved.
 
 ** Paths of Minimum Action
 :PROPERTIES:
 :header-args+: :tangle ch1/min-action-paths.scm :comments org
 :END:
+
+This section takes us through an example action calculation on a path with an
+adjustable "variation", or wiggle. We should see that, if we consider a
+"realizable path", then any wiggle we add will increase the calculated action.
 
 #+begin_src scheme :exports none
 (load "ch1/utils.scm")
@@ -593,10 +665,12 @@ As expected.
 : ;... done
 : #| check-f |#
 
-This section in the textbook implements path variation, so we can see the action
-change (and increase!) off of the optimal path.
+The only restriction on a variation is that it can't affect the endpoints of the
+realizable path. the times and positions of the start and end of the path are
+pinned.
 
-=make-eta= returns a function that equals 0 at $t_1$ and $t_2$:
+=make-eta= takes some path $\nu$ and returns a function that wiggles in some
+similar way to $\nu$, but equals 0 at $t_1$ and $t_2$:
 
 #+begin_src scheme
 (define ((make-eta nu t1 t2) t)
@@ -607,8 +681,8 @@ change (and increase!) off of the optimal path.
 : #| make-eta |#
 
 Next, define a function that calculates the Lagrangian for a free particle, like
-before, but adds in the path variation multiplied by some small scaling factor
-$\epsilon$.
+before, but adds in the path variation $\eta$ multiplied by some small scaling factor
+$\epsilon$:
 
 #+begin_src scheme
 (define ((varied-free-particle-action mass q nu t1 t2) epsilon)
@@ -622,8 +696,10 @@ $\epsilon$.
 #+RESULTS:
 : #| varied-free-particle-action |#
 
-The action for a small variation of $v(t) = (\sin(t), \cos(t), t^2)$ is larger
-(top entry) vs the non-varied path (bottom entry), as expected.
+Consider some variation like $v(t) = (\sin(t), \cos(t), t^2)$. The action of the
+path with this small wiggle (processed through =make-eta= to pin its endpoints)
+is larger (top entry) than the action of the non-varied path (bottom entry), as
+expected:
 
 #+begin_src scheme :results value raw :exports both :cache yes :noweb yes
 <<test-path>>
@@ -636,14 +712,17 @@ The action for a small variation of $v(t) = (\sin(t), \cos(t), t^2)$ is larger
        (action-fn 0))))
 #+end_src
 
-#+RESULTS[3b26d789e2b0e25f6eb715c26a42c1ba4afe9017]:
+#+RESULTS[10c4c8e6a40701b7176b4b1b2e9dd30b80185e6f]:
+#| test-path |#
+
 \begin{equation}
 \begin{pmatrix} \displaystyle{ 436.2912142857153} \cr \cr \displaystyle{ 435.}\end{pmatrix}
 \end{equation}
 
 What value of $\epsilon$ minimizes the action for the test path?
 
- Search over -2.0 to 1.0:
+We can search over values of $\epsilon$ from $-2.0$ to $1.0$ using the built-in
+=minimize= function:
 
 #+begin_src scheme :results value raw :exports both :cache yes
 (let ((action-fn (varied-free-particle-action
@@ -651,12 +730,12 @@ What value of $\epsilon$ minimizes the action for the test path?
                   (up sin cos square)
                   0.0 10.0)))
   (->tex-equation
-   (minimize action-fn -2.0 1.0)))
+   (car (minimize action-fn -2.0 1.0))))
 #+end_src
 
-#+RESULTS[0d64b0428a3899b4f3648f309e2ff669c54d5b42]:
+#+RESULTS[87d808676b8bc1d49dd05d4ce8126fb3f223c1ce]:
 \begin{equation}
-5.134781488891349e-15\left( 435., 5 \right)
+5.134781488891349e-15
 \end{equation}
 
 The result shows that the minimum action occurs at $\epsilon = 0$, up to
@@ -683,7 +762,9 @@ and $(t_1, q_1)$. $qs$ is a list of intermediate points.
 #+RESULTS:
 : #| make-path |#
 
-This function sort-of-composes =make-path= and =Lagrangian-action=:
+The next function sort-of-composes =make-path= and =Lagrangian-action= into a
+function that takes $L$ and the endpoints, and returns the total action along
+the path.
 
 #+begin_src scheme
 (define ((parametric-path-action L t0 q0 t1 q1) qs)
@@ -694,7 +775,11 @@ This function sort-of-composes =make-path= and =Lagrangian-action=:
 #+RESULTS:
 : #| parametric-path-action |#
 
-Finally, a function that generates a path that minimizes the action:
+Finally, =find-path= takes the previous function's arguments, plus a parameter
+$n$. $n$ controls how many intermediate points the optimizer will inject and
+modify in its attempt to find an action-minimizing path. The more points you
+specify, the longer minimization will take, but the more accurate the final path
+will be.
 
 #+begin_src scheme
 (define (find-path L t0 q0 t1 q1 n)
@@ -710,24 +795,29 @@ Finally, a function that generates a path that minimizes the action:
 : #| find-path |#
 
 Let's test it out with a Lagrangian for a one dimensional harmonic oscillator
-with spring constant $k$:
+with spring constant $k$. Here is the Lagrangian, equal to the kinetic energy
+minus the potential from the spring:
 
 #+name: L-harmonic
 #+begin_src scheme
 (define ((L-harmonic m k) local)
   (let ((q (coordinate local))
         (v (velocity local)))
-    (- (* 1/2 m (square v)) (* 1/2 k (square q)))))
+    (- (* 1/2 m (square v))
+       (* 1/2 k (square q)))))
 #+end_src
 
 #+RESULTS:
 : #| L-harmonic |#
 
-#+begin_src scheme
-(define win2 (frame 0.0 :pi/2 0 1))
+Now we invoke the procedures we've built, and plot the final, path-minimizing
+trajectory.
 
+#+begin_src scheme
 (define harmonic-path
   (find-path (L-harmonic 1.0 1.0) 0.0 1.0 :pi/2 0.0 3))
+
+(define win2 (frame 0.0 :pi/2 0 1))
 
 (plot-function win2 harmonic-path 0 :pi (/ :pi 100))
 #+end_src
@@ -738,7 +828,8 @@ with spring constant $k$:
 : #| harmonic-path |#
 
 The path looks like a harmonic oscillator that starts high and bounces down,
-after $\pi \over 2$ seconds, down to 0.
+after $\pi \over 2$ seconds, down to 0. This is the first quarter of a sine wave
+with period $2 \pi$.
 
 #+DOWNLOADED: screenshot @ 2020-06-10 14:24:14
 #+attr_org: :width 400px
@@ -752,8 +843,9 @@ after $\pi \over 2$ seconds, down to 0.
 :header-args+: :tangle ch1/ex1-5.scm :comments org
 :END:
 
-The goal of this exercise is really just to watch the minimization process that
-they've given us.
+The goal of this The goal of this exercise is to watch the minimization process
+that we just discussed proceed, from the initial guess of a straight-line path
+to the final, natural looking harmonic oscillation.
 
 #+begin_src scheme :exports none
 (load "ch1/utils.scm")
@@ -765,13 +857,15 @@ they've given us.
 : ;... done
 : #| check-f |#
 
+The exercise states:
+
 #+begin_quote
 We can watch the progress of the minimization by modifying the procedure
 parametric-path-action to plot the path each time the action is computed.
 #+end_quote
 
-The functions they've provided define a window, and then a version of
-=parametric-path-action= that updates the graph as it minimizes:
+The functions the authors provide in the exercise define a window, and then a
+version of =parametric-path-action= that updates the graph as it minimizes:
 
 #+begin_src scheme :noweb yes
 (define win2 (frame 0.0 :pi/2 0.0 1.2))
@@ -795,7 +889,7 @@ The functions they've provided define a window, and then a version of
 :
 : #| parametric-path-action |#
 
-This final command runs the minimization and updates the graph as it goes.
+Run the minimization with the same parameters as in the previous section:
 
 #+begin_src scheme
 (find-path (L-harmonic 1.0 1.0) 0.0 1.0 :pi/2 0.0 2)
@@ -804,7 +898,7 @@ This final command runs the minimization and updates the graph as it goes.
 #+RESULTS:
 : #| poly |#
 
-The minimization looks like this:
+and watch the plot update:
 
 #+DOWNLOADED: https://i.imgur.com/AJBpDgU.gif @ 2020-05-29 10:12:19
 #+attr_org: :width 400px
@@ -816,11 +910,11 @@ The minimization looks like this:
 :header-args+: :tangle ch1/ex1-6.scm :comments org
 :END:
 
-#+begin_src scheme :exports none
-(load "ch1/utils.scm")
-#+end_src
+The authors have lightly demonstrated that plausible-looking paths have
+stationary action between fixed endpoints. What happens if we overconstrain the
+problem?
 
-The problem asks:
+The exercise asks:
 
 #+begin_quote
 Suppose we try to obtain a path by minimizing an action for an impossible
@@ -831,15 +925,18 @@ unpleasant attack? You may find it illuminating to program it and see what
 happens.
 #+end_quote
 
-I spent a good amount of time thinking about this one. When I attacked this book
-five years ago I found it very confusing. It makes more sense now that I've
-moved farther in the book and understand what it's asking us to do.
+#+begin_src scheme :exports none
+(load "ch1/utils.scm")
+#+end_src
+
+I spent a good amount of time thinking about this exercise. When I attempted to
+read this book in 2015, I found it very confusing.
 
 Let's say you take, as the authors suggest, some path, and impose velocity
-constraints on the endpoints in addition to the position constraints.
+constraints on the endpoints in addition to the required position constraints.
 
 Usually, you constrain the coordinates at each endpoint and force a path that
-minimizes the action between two times. So what does it mean to impose velocity
+minimizes the action between two times. What does it mean to impose velocity
 conditions?
 
 The key is to realize that on the computer, you're forcing a path to be composed
@@ -849,19 +946,32 @@ the path that makes no sense for minimal action.
 
 Let's define a new version of =parametric-path-action= that also takes an offset
 for the initial and final points. We'll force the first and last intermediate
-point to be equal to the start and end points, plus the offsets.
+point to be equal to the start and end points, plus some offset we can supply to
+the function.
 
 Then, we can try to find an action-minimizing path, but force the optimizer to
 deal with not just our endpoint conditions, but these two extra points as well.
-Forcing two points on each end will force an initial velocity condition.
+Forcing two points on each end will force an initial velocity condition. An
+offset of 0 would be equivalent to imposing a velocity of 0 at the start.
 
-Here's the implementation:
+*** Intuition
+
+I simply proceeded with the implementation, but I'd recommend you take a minute
+to consider what you /think/ will happen here. A hint is that the code is
+attempting to minimize action, given the constraint of the actual Lagrangian.
+What will it do when it's forced to battle with a new exterior constraint, not
+captured in the Lagrangian?
+
+*** Implementation
+
+Here's the implementation of the modification described earlier:
 
 #+begin_src scheme
 
 (define (((parametric-path-action* win)
           Lagrangian t0 q0 offset0 t1 q1 offset1)
          intermediate-qs)
+  ;; See the two new points?
   (let ((intermediate-qs* (append (list (+ q0 offset0))
                                   intermediate-qs
                                   (list (+ q1 offset1)))))
@@ -876,11 +986,11 @@ Here's the implementation:
 #+RESULTS:
 : #| parametric-path-action* |#
 
-You could try a similar trick by modifying the first and last entries of
+You might try a similar trick by modifying the first and last entries of
 =intermediate-qs= instead of appending a point, but I suspect that the optimizer
-would be able to figure out how to offset your offset.
+would be able to figure out how to undo your offset. (Try this as an exercise.)
 
-Next, a version of =find-path= that passes the offsets through to the new
+Next, a new version of =find-path= that passes the offsets through to the new
 =parametric-path-action*=:
 
 #+begin_src scheme
@@ -923,7 +1033,7 @@ number of interpolation points that the system will use.
 Internally, remember, =parametric-path-action*= will append two extra fixed
 offset points to the =n= intermediate points that the optimizer gets to control.
 
-*** Executions
+*** Execution
 
 Let's run the code with 0 offsets and 3 interpolation points. Note that this
 should /still/ distort the path, since we now have two fixed points at the start
@@ -947,7 +1057,10 @@ The path ends up looking almost sinusoidal, and takes a while to converge. This
 is the best polynomial that the system can come up with that matches the 7
 points (3 interpolated, 2 offsets, 1 start and 1 end).
 
-Here's a small positive velocity imposed at the beginning:
+The actual realizable path should be a straight line between the two points. The
+initial velocity of
+
+Here's a small positive velocity imposed at the beginning, and 0 at the end:
 
 #+begin_src scheme
 (one-six 0.2 0 3)
@@ -959,7 +1072,8 @@ Here's a small positive velocity imposed at the beginning:
 #+attr_latex: :width 8cm
 [[file:images/Lagrangian_Mechanics/2020-06-10_15-10-53_ex1_6_02offset.gif]]
 
-The system takes longer to converge. Here's a larger impulse of 0.5:
+The system takes longer to converge. Here's a larger impulse of 0.5 at the
+beginning:
 
 #+begin_src scheme
 (one-six 0.5 0 3)
@@ -989,7 +1103,7 @@ The process __does__ converge, but this is only because we only used 3
 intermediate points. If you bump up to 10 points, with this code:
 
 #+begin_src scheme
-(one-six 20 0 3)
+(one-six -0.5 0 10)
 #+end_src
 
 #+RESULTS:
@@ -1006,7 +1120,9 @@ breaks; internally it ends up pinned between two tugging constraints.
 
 If you make the impulse too big or force too many intermediate points, then the
 war is too hardcore and the process never converges. But it's important to note
-here the details of the optimizer. This detail doesn't break reality.
+here that these are details of the computational process. This detail doesn't
+break reality. (It would break your model of reality, as it did here, if you
+have constraints or forces that you don't capture in the Lagrangian.)
 
 If you /do/ need to impose velocity conditions, it turns out you can use a
 Lagrangian that takes acceleration into account. This is discussed in Exercise
@@ -1018,7 +1134,7 @@ This exercise asks us to prove various products of the variation operator
 $\delta_\eta$. This is a sort of higher-order derivative operator. Apply it to a
 higher order function $f$, and you'll get a function back that returns the
 /sensitivity/ of $f$ to fluctuations in its input path function. (Confusing?
-Check out [[https://tgvaughan.github.io/sicm/chapter001.html#h1-6a][the textbook]].
+Check out [[https://tgvaughan.github.io/sicm/chapter001.html#h1-6a][the textbook]].)
 
 *** Variation Product Rule
 
@@ -1057,7 +1173,7 @@ the product rule we were seeking:
 
 *** Variation Sum Rule
 
-The sum rule is easier. Our goal is:
+The sum rule is easier. Our goal is to show that:
 
 \begin{equation}
 \label{eq:var-sum}
@@ -1249,8 +1365,8 @@ one:
 I've modified it slightly to take in a symbol, since we'll need to generate
 multiple functions for a few of the rules.
 
-$fn$ takes a symbol like $F$ and a path function - a function from $t$ to any
-number of coordinates (see the =UP*=?) - and returns a generic expression for a
+$fn$ takes a symbol like $F$ and a path function -- a function from $t$ to any
+number of coordinates (see the =UP*=?) -- and returns a generic expression for a
 path dependent function $F$ that acts via $F \circ \Gamma[q]$. $F$ might be a
 Lagrangian, for example.
 
@@ -1260,7 +1376,7 @@ use to add variation to the path.
 
 #+begin_src scheme
 (define q (literal-function 'q (-> Real (UP Real Real))))
-(define eta (literal-function 'q (-> Real (UP Real Real))))
+(define eta (literal-function 'eta (-> Real (UP Real Real))))
 #+end_src
 
 #+RESULTS:
