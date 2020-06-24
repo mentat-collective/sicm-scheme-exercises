@@ -1601,7 +1601,6 @@ If you need to take \\(n\\) steps along a cycle of length \\(l\\), you'll end up
 (define (cycle n elems)
   (apply append (make-list n elems)))
 
-;; Returns
 (define (alternating n elems)
   (let* ((l (length elems))
          (times (quotient (+ n (-1+ l)) l)))
@@ -1613,7 +1612,6 @@ Now, the general `Lagrange-equations*` implementation.
 This function defines an internal function `term` that generates the $i$th term of the derivative combination described above. This sequence is zipped with the sequence of \\(1, -1\\), and `fold-left` generates the sum.
 
 ```scheme
-;; Returns n copies of elems appended to each other.
 (define ((Lagrange-equations* L n) q)
   (let ((state-path (Gamma q (1+ n))))
     (define (term i)
@@ -1643,9 +1641,25 @@ There it is again, the harmonic oscillator. I don't have any intuition for highe
 
 # Exercise 1.14: Coordinate-independence of Lagrange equations<a id="sec-15"></a>
 
-This exercise is building up to showing that the coordinate transformation is *always* associative; you can always generate a new Lagrangian by composing it with a coordinate transformation.
+Look carefully at what this exercise is asking us to do:
 
-We're trying to show that the rectangular equations of motion are the same as the polar. Here are the two Lagrangians from the book:
+> Check that the Lagrange equations for central force motion in polar coordinates and in rectangular coordinates are equivalent. Determine the relationship among the second derivatives by substituting paths into the transformation equations and computing derivatives, then substitute these relations into the equations of motion.
+
+The punchline that we'll encounter soon is that a coordinate transformation of applied to some path function \\(q\\) can commute with \\(\Gamma\\). You can always write some function \\(C\\) of the local tuple that handles the coordinate transformation *after* \\(\Gamma[q]\\) instead of transforming the path directly. In other words, you can always find some \\(C\\) such that
+
+\begin{equation}
+C \circ \Gamma[q] = \Gamma[q']
+\end{equation}
+
+Because function composition is associative, instead of ever transforming the path, you can push the coordinate transformation into the Lagrangian to generate a new Lagrangian: \\(L = L' \circ C\\).
+
+The section of textbook just before the exercise has given us two Lagrangians in different coordinates &#x2013; `L-central-polar` and `L-rectangular` &#x2013; and generated Lagrange equations from each.
+
+Our task is to directly transform the Lagrange equations by substituting the first and second derivatives of the coordinate transformation expression into one of the sets of equations, and looking to see that it's equivalent to the other.
+
+Fair warning: this is much more painful than transforming the Lagrangian *before* generating the Lagrange equations. This exercise continues the theme of devastating you with algebra as a way to show you the horror that the later techniques were developed to avoid. Let us proceed.
+
+Here are the two Lagrangians from the book:
 
 ```scheme
 (define ((L-central-rectangular m U) local)
@@ -1658,7 +1672,7 @@ We're trying to show that the rectangular equations of motion are the same as th
   (let ((q (coordinate local))
         (qdot (velocity local)))
     (let ((r (ref q 0)) (phi (ref q 1))
-                        (rdot (ref qdot 0)) (phidot (ref qdot 1)))
+          (rdot (ref qdot 0)) (phidot (ref qdot 1)))
       (- (* 1/2 m
             (+ (square rdot)
                (square (* r phidot))) )
@@ -1682,7 +1696,7 @@ Here are the rectangular equations of motion:
 \label{eq:rect-equations}
 \end{equation}
 
-And here are the polar equations:
+And the polar Lagrange equations:
 
 ```scheme
 (->tex-equation
@@ -1697,11 +1711,9 @@ And here are the polar equations:
 \begin{bmatrix} \displaystyle{  - m r\left( t \right) {\left( D\phi\left( t \right) \right)}^{2} + m {D}^{2}r\left( t \right) + DU\left( r\left( t \right) \right)} \cr \cr \displaystyle{ m {D}^{2}\phi\left( t \right) {\left( r\left( t \right) \right)}^{2} + 2 m r\left( t \right) D\phi\left( t \right) Dr\left( t \right)}\end{bmatrix}
 \end{equation}
 
-The goal is to show that, if you can write down coordinate transformations for the coordinates, velocities and accelerations, the equations of motions will turn out to be equivalent.
+Once again, our goal is to show that, if you can write down coordinate transformations for the coordinates, velocities and accelerations and substitute them in to one set of Lagrange equations, the other will appear.
 
-They want you to do this on paper. We'll show how to accomplish this by writing down expressions for the rectangular coordinates in terms of polar coordinates and substituting those in to the rectangular equations of motion. We should find that the polar equations pop out.
-
-Take the coordinate transformation described in 1.64 in the book:
+To do this by hand, take the coordinate transformation described in 1.64 in the book:
 
 \begin{equation}
   \begin{split}
@@ -1710,7 +1722,7 @@ Take the coordinate transformation described in 1.64 in the book:
   \end{split}
 \end{equation}
 
-Note that \\(x\\), \\(y\\), \\(r\\) and \\(\phi\\) are functions of \\(t\\). Take the derivative of each equation (Use the product and chain rules!) to obtain expressions for the rectangular velocities in terms of the polar coordinates, just like equation 1.66 in the book:
+Note that \\(x\\), \\(y\\), \\(r\\) and \\(\phi\\) are functions of \\(t\\). Take the derivative of each equation (Use the product and chain rules) to obtain expressions for the rectangular velocities in terms of the polar coordinates, just like equation 1.66 in the book:
 
 \begin{equation}
   \begin{split}
@@ -1721,7 +1733,7 @@ Note that \\(x\\), \\(y\\), \\(r\\) and \\(\phi\\) are functions of \\(t\\). Tak
 
 The rectangular equations of motion have second derivatives, so we need to keep going. This is too devastating to imagine doing by hand. Let's move to Scheme.
 
-Write the coordinate transformation for polar coordinates to rectangular:
+Write the coordinate transformation for polar coordinates to rectangular in Scheme:
 
 ```scheme
 (define (p->r local)
@@ -1733,9 +1745,9 @@ Write the coordinate transformation for polar coordinates to rectangular:
     (up x y)))
 ```
 
-Then use `F->C`, first described on page 46. This is a function that takes some function like `p->r` that converts coordinates, and returns a *new* function that can convert an entire local tuple from one coordinate system to another.
+Now use `F->C`, first described on page 46. This is a function that takes a coordinate transformation like `p->r` and returns a *new* function that can convert an entire local tuple from one coordinate system to another; the \\(C\\) discussed above.
 
-The version that the book presents on page 46 can only transform the velocity component, but `scmutils` contains a more general version that will convert as many path elements as you pass to it.
+The version that the book presents on page 46 can only generate a velocity transformation given a coordinate transformation, but `scmutils` contains a more general version that will convert as many path elements as you pass to it.
 
 Here are the rectangular positions, velocities and accelerations, written in polar coordinates:
 
@@ -1753,9 +1765,9 @@ Here are the rectangular positions, velocities and accelerations, written in pol
 \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{ r \cos\left( \phi \right)} \cr \cr \displaystyle{ r \sin\left( \phi \right)}\end{pmatrix}} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{  - \dot{\phi} r \sin\left( \phi \right) + \dot{r} \cos\left( \phi \right)} \cr \cr \displaystyle{ \dot{\phi} r \cos\left( \phi \right) + \dot{r} \sin\left( \phi \right)}\end{pmatrix}} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{  - {\dot{\phi}}^{2} r \cos\left( \phi \right) - 2 \dot{\phi} \dot{r} \sin\left( \phi \right) - \ddot{\phi} r \sin\left( \phi \right) + \ddot{r} \cos\left( \phi \right)} \cr \cr \displaystyle{  - {\dot{\phi}}^{2} r \sin\left( \phi \right) + 2 \dot{\phi} \dot{r} \cos\left( \phi \right) + \ddot{\phi} r \cos\left( \phi \right) + \ddot{r} \sin\left( \phi \right)}\end{pmatrix}}\end{pmatrix}
 \end{equation}
 
-Ordinarily, it would be too heartbreaking to substitute these in to the rectangular equations of motion&#x2026; but we have Scheme to help.
+Ordinarily, it would be too heartbreaking to substitute these in to the rectangular equations of motion. The fact that we have Scheme on our side gives me the strength to proceed.
 
-This function generates the equations of motion as a function of the local tuple:
+Write the rectangular Lagrange equations as a function of the local tuple, so we can call it directly:
 
 ```scheme
 (define (rect-equations local)
@@ -1780,7 +1792,7 @@ This function generates the equations of motion as a function of the local tuple
            (sqrt (+ (square x) (square y)))))))
 ```
 
-And here are the equations of motion, written in terms of an explicit local tuple:
+Verify that these are, in fact, the rectangular equations of motion by passing in a symbolic rectangular local tuple:
 
 ```scheme
 (let ((rect-path (up 't
@@ -1812,7 +1824,17 @@ Now use the `p->r` conversion to substitute each of the rectangular values above
 \begin{pmatrix} \displaystyle{  - m {\dot{\phi}}^{2} r \cos\left( \phi \right) - 2 m \dot{\phi} \dot{r} \sin\left( \phi \right) - m \ddot{\phi} r \sin\left( \phi \right) + m \ddot{r} \cos\left( \phi \right) + DU\left( r \right) \cos\left( \phi \right)} \cr \cr \displaystyle{  - m {\dot{\phi}}^{2} r \sin\left( \phi \right) + 2 m \dot{\phi} \dot{r} \cos\left( \phi \right) + m \ddot{\phi} r \cos\left( \phi \right) + m \ddot{r} \sin\left( \phi \right) + DU\left( r \right) \sin\left( \phi \right)}\end{pmatrix}
 \end{equation}
 
-I stared at this for a while&#x2026; and eventually noticed this linear combination that gets me to the result.
+Oh no. This looks quite different from the polar Lagrange equations above. What is the problem?
+
+I had to stare at this for a long time before I saw what to do. Notice that the terms we want from the polar Lagrange equations all seem to appear in the first equation with a \\(\cos \phi\\), and in the second equation with a \\(\sin \phi\\). Using the trigonometric identity:
+
+\begin{equation}
+(\cos \phi)^2 + (\sin \phi)^2 = 1
+\end{equation}
+
+I realized that I could recover the first equation through a linear combination of both terms. Multiply the first by \\(\cos \phi\\) and the second by \\(\sin \phi\\), add them together and the unwanted terms all drop away.
+
+A similar trick recovers the second equation,given an extra factor of \\(r\\):
 
 ```scheme
 (let* ((convert-path (F->C p->r))
@@ -1832,6 +1854,10 @@ I stared at this for a while&#x2026; and eventually noticed this linear combinat
 \begin{equation}
 \begin{pmatrix} \displaystyle{  - m {\dot{\phi}}^{2} r + m \ddot{r} + DU\left( r \right)} \cr \cr \displaystyle{ 2 m \dot{\phi} r \dot{r} + m \ddot{\phi} {r}^{2}}\end{pmatrix}
 \end{equation}
+
+This was a powerful lesson. We're allowed to take a linear combination here because each equation is a residual, equal to zero. \\(a0 + b0 = 0\\) for any \\(a\\) and \\(b\\), so any combination we generate is still a valid residual.
+
+There is something important going on here, with the way we were able to remove \\(\phi\\) completely from the Lagrange equations. It seemed like \\(\phi\\) was quite important, until we managed to kill it. Is this related to the discussions of symmetries that we'll encounter later in the book? Let me know if you know the answer here.
 
 # Exercise 1.15: Equivalence<a id="sec-16"></a>
 
@@ -1853,7 +1879,6 @@ Here's what's next:
 -   Lock down some of the compositions in code.
 -   Show the by-hand version (remember to sub in the down tuple)
 -   Show that we can confirm it all cancels out in code&#x2026; IF we could possibly see the factor.
--   Come up with a test case for the partial problem for Sussman.
 
 ## Coordinate Transformations<a id="sec-16-2"></a>
 

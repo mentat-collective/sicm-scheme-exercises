@@ -102,7 +102,6 @@
 (define (cycle n elems)
   (apply append (make-list n elems)))
 
-;; Returns
 (define (alternating n elems)
   (let* ((l (length elems))
          (times (quotient (+ n (-1+ l)) l)))
@@ -121,7 +120,6 @@
 ;; sequence of $1, -1$, and =fold-left= generates the sum.
 
 
-;; Returns n copies of elems appended to each other.
 (define ((Lagrange-equations* L n) q)
   (let ((state-path (Gamma q (1+ n))))
     (define (term i)
