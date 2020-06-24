@@ -1,14 +1,11 @@
-;; Scheme Tools
+;; Exercise 1.15: Equivalence
+;; :PROPERTIES:
+;; :header-args+: :tangle ch1/ex1-15.scm :comments org
+;; :END:
 
 
 (load "ch1/utils.scm")
-
-
-;; #+RESULTS:
-;; : ;Loading "ch1/utils.scm"...
-;; : ;  Loading "ch1/exdisplay.scm"... done
-;; : ;... done
-;; : #| check-f |#
+;; Scheme Tools
 
 ;; Equation (1.77) in the book describes how to implement $C$ given some arbitrary
 ;; $F$. Looking ahead slightly, this is implemented as =F->C= on page 46.

@@ -2580,11 +2580,20 @@ answer here.
 :header-args+: :tangle ch1/ex1-15.scm :comments org
 :END:
 
-This is one of the more important exercises in the chapter, in my opinion. The
-problem asks for a proof that it's possible to absorb a coordinate
-transformation directly into the Lagrangian. If you can do this, you can express
-your paths and your forces in whatever coordinates you like, so long as you can
-transition between them.
+#+begin_src scheme :exports none
+(load "ch1/utils.scm")
+#+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
+
+This is one of the more important exercises in the chapter. The problem asks for
+a proof that it's possible to absorb a coordinate transformation directly into
+the Lagrangian. If you can do this, you can express your paths and your forces
+in whatever coordinates you like, so long as you can transition between them.
 
 I also found that this exposed, and repaired, my weakness with the [[http://fmnt.info/blog/20180228_sicm/index.html#orga0630c4][functional
 notation]] that Sussman and Wisdom have used in the book.
@@ -2681,16 +2690,6 @@ this derivation using Scheme to help us along.
 First, some Scheme tools that will help us in both cases.
 
 *** Scheme Tools
-
-#+begin_src scheme :exports none
-(load "ch1/utils.scm")
-#+end_src
-
-#+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
-: ;... done
-: #| check-f |#
 
 Equation (1.77) in the book describes how to implement $C$ given some arbitrary
 $F$. Looking ahead slightly, this is implemented as =F->C= on page 46.
@@ -2940,7 +2939,7 @@ Subtract the two terms, extract common factors and use our assumption
 \end{equation}
 
 And boom, we're done! The primed Lagranged equations \eqref{eq:lagrange-prime}
-hold if the unprimed equations \label{eq:1-15-lagrange} hold.
+hold if the unprimed equations \eqref{eq:1-15-lagrange} hold.
 
 I'm not sure what to make of the new constant terms. The new Lagrange equations
 are scaled by $\partial_1 F(t, q'(t))$, the derivative of $F$ with respect to

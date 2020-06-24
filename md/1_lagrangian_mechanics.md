@@ -1862,7 +1862,7 @@ There is something important going on here, with the way we were able to remove 
 
 # Exercise 1.15: Equivalence<a id="sec-16"></a>
 
-This is one of the more important exercises in the chapter, in my opinion. The problem asks for a proof that it's possible to absorb a coordinate transformation directly into the Lagrangian. If you can do this, you can express your paths and your forces in whatever coordinates you like, so long as you can transition between them.
+This is one of the more important exercises in the chapter. The problem asks for a proof that it's possible to absorb a coordinate transformation directly into the Lagrangian. If you can do this, you can express your paths and your forces in whatever coordinates you like, so long as you can transition between them.
 
 I also found that this exposed, and repaired, my weakness with the [functional notation](http://fmnt.info/blog/20180228_sicm/index.html#orga0630c4) that Sussman and Wisdom have used in the book.
 
@@ -2135,7 +2135,7 @@ Subtract the two terms, extract common factors and use our assumption \eqref{eq:
   \end{aligned}
 \end{equation}
 
-And boom, we're done! The primed Lagranged equations \eqref{eq:lagrange-prime} hold if the unprimed equations \label{eq:1-15-lagrange} hold.
+And boom, we're done! The primed Lagranged equations \eqref{eq:lagrange-prime} hold if the unprimed equations \eqref{eq:1-15-lagrange} hold.
 
 I'm not sure what to make of the new constant terms. The new Lagrange equations are scaled by \\(\partial\_1 F(t, q'(t))\\), the derivative of \\(F\\) with respect to the path; that seems interesting, and possibly there's some nice physical intuition waiting to be discovered.
 
