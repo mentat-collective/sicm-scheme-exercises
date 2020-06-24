@@ -52,8 +52,8 @@
 ;; I've modified it slightly to take in a symbol, since we'll need to generate
 ;; multiple functions for a few of the rules.
 
-;; $fn$ takes a symbol like $F$ and a path function - a function from $t$ to any
-;; number of coordinates (see the =UP*=?) - and returns a generic expression for a
+;; $fn$ takes a symbol like $F$ and a path function -- a function from $t$ to any
+;; number of coordinates (see the =UP*=?) -- and returns a generic expression for a
 ;; path dependent function $F$ that acts via $F \circ \Gamma[q]$. $F$ might be a
 ;; Lagrangian, for example.
 
@@ -63,7 +63,7 @@
 
 
 (define q (literal-function 'q (-> Real (UP Real Real))))
-(define eta (literal-function 'q (-> Real (UP Real Real))))
+(define eta (literal-function 'eta (-> Real (UP Real Real))))
 ;; Variation Product Rule
 
 ;; Equation \eqref{eq:var-prod} states the product rule for variations. Here it is

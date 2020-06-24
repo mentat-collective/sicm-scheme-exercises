@@ -113,22 +113,46 @@
 
 ;; #+RESULTS[5eac70f3edfcf5feeb3a2eb9b98d89646f21ade3]:
 ;; \begin{equation}
-;; D{q}^\prime\left( t \right) {\partial}_{2}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {\left( partial\left( 1 \right) \right)}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) {\partial}_{1}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) + {\partial}_{2}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) \left( partial\left( 0 \right) partial\left( 1 \right) \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
+;; D{q}^\prime\left( t \right) {\partial}_{2}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {{\partial}_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) {\partial}_{1}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) + {\partial}_{2}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) \left( {\partial}_{0} {\partial}_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
+;; \end{equation}
+
+;; Insane. Make a helper:
+
+
+(define (->eq expr)
+  (write-string
+   (replace-all (->tex-equation* expr)
+                (->tex* ((Gamma q) 't))
+                "\\Gamma[q]")))
+
+
+;; #+RESULTS:
+;; : #| ->eq |#
+
+
+(->eq
+ ((compose ((partial 1) Lprime) (Gamma qprime))
+  't))
+
+
+;; #+RESULTS[ee6c612cadd91730dd0142a4dd7476fda80d6e07]:
+;; \begin{equation}
+;; D{q}^\prime\left( t \right) {\partial}_{2}L\left( \Gamma[q] \right) {{\partial}_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) {\partial}_{1}L\left( \Gamma[q] \right) + {\partial}_{2}L\left( \Gamma[q] \right) \left( {\partial}_{0} {\partial}_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
 ;; \end{equation}
 
 ;; The Lagrange equation term is in there with a factor on it. Here's the term I need to subtract:
 
 
 (let* ((factor
-        (compose coordinate ((partial 1) C) (Gamma qprime)))      )
-  (->tex-equation
+        (compose coordinate ((partial 1) C) (Gamma qprime))))
+  (->eq
    ((* factor (compose ((partial 1) L) (Gamma q)))
     't)))
 
 
-;; #+RESULTS[881bca125c154512d159981aae326e02b633fb8d]:
+;; #+RESULTS[fdee1e7dd366b3f377475dbb8a29fda7947fbed3]:
 ;; \begin{equation}
-;; {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) {\partial}_{1}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right)
+;; {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) {\partial}_{1}L\left( \Gamma[q] \right)
 ;; \end{equation}
 
 ;; So now we have the whole thing and the term to substract off. This is the extra:
@@ -136,28 +160,29 @@
 
 (let* ((factor
         (compose coordinate ((partial 1) C) (Gamma qprime))))
-  (->tex-equation
+  (->eq
    ((- (compose ((partial 1) Lprime) (Gamma qprime))
        (* factor (compose ((partial 1) L) (Gamma q))))
     't)))
 
 
-;; #+RESULTS[ab5e1b69d3d762f9eb3a7f477664ce4681321e66]:
+;; #+RESULTS[3a427ada24fe09ae1604ddec522cf9806fbc5870]:
 ;; \begin{equation}
-;; D{q}^\prime\left( t \right) {\partial}_{2}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {\left( partial\left( 1 \right) \right)}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{2}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) \left( partial\left( 0 \right) partial\left( 1 \right) \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
+;; D{q}^\prime\left( t \right) {\partial}_{2}L\left( \Gamma[q] \right) {{\partial}_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{2}L\left( \Gamma[q] \right) \left( {\partial}_{0} {\partial}_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
 ;; \end{equation}
 
-;; Let's do the other side. Nightmare!
+;; Let's do the other side. This is where we have total insanity, no one would ever
+;; work this way.
 
 
-(->tex-equation
+(->eq
  ((D (compose ((partial 2) Lprime) (Gamma qprime)))
   't))
 
 
-;; #+RESULTS[8f6c2926e2d5df141a3985bb361708120ec851f2]:
+;; #+RESULTS[9813f05b0fc4d5e7ad9ce035bca6e494cb087d84]:
 ;; \begin{equation}
-;; {\left( partial\left( 2 \right) \right)}^{2}\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {\left( D{q}^\prime\left( t \right) \right)}^{2} {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) {\left( partial\left( 1 \right) \right)}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {D}^{2}{q}^\prime\left( t \right) {\left( partial\left( 2 \right) \right)}^{2}\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {\left( {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} + 2 {\left( partial\left( 2 \right) \right)}^{2}\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) \left( partial\left( 0 \right) partial\left( 1 \right) \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + \left( partial\left( 1 \right) partial\left( 2 \right) \right)\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) D{q}^\prime\left( t \right) {\left( {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} + {\left( partial\left( 2 \right) \right)}^{2}\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {\left( partial\left( 0 \right) \right)}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + \left( partial\left( 1 \right) partial\left( 2 \right) \right)\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + D{q}^\prime\left( t \right) {\partial}_{2}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {\left( partial\left( 1 \right) \right)}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + \left( partial\left( 0 \right) partial\left( 2 \right) \right)\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{2}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) \left( partial\left( 0 \right) partial\left( 1 \right) \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
+;; {{\partial}_{2}}^{2}\left( L \right)\left( \Gamma[q] \right) {\left( D{q}^\prime\left( t \right) \right)}^{2} {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) {{\partial}_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {D}^{2}{q}^\prime\left( t \right) {{\partial}_{2}}^{2}\left( L \right)\left( \Gamma[q] \right) {\left( {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} + 2 {{\partial}_{2}}^{2}\left( L \right)\left( \Gamma[q] \right) D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) \left( {\partial}_{0} {\partial}_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + \left( {\partial}_{1} {\partial}_{2} \right)\left( L \right)\left( \Gamma[q] \right) D{q}^\prime\left( t \right) {\left( {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} + {{\partial}_{2}}^{2}\left( L \right)\left( \Gamma[q] \right) {{\partial}_{0}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + \left( {\partial}_{1} {\partial}_{2} \right)\left( L \right)\left( \Gamma[q] \right) {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + D{q}^\prime\left( t \right) {\partial}_{2}L\left( \Gamma[q] \right) {{\partial}_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + \left( {\partial}_{0} {\partial}_{2} \right)\left( L \right)\left( \Gamma[q] \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{2}L\left( \Gamma[q] \right) \left( {\partial}_{0} {\partial}_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
 ;; \end{equation}
 
 ;; I see Lagrange's equation peeking out, with a big factor attached to it.
@@ -165,15 +190,33 @@
 
 (let* ((factor
         (compose velocity ((partial 2) C) (Gamma qprime))))
-  (->tex-equation
+  (->eq
    ((* factor (D (compose ((partial 2) L) (Gamma q))))
     't)))
 
 
-;; #+RESULTS[a499b82f2449993cdf822f3c0f67685b380e4304]:
+;; #+RESULTS[b23402833547cb01c1c9752829329efd26bdfb0e]:
 ;; \begin{equation}
-;; {\left( partial\left( 2 \right) \right)}^{2}\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {\left( D{q}^\prime\left( t \right) \right)}^{2} {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) {\left( partial\left( 1 \right) \right)}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {D}^{2}{q}^\prime\left( t \right) {\left( partial\left( 2 \right) \right)}^{2}\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {\left( {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} + 2 {\left( partial\left( 2 \right) \right)}^{2}\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) \left( partial\left( 0 \right) partial\left( 1 \right) \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + \left( partial\left( 1 \right) partial\left( 2 \right) \right)\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) D{q}^\prime\left( t \right) {\left( {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} + {\left( partial\left( 2 \right) \right)}^{2}\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {\left( partial\left( 0 \right) \right)}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + \left( partial\left( 1 \right) partial\left( 2 \right) \right)\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + \left( partial\left( 0 \right) partial\left( 2 \right) \right)\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right)
+;; {{\partial}_{2}}^{2}\left( L \right)\left( \Gamma[q] \right) {\left( D{q}^\prime\left( t \right) \right)}^{2} {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) {{\partial}_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {D}^{2}{q}^\prime\left( t \right) {{\partial}_{2}}^{2}\left( L \right)\left( \Gamma[q] \right) {\left( {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} + 2 {{\partial}_{2}}^{2}\left( L \right)\left( \Gamma[q] \right) D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) \left( {\partial}_{0} {\partial}_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + \left( {\partial}_{1} {\partial}_{2} \right)\left( L \right)\left( \Gamma[q] \right) D{q}^\prime\left( t \right) {\left( {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} + {{\partial}_{2}}^{2}\left( L \right)\left( \Gamma[q] \right) {{\partial}_{0}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + \left( {\partial}_{1} {\partial}_{2} \right)\left( L \right)\left( \Gamma[q] \right) {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + \left( {\partial}_{0} {\partial}_{2} \right)\left( L \right)\left( \Gamma[q] \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right)
 ;; \end{equation}
+
+;; Remaining:
+
+
+(let* ((factor
+        (compose velocity ((partial 2) C) (Gamma qprime))))
+  (->eq
+   ((- (D (compose ((partial 2) Lprime) (Gamma qprime)))
+       (* factor (D (compose ((partial 2) L) (Gamma q)))))
+    't)))
+
+
+;; #+RESULTS[a3629487417ac094720b5e63fff35edaaa8d3875]:
+;; \begin{equation}
+;; D{q}^\prime\left( t \right) {\partial}_{2}L\left( \Gamma[q] \right) {{\partial}_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{2}L\left( \Gamma[q] \right) \left( {\partial}_{0} {\partial}_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
+;; \end{equation}
+
+;; That's familiar.
 
 ;; About the factors, this is interesting:
 

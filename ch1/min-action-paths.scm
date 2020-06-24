@@ -3,6 +3,10 @@
 ;; :header-args+: :tangle ch1/min-action-paths.scm :comments org
 ;; :END:
 
+;; This section takes us through an example action calculation on a path with an
+;; adjustable "variation", or wiggle. We should see that, if we consider a
+;; "realizable path", then any wiggle we add will increase the calculated action.
+
 
 (load "ch1/utils.scm")
 
@@ -13,10 +17,12 @@
 ;; : ;... done
 ;; : #| check-f |#
 
-;; This section in the textbook implements path variation, so we can see the action
-;; change (and increase!) off of the optimal path.
+;; The only restriction on a variation is that it can't affect the endpoints of the
+;; realizable path. the times and positions of the start and end of the path are
+;; pinned.
 
-;; =make-eta= returns a function that equals 0 at $t_1$ and $t_2$:
+;; =make-eta= takes some path $\nu$ and returns a function that wiggles in some
+;; similar way to $\nu$, but equals 0 at $t_1$ and $t_2$:
 
 
 (define ((make-eta nu t1 t2) t)
@@ -27,8 +33,8 @@
 ;; : #| make-eta |#
 
 ;; Next, define a function that calculates the Lagrangian for a free particle, like
-;; before, but adds in the path variation multiplied by some small scaling factor
-;; $\epsilon$.
+;; before, but adds in the path variation $\eta$ multiplied by some small scaling factor
+;; $\epsilon$:
 
 
 (define ((varied-free-particle-action mass q nu t1 t2) epsilon)
@@ -42,8 +48,10 @@
 ;; #+RESULTS:
 ;; : #| varied-free-particle-action |#
 
-;; The action for a small variation of $v(t) = (\sin(t), \cos(t), t^2)$ is larger
-;; (top entry) vs the non-varied path (bottom entry), as expected.
+;; Consider some variation like $v(t) = (\sin(t), \cos(t), t^2)$. The action of the
+;; path with this small wiggle (processed through =make-eta= to pin its endpoints)
+;; is larger (top entry) than the action of the non-varied path (bottom entry), as
+;; expected:
 
 
 (define (test-path t)
@@ -59,14 +67,17 @@
        (action-fn 0))))
 
 
-;; #+RESULTS[3b26d789e2b0e25f6eb715c26a42c1ba4afe9017]:
+;; #+RESULTS[10c4c8e6a40701b7176b4b1b2e9dd30b80185e6f]:
+;; #| test-path |#
+
 ;; \begin{equation}
 ;; \begin{pmatrix} \displaystyle{ 436.2912142857153} \cr \cr \displaystyle{ 435.}\end{pmatrix}
 ;; \end{equation}
 
 ;; What value of $\epsilon$ minimizes the action for the test path?
 
-;;  Search over -2.0 to 1.0:
+;; We can search over values of $\epsilon$ from $-2.0$ to $1.0$ using the built-in
+;; =minimize= function:
 
 
 (let ((action-fn (varied-free-particle-action
@@ -74,7 +85,7 @@
                   (up sin cos square)
                   0.0 10.0)))
   (->tex-equation
-   (minimize action-fn -2.0 1.0)))
+   (car (minimize action-fn -2.0 1.0))))
 ;; Finding trajectories that minimize the action
 
 ;; Is it possible to use this principle to actually /find/ a path, instead of
@@ -96,7 +107,9 @@
 ;; #+RESULTS:
 ;; : #| make-path |#
 
-;; This function sort-of-composes =make-path= and =Lagrangian-action=:
+;; The next function sort-of-composes =make-path= and =Lagrangian-action= into a
+;; function that takes $L$ and the endpoints, and returns the total action along
+;; the path.
 
 
 (define ((parametric-path-action L t0 q0 t1 q1) qs)
@@ -107,7 +120,11 @@
 ;; #+RESULTS:
 ;; : #| parametric-path-action |#
 
-;; Finally, a function that generates a path that minimizes the action:
+;; Finally, =find-path= takes the previous function's arguments, plus a parameter
+;; $n$. $n$ controls how many intermediate points the optimizer will inject and
+;; modify in its attempt to find an action-minimizing path. The more points you
+;; specify, the longer minimization will take, but the more accurate the final path
+;; will be.
 
 
 (define (find-path L t0 q0 t1 q1 n)
@@ -123,23 +140,28 @@
 ;; : #| find-path |#
 
 ;; Let's test it out with a Lagrangian for a one dimensional harmonic oscillator
-;; with spring constant $k$:
+;; with spring constant $k$. Here is the Lagrangian, equal to the kinetic energy
+;; minus the potential from the spring:
 
 ;; #+name: L-harmonic
 
 (define ((L-harmonic m k) local)
   (let ((q (coordinate local))
         (v (velocity local)))
-    (- (* 1/2 m (square v)) (* 1/2 k (square q)))))
+    (- (* 1/2 m (square v))
+       (* 1/2 k (square q)))))
 
 
 ;; #+RESULTS:
 ;; : #| L-harmonic |#
 
+;; Now we invoke the procedures we've built, and plot the final, path-minimizing
+;; trajectory.
 
-(define win2 (frame 0.0 :pi/2 0 1))
 
 (define harmonic-path
   (find-path (L-harmonic 1.0 1.0) 0.0 1.0 :pi/2 0.0 3))
+
+(define win2 (frame 0.0 :pi/2 0 1))
 
 (plot-function win2 harmonic-path 0 :pi (/ :pi 100))

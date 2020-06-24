@@ -12,7 +12,9 @@
     - [Finding trajectories that minimize the action](#sec-5-1)
   - [Exercise 1.5: Solution process](#sec-6)
   - [Exercise 1.6: Minimizing action](#sec-7)
-    - [Executions](#sec-7-1)
+    - [Intuition](#sec-7-1)
+    - [Implementation](#sec-7-2)
+    - [Execution](#sec-7-3)
   - [Exercise 1.7: Properties of \\(\delta\\)](#sec-8)
     - [Variation Product Rule](#sec-8-1)
     - [Variation Sum Rule](#sec-8-2)
@@ -32,9 +34,10 @@
     - [Higher dimensions](#sec-11-1)
   - [Exercise 1.11: Kepler's third law](#sec-12)
   - [Exercise 1.12: Lagrange's equations (code)](#sec-13)
-    - [Part A: Ideal Planar Pendulum](#sec-13-1)
-    - [Part B: 2D Potential](#sec-13-2)
-    - [Part C: Particle on a Sphere](#sec-13-3)
+    - [Preliminary Notes](#sec-13-1)
+    - [Part A: Ideal Planar Pendulum](#sec-13-2)
+    - [Part B: 2D Potential](#sec-13-3)
+    - [Part C: Particle on a Sphere](#sec-13-4)
   - [Exercise 1.13: Higher-derivative Lagrangians (code)](#sec-14)
     - [Part A: Acceleration-dependent Lagrangian Implementation](#sec-14-1)
     - [Part B: Applying HO-Lagrangians](#sec-14-2)
@@ -84,33 +87,54 @@
 
 # Exercise 1.1: Degrees of Freedom and 1.2: Generalized Coordinates<a id="sec-1"></a>
 
+This exercise is designed to get you thinking about the idea of *configuration space*. One goal of classical mechanics is to predict the future of a system, based on a description of the current state of the system. So how to describe the system?
+
+One way would be to track, for every instant of time, a 3-dimensional position for every particle in a system, along with velocities in each direction, for a total of 6 numbers - or *dimensions* - per particle.
+
+That's fine for particles moving in straight lines through space, not affecting each other. But remember, this is all an accounting trick that we're using to represent reality, not reality itself. If there is some more convenient way to track the state of the system, we're free to use that as well, provided we can recover the original positions and velocities after evolving the system.
+
+Maybe two particles are attached to each other, so their positions in space are the same, or offset by a tiny amount. Then it's enough to track:
+
+-   the position of one of the particles (3 numbers)
+-   the angle and distance of the offset (2 numbers)
+
+What seemed like a system that required 6 numbers actually required 5.
+
+Theo Jansen's incredible [Strandbeesten](https://www.youtube.com/watch?v=LewVEF2B_pM) are built out of copies of [Jansen's Linkage](https://en.wikipedia.org/wiki/Jansen%27s_linkage). Each of these legs has 11 pipes that flex and bend, but only **one** degree of freedom.
+
+![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-06-23_14-48-36_screenshot.png)
+
+The first exercise gives us some practice thinking about the redundancy in different physical systems.
+
 > For each of the mechanical systems described below, give the number of degrees of freedom of the configuration space. ([SICM, ex1](https://tgvaughan.github.io/sicm/chapter001.html#Exe_1-1))
 
-[Exercise 1.2](https://tgvaughan.github.io/sicm/chapter001.html#Exe_1-2) asks about the generalized coordinates of each, so I'll note those here too.
+[Exercise 1.2](https://tgvaughan.github.io/sicm/chapter001.html#Exe_1-2) asks about the "generalized coordinates" of each system. What are the actual numbers that we want to track for each system, if not the \\(3N\\) positions of each of \\(N\\) particles?
+
+> For each of the systems in exercise 1.1, specify a system of generalized coordinates that can be used to describe the behavior of the system.
 
 1.  Three juggling pins.
 
-    ****18 degrees of freedom**** for three juggling pins - 3 position, 3 angles for each. OR ****15**** total, if you assume that the pin is symmetric; then you just need two degrees of tilt.
+    The system has ****18 degrees of freedom****. Each pin requires 3 coordinates to specify its center of mass, and 3 angles for each pin. If you assume that each pin is symmetric about its central axis, then it doesn't matter how far around the pin has rotated and you can make do with ****15 degrees of freedom****. 3 positions and 2 angles for each.
 
 2.  A spherical pendulum consisting of a point mass (the pendulum bob) hanging from a rigid massless rod attached to a fixed support point. The pendulum bob may move in any direction subject to the constraint imposed by the rigid rod. The point mass is subject to the uniform force of gravity.
 
-    Spherical pendulum,hanging from a fixed support has ****two degrees of freedom****, one for each angle.
+    This system has only ****2 degrees of freedom****. One for the latitude of the pendulum, and one for the longitude.
 
-3.  Spherical DOUBLE pendulum has ****four degrees of freedom****; two angles from previous, plus two more angles for the second pendulum off of the first.
+3.  A spherical double pendulum, consisting of one point mass hanging from a rigid massless rod attached to a second point mass hanging from a second massless rod attached to a fixed support point. The point masses are subject to the uniform force of gravity.
 
-    A spherical double pendulum, consisting of one point mass hanging from a rigid massless rod attached to a second point mass hanging from a second massless rod attached to a fixed support point. The point masses are subject to the uniform force of gravity.
+    ****4 degrees of freedom****; two angles from previous, plus two more angles for the second pendulum off of the first.
 
 4.  A point mass sliding without friction on a rigid curved wire.
 
-    ****1 degree of freedom****, distance along the wire.
+    ****1 degree of freedom****; the distance along the wire.
 
 5.  A top consisting of a rigid axisymmetric body with one point on the symmetry axis of the body attached to a fixed support, subject to a uniform gravitational force.
 
-    Axisymmetric top has ****TWO degrees of freedom****, for the angles off of vertical. But then we can't talk about its speed, so that's a little strange. I guess it has an angular momentum as a property, but that's not a coordinate.
+    This system seems to have ****2 degrees of freedom****, for the angles off of vertical. It's like a spherical pendulum, but upside down. What I find strange about this answer is that the top does have a rotation speed, which is a measure of how far the top has rotated in time. How can we track this velocity if we don't track the top's spin angle? This may be wrong.
 
-6.  The same as e, but not axisymmetric.
+6.  The same as **5**, but not axisymmetric.
 
-    We now have ****THREE degrees of freedom****, one more for the angle of the top's rotation.
+    A non-symmetric top has ****3 degrees of freedom****. 2 from before, and an additional angle to measure how far around the top has rotated.
 
 # Exercise 1.3: Fermat optics<a id="sec-2"></a>
 
@@ -323,6 +347,8 @@ This whole area of optics and least time has obsessed scientists for hundreds of
 
 # Section 1.4: Computing Actions<a id="sec-3"></a>
 
+I don't plan on doing this for every section in the book, but section 1.4 is the first place where we're introduced to Scheme, so I followed along and made a few notes.
+
 This is the first demo of how any of this stuff works, starting on page 15. Here's our first Lagrangian, super simple.
 
 ```scheme
@@ -330,6 +356,10 @@ This is the first demo of how any of this stuff works, starting on page 15. Here
   (let ((v (velocity local)))
     (* 1/2 mass (dot-product v v))))
 ```
+
+`L-free-particle` is a function that takes some `mass` and returns a *new* function. The new function takes an instance of a "local tuple" and returns the value of the "Lagrangian". This is the function that you query at every point along some evolving path in configuration space. For realizable physical paths, the integral of this function should by minimized, or stationary.
+
+Why? That's what we're trying to develop here.
 
 Suppose we let \\(q\\) denote a coordinate path function that maps time to position components:
 
@@ -355,7 +385,7 @@ The value \\(\Gamma\\) returns is called the "local tuple":
 
 This is just \\((t, q(t), (Dq)(t), ....)\\) Where \\(D\\) is the derivative. (Preview: can a component of the coordinate path depend on the others? YES, and that would impose constraints beyond the degrees of freedom you'd guess by just counting the coordinates.)
 
-Composing the Langrangian with \\(\Gamma\\) gives you a function that computes the Lagrangian at some instant:
+Composing the Langrangian with \\(\Gamma[q]\\) gives you a function that computes the Lagrangian at some instant:
 
 ```scheme
 (->tex-equation
@@ -384,8 +414,6 @@ Here's an example path that a particle might take, moving along a straight line 
       (+ (* 2 t) 1)))
 ```
 
-    #| test-path |#
-
 Calculate the action for a particle of mass 3, between \\(t\_1 = 0\\) and \\(t\_2 = 10\\):
 
 ```scheme
@@ -397,6 +425,8 @@ Calculate the action for a particle of mass 3, between \\(t\_1 = 0\\) and \\(t\_
 This happens to be the minimal action, since the path we provided was a uniform path and the Lagrangian was for a free particle. If we'd provided a different path, we would still get an action. Just not a stationary action. Infinitesimal wiggles would change the action.
 
 # Exercise 1.4: Lagrangian actions<a id="sec-4"></a>
+
+This exercise has us calculating the actual value of the action along some realizable path taken by a free particle.
 
 > For a free particle an appropriate Lagrangian is
 
@@ -412,6 +442,8 @@ L(t, x, v) = {1 \over 2}mv^2
 {m \over 2}{{(x\_b - x\_a)^2} \over {t\_b - t\_a}}
 \end{equation}
 
+I'm not sure I see the point of this exercise, for developing intuition about Langrangian mechanics. I think it may be here to make sure we understand that we're not minimizing the *function* \\(L\\). We're minimizing (finding the stationary point of) the integral of \\(L\\) between \\(t\_a\\) and \\(t\_b\\).
+
 The velocity is constant between the two points, so it must be equal to the difference in position over the difference in time:
 
 \begin{equation}
@@ -419,7 +451,7 @@ The velocity is constant between the two points, so it must be equal to the diff
 v = {{x(t\_b) - x(t\_a)} \over {t\_b - t\_a}} = {{x\_b - x\_a} \over {t\_b - t\_a}}
 \end{equation}
 
-The action is equal to:
+The action is equal to the integral of \\(L\\) evaluated between the two time points:
 
 \begin{equation}
   \label{eq:2}
@@ -441,20 +473,22 @@ The velocity is constant, so substitute in equation \eqref{eq:constant-v} and si
   \end{aligned}
 \end{equation}
 
-As expected.
+Boom, solution achieved.
 
 # Paths of Minimum Action<a id="sec-5"></a>
 
-This section in the textbook implements path variation, so we can see the action change (and increase!) off of the optimal path.
+This section takes us through an example action calculation on a path with an adjustable "variation", or wiggle. We should see that, if we consider a "realizable path", then any wiggle we add will increase the calculated action.
 
-`make-eta` returns a function that equals 0 at \\(t\_1\\) and \\(t\_2\\):
+The only restriction on a variation is that it can't affect the endpoints of the realizable path. the times and positions of the start and end of the path are pinned.
+
+`make-eta` takes some path \\(\nu\\) and returns a function that wiggles in some similar way to \\(\nu\\), but equals 0 at \\(t\_1\\) and \\(t\_2\\):
 
 ```scheme
 (define ((make-eta nu t1 t2) t)
   (* (- t t1) (- t t2) (nu t)))
 ```
 
-Next, define a function that calculates the Lagrangian for a free particle, like before, but adds in the path variation multiplied by some small scaling factor \\(\epsilon\\).
+Next, define a function that calculates the Lagrangian for a free particle, like before, but adds in the path variation \\(\eta\\) multiplied by some small scaling factor \\(\epsilon\\):
 
 ```scheme
 (define ((varied-free-particle-action mass q nu t1 t2) epsilon)
@@ -465,7 +499,7 @@ Next, define a function that calculates the Lagrangian for a free particle, like
                        t2)))
 ```
 
-The action for a small variation of \\(v(t) = (\sin(t), \cos(t), t^2)\\) is larger (top entry) vs the non-varied path (bottom entry), as expected.
+Consider some variation like \\(v(t) = (\sin(t), \cos(t), t^2)\\). The action of the path with this small wiggle (processed through `make-eta` to pin its endpoints) is larger (top entry) than the action of the non-varied path (bottom entry), as expected:
 
 ```scheme
 (define (test-path t)
@@ -481,13 +515,15 @@ The action for a small variation of \\(v(t) = (\sin(t), \cos(t), t^2)\\) is larg
        (action-fn 0))))
 ```
 
+\#| test-path |#
+
 \begin{equation}
 \begin{pmatrix} \displaystyle{ 436.2912142857153} \cr \cr \displaystyle{ 435.}\end{pmatrix}
 \end{equation}
 
 What value of \\(\epsilon\\) minimizes the action for the test path?
 
-Search over -2.0 to 1.0:
+We can search over values of \\(\epsilon\\) from \\(-2.0\\) to \\(1.0\\) using the built-in `minimize` function:
 
 ```scheme
 (let ((action-fn (varied-free-particle-action
@@ -495,11 +531,11 @@ Search over -2.0 to 1.0:
                   (up sin cos square)
                   0.0 10.0)))
   (->tex-equation
-   (minimize action-fn -2.0 1.0)))
+   (car (minimize action-fn -2.0 1.0))))
 ```
 
 \begin{equation}
-5.134781488891349e-15\left( 435., 5 \right)
+5.134781488891349e-15
 \end{equation}
 
 The result shows that the minimum action occurs at \\(\epsilon = 0\\), up to numerical precision.
@@ -519,7 +555,7 @@ First we need a function that builds a path. This version generates a path of in
        (append (list t0) ts (list t1))))))
 ```
 
-This function sort-of-composes `make-path` and `Lagrangian-action`:
+The next function sort-of-composes `make-path` and `Lagrangian-action` into a function that takes \\(L\\) and the endpoints, and returns the total action along the path.
 
 ```scheme
 (define ((parametric-path-action L t0 q0 t1 q1) qs)
@@ -527,7 +563,7 @@ This function sort-of-composes `make-path` and `Lagrangian-action`:
     (Lagrangian-action L path t0 t1)))
 ```
 
-Finally, a function that generates a path that minimizes the action:
+Finally, `find-path` takes the previous function's arguments, plus a parameter \\(n\\). \\(n\\) controls how many intermediate points the optimizer will inject and modify in its attempt to find an action-minimizing path. The more points you specify, the longer minimization will take, but the more accurate the final path will be.
 
 ```scheme
 (define (find-path L t0 q0 t1 q1 n)
@@ -539,37 +575,42 @@ Finally, a function that generates a path that minimizes the action:
       (make-path t0 q0 t1 q1 minimizing-qs))))
 ```
 
-Let's test it out with a Lagrangian for a one dimensional harmonic oscillator with spring constant \\(k\\):
+Let's test it out with a Lagrangian for a one dimensional harmonic oscillator with spring constant \\(k\\). Here is the Lagrangian, equal to the kinetic energy minus the potential from the spring:
 
 ```scheme
 (define ((L-harmonic m k) local)
   (let ((q (coordinate local))
         (v (velocity local)))
-    (- (* 1/2 m (square v)) (* 1/2 k (square q)))))
+    (- (* 1/2 m (square v))
+       (* 1/2 k (square q)))))
 ```
 
     #| L-harmonic |#
 
-```scheme
-(define win2 (frame 0.0 :pi/2 0 1))
+Now we invoke the procedures we've built, and plot the final, path-minimizing trajectory.
 
+```scheme
 (define harmonic-path
   (find-path (L-harmonic 1.0 1.0) 0.0 1.0 :pi/2 0.0 3))
+
+(define win2 (frame 0.0 :pi/2 0 1))
 
 (plot-function win2 harmonic-path 0 :pi (/ :pi 100))
 ```
 
-The path looks like a harmonic oscillator that starts high and bounces down, after \\(\pi \over 2\\) seconds, down to 0.
+The path looks like a harmonic oscillator that starts high and bounces down, after \\(\pi \over 2\\) seconds, down to 0. This is the first quarter of a sine wave with period \\(2 \pi\\).
 
 ![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-06-10_14-24-14_screenshot.png)
 
 # Exercise 1.5: Solution process<a id="sec-6"></a>
 
-The goal of this exercise is really just to watch the minimization process that they've given us.
+The goal of this The goal of this exercise is to watch the minimization process that we just discussed proceed, from the initial guess of a straight-line path to the final, natural looking harmonic oscillation.
+
+The exercise states:
 
 > We can watch the progress of the minimization by modifying the procedure parametric-path-action to plot the path each time the action is computed.
 
-The functions they've provided define a window, and then a version of `parametric-path-action` that updates the graph as it minimizes:
+The functions the authors provide in the exercise define a window, and then a version of `parametric-path-action` that updates the graph as it minimizes:
 
 ```scheme
 (define win2 (frame 0.0 :pi/2 0.0 1.2))
@@ -577,7 +618,8 @@ The functions they've provided define a window, and then a version of `parametri
 (define ((L-harmonic m k) local)
   (let ((q (coordinate local))
         (v (velocity local)))
-    (- (* 1/2 m (square v)) (* 1/2 k (square q)))))
+    (- (* 1/2 m (square v))
+       (* 1/2 k (square q)))))
 
 (define ((parametric-path-action Lagrangian t0 q0 t1 q1)
          intermediate-qs)
@@ -589,41 +631,50 @@ The functions they've provided define a window, and then a version of `parametri
     (Lagrangian-action Lagrangian path t0 t1)))
 ```
 
-This final command runs the minimization and updates the graph as it goes.
+Run the minimization with the same parameters as in the previous section:
 
 ```scheme
 (find-path (L-harmonic 1.0 1.0) 0.0 1.0 :pi/2 0.0 2)
 ```
 
-The minimization looks like this:
+and watch the plot update:
 
 ![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-05-29_10-12-19_AJBpDgU.gif)
 
 # Exercise 1.6: Minimizing action<a id="sec-7"></a>
 
-The problem asks:
+The authors have lightly demonstrated that plausible-looking paths have stationary action between fixed endpoints. What happens if we overconstrain the problem?
+
+The exercise asks:
 
 > Suppose we try to obtain a path by minimizing an action for an impossible problem. For example, suppose we have a free particle and we impose endpoint conditions on the velocities as well as the positions that are inconsistent with the particle being free. Does the formalism protect itself from such an unpleasant attack? You may find it illuminating to program it and see what happens.
 
-I spent a good amount of time thinking about this one. When I attacked this book five years ago I found it very confusing. It makes more sense now that I've moved farther in the book and understand what it's asking us to do.
+I spent a good amount of time thinking about this exercise. When I attempted to read this book in 2015, I found it very confusing.
 
-Let's say you take, as the authors suggest, some path, and impose velocity constraints on the endpoints in addition to the position constraints.
+Let's say you take, as the authors suggest, some path, and impose velocity constraints on the endpoints in addition to the required position constraints.
 
-Usually, you constrain the coordinates at each endpoint and force a path that minimizes the action between two times. So what does it mean to impose velocity conditions?
+Usually, you constrain the coordinates at each endpoint and force a path that minimizes the action between two times. What does it mean to impose velocity conditions?
 
 The key is to realize that on the computer, you're forcing a path to be composed of a bunch of discrete points. If you can force a point into the path that is NOT controlled by the optimizer, then you can force a velocity at some point in the path that makes no sense for minimal action.
 
-Let's define a new version of `parametric-path-action` that also takes an offset for the initial and final points. We'll force the first and last intermediate point to be equal to the start and end points, plus the offsets.
+Let's define a new version of `parametric-path-action` that also takes an offset for the initial and final points. We'll force the first and last intermediate point to be equal to the start and end points, plus some offset we can supply to the function.
 
-Then, we can try to find an action-minimizing path, but force the optimizer to deal with not just our endpoint conditions, but these two extra points as well. Forcing two points on each end will force an initial velocity condition.
+Then, we can try to find an action-minimizing path, but force the optimizer to deal with not just our endpoint conditions, but these two extra points as well. Forcing two points on each end will force an initial velocity condition. An offset of 0 would be equivalent to imposing a velocity of 0 at the start.
 
-Here's the implementation:
+## Intuition<a id="sec-7-1"></a>
+
+I simply proceeded with the implementation, but I'd recommend you take a minute to consider what you *think* will happen here. A hint is that the code is attempting to minimize action, given the constraint of the actual Lagrangian. What will it do when it's forced to battle with a new exterior constraint, not captured in the Lagrangian?
+
+## Implementation<a id="sec-7-2"></a>
+
+Here's the implementation of the modification described earlier:
 
 ```scheme
 
 (define (((parametric-path-action* win)
           Lagrangian t0 q0 offset0 t1 q1 offset1)
          intermediate-qs)
+  ;; See the two new points?
   (let ((intermediate-qs* (append (list (+ q0 offset0))
                                   intermediate-qs
                                   (list (+ q1 offset1)))))
@@ -635,9 +686,9 @@ Here's the implementation:
       (Lagrangian-action Lagrangian path t0 t1))))
 ```
 
-You could try a similar trick by modifying the first and last entries of `intermediate-qs` instead of appending a point, but I suspect that the optimizer would be able to figure out how to offset your offset.
+You might try a similar trick by modifying the first and last entries of `intermediate-qs` instead of appending a point, but I suspect that the optimizer would be able to figure out how to undo your offset. (Try this as an exercise.)
 
-Next, a version of `find-path` that passes the offsets through to the new `parametric-path-action*`:
+Next, a new version of `find-path` that passes the offsets through to the new `parametric-path-action*`:
 
 ```scheme
 (define ((find-path* win) L t0 q0 offset0 t1 q1 offset1 n)
@@ -669,7 +720,7 @@ And finally, a function that can execute runs of our formalism-killing experimen
 
 Internally, remember, `parametric-path-action*` will append two extra fixed offset points to the `n` intermediate points that the optimizer gets to control.
 
-## Executions<a id="sec-7-1"></a>
+## Execution<a id="sec-7-3"></a>
 
 Let's run the code with 0 offsets and 3 interpolation points. Note that this should *still* distort the path, since we now have two fixed points at the start and end. This is effectively imposing a 0 velocity constraint at the beginning and end.
 
@@ -683,7 +734,9 @@ Here's the code, and its output:
 
 The path ends up looking almost sinusoidal, and takes a while to converge. This is the best polynomial that the system can come up with that matches the 7 points (3 interpolated, 2 offsets, 1 start and 1 end).
 
-Here's a small positive velocity imposed at the beginning:
+The actual realizable path should be a straight line between the two points. The initial velocity of
+
+Here's a small positive velocity imposed at the beginning, and 0 at the end:
 
 ```scheme
 (one-six 0.2 0 3)
@@ -691,7 +744,7 @@ Here's a small positive velocity imposed at the beginning:
 
 ![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-06-10_15-10-53_ex1_6_02offset.gif)
 
-The system takes longer to converge. Here's a larger impulse of 0.5:
+The system takes longer to converge. Here's a larger impulse of 0.5 at the beginning:
 
 ```scheme
 (one-six 0.5 0 3)
@@ -710,7 +763,7 @@ And a moderate negative velocity, just for fun:
 The process <span class="underline"><span class="underline">does</span></span> converge, but this is only because we only used 3 intermediate points. If you bump up to 10 points, with this code:
 
 ```scheme
-(one-six 20 0 3)
+(one-six -0.5 0 10)
 ```
 
 The optimization freezes.
@@ -719,13 +772,13 @@ What is going on here? Why does the minimizer converge?
 
 With velocity constraints imposed, we're no longer minimizing the action with respect to some Lagrangian. We're minimizing the action given two constraints. You have the Lagrangian, and then the warring goal of the polynomial interpolation forcing a certain shape on the path. At some point, the minimizer breaks; internally it ends up pinned between two tugging constraints.
 
-If you make the impulse too big or force too many intermediate points, then the war is too hardcore and the process never converges. But it's important to note here the details of the optimizer. This detail doesn't break reality.
+If you make the impulse too big or force too many intermediate points, then the war is too hardcore and the process never converges. But it's important to note here that these are details of the computational process. This detail doesn't break reality. (It would break your model of reality, as it did here, if you have constraints or forces that you don't capture in the Lagrangian.)
 
 If you *do* need to impose velocity conditions, it turns out you can use a Lagrangian that takes acceleration into account. This is discussed in Exercise 1.10.
 
 # Exercise 1.7: Properties of \\(\delta\\)<a id="sec-8"></a>
 
-This exercise asks us to prove various products of the variation operator \\(\delta\_\eta\\). This is a sort of higher-order derivative operator. Apply it to a higher order function \\(f\\), and you'll get a function back that returns the *sensitivity* of \\(f\\) to fluctuations in its input path function. (Confusing? Check out [the textbook](https://tgvaughan.github.io/sicm/chapter001.html#h1-6a).
+This exercise asks us to prove various products of the variation operator \\(\delta\_\eta\\). This is a sort of higher-order derivative operator. Apply it to a higher order function \\(f\\), and you'll get a function back that returns the *sensitivity* of \\(f\\) to fluctuations in its input path function. (Confusing? Check out [the textbook](https://tgvaughan.github.io/sicm/chapter001.html#h1-6a).)
 
 ## Variation Product Rule<a id="sec-8-1"></a>
 
@@ -759,7 +812,7 @@ You might recognize that we've now isolated terms that look like \\(\delta\_\eta
 
 ## Variation Sum Rule<a id="sec-8-2"></a>
 
-The sum rule is easier. Our goal is:
+The sum rule is easier. Our goal is to show that:
 
 \begin{equation}
 \label{eq:var-sum}
@@ -912,14 +965,16 @@ Part B's problem description gave us a path-dependent function similar to this o
 
 I've modified it slightly to take in a symbol, since we'll need to generate multiple functions for a few of the rules.
 
-\\(fn\\) takes a symbol like \\(F\\) and a path function - a function from \\(t\\) to any number of coordinates (see the `UP*`?) - and returns a generic expression for a path dependent function \\(F\\) that acts via \\(F \circ \Gamma[q]\\). \\(F\\) might be a Lagrangian, for example.
+\\(fn\\) takes a symbol like \\(F\\) and a path function &#x2013; a function from \\(t\\) to any number of coordinates (see the `UP*`?) &#x2013; and returns a generic expression for a path dependent function \\(F\\) that acts via \\(F \circ \Gamma[q]\\). \\(F\\) might be a Lagrangian, for example.
 
 The textbook also gives us this function from \\(t \to (x, y)\\) to test out the properties above. I've added an \\(\eta\\) of the same type signature that we can use to add variation to the path.
 
 ```scheme
 (define q (literal-function 'q (-> Real (UP Real Real))))
-(define eta (literal-function 'q (-> Real (UP Real Real))))
+(define eta (literal-function 'eta (-> Real (UP Real Real))))
 ```
+
+These weren't easy to write down, but they really do constitute proofs. If you trust the system managing the algebra, then the equalities here are general. This is an area of computing I haven't worked with much, but I'm left with the eery feeling that these are more powerful than any tests I might have decided to write, if I weren't guided by this exercise.
 
 ### Variation Product Rule<a id="sec-9-2-1"></a>
 
@@ -1025,13 +1080,19 @@ Our final test. Here's equation \eqref{eq:var-commute} in code, showing that the
 
 # Exercise 1.9: Lagrange's equations<a id="sec-10"></a>
 
-This exercise has us deriving Lagrange's equations in steps for three different systems.
+This exercise asks us to derive Lagrange's equations in steps for three different systems. Is this conscionable, given that we have the computer available to do the algebra for us? I think that this exercise is good practice for understanding the syntax, and maybe for refreshing your memory of how to symbolically manipulate derivatives.
 
-You should do this on paper, then go look at Exercise 1.12 for the Scheme code that implements each Lagrangian and shows the steps required to get to Lagrange's equations.
+But I'm feeling more and more that we're in the middle of a thicket of exercises that are smugly attempting to show us how bad life is with pencil and paper, and how nice a computer algebra system can be. These paper-and-pencil problems are going to get harder and harder, while they stay trivial in Scheme.
+
+Decide for yourself. Exercise 1.12 solves implements each Lagrangian in Scheme and demonstrates the steps required to get to Lagrange's equations; I do buy that it would be difficult to do this without a good handle on the syntax.
+
+Give it a try, then go examine exercise 1.12.
 
 # Exercise 1.10: Higher-derivative Lagrangians<a id="sec-11"></a>
 
-Exercise:
+The only reason that the Lagrangians we've been considering don't take any local tuple components beyond velocity is that the physics of our universe seems concerned with updating velocities and nothing beyond. Newton's second law gives us an update rule for the velocities in a system, and we picked the Lagrangian so that Lagrange's equations would match Newton's second law.
+
+But the formula for action works just as well if the Lagrangian takes many, or infinite, derivatives of the original coordinates. This exercise asks us to:
 
 > Derive Lagrange's equations for Lagrangians that depend on accelerations. In particular, show that the Lagrange equations for Lagrangians of the form \\(L(t, q, \dot{q}, \ddot{q})\\) with \\(\ddot{q}\\) terms are
 >
@@ -1039,7 +1100,9 @@ Exercise:
 >   D^2(\partial\_3L \circ \Gamma[q]) - D(\partial\_2L \circ \Gamma[q]) + (\partial\_1L \circ \Gamma[q]) = 0
 > \end{equation}
 
-Start with the action:
+In other words, find the constraint that has to be true of the Lagrangian for the action to be stationary along the supplied path.
+
+This derivation follows the derivation of the Lagrange equations from the book, starting on page 28. Begin with the equation for action with an acceleration argument to \\(L\\):
 
 \begin{equation}
   \begin{aligned}
@@ -1054,7 +1117,7 @@ apply the variation operator, \\(\delta\_\eta\\):
   \delta\_\eta S[q](t\_a, t\_b) = \int\_{t\_a}^{t\_b} \delta\_\eta (L \circ \Gamma[q])
 \end{equation}
 
-Expand the right side out the chain rule, equation \eqref{eq:var-chain}:
+Expand the right side out using the chain rule for variations, equation \eqref{eq:var-chain}:
 
 \begin{equation}
   \int\_{t\_a}^{t\_b} \delta\_\eta (L \circ \Gamma[q])  =\int\_{t\_a}^{t\_b} ((DL) \circ \Gamma[q]) \delta\_\eta\Gamma[q]
@@ -1075,7 +1138,7 @@ Expand the chain rule up to the $n$th derivative of the coordinate:
   \end{aligned}
 \end{equation}
 
-Our goal now is to isolate the Lagrange equations. Focus on the \\(\partial\_2 L\\) term:
+Our goal now is to find some quantity inside the integral that doesn't depend on \\(\eta\\). Setting that quantity to \\(0\\) will give us the Lagrange equations. Focus on the \\(\partial\_2 L\\) term:
 
 \begin{equation}
   \int\_{t\_a}^{t\_b} (\partial\_2L \circ \Gamma[q])D\eta
@@ -1103,9 +1166,9 @@ And reducing the full equation to:
   \end{aligned}
 \end{equation}
 
-The original Lagrange equations are peeking at us.
+The original Lagrange equations are peeking at us, multiplied by \\(\eta\\).
 
-We got there by isolating a term multiplied by \\(\eta\\). To do this with the next term, integrate by parts twice:
+Can we get another term into that form and move it in with the original Lagrange equation terms? Take the next term and integrate by parts twice:
 
 \begin{equation}
   \begin{aligned}
@@ -1116,7 +1179,9 @@ We got there by isolating a term multiplied by \\(\eta\\). To do this with the n
 
 The second of the two definite evaluations disappears, since, as before, \\(\eta(t\_a) = \eta(t\_b) = 0\\). The first of the definite evaluations suggests that we need a new constraint to achieve higher-derivative Lagrange equations.
 
-If \\(D\eta(t\_a) = D\eta(t\_b) = 0\\), then the first definite evaluation disappears as well. So, for a Lagrangian that considers acceleration, we have to impose the constraint that that the endpoint velocities stay fixed. The term collapses to:
+If we require \\(D\eta(t\_a) = D\eta(t\_b) = 0\\), then the first definite evaluation disappears as well. So, for a Lagrangian that considers acceleration, we have to impose the constraint that the path's endpoint velocities can't vary. The path-wiggle's endpoints can't be in motion.
+
+The term collapses to:
 
 \begin{equation}
   \begin{aligned}
@@ -1144,7 +1209,7 @@ For a Lagrangian of the form \\(L(t, q, \dot{q}, \ddot{q})\\), the remaining ter
   \end{aligned}
 \end{equation}
 
-The goal was to find conditions under which the action is stationary, ie, \\(\delta\_\eta S[q](t\_a, t\_b) = 0\\). For arbitrary \\(\eta\\) with fixed endpoints, this can only occur if the non-\\(\eta\\) inside the integral is 0:
+The goal was to find conditions under which the action is stationary, ie, \\(\delta\_\eta S[q](t\_a, t\_b) = 0\\). For arbitrary \\(\eta\\) with fixed endpoints, this can only occur if the non-\\(\eta\\) factor inside the integral is 0:
 
 \begin{equation}
 (\partial\_1L \circ \Gamma[q]) - D(\partial\_2L \circ \Gamma[q]) + D^2(\partial\_3L \circ \Gamma[q]) = 0
@@ -1154,19 +1219,19 @@ This is the result we were seeking.
 
 ## Higher dimensions<a id="sec-11-1"></a>
 
-To keep going, we have to integrate by parts once more for each new term of the local tuple that the Lagrangian depends on. For each new term we'd find a new constraint:
+To keep going, we have to integrate by parts once more for each new term of the local tuple that the Lagrangian depends on. For each new term we gain a new constraint:
 
 \begin{equation}
 D^{n-1}\eta(t\_a) = D^{n-1}\eta(t\_b) = 0
 \end{equation}
 
-And a new term in Lagrange's equations:
+And a new term in the ever-higher-dimensional Lagrange's equations:
 
 \begin{equation}
   (-1)^{n} D^{n}(\partial\_{n+1}L \circ \Gamma[q])
 \end{equation}
 
-The fully general Lagrange's equations are, for a Lagrangian that depends on the local tuple up to the $n$th derivative of \\(q\\), are:
+The fully general Lagrange's equations are, for a Lagrangian that depends on the local tuple up to the $n$th derivative of \\(q\\):
 
 \begin{equation}
   0 = \sum\_{i = 0}^n(-1)^i D^{i}(\partial\_{i+1}L \circ \Gamma[q])
@@ -1180,33 +1245,41 @@ D^i\eta(t\_a) = D^i\eta(t\_b) = 0
 
 Equivalently, the constraint is that all derivatives of \\(q\\) from \\(i\\) to \\(n-1\\) must remain constant at \\(t\_a\\) and \\(t\_b\\).
 
-Exercise 1.13 implements this in Scheme.
+Exercise 1.13 implements a procedure that generates the residual required by these higher-dimensional Lagrange equations in Scheme.
 
 # Exercise 1.11: Kepler's third law<a id="sec-12"></a>
 
-Lagrangian from the problem:
+This exercise asks us to derive [Kepler's third law](https://en.wikipedia.org/wiki/Kepler%27s_laws_of_planetary_motion#Third_law_of_Kepler) by considering a Langrangian that describes two particles rotating in a circular orbit around their center of mass at some rate.
+
+Here's the Lagrangian for "central force", in polar coordinates. This is rotational kinetic energy, minus some arbitrary potential \\(V\\) that depends on the distance \\(r\\) between the two particles.
 
 ```scheme
 (define ((L-central-polar m V) local)
   (let ((q (coordinate local))
         (qdot (velocity local)))
     (let ((r (ref q 0))     (phi (ref q 1))
-                            (rdot (ref qdot 0)) (phidot (ref qdot 1)))
+          (rdot (ref qdot 0)) (phidot (ref qdot 1)))
       (- (* 1/2 m
-            (+ (square rdot) (square (* r phidot))) )
+            (+ (square rdot) (square (* r phidot))))
          (V r)))))
 ```
 
-Helper function, plus a Scheme version of the reduced mass definition:
+This function defines gravitational potential energy:
 
 ```scheme
 (define ((gravitational-energy G m1 m2) r)
   (- (/ (* G m1 m2) r)))
+```
 
+What is the mass \\(m\\) in the Lagrangian above? It's the "[reduced mass](https://en.wikipedia.org/wiki/Reduced_mass)", totally unjustified at this point in the book:
+
+```scheme
 (define (reduced-mass m1 m2)
   (/ (* m1 m2)
      (+ m1 m2)))
 ```
+
+If you want to see why the reduced mass has the form it does, check out [this derivation](https://en.wikipedia.org/wiki/Reduced_mass#Lagrangian_mechanics).
 
 The Lagrangian is written in terms of some angle \\(\phi\\) and \\(r\\), the distance between the two particles. \\(q\\) defines a circular path:
 
@@ -1216,7 +1289,7 @@ The Lagrangian is written in terms of some angle \\(\phi\\) and \\(r\\), the dis
     (up r phi)))
 ```
 
-Let's write the Lagrange equations, given \\(r = a\\) and \\(\omega = n\\):
+Write the Lagrange equations, given \\(r = a\\) and \\(\omega = n\\):
 
 ```scheme
 (let ((eqfn (Lagrange-equations
@@ -1230,7 +1303,12 @@ Let's write the Lagrange equations, given \\(r = a\\) and \\(\omega = n\\):
 \begin{bmatrix} \displaystyle{ {{ - {a}^{3} \cdot m1 \cdot m2 \cdot {n}^{2} + G {m1}^{2} \cdot m2 + G \cdot m1 \cdot {m2}^{2}}\over {{a}^{2} \cdot m1 + {a}^{2} \cdot m2}}} \cr \cr \displaystyle{ 0}\end{bmatrix}
 \end{equation}
 
-If you fiddle with this you should see that you can factor out the reduced mass and an \\(a^2\\) term. The whole equations is zero, so it's fine to multiply the residual by any non-zero factor you like.
+These two entries are *residuals*, equal to zero. Stare at the top residual and you might notice that you can can factor out:
+
+-   the reduced mass, and
+-   a factor of \\(1 \over a^2\\)
+
+Manually factor these out:
 
 ```scheme
 (let ((eqfn (Lagrange-equations
@@ -1246,7 +1324,7 @@ If you fiddle with this you should see that you can factor out the reduced mass 
 \begin{bmatrix} \displaystyle{  - {a}^{3} {n}^{2} + G \cdot m1 + G \cdot m2} \cr \cr \displaystyle{ 0}\end{bmatrix}
 \end{equation}
 
-And, boom, there in the first position we see Kepler's third law:
+And, boom, with some cleanup, we see Kepler's third law:
 
 \begin{equation}
 \label{eq:kepler3}
@@ -1255,7 +1333,9 @@ n^2a^3 = G(m\_1 + m\_2)
 
 # Exercise 1.12: Lagrange's equations (code)<a id="sec-13"></a>
 
-This exercise has us writing code for the three systems described in [Exercise 1.9](https://tgvaughan.github.io/sicm/chapter001.html#Exe_1-9). Before we start, here's a function that will display an up-tuple of:
+This exercise asks us to write Scheme implementations for each of the three systems described in [Exercise 1.9](https://tgvaughan.github.io/sicm/chapter001.html#Exe_1-9).
+
+Before we begin, here is a function that will display an up-tuple of:
 
 -   \\(\partial\_1 L \circ \Gamma[q]\\), the generalized force
 -   \\(\partial\_2 L \circ \Gamma[q]\\), the generalized momenta
@@ -1272,21 +1352,29 @@ This exercise has us writing code for the three systems described in [Exercise 1
       't))))
 ```
 
-We'll call this for each system to show the steps required to derive Lagrange's equations.
+These are the steps required on the road to a derivation of Lagrange's equations.
 
-## Part A: Ideal Planar Pendulum<a id="sec-13-1"></a>
+## Preliminary Notes<a id="sec-13-1"></a>
+
+I found this exercise to be challenging because I was searching for a particular elegant form of the Lagrange equations for each system. Because the Lagrange equations are residuals, any linear combination of the equations also has to equal 0. In a few of the exercises below, I reached a solution that was technically correct, but cluttered.
+
+If I were using Lagrangian mechanics to develop a game, or to simulate motion in some virtual world, I would just move on. But it seems that one of the tasks for the learner in modern physics is to take transferable lessons from the equations, and this means that it's important to try and unmask terms that might appear in different systems under superficially different forms.
+
+Exercise 1.14 has an example of this problem that took me a long time to notice. The systems we analyze here happen to have yielded nice, familiar solutions. But note now that this is not a gimme.
+
+## Part A: Ideal Planar Pendulum<a id="sec-13-2"></a>
 
 From the book:
 
 > An ideal planar pendulum consists of a bob of mass \\(m\\) connected to a pivot by a massless rod of length \\(l\\) subject to uniform gravitational acceleration \\(g\\). A Lagrangian is \\(L(t, \theta, \dot{\theta}) = {1 \over 2} ml^2\dot{\theta}^2 + mgl\cos \theta\\). The formal parameters of \\(L\\) are \\(t\\), \\(\theta\\), and \\(\dot{\theta}\\); \\(\theta\\) measures the angle of the pendulum rod to a plumb line and \\(\dot{\theta}\\) is the angular velocity of the rod.
 
-Here is the Lagrangian described above:
+Here is the Lagrangian described by the exercise:
 
 ```scheme
 (define ((L-pendulum m g l) local)
   (let ((theta (coordinate local))
         (theta_dot (velocity local)))
-    (- (* 1/2 m (square l) (square theta_dot))
+    (+ (* 1/2 m (square l) (square theta_dot))
        (* m g l (cos theta)))))
 ```
 
@@ -1299,33 +1387,49 @@ And the steps that lead us to Lagrange's equations:
 ```
 
 \begin{equation}
-\begin{pmatrix} \displaystyle{ g l m \sin\left( \theta\left( t \right) \right)} \cr \cr \displaystyle{ {l}^{2} m D\theta\left( t \right)} \cr \cr \displaystyle{ {l}^{2} m {D}^{2}\theta\left( t \right)} \cr \cr \displaystyle{  - g l m \sin\left( \theta\left( t \right) \right) + {l}^{2} m {D}^{2}\theta\left( t \right)}\end{pmatrix}
+\begin{pmatrix} \displaystyle{ \left( - 1 \right) g l m \sin\left( \theta\left( t \right) \right)} \cr \cr \displaystyle{ {l}^{2} m D\theta\left( t \right)} \cr \cr \displaystyle{ {l}^{2} m {D}^{2}\theta\left( t \right)} \cr \cr \displaystyle{ g l m \sin\left( \theta\left( t \right) \right) + {l}^{2} m {D}^{2}\theta\left( t \right)}\end{pmatrix}
 \end{equation}
 
-The final Lagrange equation needs some hand simplification. Divide out \\(g\\) and \\(l\\), and include a factor of \\(-1\\) to make things look nice:
+The final entry is the Lagrange equation, equal to \\(0\\). Divide out the shared factors of \\(m\\) and \\(l\\):
 
 ```scheme
 (let* ((L (L-pendulum 'm 'g 'l))
        (theta (literal-function 'theta))
-       (eq ((Lagrange-equations L) theta)))
+       (eqs ((Lagrange-equations L) theta)))
   (->tex-equation
-   ((/ eq (* -1 'm 'l))
+   ((/ eqs (* 'm 'l))
     't)))
 ```
 
 \begin{equation}
-g \sin\left( \theta\left( t \right) \right) - l {D}^{2}\theta\left( t \right)
+g \sin\left( \theta\left( t \right) \right) + l {D}^{2}\theta\left( t \right)
 \end{equation}
 
-Much better.
+This is the [familiar equation of motion](https://en.wikipedia.org/wiki/Pendulum_(mathematics)) for a planar pendum.
 
-## Part B: 2D Potential<a id="sec-13-2"></a>
+## Part B: 2D Potential<a id="sec-13-3"></a>
+
+The next problem is in rectangular coordinates. This means that we'll end up with two Lagrange equations that have to be satisfied.
 
 From the book:
 
 > A particle of mass \\(m\\) moves in a two-dimensional potential \\(V(x, y) = {(x^2 + y^2) \over 2} + x^2 y - {y^3 \over 3}\\), where \\(x\\) and \\(y\\) are rectangular coordinates of the particle. A Lagrangian is \\(L(t;x, y; v\_x, v\_y) = {1 \over 2} m (v\_x^2 + v\_y^2) - V(x, y)\\).
 
-Define the potential \\(V\\) and the Lagrangian separately. The Lagrangian here is actually written in a form general enough that it would work for any number of dimensions in rectangular space, given some potential \\(V\\). This is something to note for later, when we discuss coordinate transformations.
+I have no intuition for *what* this potential is, by the way. One term, \\({x^2 + y^2} \over 2\\), looks like half the square of the distance of the particle away from 0, or \\({1 \over 2} r^2\\). What are the other terms? I've been so well trained that I simply start calculating.
+
+Define the Lagrangian to be the difference of the kinetic energy and some potential \\(V\\) that has access to the coordinates:
+
+```scheme
+(define (((L-2d-potential m) V) local)
+  (- (* 1/2 m (square (velocity local)))
+     (V (coordinate local))))
+```
+
+Thanks to the tuple algebra of `scmutils`, This form of the Lagrangian is general enough that it would work for any number of dimensions in rectangular space, given some potential \\(V\\). `square` takes a dot product, so we end up with a kinetic energy term for every spatial dimension.
+
+Note this for later, as this idea will become useful when the book reaches the discussion of coordinate transformations.
+
+Next define the potential from the problem description:
 
 ```scheme
 (define (V q)
@@ -1336,13 +1440,9 @@ Define the potential \\(V\\) and the Lagrangian separately. The Lagrangian here 
              2)
           (* (square x) y))
        (/ (cube y) 3))))
-
-(define (((L-2d-potential m) V) local)
-  (- (* 1/2 m (square (velocity local)))
-     (V (coordinate local))))
 ```
 
-Next, the derivation of the Lagrange equations:
+Our helpful function generates the Lagrange equations, along with each intermediate step:
 
 ```scheme
 (lagrange-equation-steps
@@ -1355,13 +1455,18 @@ Next, the derivation of the Lagrange equations:
 \begin{pmatrix} \displaystyle{ \begin{bmatrix} \displaystyle{  - 2 y\left( t \right) x\left( t \right) - x\left( t \right)} \cr \cr \displaystyle{ {\left( y\left( t \right) \right)}^{2} - {\left( x\left( t \right) \right)}^{2} - y\left( t \right)}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ m Dx\left( t \right)} \cr \cr \displaystyle{ m Dy\left( t \right)}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ m {D}^{2}x\left( t \right)} \cr \cr \displaystyle{ m {D}^{2}y\left( t \right)}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ m {D}^{2}x\left( t \right) + 2 y\left( t \right) x\left( t \right) + x\left( t \right)} \cr \cr \displaystyle{ m {D}^{2}y\left( t \right) - {\left( y\left( t \right) \right)}^{2} + {\left( x\left( t \right) \right)}^{2} + y\left( t \right)}\end{bmatrix}}\end{pmatrix}
 \end{equation}
 
-The final down-tuple gives us the Lagrange equations for \\(x\\) and \\(y\\) respectively.
+The final down-tuple gives us the Lagrange equations that \\(x\\) and \\(y\\) (respectively) must satisfy.
 
-## Part C: Particle on a Sphere<a id="sec-13-3"></a>
+## Part C: Particle on a Sphere<a id="sec-13-4"></a>
 
-From the book:
+This problem is slightly more clear. From the book:
 
 > A Lagrangian for a particle of mass \\(m\\) constrained to move on a sphere of radius \\(R\\) is \\(L(t; \theta, \phi; \alpha, \beta) = {1 \over 2} m R^2(\alpha^2+(\beta \sin\theta)^2)\\). The angle \\(\theta\\) is the colatitude of the particle and \\(\phi\\) is the longitude; the rate of change of the colatitude is \\(\alpha\\) and the rate of change of the longitude is \\(\beta\\).
+
+So the particle has some generalized kinetic energy with terms for:
+
+-   its speed north and south, and
+-   its speed east and west, scaled to be strongest at 0 longitude along the \\(x\\) axis and fall off to nothing at the \\(y\\) axis.
 
 Here is the Lagrangian:
 
@@ -1377,7 +1482,7 @@ Here is the Lagrangian:
           (square (* beta (sin theta)))))))
 ```
 
-The final Lagrange equations have a few terms that we can cancel out. Scheme doesn't know that these are meant to be residuals, so it won't cancel out factors that we can see by eye are missing. Here is the full derivation:
+Here is the full derivation:
 
 ```scheme
 (lagrange-equation-steps
@@ -1390,7 +1495,9 @@ The final Lagrange equations have a few terms that we can cancel out. Scheme doe
 \begin{pmatrix} \displaystyle{ \begin{bmatrix} \displaystyle{ {R}^{2} m \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) {\left( D\phi\left( t \right) \right)}^{2}} \cr \cr \displaystyle{ 0}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ {R}^{2} m D\theta\left( t \right)} \cr \cr \displaystyle{ {R}^{2} m {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} D\phi\left( t \right)}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ {R}^{2} m {D}^{2}\theta\left( t \right)} \cr \cr \displaystyle{ 2 {R}^{2} m \sin\left( \theta\left( t \right) \right) D\theta\left( t \right) \cos\left( \theta\left( t \right) \right) D\phi\left( t \right) + {R}^{2} m {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} {D}^{2}\phi\left( t \right)}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{  - {R}^{2} m \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) {\left( D\phi\left( t \right) \right)}^{2} + {R}^{2} m {D}^{2}\theta\left( t \right)} \cr \cr \displaystyle{ 2 {R}^{2} m \sin\left( \theta\left( t \right) \right) D\theta\left( t \right) \cos\left( \theta\left( t \right) \right) D\phi\left( t \right) + {R}^{2} m {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} {D}^{2}\phi\left( t \right)}\end{bmatrix}}\end{pmatrix}
 \end{equation}
 
-Next, get the Lagrange equations in hand and manually simplify each equation by dividing out, respectively, \\(mR^2\\) and \\(mR^2 \sin \theta\\):
+The final Lagrange residuals have a few terms that we can divide out. Scheme doesn't know that these are meant to be residuals, so it won't cancel out factors that we can see by eye are missing.
+
+Isolate the Lagrange equations from the derivation and manually simplify each equation by dividing out, respectively, \\(mR^2\\) and \\(mR^2 \sin \theta\\):
 
 ```scheme
 (let* ((L (L-sphere 'm 'R))
@@ -1409,13 +1516,19 @@ Next, get the Lagrange equations in hand and manually simplify each equation by 
 \begin{pmatrix} \displaystyle{  - \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) {\left( D\phi\left( t \right) \right)}^{2} + {D}^{2}\theta\left( t \right)} \cr \cr \displaystyle{ 2 D\theta\left( t \right) \cos\left( \theta\left( t \right) \right) D\phi\left( t \right) + \sin\left( \theta\left( t \right) \right) {D}^{2}\phi\left( t \right)}\end{pmatrix}
 \end{equation}
 
-Looking good. These are the residuals for \\(\theta\\) and \\(\phi\\), respectively.
+These are the Lagrange equations for \\(\theta\\) and \\(\phi\\), respectively.
 
 # Exercise 1.13: Higher-derivative Lagrangians (code)<a id="sec-14"></a>
 
+This exercise completes exercise 1.10 by asking for implementations of the higher-order Lagrange equations that we derived. This was a nice Scheme exercise; I would argue that this implementation should exist in the standard library. But that would ruin the fun of the exercise&#x2026;
+
 ## Part A: Acceleration-dependent Lagrangian Implementation<a id="sec-14-1"></a>
 
-Here we go:
+From the book:
+
+> Write a procedure to compute the Lagrange equations for Lagrangians that depend upon acceleration, as in exercise 1.10. Note that Gamma can take an optional argument giving the length of the initial segment of the local tuple needed. The default length is 3, giving components of the local tuple up to and including the velocities.
+
+Now that we know the math, the implementation is a straightforward extension of the `Lagrange-equations` procedure presented in the book:
 
 ```scheme
 (define ((Lagrange-equations3 L) q)
@@ -1427,7 +1540,17 @@ Here we go:
 
 ## Part B: Applying HO-Lagrangians<a id="sec-14-2"></a>
 
-Lagrangian from the problem:
+Now it's time to use the new function. From the book:
+
+> Use your procedure to compute the Lagrange equations for the Lagrangian
+>
+> \begin{equation}
+> L(t, x, v, a) = - {1 \over 2}mxa - {1 \over 2}kx^2
+> \end{equation}
+>
+> Do you recognize the resulting equation of motion?
+
+Here is the Lagrangian described in the problem:
 
 ```scheme
 (define ((L-1-13 m k) local)
@@ -1437,7 +1560,7 @@ Lagrangian from the problem:
        (* 1/2 k (square x)))))
 ```
 
-Testing, with a factor of \\(-1\\) to make it look nice:
+Use the new function to generate the Lagrange equations. This call includes a factor of \\(-1\\) to make the equation look nice:
 
 ```scheme
 (->tex-equation
@@ -1449,21 +1572,48 @@ Testing, with a factor of \\(-1\\) to make it look nice:
 k x\left( t \right) + m {D}^{2}x\left( t \right)
 \end{equation}
 
+This looks like the equation of motion for a [classical harmonic oscillator](https://en.wikipedia.org/wiki/Harmonic_oscillator). Again, I leave this problem with no new physical intuition for what is going on here, or what type of system would need an acceleration dependent Lagrangian. I suspect that we could build a harmonic oscillator for Lagrange equations of any order by properly tuning the Lagrangian. But I don't know why this would be helpful.
+
 ## Part C: Generalized Lagrange Equations<a id="sec-14-3"></a>
 
-The more general version:
+Now, some more fun with Scheme. It just feels nice to implement Scheme procedures. From the book:
+
+> For more fun, write the general Lagrange equation procedure that takes a Lagrangian that depends on any number of derivatives, and the number of derivatives, to produce the required equations of motion.
+
+As a reminder, this is the equation that we need to implement for each coordinate:
+
+\begin{equation}
+  0 = \sum\_{i = 0}^n(-1)^i D^{i}(\partial\_{i+1}L \circ \Gamma[q])
+\end{equation}
+
+There are two ideas playing together here. Each term takes an element from:
+
+-   an alternating sequence of \\(1\\) and \\(-1\\)
+-   a sequence of increasing-index \\(D^i(\partial\_i L \circ \Gamma[q])\\) terms
+
+The alternating \\(1, -1\\) sequence is similar to a more general idea: take any ordered collection arranged in a cycle, start at some point and walk around the cycle for \\(n\\) steps.
+
+If you need to take \\(n\\) steps along a cycle of length \\(l\\), you'll end up traveling around the cycle between \\(n \over l\\) and \\({n \over l} + 1\\) times.
+
+`alternate` generates a list of \\(n\\) total elements generated by walking around the ordered cycle of supplied `elems`:
 
 ```scheme
-;; Returns n copies of elems appended to each other.
 (define (cycle n elems)
   (apply append (make-list n elems)))
 
-;; Returns n total elements generated from an infinite cycle of elems.
+;; Returns
 (define (alternating n elems)
   (let* ((l (length elems))
          (times (quotient (+ n (-1+ l)) l)))
     (list-head (cycle times elems) n)))
+```
 
+Now, the general `Lagrange-equations*` implementation.
+
+This function defines an internal function `term` that generates the $i$th term of the derivative combination described above. This sequence is zipped with the sequence of \\(1, -1\\), and `fold-left` generates the sum.
+
+```scheme
+;; Returns n copies of elems appended to each other.
 (define ((Lagrange-equations* L n) q)
   (let ((state-path (Gamma q (1+ n))))
     (define (term i)
@@ -1477,7 +1627,7 @@ The more general version:
                       (reverse terms))))))
 ```
 
-Check that we get the same result:
+Generate the Lagrange equations from part b once more to check that we get the same result:
 
 ```scheme
 (->tex-equation
@@ -1489,7 +1639,7 @@ Check that we get the same result:
 k x\left( t \right) + m {D}^{2}x\left( t \right)
 \end{equation}
 
-This looks like a harmonic oscillator.
+There it is again, the harmonic oscillator. I don't have any intuition for higher order Lagrangians, so I can't cook up any further examples to test the implementation.
 
 # Exercise 1.14: Coordinate-independence of Lagrange equations<a id="sec-15"></a>
 
@@ -1815,21 +1965,41 @@ Let's expand the terms of the Lagrange equations.
 ```
 
 \begin{equation}
-D{q}^\prime\left( t \right) {\partial}\_{2}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {\left( partial\left( 1 \right) \right)}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) + {\partial}\_{2}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) \left( partial\left( 0 \right) partial\left( 1 \right) \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
+D{q}^\prime\left( t \right) {\partial}\_{2}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {{\partial}\_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) + {\partial}\_{2}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) \left( {\partial}\_{0} {\partial}\_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
+\end{equation}
+
+Insane. Make a helper:
+
+```scheme
+(define (->eq expr)
+  (write-string
+   (replace-all (->tex-equation* expr)
+                (->tex* ((Gamma q) 't))
+                "\\Gamma[q]")))
+```
+
+```scheme
+(->eq
+ ((compose ((partial 1) Lprime) (Gamma qprime))
+  't))
+```
+
+\begin{equation}
+D{q}^\prime\left( t \right) {\partial}\_{2}L\left( \Gamma[q] \right) {{\partial}\_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}L\left( \Gamma[q] \right) + {\partial}\_{2}L\left( \Gamma[q] \right) \left( {\partial}\_{0} {\partial}\_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
 \end{equation}
 
 The Lagrange equation term is in there with a factor on it. Here's the term I need to subtract:
 
 ```scheme
 (let* ((factor
-        (compose coordinate ((partial 1) C) (Gamma qprime)))      )
-  (->tex-equation
+        (compose coordinate ((partial 1) C) (Gamma qprime))))
+  (->eq
    ((* factor (compose ((partial 1) L) (Gamma q)))
     't)))
 ```
 
 \begin{equation}
-{\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right)
+{\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}L\left( \Gamma[q] \right)
 \end{equation}
 
 So now we have the whole thing and the term to substract off. This is the extra:
@@ -1837,26 +2007,26 @@ So now we have the whole thing and the term to substract off. This is the extra:
 ```scheme
 (let* ((factor
         (compose coordinate ((partial 1) C) (Gamma qprime))))
-  (->tex-equation
+  (->eq
    ((- (compose ((partial 1) Lprime) (Gamma qprime))
        (* factor (compose ((partial 1) L) (Gamma q))))
     't)))
 ```
 
 \begin{equation}
-D{q}^\prime\left( t \right) {\partial}\_{2}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {\left( partial\left( 1 \right) \right)}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{2}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) \left( partial\left( 0 \right) partial\left( 1 \right) \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
+D{q}^\prime\left( t \right) {\partial}\_{2}L\left( \Gamma[q] \right) {{\partial}\_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{2}L\left( \Gamma[q] \right) \left( {\partial}\_{0} {\partial}\_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
 \end{equation}
 
-Let's do the other side. Nightmare!
+Let's do the other side. This is where we have total insanity, no one would ever work this way.
 
 ```scheme
-(->tex-equation
+(->eq
  ((D (compose ((partial 2) Lprime) (Gamma qprime)))
   't))
 ```
 
 \begin{equation}
-{\left( partial\left( 2 \right) \right)}^{2}\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {\left( D{q}^\prime\left( t \right) \right)}^{2} {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) {\left( partial\left( 1 \right) \right)}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {D}^{2}{q}^\prime\left( t \right) {\left( partial\left( 2 \right) \right)}^{2}\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {\left( {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} + 2 {\left( partial\left( 2 \right) \right)}^{2}\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \left( partial\left( 0 \right) partial\left( 1 \right) \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + \left( partial\left( 1 \right) partial\left( 2 \right) \right)\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) D{q}^\prime\left( t \right) {\left( {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} + {\left( partial\left( 2 \right) \right)}^{2}\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {\left( partial\left( 0 \right) \right)}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + \left( partial\left( 1 \right) partial\left( 2 \right) \right)\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + D{q}^\prime\left( t \right) {\partial}\_{2}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {\left( partial\left( 1 \right) \right)}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + \left( partial\left( 0 \right) partial\left( 2 \right) \right)\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{2}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) \left( partial\left( 0 \right) partial\left( 1 \right) \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
+{{\partial}\_{2}}^{2}\left( L \right)\left( \Gamma[q] \right) {\left( D{q}^\prime\left( t \right) \right)}^{2} {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) {{\partial}\_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {D}^{2}{q}^\prime\left( t \right) {{\partial}\_{2}}^{2}\left( L \right)\left( \Gamma[q] \right) {\left( {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} + 2 {{\partial}\_{2}}^{2}\left( L \right)\left( \Gamma[q] \right) D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \left( {\partial}\_{0} {\partial}\_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + \left( {\partial}\_{1} {\partial}\_{2} \right)\left( L \right)\left( \Gamma[q] \right) D{q}^\prime\left( t \right) {\left( {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} + {{\partial}\_{2}}^{2}\left( L \right)\left( \Gamma[q] \right) {{\partial}\_{0}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + \left( {\partial}\_{1} {\partial}\_{2} \right)\left( L \right)\left( \Gamma[q] \right) {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + D{q}^\prime\left( t \right) {\partial}\_{2}L\left( \Gamma[q] \right) {{\partial}\_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + \left( {\partial}\_{0} {\partial}\_{2} \right)\left( L \right)\left( \Gamma[q] \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{2}L\left( \Gamma[q] \right) \left( {\partial}\_{0} {\partial}\_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
 \end{equation}
 
 I see Lagrange's equation peeking out, with a big factor attached to it.
@@ -1864,14 +2034,31 @@ I see Lagrange's equation peeking out, with a big factor attached to it.
 ```scheme
 (let* ((factor
         (compose velocity ((partial 2) C) (Gamma qprime))))
-  (->tex-equation
+  (->eq
    ((* factor (D (compose ((partial 2) L) (Gamma q))))
     't)))
 ```
 
 \begin{equation}
-{\left( partial\left( 2 \right) \right)}^{2}\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {\left( D{q}^\prime\left( t \right) \right)}^{2} {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) {\left( partial\left( 1 \right) \right)}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {D}^{2}{q}^\prime\left( t \right) {\left( partial\left( 2 \right) \right)}^{2}\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {\left( {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} + 2 {\left( partial\left( 2 \right) \right)}^{2}\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \left( partial\left( 0 \right) partial\left( 1 \right) \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + \left( partial\left( 1 \right) partial\left( 2 \right) \right)\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) D{q}^\prime\left( t \right) {\left( {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} + {\left( partial\left( 2 \right) \right)}^{2}\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {\left( partial\left( 0 \right) \right)}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + \left( partial\left( 1 \right) partial\left( 2 \right) \right)\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + \left( partial\left( 0 \right) partial\left( 2 \right) \right)\left( L \right)\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right)
+{{\partial}\_{2}}^{2}\left( L \right)\left( \Gamma[q] \right) {\left( D{q}^\prime\left( t \right) \right)}^{2} {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) {{\partial}\_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {D}^{2}{q}^\prime\left( t \right) {{\partial}\_{2}}^{2}\left( L \right)\left( \Gamma[q] \right) {\left( {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} + 2 {{\partial}\_{2}}^{2}\left( L \right)\left( \Gamma[q] \right) D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \left( {\partial}\_{0} {\partial}\_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + \left( {\partial}\_{1} {\partial}\_{2} \right)\left( L \right)\left( \Gamma[q] \right) D{q}^\prime\left( t \right) {\left( {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} + {{\partial}\_{2}}^{2}\left( L \right)\left( \Gamma[q] \right) {{\partial}\_{0}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + \left( {\partial}\_{1} {\partial}\_{2} \right)\left( L \right)\left( \Gamma[q] \right) {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + \left( {\partial}\_{0} {\partial}\_{2} \right)\left( L \right)\left( \Gamma[q] \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right)
 \end{equation}
+
+Remaining:
+
+```scheme
+(let* ((factor
+        (compose velocity ((partial 2) C) (Gamma qprime))))
+  (->eq
+   ((- (D (compose ((partial 2) Lprime) (Gamma qprime)))
+       (* factor (D (compose ((partial 2) L) (Gamma q)))))
+    't)))
+```
+
+\begin{equation}
+D{q}^\prime\left( t \right) {\partial}\_{2}L\left( \Gamma[q] \right) {{\partial}\_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{2}L\left( \Gamma[q] \right) \left( {\partial}\_{0} {\partial}\_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
+\end{equation}
+
+That's familiar.
 
 About the factors, this is interesting:
 

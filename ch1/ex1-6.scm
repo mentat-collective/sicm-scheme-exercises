@@ -3,11 +3,11 @@
 ;; :header-args+: :tangle ch1/ex1-6.scm :comments org
 ;; :END:
 
+;; The authors have lightly demonstrated that plausible-looking paths have
+;; stationary action between fixed endpoints. What happens if we overconstrain the
+;; problem?
 
-(load "ch1/utils.scm")
-
-
-;; The problem asks:
+;; The exercise asks:
 
 ;; #+begin_quote
 ;; Suppose we try to obtain a path by minimizing an action for an impossible
@@ -18,36 +18,17 @@
 ;; happens.
 ;; #+end_quote
 
-;; I spent a good amount of time thinking about this one. When I attacked this book
-;; five years ago I found it very confusing. It makes more sense now that I've
-;; moved farther in the book and understand what it's asking us to do.
 
-;; Let's say you take, as the authors suggest, some path, and impose velocity
-;; constraints on the endpoints in addition to the position constraints.
+(load "ch1/utils.scm")
+;; Implementation
 
-;; Usually, you constrain the coordinates at each endpoint and force a path that
-;; minimizes the action between two times. So what does it mean to impose velocity
-;; conditions?
-
-;; The key is to realize that on the computer, you're forcing a path to be composed
-;; of a bunch of discrete points. If you can force a point into the path that is
-;; NOT controlled by the optimizer, then you can force a velocity at some point in
-;; the path that makes no sense for minimal action.
-
-;; Let's define a new version of =parametric-path-action= that also takes an offset
-;; for the initial and final points. We'll force the first and last intermediate
-;; point to be equal to the start and end points, plus the offsets.
-
-;; Then, we can try to find an action-minimizing path, but force the optimizer to
-;; deal with not just our endpoint conditions, but these two extra points as well.
-;; Forcing two points on each end will force an initial velocity condition.
-
-;; Here's the implementation:
+;; Here's the implementation of the modification described earlier:
 
 
 (define (((parametric-path-action* win)
           Lagrangian t0 q0 offset0 t1 q1 offset1)
          intermediate-qs)
+  ;; See the two new points?
   (let ((intermediate-qs* (append (list (+ q0 offset0))
                                   intermediate-qs
                                   (list (+ q1 offset1)))))
@@ -62,11 +43,11 @@
 ;; #+RESULTS:
 ;; : #| parametric-path-action* |#
 
-;; You could try a similar trick by modifying the first and last entries of
+;; You might try a similar trick by modifying the first and last entries of
 ;; =intermediate-qs= instead of appending a point, but I suspect that the optimizer
-;; would be able to figure out how to offset your offset.
+;; would be able to figure out how to undo your offset. (Try this as an exercise.)
 
-;; Next, a version of =find-path= that passes the offsets through to the new
+;; Next, a new version of =find-path= that passes the offsets through to the new
 ;; =parametric-path-action*=:
 
 
@@ -97,7 +78,7 @@
                      tmax 0. offset1
                      n)))
     (Lagrangian-action L path 0 tmax)))
-;; Executions
+;; Execution
 
 ;; Let's run the code with 0 offsets and 3 interpolation points. Note that this
 ;; should /still/ distort the path, since we now have two fixed points at the start
@@ -121,7 +102,10 @@
 ;; is the best polynomial that the system can come up with that matches the 7
 ;; points (3 interpolated, 2 offsets, 1 start and 1 end).
 
-;; Here's a small positive velocity imposed at the beginning:
+;; The actual realizable path should be a straight line between the two points. The
+;; initial velocity of
+
+;; Here's a small positive velocity imposed at the beginning, and 0 at the end:
 
 
 (one-six 0.2 0 3)
@@ -133,7 +117,8 @@
 ;; #+attr_latex: :width 8cm
 ;; [[file:images/Lagrangian_Mechanics/2020-06-10_15-10-53_ex1_6_02offset.gif]]
 
-;; The system takes longer to converge. Here's a larger impulse of 0.5:
+;; The system takes longer to converge. Here's a larger impulse of 0.5 at the
+;; beginning:
 
 
 (one-six 0.5 0 3)
@@ -163,4 +148,4 @@
 ;; intermediate points. If you bump up to 10 points, with this code:
 
 
-(one-six 20 0 3)
+(one-six -0.5 0 10)

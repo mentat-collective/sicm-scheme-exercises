@@ -3,6 +3,10 @@
 ;; :header-args+: :tangle ch1/sec1-4.scm :comments org
 ;; :END:
 
+;; I don't plan on doing this for every section in the book, but section 1.4 is the
+;; first place where we're introduced to Scheme, so I followed along and made a few
+;; notes.
+
 
 (load "ch1/utils.scm")
 
@@ -25,6 +29,14 @@
 
 ;; #+RESULTS: L-free-particle
 ;; : #| L-free-particle |#
+
+;; =L-free-particle= is a function that takes some =mass= and returns a /new/
+;; function. The new function takes an instance of a "local tuple" and returns the
+;; value of the "Lagrangian". This is the function that you query at every point
+;; along some evolving path in configuration space. For realizable physical paths,
+;; the integral of this function should by minimized, or stationary.
+
+;; Why? That's what we're trying to develop here.
 
 ;; Suppose we let $q$ denote a coordinate path function that maps time to position
 ;; components:
@@ -59,7 +71,7 @@
 ;; impose constraints beyond the degrees of freedom you'd guess by just counting
 ;; the coordinates.)
 
-;; Composing the Langrangian with $\Gamma$ gives you a function that computes the
+;; Composing the Langrangian with $\Gamma[q]$ gives you a function that computes the
 ;; Lagrangian at some instant:
 
 
@@ -99,7 +111,7 @@
       (+ (* 2 t) 1)))
 
 
-;; #+RESULTS:
+;; #+RESULTS: test-path
 ;; : #| test-path |#
 
 ;; Calculate the action for a particle of mass 3, between $t_1 = 0$ and $t_2 = 10$:
