@@ -37,11 +37,12 @@
     - [Part C: Generalized Lagrange Equations](#sec-1-14-3)
   - [Exercise 1.14: Coordinate-independence of Lagrange equations](#sec-1-15)
   - [Exercise 1.15: Equivalence](#sec-1-16)
-    - [Overview](#sec-1-16-1)
-    - [Coordinate Transformations](#sec-1-16-2)
-    - [Code Preliminaries](#sec-1-16-3)
-    - [Code Version](#sec-1-16-4)
-    - [Derivation](#sec-1-16-5)
+    - [Definitions and Preliminaries](#sec-1-16-1)
+    - [Approach](#sec-1-16-2)
+    - [Scheme Tools](#sec-1-16-3)
+    - [Derivation](#sec-1-16-4)
+    - [Scheme Derivation](#sec-1-16-5)
+    - [Final Comments](#sec-1-16-6)
   - [Exercise 1.16: Central force motion](#sec-1-17)
   - [Exercise 1.17: Bead on a helical wire](#sec-1-18)
   - [Exercise 1.18: Bead on a triaxial surface](#sec-1-19)
@@ -1975,58 +1976,81 @@ There is something important going on here, with the way we were able to remove 
 
 ## Exercise 1.15: Equivalence<a id="sec-1-16"></a>
 
-NOTE - I have a strong suspicion here that we can show that what is actually going on is that we end up with a total time derivative that we can ignore. The final terms at the end that cancel&#x2026; why is it that they work out the way they do? It would be nice to try and use the time-derivative test machinery we built to take a look there.
+This is one of the more important exercises in the chapter, in my opinion. The problem asks for a proof that it's possible to absorb a coordinate transformation directly into the Lagrangian. If you can do this, you can express your paths and your forces in whatever coordinates you like, so long as you can transition between them.
 
-This one was a serious doozy. I think that this exercise can be a great way to show off the computer algebra system, and show off the steps that I go through to make a proof.
+I also found that this exposed, and repaired, my weakness with the [functional notation](http://fmnt.info/blog/20180228_sicm/index.html#orga0630c4) that Sussman and Wisdom have used in the book.
 
-But I also want to pull back and stare at the formula. What is going on? What is the meaning of the extra terms? If we can say, for example, that they're a total time derivative, looking at the future, that would be great. There has to be a reason that the Lagrangian doesn't change.
-
-The same thing happens when you look at a new Lagrangian and see a "fictitious force term" for, say, centrifugal force. There is something going on here.
-
-Okay, let's get into the derivation. State the problem, what we're trying to solve, then let's get into the derivation.
-
-### Overview<a id="sec-1-16-1"></a>
-
-Here's what's next:
-
--   Start by defining what's going on, what we're trying to do.
--   Lock down some of the compositions in code.
--   Show the by-hand version (remember to sub in the down tuple)
--   Show that we can confirm it all cancels out in code&#x2026; IF we could possibly see the factor.
-
-### Coordinate Transformations<a id="sec-1-16-2"></a>
+The problem states:
 
 > Show by direct calculation that the Lagrange equations for \\(L'\\) are satisfied if the Lagrange equations for \\(L\\) are satisfied.
 
-The coordinate transform looks like
+### Definitions and Preliminaries<a id="sec-1-16-1"></a>
+
+\\(L'\\) and \\(L\\) refer to ideas from section 1.6.1. The major promise of Lagrangian mechanics is that both the potential and kinetic energies are coordinate-independent; looking at the system through different coordinates can't affect the energy in the system, or you've dropped some information in the conversation. If this is true, then the value of the Lagrangian, equal to \\(T - V\\), must be coordinate independent too.
+
+Imagine a coordinate transformation \\(F\\), maybe time-dependent, that can convert "primed coordinates" like \\(x'\\) into "unprimed coordinates", \\(x\\):
 
 \begin{equation}
 x = F(t, x')
 \end{equation}
 
-Imagine that we're getting to rectangular from polar, say. And the coordinate transform can depend on time.
+You might imagine that \\(x'\\) is in polar coordinates and \\(x\\) is in rectangular coordinates. Time-dependence means that the coordinate system itself is moving around in time. Imagine looking at the world out of a spinning window.
 
-So let's say we have some Lagrangian \\(L\\) expressed in terms of the unprimed coordinates. We want a new Lagrangian, \\(L'\\), that we can use directly.
-
-If the Lagrangian value CAN'T change, if it's not coordinate dependent, then this has to be true:
+Now imagine some Lagrangian \\(L\\) that acts on a local tuple built out of the unprimed coordinates. If the Lagrangian's value is coordinate-independent, there must be some other form, \\(L'\\), that can act on the primed coordinates. \\(L'\\) has to satisfy:
 
 \begin{equation}
 L' \circ \Gamma[q'] = L \circ \Gamma[q]
 \end{equation}
 
-Lots of discussion about how we need to find a \\(C\\) that can change the path:
+The function \\(F\\) only acts on specific coordinates. Imagine a function \\(C\\) that uses \\(F\\) to transform the entire local tuple from the primed coordinates to the unprimed coordinates:
 
 \begin{equation}
-L \circ \Gamma[q] = L \circ C \circ \Gamma[q']
+\label{eq:1-15-relations}
+L \circ \Gamma[q] = L \circ C \circ \Gamma[q'] = L' \circ \Gamma[q']
 \end{equation}
 
-### Code Preliminaries<a id="sec-1-16-3"></a>
+Function composition is associative, so two facts stare at us from \eqref{eq:1-15-relations}:
 
-I didn't get terribly far converting this to code, but I'll leave what I have here in case some intrepid soul wants to carry the torch. This can help us a bit, so let me set up some structure.
+\begin{equation}
+\begin{aligned}
+L' & = L \circ C \cr
+\Gamma[q] & = C \circ \Gamma[q']
+\end{aligned}
+\end{equation}
 
-Goal: Figure out how to write \\(C\\) given \\(F\\), so that the computer can take derivatives for us. Ideally I'd push the entire proof through, but I got stuck.
+This implies that if we want describe our path in some primed coordinate system (imagine polar coordinates), but we only have a Lagrangian defined in an unprimed coordinate system (like rectangular coordinates), if we can just write down \\(C\\) we can generate a new Lagrangian \\(L'\\) by composing our old \\(L\\) with \\(C\\). This brings us to the exercise.
 
-Redefine the `F->C` function on page 46, so that \\(F\\) takes an explicit \\(t\\) and \\(x'\\) argument instead of having to rely on the tuple.
+The goal is to show that if the Lagrange equations hold in the unprimed coordinate system:
+
+\begin{equation}
+\label{eq:1-15-lagrange}
+D(\partial\_2L \circ \Gamma[q]) - (\partial\_1L \circ \Gamma[q]) = 0
+\end{equation}
+
+Then they hold in the primed coordinate system:
+
+\begin{equation}
+\label{eq:lagrange-prime}
+D(\partial\_2L' \circ \Gamma[q']) - (\partial\_1L' \circ \Gamma[q']) = 0
+\end{equation}
+
+### Approach<a id="sec-1-16-2"></a>
+
+The approach we'll take will be to:
+
+-   Write down the form of \\(C\\), given some arbitrary \\(F\\)
+-   start calculating the terms of the Lagrange equations in the primed coordinate system using \\(L' = L \circ C\\)
+-   Keep an eye out for some spot where we can use our assumption that the Lagrange equations hold in the unprimed coordinates.
+
+I'll walk through a solution using "pen and paper", then show how we can run this derivation using Scheme to help us along.
+
+First, some Scheme tools that will help us in both cases.
+
+### Scheme Tools<a id="sec-1-16-3"></a>
+
+Equation (1.77) in the book describes how to implement \\(C\\) given some arbitrary \\(F\\). Looking ahead slightly, this is implemented as `F->C` on page 46.
+
+The following function is a slight redefinition that allows us to use an \\(F\\) that takes an explicit \\((t, x')\\), instead of the entire local tuple:
 
 ```scheme
 (define ((F->C* F) local)
@@ -2040,7 +2064,9 @@ Redefine the `F->C` function on page 46, so that \\(F\\) takes an explicit \\(t\
               v)))))
 ```
 
-Functions:
+Next we define \\(F\\), \\(C\\) and \\(L\\) as described above, as well as `qprime`, a function that can represent our unprimed coordinate path function.
+
+The types here all imply that the path has one real coordinate. I did this to make the types easier to understand; the derivation applies equally well to paths with many dimensions.
 
 ```scheme
 (define F
@@ -2055,7 +2081,7 @@ Functions:
   (literal-function 'qprime))
 ```
 
-And now, finally, we can talk about C. This matches what we have in the book.
+When we apply \\(C\\) to the primed local tuple, do we get the transformed tuple that we expect from 1.77 in the book?
 
 ```scheme
 (->tex-equation
@@ -2066,17 +2092,17 @@ And now, finally, we can talk about C. This matches what we have in the book.
 \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix}
 \end{equation}
 
-We can also do this by converting the path itself:
+This looks correct. We can also transform the path before passing it to \\(\Gamma\\):
 
 ```scheme
 (define ((to-q F qp) t)
   (F t (qp t)))
 ```
 
-It's the same:
+Subtract the two forms to see that they're equivalent:
 
 ```scheme
-(->tex-equation
+(->tex-equations
  ((- (compose C (Gamma qprime))
      (Gamma (to-q F qprime)))
   't))
@@ -2086,16 +2112,152 @@ It's the same:
 \begin{pmatrix} \displaystyle{ 0} \cr \cr \displaystyle{ 0} \cr \cr \displaystyle{ 0}\end{pmatrix}
 \end{equation}
 
-So we can define a few more things. Talk about these in a bit.
+Now that we know \\(C\\) is correct we can define \\(q\\), the unprimed coordinate path function, and \\(Lprime\\):
 
 ```scheme
 (define q (to-q F qprime))
 (define Lprime (compose L C))
 ```
 
-### Code Version<a id="sec-1-16-4"></a>
+### Derivation<a id="sec-1-16-4"></a>
 
-Let's expand the terms of the Lagrange equations.
+Begin by calculating the components of the Lagrange equations in equation \eqref{eq:lagrange-prime}. Examine the \\(\partial\_2L'\\) term first.
+
+As we discussed above, function composition is associative, so:
+
+\begin{equation}
+\label{eq:c-l}
+(L \circ C) \circ \Gamma[q'] = L' \circ \Gamma[q'] \implies L' = L \circ C
+\end{equation}
+
+Substituting \\(L'\\) from \eqref{eq:c-l} and using the chain rule:
+
+\begin{equation}
+  \partial\_2L' = \partial\_2(L \circ C) = ((DL) \circ C) \partial\_2 C
+\end{equation}
+
+I found the next step troubling until I became more comfortable with the functional notation.
+
+\\(C\\) is a function that transforms a local tuple. It takes 3 arguments (a tuple with 3 elements, technically) and returns 3 arguments. \\(\partial\_2 C\\) is an up-tuple with 3 entries. Each entry describes the derivative each component of \\(C\\)'s output with respect to the velocity component of the local tuple.
+
+\\(L\\) is a function that transforms the 3-element local to a scalar output. \\(DL\\) is a down-tuple with 3 entries. Each entry describes the derivative of the single output with respect to each entry of the local tuple.
+
+The tuple algebra described in Chapter 9 defines multiplication between an up and down tuple as a dot product, or a "contraction" in the book's language. This means that we can expand out the product above:
+
+\begin{equation}
+  (DL \circ C)\partial\_2 C = (\partial\_0L \circ C)(I\_0 \circ \partial\_2 C) + (\partial\_1L \circ C)(I\_1 \circ \partial\_2 C) + (\partial\_2L \circ C)(I\_2 \circ \partial\_2 C)
+\end{equation}
+
+\\(I\_0\\), \\(I\_1\\) and \\(I\_2\\) are "selectors" that return that single element of the local tuple.
+
+Example the value of \\(\partial\_2C\\) using our Scheme utilities:
+
+```scheme
+(->tex-equation
+ (((partial 2) C) (up 't 'xprime 'vprime))
+ "eq:p2c")
+```
+
+\begin{equation}
+\begin{pmatrix} \displaystyle{ 0} \cr \cr \displaystyle{ 0} \cr \cr \displaystyle{ {\partial}\_{1}F\left( t, {x}^\prime \right)}\end{pmatrix}
+\label{eq:p2c}
+\end{equation}
+
+The first two components are 0, leaving us with:
+
+\begin{equation}
+  \partial\_2 L' = (DL \circ C)\partial\_2 C = (\partial\_2L \circ C)(I\_2 \circ \partial\_2 C)
+\end{equation}
+
+Compose this quantity with \\(\Gamma[q']\\) and distribute the composition into the product. Remember that \\(C \circ \Gamma[q'] = \Gamma[q]\\):
+
+\begin{equation}
+  \begin{aligned}
+    \partial\_2L' \circ \Gamma[q'] & = (\partial\_2L \circ C)(I\_2 \circ \partial\_2 C) \circ \Gamma[q'] \cr
+    & = (\partial\_2L \circ C \circ \Gamma[q'])(I\_2 \circ \partial\_2 C \circ \Gamma[q']) \cr
+    & = (\partial\_2L \circ \Gamma[q])(I\_2 \circ \partial\_2 C \circ \Gamma[q'])
+  \end{aligned}
+\end{equation}
+
+Take the derivative (with respect to time, remember, from the types):
+
+\begin{equation}
+  D(\partial\_2L' \circ \Gamma[q']) = D\left[(\partial\_2L \circ \Gamma[q])(I\_2 \circ \partial\_2 C \circ \Gamma[q'])\right]
+\end{equation}
+
+Substitute the second term using \eqref{eq:p2c}:
+
+\begin{equation}
+  D(\partial\_2L' \circ \Gamma[q']) = D\left[(\partial\_2L \circ \Gamma[q])\partial\_1F(t, q'(t))\right]
+\end{equation}
+
+Expand using the product rule:
+
+\begin{equation}
+\label{eq:ex1-15-dp2l}
+  D(\partial\_2L' \circ \Gamma[q']) = \left[ D(\partial\_2L \circ \Gamma[q]) \right]\partial\_1F(t, q'(t)) + (\partial\_2L \circ \Gamma[q])D\left[ \partial\_1F(t, q'(t)) \right]
+\end{equation}
+
+A term from the unprimed Lagrange's equation is peeking. Notice this, but don't make the substitution just yet.
+
+Next, expand the \\(\partial\_1 L'\\) term:
+
+\begin{equation}
+  \partial\_1L' = \partial\_1(L \circ C) = ((DL) \circ C) \partial\_1 C
+\end{equation}
+
+Calculate \\(\partial\_1C\\) using our Scheme utilities:
+
+```scheme
+(->tex-equation
+ (((partial 1) C) (up 't 'xprime 'vprime)))
+```
+
+\begin{equation}
+\begin{pmatrix} \displaystyle{ 0} \cr \cr \displaystyle{ {\partial}\_{1}F\left( t, {x}^\prime \right)} \cr \cr \displaystyle{ {v}^\prime {{\partial}\_{1}}^{2}\left( F \right)\left( t, {x}^\prime \right) + \left( {\partial}\_{0} {\partial}\_{1} \right)\left( F \right)\left( t, {x}^\prime \right)}\end{pmatrix}
+\end{equation}
+
+Expand the chain rule out and remove 0 terms, as before:
+
+\begin{equation}
+  \begin{aligned}
+    \partial\_1L' & = ((DL) \circ C) \partial\_1 C \cr
+    & = (\partial\_0L \circ C)(I\_0 \circ \partial\_1 C) + (\partial\_1L \circ C)(I\_1 \circ \partial\_1 C) + (\partial\_2L \circ C)(I\_2 \circ \partial\_1 C) \cr
+    & = (\partial\_1L \circ C)(I\_1 \circ \partial\_1 C) + (\partial\_2L \circ C)(I\_2 \circ \partial\_1 C)
+  \end{aligned}
+\end{equation}
+
+Compose \\(\Gamma[q']\\) and distribute:
+
+\begin{equation}
+  \begin{aligned}
+  \partial\_1L' \circ \Gamma[q'] & = (\partial\_1L \circ \Gamma[q])(I\_1 \circ \partial\_1 C \circ \Gamma[q']) + (\partial\_2L \circ \Gamma[q])(I\_2 \circ \partial\_1 C \circ \Gamma[q']) \cr
+& = (\partial\_1L \circ \Gamma[q])(\partial\_1F(t, q'(t))) + (\partial\_2L \circ \Gamma[q])D(\partial\_1F(t, q'(t)))
+  \end{aligned}
+\end{equation}
+
+We now have both components of the primed Lagrange equations from \eqref{eq:lagrange-prime}.
+
+Subtract the two terms, extract common factors and use our assumption \eqref{eq:1-15-lagrange} that the original Lagrange equations hold:
+
+\begin{equation}
+  \begin{aligned}
+  D(\partial\_2L' \circ \Gamma[q']) - (\partial\_1L' \circ \Gamma[q']) & = \left[ D(\partial\_2L \circ \Gamma[q]) - (\partial\_1L \circ \Gamma[q]) \right] \partial\_1F(t, q'(t)) \cr
+  & + \left[ (\partial\_2L \circ \Gamma[q])  - (\partial\_2L \circ \Gamma[q]) \right] D(\partial\_1F(t, q'(t))) \cr
+& = \left[ D(\partial\_2L \circ \Gamma[q]) - (\partial\_1L \circ \Gamma[q]) \right] \partial\_1F(t, q'(t)) \cr
+& = 0
+  \end{aligned}
+\end{equation}
+
+And boom, we're done! The primed Lagranged equations \eqref{eq:lagrange-prime} hold if the unprimed equations \label{eq:1-15-lagrange} hold.
+
+I'm not sure what to make of the new constant terms. The new Lagrange equations are scaled by \\(\partial\_1 F(t, q'(t))\\), the derivative of \\(F\\) with respect to the path; that seems interesting, and possibly there's some nice physical intuition waiting to be discovered.
+
+### Scheme Derivation<a id="sec-1-16-5"></a>
+
+Can we use Scheme to pursue the same derivation? If we can write the relationships of the derivation in code, then we'll have a sort of computerized proof that the primed Lagrange equations are valid.
+
+First, consider \\(\partial\_1 L' \circ \Gamma[q']\\):
 
 ```scheme
 (->tex-equation
@@ -2107,15 +2269,17 @@ Let's expand the terms of the Lagrange equations.
 D{q}^\prime\left( t \right) {\partial}\_{2}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {{\partial}\_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) + {\partial}\_{2}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) \left( {\partial}\_{0} {\partial}\_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
 \end{equation}
 
-Insane. Make a helper:
+This is completely insane, and already unhelpful. The argument to \\(L\\), we know, is actually \\(\Gamma[q]\\). Make a function that will replace the tuple with that reference:
 
 ```scheme
 (define (->eq expr)
   (write-string
    (replace-all (->tex-equation* expr)
                 (->tex* ((Gamma q) 't))
-                "\\Gamma[q]")))
+                "\\circ \\Gamma[q]")))
 ```
+
+Try again:
 
 ```scheme
 (->eq
@@ -2124,39 +2288,25 @@ Insane. Make a helper:
 ```
 
 \begin{equation}
-D{q}^\prime\left( t \right) {\partial}\_{2}L\left( \Gamma[q] \right) {{\partial}\_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}L\left( \Gamma[q] \right) + {\partial}\_{2}L\left( \Gamma[q] \right) \left( {\partial}\_{0} {\partial}\_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
+D{q}^\prime\left( t \right) {\partial}\_{2}L\left( \circ \Gamma[q] \right) {{\partial}\_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}L\left( \circ \Gamma[q] \right) + {\partial}\_{2}L\left( \circ \Gamma[q] \right) \left( {\partial}\_{0} {\partial}\_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
 \end{equation}
 
-The Lagrange equation term is in there with a factor on it. Here's the term I need to subtract:
+Ignore the parentheses around \\(\circ \Gamma[q]\\) and this looks better.
+
+The \\(\partial\_1 L \circ \Gamma[q]\\) term of the unprimed Lagrange equations is nestled inside the expansion above, multiplied by a factor \\(\partial\_1F(t, q'(t))\\):
 
 ```scheme
-(let* ((factor
-        (compose coordinate ((partial 1) C) (Gamma qprime))))
+(let* ((factor (((partial 1) F) 't (qprime 't))))
   (->eq
    ((* factor (compose ((partial 1) L) (Gamma q)))
     't)))
 ```
 
 \begin{equation}
-{\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}L\left( \Gamma[q] \right)
+{\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}L\left( \circ \Gamma[q] \right)
 \end{equation}
 
-So now we have the whole thing and the term to substract off. This is the extra:
-
-```scheme
-(let* ((factor
-        (compose coordinate ((partial 1) C) (Gamma qprime))))
-  (->eq
-   ((- (compose ((partial 1) Lprime) (Gamma qprime))
-       (* factor (compose ((partial 1) L) (Gamma q))))
-    't)))
-```
-
-\begin{equation}
-D{q}^\prime\left( t \right) {\partial}\_{2}L\left( \Gamma[q] \right) {{\partial}\_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{2}L\left( \Gamma[q] \right) \left( {\partial}\_{0} {\partial}\_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
-\end{equation}
-
-Let's do the other side. This is where we have total insanity, no one would ever work this way.
+Next, consider the \\(D(\partial\_2 L' \circ \Gamma[q'])\\) term:
 
 ```scheme
 (->eq
@@ -2165,56 +2315,26 @@ Let's do the other side. This is where we have total insanity, no one would ever
 ```
 
 \begin{equation}
-{{\partial}\_{2}}^{2}\left( L \right)\left( \Gamma[q] \right) {\left( D{q}^\prime\left( t \right) \right)}^{2} {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) {{\partial}\_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {D}^{2}{q}^\prime\left( t \right) {{\partial}\_{2}}^{2}\left( L \right)\left( \Gamma[q] \right) {\left( {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} + 2 {{\partial}\_{2}}^{2}\left( L \right)\left( \Gamma[q] \right) D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \left( {\partial}\_{0} {\partial}\_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + \left( {\partial}\_{1} {\partial}\_{2} \right)\left( L \right)\left( \Gamma[q] \right) D{q}^\prime\left( t \right) {\left( {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} + {{\partial}\_{2}}^{2}\left( L \right)\left( \Gamma[q] \right) {{\partial}\_{0}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + \left( {\partial}\_{1} {\partial}\_{2} \right)\left( L \right)\left( \Gamma[q] \right) {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + D{q}^\prime\left( t \right) {\partial}\_{2}L\left( \Gamma[q] \right) {{\partial}\_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + \left( {\partial}\_{0} {\partial}\_{2} \right)\left( L \right)\left( \Gamma[q] \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{2}L\left( \Gamma[q] \right) \left( {\partial}\_{0} {\partial}\_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
+{\left( D{q}^\prime\left( t \right) \right)}^{2} {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) {{\partial}\_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) {{\partial}\_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) + D{q}^\prime\left( t \right) {\left( {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} \left( {\partial}\_{1} {\partial}\_{2} \right)\left( L \right)\left( \circ \Gamma[q] \right) + 2 D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \left( {\partial}\_{0} {\partial}\_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right) {{\partial}\_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) + {\left( {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} {D}^{2}{q}^\prime\left( t \right) {{\partial}\_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \left( {\partial}\_{1} {\partial}\_{2} \right)\left( L \right)\left( \circ \Gamma[q] \right) + D{q}^\prime\left( t \right) {\partial}\_{2}L\left( \circ \Gamma[q] \right) {{\partial}\_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) {{\partial}\_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) {{\partial}\_{0}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \left( {\partial}\_{0} {\partial}\_{2} \right)\left( L \right)\left( \circ \Gamma[q] \right) + {\partial}\_{2}L\left( \circ \Gamma[q] \right) \left( {\partial}\_{0} {\partial}\_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
 \end{equation}
 
-I see Lagrange's equation peeking out, with a big factor attached to it.
+This, again, is total madness. We really want some way to control how Scheme expands terms.
+
+But we know what we're looking for. Expand out the matching term of the unprimed Lagrange equations:
 
 ```scheme
-(let* ((factor
-        (compose velocity ((partial 2) C) (Gamma qprime))))
-  (->eq
-   ((* factor (D (compose ((partial 2) L) (Gamma q))))
-    't)))
-```
-
-\begin{equation}
-{{\partial}\_{2}}^{2}\left( L \right)\left( \Gamma[q] \right) {\left( D{q}^\prime\left( t \right) \right)}^{2} {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) {{\partial}\_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {D}^{2}{q}^\prime\left( t \right) {{\partial}\_{2}}^{2}\left( L \right)\left( \Gamma[q] \right) {\left( {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} + 2 {{\partial}\_{2}}^{2}\left( L \right)\left( \Gamma[q] \right) D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \left( {\partial}\_{0} {\partial}\_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + \left( {\partial}\_{1} {\partial}\_{2} \right)\left( L \right)\left( \Gamma[q] \right) D{q}^\prime\left( t \right) {\left( {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} + {{\partial}\_{2}}^{2}\left( L \right)\left( \Gamma[q] \right) {{\partial}\_{0}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + \left( {\partial}\_{1} {\partial}\_{2} \right)\left( L \right)\left( \Gamma[q] \right) {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + \left( {\partial}\_{0} {\partial}\_{2} \right)\left( L \right)\left( \Gamma[q] \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right)
-\end{equation}
-
-Remaining:
-
-```scheme
-(let* ((factor
-        (compose velocity ((partial 2) C) (Gamma qprime))))
-  (->eq
-   ((- (D (compose ((partial 2) Lprime) (Gamma qprime)))
-       (* factor (D (compose ((partial 2) L) (Gamma q)))))
-    't)))
-```
-
-\begin{equation}
-D{q}^\prime\left( t \right) {\partial}\_{2}L\left( \Gamma[q] \right) {{\partial}\_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{2}L\left( \Gamma[q] \right) \left( {\partial}\_{0} {\partial}\_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
-\end{equation}
-
-That's familiar.
-
-About the factors, this is interesting:
-
-```scheme
-(->tex-equation
- ((- (compose velocity ((partial 2) C) (Gamma qprime))
-     (compose coordinate ((partial 1) C) (Gamma qprime)))
+(->eq
+ ((D (compose ((partial 2) L) (Gamma q)))
   't))
 ```
 
 \begin{equation}
-0
+{\left( D{q}^\prime\left( t \right) \right)}^{2} {{\partial}\_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) {{\partial}\_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) + D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \left( {\partial}\_{1} {\partial}\_{2} \right)\left( L \right)\left( \circ \Gamma[q] \right) + 2 D{q}^\prime\left( t \right) \left( {\partial}\_{0} {\partial}\_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right) {{\partial}\_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) + {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) {D}^{2}{q}^\prime\left( t \right) {{\partial}\_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right) \left( {\partial}\_{1} {\partial}\_{2} \right)\left( L \right)\left( \circ \Gamma[q] \right) + {{\partial}\_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) {{\partial}\_{0}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + \left( {\partial}\_{0} {\partial}\_{2} \right)\left( L \right)\left( \circ \Gamma[q] \right)
 \end{equation}
 
-So the factors are identical. Why? Think this through.
+Staring at these two equations, it becomes clear that the first contains the second, multiplied by \\(\partial\_1F(t, q'(t))\\), the same factor that appeared in the expansion of the \\(\partial\_1 L \circ \Gamma[q]\\) term.
 
-If you pull the factor out, you see that you've generated new Lagrange equations, scaled by a factor.
+Try writing out the primed Lagrange equations, and subtracting the unprimed Lagrange equations, scaled by this factor:
 
 ```scheme
 (let* ((primed-lagrange
@@ -2236,157 +2356,18 @@ If you pull the factor out, you see that you've generated new Lagrange equations
 0
 \end{equation}
 
-Done! Amazing, it totally works in code, with some inference help.
+Done! It seems that the extra terms on each side exactly cancel. As with the pen and paper derivation, we've shown that the primed Lagranged equations \eqref{eq:lagrange-prime} hold if the unprimed equations \label{eq:1-15-lagrange} hold.
 
-### Derivation<a id="sec-1-16-5"></a>
+### Final Comments<a id="sec-1-16-6"></a>
 
-The goal here is to show that if the Lagrange equations hold in the original coordinate system:
+I'm troubled by my lack of intuition around two ideas:
 
-\begin{equation}
-\label{eq:1-15-lagrange}
-D(\partial\_2L \circ \Gamma[q]) - (\partial\_1L \circ \Gamma[q]) = 0
-\end{equation}
+-   what is the meaning of the \\(\partial\_1F(t, q'(t))\\) scaling factor?
+-   Both sides acquire a constant \\((\partial\_2L \circ \Gamma[q]) \cdot D(\partial\_1F(t, q'(t)))\\).
 
-Then they hold in the primed coordinate system:
+The right factor is a total time derivative. Is this meaningful? We know from later discussion that if we add a total time derivative to the Lagrangian we don't affect the shape of the realizable path.
 
-\begin{equation}
-\label{eq:lagrange-prime}
-D(\partial\_2L' \circ \Gamma[q']) - (\partial\_1L' \circ \Gamma[q']) = 0
-\end{equation}
-
-Approach: let's start pushing the Lagrange equations through, and see if we recognize any spot where we can use our assumption.
-
-We start by calculating the components of the Lagrange equations in equation \eqref{eq:lagrange-prime}. We'll handle the \\(\partial\_2L'\\) term first.
-
-Composition is associative, so
-
-\begin{equation}
-\label{eq:c-l}
-(L \circ C) \circ \Gamma[q'] = L' \circ \Gamma[q'] \implies L' = L \circ C
-\end{equation}
-
-Substituting the right side of \eqref{eq:c-l} and using the chain rule:
-
-\begin{equation}
-  \partial\_2L' = \partial\_2(L \circ C) = ((DL) \circ C) \partial\_2 C
-\end{equation}
-
-NOTE describe the shape of what's going on here, how we have these up and down tuple shapes. That means we can expand this out:
-
-\begin{equation}
-  (DL \circ C)\partial\_2 C = (\partial\_0L \circ C)(I\_0 \circ \partial\_2 C) + (\partial\_1L \circ C)(I\_1 \circ \partial\_2 C) + (\partial\_2L \circ C)(I\_2 \circ \partial\_2 C)
-\end{equation}
-
-It's less confusing if you leave functional notation for a moment and imagine application to some argument \\(x\\). \\(\partial\_2C(x)\\) is an up-tuple with 3 elements \\((\partial\_2C(x)\_0, \partial\_2C(x)\_1, \partial\_2C(x)\_2)\\) and \\(DL(C(x))\\) is a down-tuple, so they contract like this:
-
-\begin{equation}
-  DL(C(x)) \cdot \partial\_2 C(x) = \partial\_0L(C(x))\partial\_2 C(x)\_0 + \partial\_1L(C(x))\partial\_2 C(x)\_1 + \partial\_2L(C(x))\partial\_2 C(x)\_2
-\end{equation}
-
-Now look at the \\(\partial\_2C\\) term using our code from before:
-
-```scheme
-(let ((C (F->C* F*)))
-  (->tex-equation
-   (((partial 2) C) (up 't 'xprime 'vprime))
-   "eq:p2c"))
-```
-
-\begin{equation}
-\begin{pmatrix} \displaystyle{ 0} \cr \cr \displaystyle{ 0} \cr \cr \displaystyle{ {\partial}\_{1}F\left( t, {x}^\prime \right)}\end{pmatrix}
-\label{eq:p2c}
-\end{equation}
-
-Add the path \\(\Gamma[q']\\) back in and distribute, remembering that \\(C \circ \Gamma[q'] = \Gamma[q]\\):
-
-\begin{equation}
-  \begin{aligned}
-    \partial\_2L' \circ \Gamma[q'] & = (\partial\_2L \circ C)(I\_2 \circ \partial\_2 C) \circ \Gamma[q'] \cr
-    & = (\partial\_2L \circ C \circ \Gamma[q'])(I\_2 \circ \partial\_2 C \circ \Gamma[q']) \cr
-    & = (\partial\_2L \circ \Gamma[q])(I\_2 \circ \partial\_2 C \circ \Gamma[q'])
-  \end{aligned}
-\end{equation}
-
-Now take the time derivative:
-
-\begin{equation}
-  D(\partial\_2L' \circ \Gamma[q']) = D\left[(\partial\_2L \circ \Gamma[q])(I\_2 \circ \partial\_2 C \circ \Gamma[q'])\right]
-\end{equation}
-
-Use the product rule:
-
-\begin{equation}
-  D(\partial\_2L' \circ \Gamma[q']) = \left[ D(\partial\_2L \circ \Gamma[q]) \right](I\_2 \circ \partial\_2 C \circ \Gamma[q']) + (\partial\_2L \circ \Gamma[q])D\left[ (I\_2 \circ \partial\_2 C \circ \Gamma[q']) \right]
-\end{equation}
-
-substitute using \eqref{eq:p2c}. When we compose with a path we get this function of \\(t\\):
-
-```scheme
-(let ((C (F->C* F*)))
-  (->tex-equation
-   (ref ((compose ((partial 2) C) (Gamma qprime)) 't) 2)))
-```
-
-\begin{equation}
-{\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right)
-\end{equation}
-
-Substitute:
-
-\begin{equation}
-\label{eq:1-15-p2l}
-  D(\partial\_2L' \circ \Gamma[q']) = D(\partial\_2L \circ \Gamma[q])\partial\_1F(t, q'(t)) + (\partial\_2L \circ \Gamma[q]) D(\partial\_1F(t, q'(t)))
-\end{equation}
-
-We can see Lagrange's equation from our assumption peeking. Before we tackle that, let's do the other side:
-
-\begin{equation}
-  \partial\_1L' = \partial\_1(L \circ C) = ((DL) \circ C) \partial\_1 C
-\end{equation}
-
-Use our function above to take \\(\partial\_1C\\):
-
-```scheme
-(let ((C (F->C* F*)))
-  (->tex-equation
-   (((partial 1) C) (up 't 'xprime 'vprime))))
-```
-
-\begin{equation}
-\begin{pmatrix} \displaystyle{ 0} \cr \cr \displaystyle{ {\partial}\_{1}F\left( t, {x}^\prime \right)} \cr \cr \displaystyle{ {v}^\prime {\left( \partial\_1 \right)}^{2}F\left( t, {x}^\prime \right) + \left( \partial\_0 \partial\_1 \right)F\left( t, {x}^\prime \right)}\end{pmatrix}
-\end{equation}
-
-Expand the chain rule out and cancel, as before:
-
-\begin{equation}
-  \begin{aligned}
-    \partial\_1L' & = ((DL) \circ C) \partial\_1 C \cr
-    & = (\partial\_0L \circ C)(I\_0 \circ \partial\_1 C) + (\partial\_1L \circ C)(I\_1 \circ \partial\_1 C) + (\partial\_2L \circ C)(I\_2 \circ \partial\_1 C) \cr
-    & = (\partial\_1L \circ C)(I\_1 \circ \partial\_1 C) + (\partial\_2L \circ C)(I\_2 \circ \partial\_1 C)
-  \end{aligned}
-\end{equation}
-
-Add the path \\(\Gamma[q']\\) back in and distribute:
-
-\begin{equation}
-  \begin{aligned}
-  \partial\_1L' \circ \Gamma[q'] & = (\partial\_1L \circ \Gamma[q])(I\_1 \circ \partial\_1 C \circ \Gamma[q']) + (\partial\_2L \circ \Gamma[q])(I\_2 \circ \partial\_1 C \circ \Gamma[q']) \cr
-& = (\partial\_1L \circ \Gamma[q])(\partial\_1F(t, q'(t))) + (\partial\_2L \circ \Gamma[q])D(\partial\_1F(t, q'(t)))
-  \end{aligned}
-\end{equation}
-
-We're almost there! Go back to \label{eq:1-15-p2l}, and use our assumption \eqref{eq:1-15-lagrange} that the original Lagrange equations hold:
-
-\begin{equation}
-  \begin{aligned}
-  D(\partial\_2L' \circ \Gamma[q']) - \partial\_1L' \circ \Gamma[q'] & = D(\partial\_2L \circ \Gamma[q] - (\partial\_1L \circ \Gamma[q]))\partial\_1F(t, q'(t)) \cr
-& + (\partial\_2L \circ \Gamma[q]) D(\partial\_1F(t, q'(t))) - (\partial\_2L \circ \Gamma[q])D(\partial\_1F(t, q'(t))) \cr
-& = D(\partial\_2L \circ \Gamma[q]) - (\partial\_1L \circ \Gamma[q]))\partial\_1F(t, q'(t)) \cr
-& = 0
-  \end{aligned}
-\end{equation}
-
-And boom, we're done.
+I learned quite a bit about functional notation from this exercise, and I think that test that the result represents is critical for leaning hard on the coordinate transformations that we'll continue to explore. But I do feel like I'm leaving intuitive cake on the table.
 
 ## Exercise 1.16: Central force motion<a id="sec-1-17"></a>
 
