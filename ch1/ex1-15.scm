@@ -96,7 +96,7 @@
 ;; \end{equation}
 
 ;; Now that we know $C$ is correct we can define $q$, the unprimed coordinate path
-;; function, and $Lprime$:
+;; function, and =Lprime=:
 
 
 (define q (to-q F qprime))

@@ -2780,7 +2780,7 @@ Subtract the two forms to see that they're equivalent:
 \end{equation}
 
 Now that we know $C$ is correct we can define $q$, the unprimed coordinate path
-function, and $Lprime$:
+function, and =Lprime=:
 
 #+begin_src scheme
 (define q (to-q F qprime))
@@ -3097,57 +3097,102 @@ I'm leaving intuitive cake on the table.
 :header-args+: :tangle ch1/ex1-16.scm :comments org
 :END:
 
-Messing around to make sure I understand what I'm seeing in the coordinate
-transforms on page 45.
-
 #+begin_src scheme
 (load "ch1/utils.scm")
-
-(define (p->r local)
-  (let* ((polar-tuple (coordinate local))
-         (r (ref polar-tuple 0))
-         (phi (ref polar-tuple 1))
-         (x (* r (cos phi)))
-         (y (* r (sin phi))))
-    (up x y)))
-
-(define (spherical->rect local)
-  (let* ((spherical-tuple (coordinate local))
-         (r (ref spherical-tuple 0))
-         (theta (ref spherical-tuple 1))
-         (phi (ref spherical-tuple 2)))
-    (up (* r (sin theta) (cos phi))
-        (* r (sin theta) (sin phi))
-        (* r (cos theta)))))
 #+end_src
 
-Check polar:
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
 
-#+begin_src scheme
-(show-expression
- ((F->C p->r)
-  (up 't
-      (up 'r 'phi)
-      (up 'rdot 'phidot))))
-#+end_src
+This exercise gives you practice in writing Lagrangians as compositions.
 
-spherical coordinate change, check velocities:
+#+begin_quote
+Find Lagrangians for central force motion in three dimensions in rectangular
+coordinates and in spherical coordinates. First, find the Lagrangians
+analytically, then check the results with the computer by generalizing the
+programs that we have presented.
+#+end_quote
 
-#+begin_src scheme
-(show-expression
- ((F->C spherical->rect)
-  (up 't
-      (up 'r 'theta 'phi)
-      (up 'rdot 'thetadot 'phidot))))
+*** Analytic Approach
 
-(show-expression
- (square (ref (ref ((F->C spherical->rect)
-             (up 't
-                 (up 'r 'theta 'phi)
-                 (up 'rdot 'thetadot 'phidot))) 2) 0)))
-#+end_src
+Analytically in 3d coordinates, we have a straightforward extension:
 
-get the Langrangian from page 41:
+\begin{equation}
+L = T - V = {1 \over 2} m (v_x^2 + v_y^2 + v_z^2) - U(\sqrt{x^2 + y^2 + z^2})
+\end{equation}
+
+How would you find the spherical Lagrangian analytically?
+
+The potential part is easy. We know that $r = \sqrt{x^2 + y^2 + z^2}$, so the
+final Lagrangian will have a $U(r)$ term.
+
+To transform the kinetic energies:
+
+- write down the coordinate transformation from spherical to rectangular:
+- get the velocity components by taking derivatives, chain rule
+- substitute these in to the rectangular Lagrangian
+
+This is equivalent to generating $L' = L \circ C$, where $C$ is a function that
+substitutes each position $x, y, z$ or velocity $v_x, v_y, v_z$ for its
+spherical representation. $L'$ is the spherical Lagrangian, $L$ is the
+rectangular.
+
+How do you get the velocities?
+
+Remember, from equation 1.77 in the book:
+
+\begin{equation}
+C(t, x', v') = (t,\, F(t, x'),\, \partial_0F(t, x') + \partial_1F(t, x')v')
+\end{equation}
+
+$F(t, x')$ is the conversion from spherical to rectangular coordinates. $x'$ is
+a 3-tuple of $(r, \theta, \phi)$, and $F(t, x')$ is a 3-tuple $(x, y, z)$, where:
+
+\begin{equation}
+\begin{aligned}
+  x & = r \sin \theta \cos \phi \cr
+  y & = r \sin \theta \sin \phi \cr
+  z & = r \cos \theta
+\end{aligned}
+\end{equation}
+
+It's important to remember that the partials in equation 1.77 are taken as if
+the arguments were static. The chain rule has already been applied. It's more
+san
+
+\begin{equation}
+\partial_0F(t, x') = (0, 0, 0)
+\end{equation}
+
+This has three components; one for each of the components in the return value.
+
+$\partial_1F(t, x')$ is a tuple with three components, each of which /also/ has
+three components, one for each of the spherical coordinates.
+
+The inner tuples collapse upon multiplication by $v' = (\dot{r}, \dot{\theta},
+\dot{\phi})$, leaving:
+
+\begin{equation}
+  \begin{aligned}
+    v_x & = \dot{r} \sin \theta \cos \phi + r \dot{\theta} \cos \theta \cos \phi + r \dot{\phi} \sin \theta \sin \phi \cr
+    v_y & = \dot{r} \sin \theta \sin \phi + r \dot{\theta} \cos \theta \sin \phi + r \dot{\phi} \sin \theta \cos \phi \cr
+    v_z & = \dot{r} \cos \theta + r \dot{\theta} \sin \theta
+  \end{aligned}
+\end{equation}
+
+Substituting these in results, eventually, in a waterfall of cancellations and
+leaves:
+
+\begin{equation}
+L' = {1 \over 2} m (r^2 \dot{\phi}^2 \sin^2\phi + r^2 \dot{\theta}^2 + \dot{r}^2) - U(r)
+\end{equation}
+
+*** Scheme Approach
+
+To show the rectangular Lagrangian, get the procedure from page 41:
 
 #+begin_src scheme
 (define ((L-central-rectangular m U) local)
@@ -3157,71 +3202,695 @@ get the Langrangian from page 41:
        (U (sqrt (square q))))))
 #+end_src
 
-BOOM, now we can compose these things!
+This is already written in a form that can handle an arbitrary number of
+coordiantes. Confirm the rectangular Lagrangian by passing in a local tuple with
+3 dimensional coordinates and velocities:
+
+#+begin_src scheme :results value raw :exports both :cache yes
+(->tex-equation
+ ((L-central-rectangular 'm (literal-function 'U))
+  (up 't
+      (up 'x 'y 'z)
+      (up 'v_x 'v_y 'v_z))))
+#+end_src
+
+#+RESULTS[9bf8352b0d3e667e7149e5519cc568efbbf2f331]:
+\begin{equation}
+{{1}\over {2}} m {{v}_{x}}^{2} + {{1}\over {2}} m {{v}_{y}}^{2} + {{1}\over {2}} m {{v}_{z}}^{2} - U\left( \sqrt{{x}^{2} + {y}^{2} + {z}^{2}} \right)
+\end{equation}
+
+
+Next, the spherical. Write down the coordinate transformation from spherical to
+rectangular coordinates as a Scheme procedure:
 
 #+begin_src scheme
-(define (L-central-polar m U)
-  (compose (L-central-rectangular m U)
-           (F->C p->r)))
+(define (spherical->rect local)
+  (let* ((q (coordinate local))
+         (r (ref q 0))
+         (theta (ref q 1))
+         (phi (ref q 2)))
+    (up (* r (sin theta) (cos phi))
+        (* r (sin theta) (sin phi))
+        (* r (cos theta)))))
+#+end_src
 
+#+RESULTS:
+: #| spherical->rect |#
+
+Here are the velocities calculated above by hand:
+
+#+begin_src scheme :results value raw :exports both :cache yes
+(->tex-equation
+ (velocity
+  ((F->C spherical->rect)
+   (up 't
+       (up 'r 'theta 'phi)
+       (up 'rdot 'thetadot 'phidot)))))
+#+end_src
+
+#+RESULTS[b41cbe257b2a859243c9b36052b54e533d08484e]:
+\begin{equation}
+\begin{pmatrix} \displaystyle{  - \dot{\phi} r \sin\left( \phi \right) \sin\left( \theta \right) + r \dot{\theta} \cos\left( \phi \right) \cos\left( \theta \right) + \dot{r} \cos\left( \phi \right) \sin\left( \theta \right)} \cr \cr \displaystyle{ \dot{\phi} r \cos\left( \phi \right) \sin\left( \theta \right) + r \dot{\theta} \sin\left( \phi \right) \cos\left( \theta \right) + \dot{r} \sin\left( \phi \right) \sin\left( \theta \right)} \cr \cr \displaystyle{  - r \dot{\theta} \sin\left( \theta \right) + \dot{r} \cos\left( \theta \right)}\end{pmatrix}
+\end{equation}
+
+
+Now that we have $L$ and $C$, we can compose them to get $L'$, our spherical
+Lagrangian:
+
+#+begin_src scheme
 (define (L-central-spherical m U)
   (compose (L-central-rectangular m U)
            (F->C spherical->rect)))
 #+end_src
 
-Confirm the polar coordinate version...
+#+RESULTS:
+: #| L-central-spherical |#
 
-#+begin_src scheme
-(show-expression
- ((L-central-polar 'm (literal-function 'U))
-  (up 't
-      (up 'r 'phi)
-      (up 'rdot 'phidot))))
-#+end_src
+Confirm that this is equivalent to the analytic solution:
 
-BOOM, much better than calculating by hand!
-
-#+begin_src scheme
-(show-expression
+#+begin_src scheme :results value raw :exports both :cache yes
+(->tex-equation
  ((L-central-spherical 'm (literal-function 'U))
   (up 't
       (up 'r 'theta 'phi)
       (up 'rdot 'thetadot 'phidot))))
 #+end_src
 
+#+RESULTS[e51d842361ff78bbab3e1c959cf534c69411b061]:
+\begin{equation}
+{{1}\over {2}} m {\dot{\phi}}^{2} {r}^{2} {\left( \sin\left( \theta \right) \right)}^{2} + {{1}\over {2}} m {r}^{2} {\dot{\theta}}^{2} + {{1}\over {2}} m {\dot{r}}^{2} - U\left( r \right)
+\end{equation}
 
-rectangular, for fun:
+*** Discussion
 
-#+begin_src scheme
-(show-expression
- ((L-central-rectangular 'm (literal-function 'U))
-  (up 't
-      (up 'x 'y 'z)
-      (up 'xdot 'ydot 'zdot))))
-#+end_src
-
-From a note to Vinay. Langrangian coordinate transformation from spherical ->
-rectangular on paper, which of course is a total nightmare, writing vx^2 +
-vy^2 + vz^2 and simplifying. BUT then, of course, you write down the spherical
-=> rectangular position change...
+Langrangian coordinate transformation from spherical -> rectangular on paper,
+which of course is a total nightmare, writing vx^2 + vy^2 + vz^2 and
+simplifying. BUT then, of course, you write down the spherical => rectangular
+position change...
 
 the explicit link to function composition, and how the new lagrangian is
-(Lagrangian A + A<-B + B<-C)... really drives home how invertible coordinate
-transforms can stack associatively through function composition. the lesson is,
-prove that the code works, then trust the program to go to crazy coordinate
-systems.
+(Lagrangian A + A<-B + B<-C)... really drives home how coordinate transforms can
+stack associatively through function composition. the lesson is, prove that the
+code works, then trust the program to go to crazy coordinate systems.
 
-they add in a very simple-to-write coordinate transform that has one of the
-angles depend on t. and then compose that in, and boom, basically for free
-you're in rotating spherical coords.
+Later, the authors add in a very simple-to-write coordinate transform that has
+one of the angles depend on t. and then compose that in, and boom, basically for
+free you're in rotating spherical coords.
 
 ** Exercise 1.17: Bead on a helical wire
+:PROPERTIES:
+:header-args+: :tangle ch1/ex1-16.scm :comments org
+:END:
+
+#+begin_src scheme
+(load "ch1/utils.scm")
+#+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
+
+This, and the next three exercises, are here to give you practice in the real
+art, of difficulty, of any dynamics problem. It's easy to change coordinates. So
+what coordinates do you use?
+
+#+begin_quote
+A bead of mass $m$ is constrained to move on a frictionless helical wire. The
+helix is oriented so that its axis is horizontal. The diameter of the helix is
+$d$ and its pitch (turns per unit length) is $h$. The system is in a uniform
+gravitational field with vertical acceleration $g$. Formulate a Lagrangian that
+describes the system and find the Lagrange equations of motion.
+#+end_quote
+
+I'll replace this with a better picture later, but this is the setup:
+
+#+DOWNLOADED: screenshot @ 2020-06-25 11:03:55
+#+attr_org: :width 400px
+#+attr_html: :width 80% :align center
+#+attr_latex: :width 8cm
+[[file:images/Lagrangian_Mechanics/2020-06-25_11-03-55_screenshot.png]]
+
+#+begin_src scheme
+(define ((turns->rect d h) local)
+  (let* ((turns (coordinate local))
+         (theta (* turns 2 'pi)))
+    (up (/ turns h)
+        (* (/ d 2) (cos theta))
+        (* (/ d 2) (sin theta)))))
+#+end_src
+
+#+RESULTS:
+: #| turns->rect |#
+
+Or you could do this. Remember, these transformations need to be functions of a
+local tuple, so if you're going to compose them, remember to put =coordinate= at
+the beginning of the composition.
+
+#+begin_src scheme
+(define ((turns->x-theta h) q)
+  (up (/ q h)
+      (* q 2 'pi)))
+
+(define ((x-theta->rect d) q)
+  (let* ((x (ref q 0))
+         (theta (ref q 1)))
+    (up x
+        (* (/ d 2) (cos theta))
+        (* (/ d 2) (sin theta)))))
+
+(define (turns->rect* d h)
+  (compose (x-theta->rect d)
+           (turns->x-theta h)
+           coordinate))
+#+end_src
+
+#+RESULTS:
+: #| turns->x-theta |#
+:
+: #| x-theta->rect |#
+:
+: #| turns->rect* |#
+
+The transformations are identical:
+
+#+begin_src scheme :results value raw :exports both :cache yes
+(->tex-equation
+ ((- (turns->rect 'd 'h)
+     (turns->rect* 'd 'h))
+  (up 't 'n 'ndot)))
+#+end_src
+
+#+RESULTS[3fa8a307ddde828e0f3b9b6c573e5935c577f76a]:
+\begin{equation}
+\begin{pmatrix} \displaystyle{ 0} \cr \cr \displaystyle{ 0} \cr \cr \displaystyle{ 0}\end{pmatrix}
+\end{equation}
+
+Define the Lagrangian:
+
+#+begin_src scheme
+(define ((L-rectangular m U) local)
+  (let ((q (coordinate local))
+        (v (velocity local)))
+    (- (* 1/2 m (square v))
+       (U q))))
+
+(define (L-turns m d h U)
+  (compose (L-rectangular m U)
+           (F->C (turns->rect d h))))
+#+end_src
+
+#+RESULTS:
+: #| L-rectangular |#
+:
+: #| L-turns |#
+
+The potential is a uniform gravitational acceleration:
+
+#+begin_src scheme
+(define ((U-grav m g) q)
+  (* m g (ref q 2)))
+#+end_src
+
+#+RESULTS:
+: #| U-grav |#
+
+Final Lagrangian:
+
+#+begin_src scheme :results value raw :exports both :cache yes
+(->tex-equation
+ ((L-turns 'm 'd 'h (U-grav 'm 'g))
+  (up 't 'n 'ndot)))
+#+end_src
+
+#+RESULTS[a486b9871810f8a74d1883be47666fa323a6de81]:
+\begin{equation}
+{{{{1}\over {2}} {d}^{2} {h}^{2} m {\dot{n}}^{2} {\pi}^{2} - {{1}\over {2}} d g {h}^{2} m \sin\left( 2 n \pi \right) + {{1}\over {2}} m {\dot{n}}^{2}}\over {{h}^{2}}}
+\end{equation}
+
+Lagrange equations of motion:
+
+#+begin_src scheme :results value raw :exports both :cache yes
+(let* ((L (L-turns 'm 'd 'h (U-grav 'm 'g)))
+       (n (literal-function 'n)))
+  (->tex-equation
+   (((Lagrange-equations L) n) 't)))
+#+end_src
+
+#+RESULTS[92605835c702fcc963cc25ca8ccd8832270e11f2]:
+\begin{equation}
+{{{d}^{2} {h}^{2} m {\pi}^{2} {D}^{2}n\left( t \right) + d g {h}^{2} m \pi \cos\left( 2 \pi n\left( t \right) \right) + m {D}^{2}n\left( t \right)}\over {{h}^{2}}}
+\end{equation}
 
 ** Exercise 1.18: Bead on a triaxial surface
+:PROPERTIES:
+:header-args+: :tangle ch1/ex1-16.scm :comments org
+:END:
+
+#+begin_src scheme
+(load "ch1/utils.scm")
+#+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
+
+#+begin_quote
+A bead of mass $m$ moves without friction on a triaxial ellipsoidal surface. In
+rectangular coordinates the surface satisfies
+
+\begin{equation}
+  {x^2 \over a^2} + {y^2 \over b^2} + {z^2 \over c^2} = 1
+\end{equation}
+
+for some constants $a$, $b$, and $c$. Identify suitable generalized coordinates,
+formulate a Lagrangian, and find Lagrange's equations.
+#+end_quote
+
+The transformation to elliptical coordinates is very similar to the spherical
+coordinate transformation, but with a fixed $a$, $b$ and $c$ coefficient for
+each rectangular dimension, and no more radial degree of freedom:
+
+#+begin_src scheme
+(define ((elliptical->rect a b c) local)
+  (let* ((q (coordinate local))
+         (theta (ref q 0))
+         (phi (ref q 1)))
+    (up (* a (sin theta) (cos phi))
+        (* b (sin theta) (sin phi))
+        (* c (cos theta)))))
+#+end_src
+
+#+RESULTS:
+: #| elliptical->rect |#
+
+Next, the Lagrangian:
+
+#+begin_src scheme
+(define ((L-free-particle m) local)
+  (* 1/2 m (square
+            (velocity local))))
+
+(define (L-central-triaxial m a b c)
+  (compose (L-free-particle m)
+           (F->C (elliptical->rect a b c))))
+#+end_src
+
+#+RESULTS:
+: #| L-free-particle |#
+:
+: #| L-central-triaxial |#
+
+Final Lagrangian:
+
+#+begin_src scheme :results value raw :exports both :cache yes
+(let ((local (up 't
+                 (up 'theta 'phi)
+                 (up 'thetadot 'phidot))))
+  (->tex-equation
+   ((L-central-triaxial 'm 'a 'b 'c) local)))
+#+end_src
+
+#+RESULTS[96029124f8a649771c860516d1c6e668422de93e]:
+\begin{equation}
+{{1}\over {2}} {a}^{2} m {\dot{\phi}}^{2} {\left( \sin\left( \phi \right) \right)}^{2} {\left( \sin\left( \theta \right) \right)}^{2} - {a}^{2} m \dot{\phi} \dot{\theta} \sin\left( \phi \right) \sin\left( \theta \right) \cos\left( \phi \right) \cos\left( \theta \right) + {{1}\over {2}} {a}^{2} m {\dot{\theta}}^{2} {\left( \cos\left( \phi \right) \right)}^{2} {\left( \cos\left( \theta \right) \right)}^{2} + {{1}\over {2}} {b}^{2} m {\dot{\phi}}^{2} {\left( \sin\left( \theta \right) \right)}^{2} {\left( \cos\left( \phi \right) \right)}^{2} + {b}^{2} m \dot{\phi} \dot{\theta} \sin\left( \phi \right) \sin\left( \theta \right) \cos\left( \phi \right) \cos\left( \theta \right) + {{1}\over {2}} {b}^{2} m {\dot{\theta}}^{2} {\left( \sin\left( \phi \right) \right)}^{2} {\left( \cos\left( \theta \right) \right)}^{2} + {{1}\over {2}} {c}^{2} m {\dot{\theta}}^{2} {\left( \sin\left( \theta \right) \right)}^{2}
+\end{equation}
+
+I'm sure there's some simplification in there for us. But why?
+
+Lagrange equations of motion:
+
+#+begin_src scheme :results value raw :exports both :cache yes
+(let* ((L (L-central-triaxial 'm 'a 'b 'c))
+       (theta (literal-function 'theta))
+       (phi (literal-function 'phi)))
+  (->tex-equation
+   (((Lagrange-equations L) (up theta phi))
+    't)))
+#+end_src
+
+#+RESULTS[a4de48608ac69178397f5dbb9854dd6e4815faf5]:
+\begin{equation}
+\begin{bmatrix} \displaystyle{  - 2 {a}^{2} m \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) D\theta\left( t \right) D\phi\left( t \right) {\left( \cos\left( \theta\left( t \right) \right) \right)}^{2} - {a}^{2} m {\left( \cos\left( \phi\left( t \right) \right) \right)}^{2} {\left( D\theta\left( t \right) \right)}^{2} \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) - {a}^{2} m {\left( \cos\left( \phi\left( t \right) \right) \right)}^{2} {\left( D\phi\left( t \right) \right)}^{2} \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) - {b}^{2} m {\left( \sin\left( \phi\left( t \right) \right) \right)}^{2} {\left( D\theta\left( t \right) \right)}^{2} \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) - {b}^{2} m {\left( \sin\left( \phi\left( t \right) \right) \right)}^{2} {\left( D\phi\left( t \right) \right)}^{2} \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) + 2 {b}^{2} m \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) D\theta\left( t \right) D\phi\left( t \right) {\left( \cos\left( \theta\left( t \right) \right) \right)}^{2} - {a}^{2} m {D}^{2}\phi\left( t \right) \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) + {a}^{2} m {\left( \cos\left( \phi\left( t \right) \right) \right)}^{2} {\left( \cos\left( \theta\left( t \right) \right) \right)}^{2} {D}^{2}\theta\left( t \right) + {b}^{2} m {D}^{2}\phi\left( t \right) \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) + {b}^{2} m {\left( \sin\left( \phi\left( t \right) \right) \right)}^{2} {\left( \cos\left( \theta\left( t \right) \right) \right)}^{2} {D}^{2}\theta\left( t \right) + {c}^{2} m {\left( D\theta\left( t \right) \right)}^{2} \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) + {c}^{2} m {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} {D}^{2}\theta\left( t \right)} \cr \cr \displaystyle{ 2 {a}^{2} m {\left( \sin\left( \phi\left( t \right) \right) \right)}^{2} D\theta\left( t \right) D\phi\left( t \right) \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) + {a}^{2} m \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) {\left( D\theta\left( t \right) \right)}^{2} {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} + {a}^{2} m \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) {\left( D\phi\left( t \right) \right)}^{2} {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} - {b}^{2} m \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) {\left( D\theta\left( t \right) \right)}^{2} {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} - {b}^{2} m \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) {\left( D\phi\left( t \right) \right)}^{2} {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} + 2 {b}^{2} m {\left( \cos\left( \phi\left( t \right) \right) \right)}^{2} D\theta\left( t \right) D\phi\left( t \right) \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) + {a}^{2} m {D}^{2}\phi\left( t \right) {\left( \sin\left( \phi\left( t \right) \right) \right)}^{2} {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} - {a}^{2} m \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) {D}^{2}\theta\left( t \right) + {b}^{2} m {D}^{2}\phi\left( t \right) {\left( \cos\left( \phi\left( t \right) \right) \right)}^{2} {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} + {b}^{2} m \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) {D}^{2}\theta\left( t \right)}\end{bmatrix}
+\end{equation}
+
+This is fairly horrifying. This really demands animation, as I bet it looks
+cool, but it's not comprehensible in this form.
 
 ** Exercise 1.19: Two-bar linkage
+:PROPERTIES:
+:header-args+: :tangle ch1/ex1-16.scm :comments org
+:END:
+
+Double pendulum, sort of, except the whole thing can fly around the plane.
+
+The system description is:
+
+#+begin_src scheme
+(load "ch1/utils.scm")
+#+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
+
+#+begin_quote
+The two-bar linkage shown in figure 1.3 is constrained to move in the plane. It
+is composed of three small massive bodies interconnected by two massless rigid
+rods in a uniform gravitational field with vertical acceleration g. The rods are
+pinned to the central body by a hinge that allows the linkage to fold. The
+system is arranged so that the hinge is completely free: the members can go
+through all configurations without collision. Formulate a Lagrangian that
+describes the system and find the Lagrange equations of motion. Use the computer
+to do this, because the equations are rather big.
+#+end_quote
+
+This is new. Now we have multiple bodies:
+
+#+DOWNLOADED: https://tgvaughan.github.io/sicm/images/Art_P146.jpg @ 2020-06-29 05:39:01
+#+attr_org: :width 400px
+#+attr_html: :width 80% :align center
+#+attr_latex: :width 8cm
+[[file:images/Lagrangian_Mechanics/2020-06-29_05-39-01_Art_P146.jpg]]
+
+We can handle this by treating our coordinate space as having new dimensions
+for, say, $x_0$, $y_0$, $x_1$, $y_1$. The fact that multiple coordinates refer
+to the same particle doesn't matter for the Lagrangian. But it's a confusing
+API.
+
+/Without/ any constraints, we have six degrees of freedom. $x, y$ for each
+particle. With the constraints we have:
+
+1) $x, y$ for the central body
+2) $\theta$ and $\phi$ for the angles off center.
+
+(Sketch these out on the picture for the final version.)
+
+\begin{equation}
+\begin{aligned}
+  x_2(t) & = x_2(t) \cr
+  y_2(t) & = y_2(t) \cr
+  x_1(t) & = x_2(t) + l_1 \sin \theta \cr
+  y_1(t) & = y_2(t) - l_1 \cos \theta \cr
+  x_3(t) & = x_2(t) + l_2 \sin \phi \cr
+  y_3(t) & = y_2(t) - l_2 \cos \phi
+\end{aligned}
+\end{equation}
+
+Sketch out why this makes sense. Each angle is positive CCW for consistency,
+since they can swing all the way around.
+
+Write the coordinate transformation in scheme.
+
+#+begin_src scheme
+(define ((double-linkage->rect l1 l2) local)
+  (let* ((q (coordinate local))
+         (theta (ref q 0))
+         (phi (ref q 1))
+         (x2 (ref q 2))
+         (y2 (ref q 3)))
+    (up (+ x2 (* l1 (sin theta)))
+        (- y2 (* l1 (cos theta)))
+        x2
+        y2
+        (+ x2 (* l2 (sin phi)))
+        (- y2 (* l2 (cos phi))))))
+#+end_src
+
+#+RESULTS:
+: #| double-linkage->rect |#
+
+Next, the Lagrangian given rectangular coordinates, assuming no constraints.
+Remember, we have a uniform gravitational field pointing down; this means that
+each of the components has a potential dragging on it.
+
+#+begin_src scheme
+(define ((L-double-linkage-rect m1 m2 m3 U) local)
+  (let* ((v (velocity local))
+         (vx1 (ref v 0))
+         (vy1 (ref v 1))
+         (vx2 (ref v 2))
+         (vy2 (ref v 3))
+         (vx3 (ref v 4))
+         (vy3 (ref v 5)))
+    (- (+ (* m1 (+ (square vx1)
+                   (square vy1)))
+          (* m2 (+ (square vx2)
+                   (square vy2)))
+          (* m3 (+ (square vx3)
+                   (square vy3))))
+       (U (coordinate local)))))
+#+end_src
+
+#+RESULTS:
+: #| L-double-linkage-rect |#
+
+And the composition:
+
+#+begin_src scheme
+(define (L-double-linkage l1 l2 m1 m2 m3 U)
+  (compose (L-double-linkage-rect m1 m2 m3 U)
+           (F->C (double-linkage->rect l1 l2))))
+#+end_src
+
+#+RESULTS:
+: #| L-double-linkage |#
+
+Gravitational potential:
+
+#+begin_src scheme
+(define ((U-gravity g m1 m2 m3) q)
+  (let* ((y1 (ref q 1))
+         (y2 (ref q 3))
+         (y3 (ref q 5)))
+    (* g (+ (* m1 y1)
+            (* m2 y2)
+            (* m3 y3)))))
+#+end_src
+
+#+RESULTS:
+: #| U-gravity |#
+
+#+begin_src scheme :results value raw :exports both :cache yes
+(let ((local (up 't
+                 (up 'theta 'phi 'x_2 'y_2)
+                 (up 'thetadot 'phidot 'xdot_2 'ydot_2)))
+      (U (U-gravity 'g 'm_1 'm_2 'm_3)))
+  (->tex-equation
+   ((L-double-linkage 'l_1 'l_2 'm_1 'm_2 'm_3 U) local)))
+#+end_src
+
+#+RESULTS[871defa58c4637289b4aa4236e470eceed35fc24]:
+\begin{equation}
+{{l}_{1}}^{2} {m}_{1} {\dot{\theta}}^{2} + 2 {l}_{1} {m}_{1} \dot{\theta} {\dot{x}}_{2} \cos\left( \theta \right) + 2 {l}_{1} {m}_{1} \dot{\theta} {\dot{y}}_{2} \sin\left( \theta \right) + {{l}_{2}}^{2} {m}_{3} {\dot{\phi}}^{2} + 2 {l}_{2} {m}_{3} \dot{\phi} {\dot{x}}_{2} \cos\left( \phi \right) + 2 {l}_{2} {m}_{3} \dot{\phi} {\dot{y}}_{2} \sin\left( \phi \right) + g {l}_{1} {m}_{1} \cos\left( \theta \right) + g {l}_{2} {m}_{3} \cos\left( \phi \right) - g {m}_{1} {y}_{2} - g {m}_{2} {y}_{2} - g {m}_{3} {y}_{2} + {m}_{1} {{\dot{x}}_{2}}^{2} + {m}_{1} {{\dot{y}}_{2}}^{2} + {m}_{2} {{\dot{x}}_{2}}^{2} + {m}_{2} {{\dot{y}}_{2}}^{2} + {m}_{3} {{\dot{x}}_{2}}^{2} + {m}_{3} {{\dot{y}}_{2}}^{2}
+\end{equation}
+
+Lagrange equations of motion:
+
+#+begin_src scheme :results value raw :exports both :cache yes
+(let* ((U (U-gravity 'g 'm_1 'm_2 'm_3))
+       (L (L-double-linkage 'l_1 'l_2 'm_1 'm_2 'm_3 U))
+       (theta (literal-function 'theta))
+       (phi (literal-function 'phi))
+       (x2 (literal-function 'x_2))
+       (y2 (literal-function 'y_2)))
+  (->tex-equation
+   (((Lagrange-equations L) (up theta phi x2 y2))
+    't)))
+#+end_src
+
+#+RESULTS[891b221c072e1a0a84d8a553f44953d7e1708fec]:
+\begin{equation}
+\begin{bmatrix} \displaystyle{ g {l}_{1} {m}_{1} \sin\left( \theta\left( t \right) \right) + 2 {{l}_{1}}^{2} {m}_{1} {D}^{2}\theta\left( t \right) + 2 {l}_{1} {m}_{1} \sin\left( \theta\left( t \right) \right) {D}^{2}{y}_{2}\left( t \right) + 2 {l}_{1} {m}_{1} \cos\left( \theta\left( t \right) \right) {D}^{2}{x}_{2}\left( t \right)} \cr \cr \displaystyle{ g {l}_{2} {m}_{3} \sin\left( \phi\left( t \right) \right) + 2 {{l}_{2}}^{2} {m}_{3} {D}^{2}\phi\left( t \right) + 2 {l}_{2} {m}_{3} \sin\left( \phi\left( t \right) \right) {D}^{2}{y}_{2}\left( t \right) + 2 {l}_{2} {m}_{3} \cos\left( \phi\left( t \right) \right) {D}^{2}{x}_{2}\left( t \right)} \cr \cr \displaystyle{  - 2 {l}_{1} {m}_{1} \sin\left( \theta\left( t \right) \right) {\left( D\theta\left( t \right) \right)}^{2} - 2 {l}_{2} {m}_{3} \sin\left( \phi\left( t \right) \right) {\left( D\phi\left( t \right) \right)}^{2} + 2 {l}_{1} {m}_{1} {D}^{2}\theta\left( t \right) \cos\left( \theta\left( t \right) \right) + 2 {l}_{2} {m}_{3} {D}^{2}\phi\left( t \right) \cos\left( \phi\left( t \right) \right) + 2 {m}_{1} {D}^{2}{x}_{2}\left( t \right) + 2 {m}_{2} {D}^{2}{x}_{2}\left( t \right) + 2 {m}_{3} {D}^{2}{x}_{2}\left( t \right)} \cr \cr \displaystyle{ 2 {l}_{1} {m}_{1} {\left( D\theta\left( t \right) \right)}^{2} \cos\left( \theta\left( t \right) \right) + 2 {l}_{2} {m}_{3} {\left( D\phi\left( t \right) \right)}^{2} \cos\left( \phi\left( t \right) \right) + 2 {l}_{1} {m}_{1} {D}^{2}\theta\left( t \right) \sin\left( \theta\left( t \right) \right) + 2 {l}_{2} {m}_{3} {D}^{2}\phi\left( t \right) \sin\left( \phi\left( t \right) \right) + g {m}_{1} + g {m}_{2} + g {m}_{3} + 2 {m}_{1} {D}^{2}{y}_{2}\left( t \right) + 2 {m}_{2} {D}^{2}{y}_{2}\left( t \right) + 2 {m}_{3} {D}^{2}{y}_{2}\left( t \right)}\end{bmatrix}
+\end{equation}
+
+Kill some clear factors:
+
+#+begin_src scheme :results value raw :exports both :cache yes
+(let* ((U (U-gravity 'g 'm_1 'm_2 'm_3))
+       (L (L-double-linkage 'l_1 'l_2 'm_1 'm_2 'm_3 U))
+       (theta (literal-function 'theta))
+       (phi (literal-function 'phi))
+       (x2 (literal-function 'x_2))
+       (y2 (literal-function 'y_2))
+       (eqs (((Lagrange-equations L) (up theta phi x2 y2))
+             't)))
+  (->tex-equation
+   (up (/ (ref eqs 0) 'l_1 'm_1)
+       (/ (ref eqs 1) 'l_2 'm_3)
+       (/ (ref eqs 2) 2)
+       (ref eqs 3))))
+#+end_src
+
+#+RESULTS[9aef049c71af2604c4b6e5d179f815d38d262792]:
+\begin{equation}
+\begin{pmatrix} \displaystyle{ g \sin\left( \theta\left( t \right) \right) + 2 {l}_{1} {D}^{2}\theta\left( t \right) + 2 \sin\left( \theta\left( t \right) \right) {D}^{2}{y}_{2}\left( t \right) + 2 \cos\left( \theta\left( t \right) \right) {D}^{2}{x}_{2}\left( t \right)} \cr \cr \displaystyle{ g \sin\left( \phi\left( t \right) \right) + 2 {l}_{2} {D}^{2}\phi\left( t \right) + 2 \sin\left( \phi\left( t \right) \right) {D}^{2}{y}_{2}\left( t \right) + 2 \cos\left( \phi\left( t \right) \right) {D}^{2}{x}_{2}\left( t \right)} \cr \cr \displaystyle{  - {l}_{1} {m}_{1} \sin\left( \theta\left( t \right) \right) {\left( D\theta\left( t \right) \right)}^{2} - {l}_{2} {m}_{3} \sin\left( \phi\left( t \right) \right) {\left( D\phi\left( t \right) \right)}^{2} + {l}_{1} {m}_{1} {D}^{2}\theta\left( t \right) \cos\left( \theta\left( t \right) \right) + {l}_{2} {m}_{3} {D}^{2}\phi\left( t \right) \cos\left( \phi\left( t \right) \right) + {m}_{1} {D}^{2}{x}_{2}\left( t \right) + {m}_{2} {D}^{2}{x}_{2}\left( t \right) + {m}_{3} {D}^{2}{x}_{2}\left( t \right)} \cr \cr \displaystyle{ 2 {l}_{1} {m}_{1} {\left( D\theta\left( t \right) \right)}^{2} \cos\left( \theta\left( t \right) \right) + 2 {l}_{2} {m}_{3} {\left( D\phi\left( t \right) \right)}^{2} \cos\left( \phi\left( t \right) \right) + 2 {l}_{1} {m}_{1} {D}^{2}\theta\left( t \right) \sin\left( \theta\left( t \right) \right) + 2 {l}_{2} {m}_{3} {D}^{2}\phi\left( t \right) \sin\left( \phi\left( t \right) \right) + g {m}_{1} + g {m}_{2} + g {m}_{3} + 2 {m}_{1} {D}^{2}{y}_{2}\left( t \right) + 2 {m}_{2} {D}^{2}{y}_{2}\left( t \right) + 2 {m}_{3} {D}^{2}{y}_{2}\left( t \right)}\end{pmatrix}
+\end{equation}
+
+This was not as gnarly as the previous problem. Perhaps I did something wrong
+there. We'll see when we get animation.
 
 ** Exercise 1.20: Sliding pendulum
+:PROPERTIES:
+:header-args+: :tangle ch1/ex1-16.scm :comments org
+:END:
+
+#+begin_src scheme
+(load "ch1/utils.scm")
+#+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
+
+#+begin_quote
+Consider a pendulum of length $l$ attached to a support that is free to move
+horizontally, as shown in figure 1.4. Let the mass of the support be $m1$ and
+the mass of the pendulum bob be $m2$. Formulate a Lagrangian and derive
+Lagrange's equations for this system.
+#+end_quote
+
+This is interesting, and totally not-obvious how to represent with Newtonian
+mechanics. Here it is pretty simple. The setup:
+
+#+DOWNLOADED: https://tgvaughan.github.io/sicm/images/Art_P147.jpg @ 2020-06-29 05:39:33
+#+attr_org: :width 400px
+#+attr_html: :width 80% :align center
+#+attr_latex: :width 8cm
+[[file:images/Lagrangian_Mechanics/2020-06-29_05-39-33_Art_P147.jpg]]
+
+We can use 2 coordinates:
+
+1. the horizontal position of the cart
+2. the angle $\theta$ of the bob.
+
+Here's the conversion to rectangular:
+
+\begin{equation}
+\begin{aligned}
+  x_1(t) & = x_1(t) \cr
+  y_1(t) & = l \cr
+  x_2(t) & = x_1(t) + l \sin \theta \cr
+  y_2(t) & = l(1 - \cos \theta)
+\end{aligned}
+\end{equation}
+
+Draw these on the picture to make it clearer.
+
+Write the coordinate transformation in scheme.
+
+#+begin_src scheme
+(define ((sliding-pend->rect l) local)
+  (let* ((q (coordinate local))
+         (x1 (ref q 0))
+         (theta (ref q 1)))
+    (up x1
+        l
+        (+ x1 (* l (sin theta)))
+        (* l (- 1 (cos theta))))))
+#+end_src
+
+#+RESULTS:
+: #| sliding-pend->rect |#
+
+Next, the Lagrangian given rectangular coordinates, assuming no constraints:
+
+#+begin_src scheme
+(define ((L-sliding-pend-rect m1 m2 U) local)
+  (let* ((v (velocity local))
+         (vx1 (ref v 0))
+         (vy1 (ref v 1))
+         (vx2 (ref v 2))
+         (vy2 (ref v 3)))
+    (- (+ (* m1 (+ (square vx1)
+                   (square vy1)))
+          (* m2 (+ (square vx2)
+                   (square vy2))))
+       (U (coordinate local)))))
+#+end_src
+
+#+RESULTS:
+: #| L-sliding-pend-rect |#
+
+And the composition:
+
+#+begin_src scheme
+(define (L-sliding-pend l m1 m2 U)
+  (compose (L-sliding-pend-rect m1 m2 U)
+           (F->C (sliding-pend->rect l))))
+#+end_src
+
+#+RESULTS:
+: #| L-sliding-pend |#
+
+Gravitational potential. I could include the cart here, but since we know it's
+fixed gravitationally it wouldn't change the equations of motion.
+
+#+begin_src scheme
+(define ((U-gravity g m2) q)
+  (let* ((y2 (ref q 3)))
+    (* m2 g y2)))
+#+end_src
+
+#+RESULTS:
+: #| U-gravity |#
+
+#+begin_src scheme :results value raw :exports both :cache yes
+(let ((local (up 't
+                 (up 'x_1 'theta)
+                 (up 'xdot_1 'thetadot)))
+      (U (U-gravity 'g 'm_2)))
+  (->tex-equation
+   ((L-sliding-pend 'l 'm_1 'm_2 U) local)))
+#+end_src
+
+#+RESULTS[a0d77887cb7ea10a807f5718c1383453f676c148]:
+\begin{equation}
+{l}^{2} {m}_{2} {\dot{\theta}}^{2} + 2 l {m}_{2} \dot{\theta} {\dot{x}}_{1} \cos\left( \theta \right) + g l {m}_{2} \cos\left( \theta \right) - g l {m}_{2} + {m}_{1} {{\dot{x}}_{1}}^{2} + {m}_{2} {{\dot{x}}_{1}}^{2}
+\end{equation}
+
+Lagrange equations of motion:
+
+#+begin_src scheme :results value raw :exports both :cache yes
+(let* ((U (U-gravity 'g 'm_2))
+       (L (L-sliding-pend 'l 'm_1 'm_2 U))
+       (x1 (literal-function 'x_1))
+       (theta (literal-function 'theta)))
+  (->tex-equation
+   (((Lagrange-equations L) (up x1 theta))
+    't)))
+#+end_src
+
+#+RESULTS[a556eaea3f66fe4d94bd82a34c9f2e786a4187a1]:
+\begin{equation}
+\begin{bmatrix} \displaystyle{  - 2 l {m}_{2} \sin\left( \theta\left( t \right) \right) {\left( D\theta\left( t \right) \right)}^{2} + 2 l {m}_{2} {D}^{2}\theta\left( t \right) \cos\left( \theta\left( t \right) \right) + 2 {m}_{1} {D}^{2}{x}_{1}\left( t \right) + 2 {m}_{2} {D}^{2}{x}_{1}\left( t \right)} \cr \cr \displaystyle{ g l {m}_{2} \sin\left( \theta\left( t \right) \right) + 2 {l}^{2} {m}_{2} {D}^{2}\theta\left( t \right) + 2 l {m}_{2} {D}^{2}{x}_{1}\left( t \right) \cos\left( \theta\left( t \right) \right)}\end{bmatrix}
+\end{equation}
+
+Cleaner:
+
+#+begin_src scheme :results value raw :exports both :cache yes
+(let* ((U (U-gravity 'g 'm_2))
+       (L (L-sliding-pend 'l 'm_1 'm_2 U))
+       (x1 (literal-function 'x_1))
+       (theta (literal-function 'theta))
+       (eqs (((Lagrange-equations L) (up x1 theta))
+             't)))
+  (->tex-equation
+   (up (ref eqs 0)
+       (/ (ref eqs 1) 'l 'm_2))))
+#+end_src
+
+#+RESULTS[f3d6bb9e68a92d9b0f1c99d8aef6c9b4028d4578]:
+\begin{equation}
+\begin{pmatrix} \displaystyle{  - 2 l {m}_{2} \sin\left( \theta\left( t \right) \right) {\left( D\theta\left( t \right) \right)}^{2} + 2 l {m}_{2} {D}^{2}\theta\left( t \right) \cos\left( \theta\left( t \right) \right) + 2 {m}_{1} {D}^{2}{x}_{1}\left( t \right) + 2 {m}_{2} {D}^{2}{x}_{1}\left( t \right)} \cr \cr \displaystyle{ g \sin\left( \theta\left( t \right) \right) + 2 l {D}^{2}\theta\left( t \right) + 2 {D}^{2}{x}_{1}\left( t \right) \cos\left( \theta\left( t \right) \right)}\end{pmatrix}
+\end{equation}
 
 
 ** Exercise 1.21: A dumbbell
@@ -3229,67 +3898,143 @@ you're in rotating spherical coords.
 :header-args+: :tangle ch1/ex1-21.scm :comments org
 :END:
 
-The uneven dumbbell.
+The uneven dumbbell. We've just made it through four exercises which embrace the
+idea that you can bake constraints into the coordinate transformation. But why
+should we believe that this is allowed?
 
-NOTE for when I write this up. This exercise is quite careful to NOT change the
-dimension of the configuration space, when it does coordinate transformations.
-We show later that you can do that, but that's the reason, good to note, why you
-introduce a new variable $c$ that's equal to the distance between the dumbbells.
+This exercise comes after a section called "Why it Works".
+
+The next exercise tries to do a coordinate change that is really careful about
+/not/ changing the dimension of the configuration space, so that we can show
+that this move is allowed. Here's the setup:
+
+#+DOWNLOADED: https://tgvaughan.github.io/sicm/images/Art_P166.jpg @ 2020-06-29 05:40:00
+#+attr_org: :width 400px
+#+attr_html: :width 80% :align center
+#+attr_latex: :width 8cm
+[[file:images/Lagrangian_Mechanics/2020-06-29_05-40-00_Art_P166.jpg]]
 
 #+begin_src scheme
 (load "ch1/utils.scm")
 #+end_src
 
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
+
+The idea here is to take the distance between the particles $l$ and treat it as
+a new dimension $c$.
+
+Goal is to assume that Newtonian mechanics' approach to constraints, shown [[https://en.wikipedia.org/wiki/Newtonian_dynamics#Constraint_forces][here]],
+I think, is correct, and then show that the resulting equations of motion let us
+treat the distance coordinate $c$ as a constant.
+
 Takes in any number of up tuples and zips them into a new list of up-tuples by
 taking each element.
 
-#+begin_src scheme
-(define (up-zip . ups)
-  (apply vector-map up (map up->vector ups)))
-#+end_src
+*** Multiple Particle API
 
-I spent some time trying to make a nice API... but without map, filter,
-reduce etc on tuples it is quite annoying. So let's go ad hoc first and see
-what happens.
+Many exercises have been dealing with multiple particles so far. Let's introduce
+some functions that let us pluck the appropriate coordinates out of the local
+tuple.
+
+If we have the velocity and mass of a particle, its kinetic energy is easy to
+define:
 
 #+begin_src scheme
 (define (KE-particle m v)
   (* 1/2 m (square v)))
 #+end_src
 
-#+begin_src scheme
-;; gets the particle itself
-(define ((extract-particle pieces) local i)
-  (let* ((q (coordinate local))
-         (qdot (velocity local))
-         (indices (apply up (iota pieces (* i pieces))))
-         (extract (lambda (tuple)
-                    (vector-map (lambda (i) (ref tuple i))
-                                indices))))
-    (up (time q)
-        (extract q)
-        (extract qdot))))
+#+RESULTS:
+: #| KE-particle |#
 
-(define (constraint q0 q1 F l)
+This next function, =extract-particle=, takes a number of components -- 2 for a
+particle with 2 components, 3 for a particle in space, etc -- and returns a
+function of =local= and =i=, a particle index. This function can be used to
+extract a sub-local-tuple for that particle from a flattened list.
+
+#+begin_src scheme
+(define ((extract-particle pieces) local i)
+  (let* ((indices (apply up (iota pieces (* i pieces))))
+         (extract (lambda (tuple)
+                    (vector-map (lambda (i)
+                                  (ref tuple i))
+                                indices))))
+    (up (time local)
+        (extract (coordinate local))
+        (extract (velocity local)))))
+#+end_src
+
+#+RESULTS:
+: #| extract-particle |#
+
+*** Part A: Newton's Equations
+
+#+begin_quote
+Write Newton's equations for the balance of forces for the four rectangular
+coordinates of the two particles, given that the scalar tension in the rod is
+$F$.
+#+end_quote
+
+TODO: Write these down from the notebook.
+
+*** Part B: Dumbbell Lagrangian
+
+#+begin_quote
+Write the formal Lagrangian
+
+\begin{equation}
+L(t; x_0, y_0, x_1, y_1, F; \dot{x}_0, \dot{y}_0, \dot{x}_1, \dot{y}_1, \dot{F})
+\end{equation}
+
+such that Lagrange's equations will yield the Newton's equations you derived in
+part *a*.
+#+end_quote
+
+
+Here is how we model constraint forces. Each pair of particles has some
+constraint potential acting between them:
+
+#+begin_src scheme
+(define (U-constraint q0 q1 F l)
   (* (/ F (* 2 l))
      (- (square (- q1 q0))
         (square l))))
+#+end_src
 
+#+RESULTS:
+: #| U-constraint |#
+
+And here's a Lagrangian for two free particles, subject to a constraint
+potential $F$ acting between them.
+
+#+begin_src scheme
 (define ((L-free-constrained m0 m1 l) local)
   (let* ((extract (extract-particle 2))
          (p0 (extract local 0))
-         (q_0 (coordinate p0))
-         (qdot_0 (velocity p0))
+         (q0 (coordinate p0))
+         (qdot0 (velocity p0))
 
          (p1 (extract local 1))
-         (q_1 (coordinate p1))
-         (qdot_1 (velocity p1))
+         (q1 (coordinate p1))
+         (qdot1 (velocity p1))
 
          (F (ref (coordinate local) 4)))
-    (- (+ (KE-particle m0 qdot_0)
-          (KE-particle m1 qdot_1))
-       (constraint q_0 q_1 F l))))
+    (- (+ (KE-particle m0 qdot0)
+          (KE-particle m1 qdot1))
+       (U-constraint q0 q1 F l))))
+#+end_src
 
+#+RESULTS:
+: #| L-free-constrained |#
+
+Finally, the path. This is rectangular coordinates for each piece, plus $F$
+between them.
+
+#+begin_src scheme
 (define q-rect
   (up (literal-function 'x_0)
       (literal-function 'y_0)
@@ -3298,23 +4043,51 @@ what happens.
       (literal-function 'F)))
 #+end_src
 
+#+RESULTS:
+: #| q-rect |#
+
 This shows the lagrangian itself, which answers part b:
 
-#+begin_src scheme
+#+begin_src scheme :results value raw :exports both :cache yes
 (let* ((L (L-free-constrained 'm_0 'm_1 'l))
        (f (compose L (Gamma q-rect))))
-  (se (f 't)))
+  (->tex-equation
+   (f 't)))
 #+end_src
 
-Here are the lagrange equations, confirming part b.
+#+RESULTS[9e535179734061e62fa19be6d57ad8f8846008d9]:
+\begin{equation}
+{{{{1}\over {2}} l {m}_{0} {\left( D{x}_{0}\left( t \right) \right)}^{2} + {{1}\over {2}} l {m}_{0} {\left( D{y}_{0}\left( t \right) \right)}^{2} + {{1}\over {2}} l {m}_{1} {\left( D{x}_{1}\left( t \right) \right)}^{2} + {{1}\over {2}} l {m}_{1} {\left( D{y}_{1}\left( t \right) \right)}^{2} + {{1}\over {2}} {l}^{2} F\left( t \right) - {{1}\over {2}} F\left( t \right) {\left( {x}_{1}\left( t \right) \right)}^{2} + F\left( t \right) {x}_{1}\left( t \right) {x}_{0}\left( t \right) - {{1}\over {2}} F\left( t \right) {\left( {x}_{0}\left( t \right) \right)}^{2} - {{1}\over {2}} F\left( t \right) {\left( {y}_{1}\left( t \right) \right)}^{2} + F\left( t \right) {y}_{1}\left( t \right) {y}_{0}\left( t \right) - {{1}\over {2}} F\left( t \right) {\left( {y}_{0}\left( t \right) \right)}^{2}}\over {l}}
+\end{equation}
 
-#+begin_src scheme
+Here are the Lagrange equations, which, if you squint, are like Newton's
+equations from part a.
+
+#+begin_src scheme :results value raw :exports both :cache yes
 (let* ((L (L-free-constrained 'm_0 'm_1 'l))
        (f ((Lagrange-equations L) q-rect)))
-  (se (f 't)))
+  (->tex-equation
+   (f 't)))
 #+end_src
 
-Part c - make a change of coordinates.
+#+RESULTS[2d4f6bae712013ae3a23025d941fa644e6cbf412]:
+\begin{equation}
+\begin{bmatrix} \displaystyle{ {{l {m}_{0} {D}^{2}{x}_{0}\left( t \right) - F\left( t \right) {x}_{1}\left( t \right) + F\left( t \right) {x}_{0}\left( t \right)}\over {l}}} \cr \cr \displaystyle{ {{l {m}_{0} {D}^{2}{y}_{0}\left( t \right) - F\left( t \right) {y}_{1}\left( t \right) + F\left( t \right) {y}_{0}\left( t \right)}\over {l}}} \cr \cr \displaystyle{ {{l {m}_{1} {D}^{2}{x}_{1}\left( t \right) + F\left( t \right) {x}_{1}\left( t \right) - F\left( t \right) {x}_{0}\left( t \right)}\over {l}}} \cr \cr \displaystyle{ {{l {m}_{1} {D}^{2}{y}_{1}\left( t \right) + F\left( t \right) {y}_{1}\left( t \right) - F\left( t \right) {y}_{0}\left( t \right)}\over {l}}} \cr \cr \displaystyle{ {{ - {{1}\over {2}} {l}^{2} + {{1}\over {2}} {\left( {x}_{1}\left( t \right) \right)}^{2} - {x}_{1}\left( t \right) {x}_{0}\left( t \right) + {{1}\over {2}} {\left( {x}_{0}\left( t \right) \right)}^{2} + {{1}\over {2}} {\left( {y}_{1}\left( t \right) \right)}^{2} - {y}_{1}\left( t \right) {y}_{0}\left( t \right) + {{1}\over {2}} {\left( {y}_{0}\left( t \right) \right)}^{2}}\over {l}}}\end{bmatrix}
+\end{equation}
+
+*** Part C: Coordinate Change
+
+#+begin_quote
+Make a change of coordinates to a coordinate system with center of mass
+coordinates $x_{CM}$, $y_{CM}$, angle $\theta$, distance between the particles
+$c$, and tension force $F$. Write the Lagrangian in these coordinates, and write
+the Lagrange equations.
+#+end_quote
+
+This is a coordinate change that is very careful not to reduce the degrees of
+freedom.
+
+First, the coordinate change:
 
 #+begin_src scheme
 (define ((cm-theta->rect m0 m1) local)
@@ -3332,74 +4105,333 @@ Part c - make a change of coordinates.
         (+ x_cm (* m1-distance (cos theta)))
         (+ y_cm (* m1-distance (sin theta)))
         F)))
+#+end_src
 
-(se
- ((F->C (cm-theta->rect 'm_0 'm_1))
-  (up 't
-      (up 'x_cm 'y_cm 'theta 'c 'F)
-      (up 'xdot_cm 'ydot_cm 'thetadot 'cdot 'Fdot))))
+#+RESULTS:
+: #| cm-theta->rect |#
 
-(define (L-free-constrained-new m0 m1 l)
+Then the coordinate change applied to the local tuple:
+
+#+begin_src scheme :results value raw :exports both :cache yes
+(let ((local (up 't
+                 (up 'x_cm 'y_cm 'theta 'c 'F)
+                 (up 'xdot_cm 'ydot_cm 'thetadot 'cdot 'Fdot)))
+      (C (F->C (cm-theta->rect 'm_0 'm_1))))
+  (->tex-equation
+   (C local)))
+#+end_src
+
+#+RESULTS[2c67e287b90be4d75ab8c396222d968e56d71383]:
+\begin{equation}
+\begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{ {{ - c {m}_{1} \cos\left( \theta \right) + {m}_{0} {x}_{cm} + {m}_{1} {x}_{cm}}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ {{ - c {m}_{1} \sin\left( \theta \right) + {m}_{0} {y}_{cm} + {m}_{1} {y}_{cm}}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ {{c {m}_{0} \cos\left( \theta \right) + {m}_{0} {x}_{cm} + {m}_{1} {x}_{cm}}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ {{c {m}_{0} \sin\left( \theta \right) + {m}_{0} {y}_{cm} + {m}_{1} {y}_{cm}}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ F}\end{pmatrix}} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{ {{c {m}_{1} \dot{\theta} \sin\left( \theta \right) - \dot{c} {m}_{1} \cos\left( \theta \right) + {m}_{0} {\dot{x}}_{cm} + {m}_{1} {\dot{x}}_{cm}}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ {{ - c {m}_{1} \dot{\theta} \cos\left( \theta \right) - \dot{c} {m}_{1} \sin\left( \theta \right) + {m}_{0} {\dot{y}}_{cm} + {m}_{1} {\dot{y}}_{cm}}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ {{ - c {m}_{0} \dot{\theta} \sin\left( \theta \right) + \dot{c} {m}_{0} \cos\left( \theta \right) + {m}_{0} {\dot{x}}_{cm} + {m}_{1} {\dot{x}}_{cm}}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ {{c {m}_{0} \dot{\theta} \cos\left( \theta \right) + \dot{c} {m}_{0} \sin\left( \theta \right) + {m}_{0} {\dot{y}}_{cm} + {m}_{1} {\dot{y}}_{cm}}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ \dot{F}}\end{pmatrix}}\end{pmatrix}
+\end{equation}
+
+Then the Lagrangian in the new coordinates;
+
+#+begin_src scheme
+(define (L-free-constrained* m0 m1 l)
   (compose (L-free-constrained m0 m1 l)
            (F->C (cm-theta->rect m0 m1))))
 #+end_src
 
+#+RESULTS:
+: #| L-free-constrained* |#
+
 This shows the lagrangian itself, after the coordinate transformation:
 
-#+begin_src scheme
+#+begin_src scheme :results value raw :exports both :cache yes
 (let* ((q (up (literal-function 'x_cm)
               (literal-function 'y_cm)
               (literal-function 'theta)
               (literal-function 'c)
               (literal-function 'F)))
-       (L (L-free-constrained-new 'm_0 'm_1 'l))
+       (L (L-free-constrained* 'm_0 'm_1 'l))
        (f (compose L (Gamma q))))
-  (se (f 't)))
+  (->tex-equation
+   (f 't)))
 #+end_src
 
-Here are the lagrange equations for part c.
+#+RESULTS[d36e7f3c5c5e5a8663d599a055face7a7f6ddb61]:
+\begin{equation}
+{{l {m}_{0} {m}_{1} {\left( c\left( t \right) \right)}^{2} {\left( D\theta\left( t \right) \right)}^{2} + l {{m}_{0}}^{2} {\left( D{x}_{cm}\left( t \right) \right)}^{2} + l {{m}_{0}}^{2} {\left( D{y}_{cm}\left( t \right) \right)}^{2} + 2 l {m}_{0} {m}_{1} {\left( D{x}_{cm}\left( t \right) \right)}^{2} + 2 l {m}_{0} {m}_{1} {\left( D{y}_{cm}\left( t \right) \right)}^{2} + l {m}_{0} {m}_{1} {\left( Dc\left( t \right) \right)}^{2} + l {{m}_{1}}^{2} {\left( D{x}_{cm}\left( t \right) \right)}^{2} + l {{m}_{1}}^{2} {\left( D{y}_{cm}\left( t \right) \right)}^{2} + {l}^{2} {m}_{0} F\left( t \right) + {l}^{2} {m}_{1} F\left( t \right) - {m}_{0} F\left( t \right) {\left( c\left( t \right) \right)}^{2} - {m}_{1} F\left( t \right) {\left( c\left( t \right) \right)}^{2}}\over {2 l {m}_{0} + 2 l {m}_{1}}}
+\end{equation}
 
-#+begin_src scheme
+Here are the Lagrange equations:
+
+#+begin_src scheme :results value raw :exports both :cache yes
 (let* ((q (up (literal-function 'x_cm)
               (literal-function 'y_cm)
               (literal-function 'theta)
               (literal-function 'c)
               (literal-function 'F)))
-       (L (L-free-constrained-new 'm_0 'm_1 'l))
+       (L (L-free-constrained* 'm_0 'm_1 'l))
        (f ((Lagrange-equations L) q)))
-  (se (f 't)))
+  (->tex-equation
+   (f 't)))
 #+end_src
 
-For part d, we can substitute the constant value of c to get simplified
-equations.
+#+RESULTS[c6a3572c8b6115d086c9f8ee85939b79942967ed]:
+\begin{equation}
+\begin{bmatrix} \displaystyle{ {m}_{0} {D}^{2}{x}_{cm}\left( t \right) + {m}_{1} {D}^{2}{x}_{cm}\left( t \right)} \cr \cr \displaystyle{ {m}_{0} {D}^{2}{y}_{cm}\left( t \right) + {m}_{1} {D}^{2}{y}_{cm}\left( t \right)} \cr \cr \displaystyle{ {{2 {m}_{0} {m}_{1} Dc\left( t \right) c\left( t \right) D\theta\left( t \right) + {m}_{0} {m}_{1} {\left( c\left( t \right) \right)}^{2} {D}^{2}\theta\left( t \right)}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ {{ - l {m}_{0} {m}_{1} c\left( t \right) {\left( D\theta\left( t \right) \right)}^{2} + l {m}_{0} {m}_{1} {D}^{2}c\left( t \right) + {m}_{0} F\left( t \right) c\left( t \right) + {m}_{1} F\left( t \right) c\left( t \right)}\over {l {m}_{0} + l {m}_{1}}}} \cr \cr \displaystyle{ {{ - {{1}\over {2}} {l}^{2} + {{1}\over {2}} {\left( c\left( t \right) \right)}^{2}}\over {l}}}\end{bmatrix}
+\end{equation}
 
-#+begin_src scheme
+That final equation states that $c(t) = l$. Amazing!
+
+*** Part D: Substitute $c(t) = l$
+
+#+begin_quote
+You may deduce from one of these equations that $c(t) = l$. From this fact we
+get that $Dc = 0$ and $D^2c = 0$. Substitute these into the Lagrange equations
+you just computed to get the equation of motion for $x_{CM}$, $y_{CM}$,
+$\theta$.
+#+end_quote
+
+We can substitute the constant value of $c$ using a function that always returns
+$l$ to get simplified equations:
+
+#+begin_src scheme :results value raw :exports both :cache yes
 (let* ((q (up (literal-function 'x_cm)
               (literal-function 'y_cm)
               (literal-function 'theta)
               (lambda (t) 'l)
               (literal-function 'F)))
-       (L (L-free-constrained-new 'm_0 'm_1 'l))
+       (L (L-free-constrained* 'm_0 'm_1 'l))
        (f ((Lagrange-equations L) q)))
-  (se (f 't)))
+  (->tex-equation
+   (f 't)))
 #+end_src
+
+#+RESULTS[a51bdf5bbe673771262278b5dca048646c257752]:
+\begin{equation}
+\begin{bmatrix} \displaystyle{ {m}_{0} {D}^{2}{x}_{cm}\left( t \right) + {m}_{1} {D}^{2}{x}_{cm}\left( t \right)} \cr \cr \displaystyle{ {m}_{0} {D}^{2}{y}_{cm}\left( t \right) + {m}_{1} {D}^{2}{y}_{cm}\left( t \right)} \cr \cr \displaystyle{ {{{l}^{2} {m}_{0} {m}_{1} {D}^{2}\theta\left( t \right)}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ {{ - l {m}_{0} {m}_{1} {\left( D\theta\left( t \right) \right)}^{2} + {m}_{0} F\left( t \right) + {m}_{1} F\left( t \right)}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ 0}\end{bmatrix}
+\end{equation}
+
+This is saying that the acceleration on the center of mass is 0.
+
+The fourth equation, the equation of motion for the $c(t)$, is interesting here.
+We need to pull in the definition of "reduced mass" from exercise 1.11:
+
+#+begin_src scheme
+(define (reduced-mass m1 m2)
+  (/ (* m1 m2)
+     (+ m1 m2)))
+#+end_src
+
+#+RESULTS:
+: #| reduced-mass |#
+
+If we let $m$ be the reduced mass, this equation states:
+
+\begin{equation}
+\label{eq:constraint-force}
+F(t) = m l \dot{\theta}^2
+\end{equation}
+
+We can verify this with Scheme by subtracting the two equations:
+
+#+begin_src scheme :results value raw :exports both :cache yes
+(let* ((F (literal-function 'F))
+       (theta (literal-function 'theta))
+       (q (up (literal-function 'x_cm)
+              (literal-function 'y_cm)
+              theta
+              (lambda (t) 'l)
+              F))
+       (L (L-free-constrained* 'm_0 'm_1 'l))
+       (f ((Lagrange-equations L) q))
+
+       (m (reduced-mass 'm_0 'm_1)))
+  (->tex-equation
+   (- (ref (f 't) 3)
+      (- (F 't)
+         (* m 'l (square ((D theta) 't)))))))
+#+end_src
+
+#+RESULTS[98183c269755d12e4a77e511208ba05dd8872966]:
+\begin{equation}
+0
+\end{equation}
+
+*** Part E: New Lagrangian
+
+#+begin_quote
+Make a Lagrangian ($= T − V$) for the system described with the irredundant
+generalized coordinates $x_{CM}$, $y_{CM}$, $\theta$ and compute the Lagrange
+equations from this Lagrangian. They should be the same equations as you derived
+for the same coordinates in part d.
+#+end_quote
 
 For part e, I wrote this in the notebook - it is effectively identical to the
 substitution that is happening on the computer, so I'm going to ignore this. You
 just get more cancellations.
 
+But let's go at it, for fun.
+
+Here's the Lagrangian of 2 free particles:
+
+#+begin_src scheme
+(define ((L-free2 m0 m1) local)
+  (let* ((extract (extract-particle 2))
+
+         (p0 (extract local 0))
+         (q0 (coordinate p0))
+         (qdot0 (velocity p0))
+
+         (p1 (extract local 1))
+         (q1 (coordinate p1))
+         (qdot1 (velocity p1)))
+    (+ (KE-particle m0 qdot0)
+       (KE-particle m1 qdot1))))
+#+end_src
+
+#+RESULTS:
+: #| L-free2 |#
+
+Then a version of =cm-theta->rect= where we ignore $F$, and sub in a constant
+$l$:
+
+#+begin_src scheme :results value raw :exports both :cache yes
+(define ((cm-theta->rect* m0 m1 l) local)
+  (let* ((q (coordinate local))
+         (x_cm (ref q 0))
+         (y_cm (ref q 1))
+         (theta (ref q 2))
+         (total-mass (+ m0 m1))
+         (m0-distance (* l (/ m1 total-mass)))
+         (m1-distance (* l (/ m0 total-mass))))
+    (up (- x_cm (* m0-distance (cos theta)))
+        (- y_cm (* m0-distance (sin theta)))
+        (+ x_cm (* m1-distance (cos theta)))
+        (+ y_cm (* m1-distance (sin theta))))))
+#+end_src
+
+#+RESULTS[aee3cbebd833662ba2610e81cef9e42936dcb703]:
+#| cm-theta->rect* |#
+
+The Lagrangian:
+
+#+begin_src scheme
+(define (L-free-constrained2 m0 m1 l)
+  (compose (L-free2 m0 m1)
+           (F->C (cm-theta->rect* m0 m1 l))))
+#+end_src
+
+#+RESULTS:
+: #| L-free-constrained2 |#
+
+Equations:
+
+#+begin_src scheme :results value raw :exports both :cache yes
+(let* ((q (up (literal-function 'x_cm)
+              (literal-function 'y_cm)
+              (literal-function 'theta)
+              (lambda (t) 'l)
+              (literal-function 'F)))
+       (L1 (L-free-constrained* 'm_0 'm_1 'l))
+       (L2 (L-free-constrained2 'm_0 'm_1 'l)))
+  (->tex-equation
+   ((- ((Lagrange-equations L1) q)
+       ((Lagrange-equations L2) q))
+    't)))
+#+end_src
+
+#+RESULTS[132abd940897cd8f9d1e34d11fb3c415fce45a61]:
+\begin{equation}
+\begin{bmatrix} \displaystyle{ 0} \cr \cr \displaystyle{ 0} \cr \cr \displaystyle{ 0} \cr \cr \displaystyle{ {{ - l {m}_{0} {m}_{1} {\left( D\theta\left( t \right) \right)}^{2} + {m}_{0} F\left( t \right) + {m}_{1} F\left( t \right)}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ 0}\end{bmatrix}
+\end{equation}
+
+The only remaining equation is \eqref{eq:constraint-force} from above. This
+remains because the simplified Lagrangian ignores the $F$ term.
 
 ** Exercise 1.22: Driven pendulum
+:PROPERTIES:
+:header-args+: :tangle ch1/ex1-22.scm :comments org
+:END:
+
+#+begin_src scheme
+(load "ch1/utils.scm")
+#+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
 
 ** Exercise 1.23: Fill in the details
+:PROPERTIES:
+:header-args+: :tangle ch1/ex1-23.scm :comments org
+:END:
+
+#+begin_src scheme
+(load "ch1/utils.scm")
+#+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
 
 ** Exercise 1.24: Constraint forces
+:PROPERTIES:
+:header-args+: :tangle ch1/ex1-24.scm :comments org
+:END:
+
+#+begin_src scheme
+(load "ch1/utils.scm")
+#+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
 
 ** Exercise 1.25: Foucalt pendulum Lagrangian
+:PROPERTIES:
+:header-args+: :tangle ch1/ex1-25.scm :comments org
+:END:
+
+#+begin_src scheme
+(load "ch1/utils.scm")
+#+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
 
 ** Exercise 1.26: Properties of $D_t$
+:PROPERTIES:
+:header-args+: :tangle ch1/ex1-26.scm :comments org
+:END:
+
+#+begin_src scheme
+(load "ch1/utils.scm")
+#+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
 
 ** Exercise 1.27: Lagrange equations for total time derivatives
+:PROPERTIES:
+:header-args+: :tangle ch1/ex1-27.scm :comments org
+:END:
+
+#+begin_src scheme
+(load "ch1/utils.scm")
+#+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
 
 ** Exercise 1.28: Total Time Derivatives
 :PROPERTIES:
@@ -3748,20 +4780,230 @@ SO, only if the shift and uniform translation are constant do we not affect the
 Lagrangian value.
 
 ** Exercise 1.30: Orbits in a central potential
+:PROPERTIES:
+:header-args+: :tangle ch1/ex1-30.scm :comments org
+:END:
+
+#+begin_src scheme
+(load "ch1/utils.scm")
+#+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
+
 ** Exercise 1.31: Foucault pendulum evolution
+:PROPERTIES:
+:header-args+: :tangle ch1/ex1-31.scm :comments org
+:END:
+
+#+begin_src scheme
+(load "ch1/utils.scm")
+#+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
+
 ** Exercise 1.32: Time-dependent constraints
+:PROPERTIES:
+:header-args+: :tangle ch1/ex1-32.scm :comments org
+:END:
+
+#+begin_src scheme
+(load "ch1/utils.scm")
+#+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
+
 ** Exercise 1.33: Falling off a log
+:PROPERTIES:
+:header-args+: :tangle ch1/ex1-33.scm :comments org
+:END:
+
+#+begin_src scheme
+(load "ch1/utils.scm")
+#+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
+
 ** Exercise 1.34: Driven spherical pendulum
+:PROPERTIES:
+:header-args+: :tangle ch1/ex1-34.scm :comments org
+:END:
+
+#+begin_src scheme
+(load "ch1/utils.scm")
+#+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
+
 ** Exercise 1.35: Restricted equations of motion
+:PROPERTIES:
+:header-args+: :tangle ch1/ex1-35.scm :comments org
+:END:
+
+#+begin_src scheme
+(load "ch1/utils.scm")
+#+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
+
 ** Exercise 1.36: Noether integral
+:PROPERTIES:
+:header-args+: :tangle ch1/ex1-36.scm :comments org
+:END:
+
+#+begin_src scheme
+(load "ch1/utils.scm")
+#+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
+
 ** Exercise 1.37: Velocity transformation
+:PROPERTIES:
+:header-args+: :tangle ch1/ex1-37.scm :comments org
+:END:
+
+#+begin_src scheme
+(load "ch1/utils.scm")
+#+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
+
 ** Exercise 1.38: Properties of $E$
+:PROPERTIES:
+:header-args+: :tangle ch1/ex1-38.scm :comments org
+:END:
+
+#+begin_src scheme
+(load "ch1/utils.scm")
+#+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
+
 ** Exercise 1.39: Combining Lagrangians
+:PROPERTIES:
+:header-args+: :tangle ch1/ex1-39.scm :comments org
+:END:
+
+#+begin_src scheme
+(load "ch1/utils.scm")
+#+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
+
 ** Exercise 1.40: Bead on a triaxial surface
+:PROPERTIES:
+:header-args+: :tangle ch1/ex1-40.scm :comments org
+:END:
+
+#+begin_src scheme
+(load "ch1/utils.scm")
+#+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
+
 ** Exercise 1.41: Motion of a tiny golf ball
+:PROPERTIES:
+:header-args+: :tangle ch1/ex1-41.scm :comments org
+:END:
+
+#+begin_src scheme
+(load "ch1/utils.scm")
+#+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
+
 ** Exercise 1.42: Augmented Lagrangian
+:PROPERTIES:
+:header-args+: :tangle ch1/ex1-42.scm :comments org
+:END:
+
+#+begin_src scheme
+(load "ch1/utils.scm")
+#+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
+
 ** Exercise 1.43: A numerical investigation
+:PROPERTIES:
+:header-args+: :tangle ch1/ex1-43.scm :comments org
+:END:
+
+#+begin_src scheme
+(load "ch1/utils.scm")
+#+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
+
 ** Exercise 1.44: Double pendulum behavior
+:PROPERTIES:
+:header-args+: :tangle ch1/ex1-44.scm :comments org
+:END:
+
+#+begin_src scheme
+(load "ch1/utils.scm")
+#+end_src
+
+#+RESULTS:
+: ;Loading "ch1/utils.scm"...
+: ;  Loading "ch1/exdisplay.scm"... done
+: ;... done
+: #| check-f |#
+
 
 * Rigid Bodies
 
