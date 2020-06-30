@@ -70,6 +70,7 @@
 ;; Here is how we model constraint forces. Each pair of particles has some
 ;; constraint potential acting between them:
 
+;; #+name: U-constraint
 
 (define (U-constraint q0 q1 F l)
   (* (/ F (* 2 l))
@@ -83,6 +84,7 @@
 ;; And here's a Lagrangian for two free particles, subject to a constraint
 ;; potential $F$ acting between them.
 
+;; #+name: L-free-constrained
 
 (define ((L-free-constrained m0 m1 l) local)
   (let* ((extract (extract-particle 2))

@@ -66,6 +66,9 @@
     - [Part D: Substitute \\(c(t) = l\\)](#sec-22-5)
     - [Part E: New Lagrangian](#sec-22-6)
   - [Exercise 1.22: Driven pendulum](#sec-23)
+    - [Part A: Newton's Equations](#sec-23-1)
+    - [Part B: Lagrangian](#sec-23-2)
+    - [Part C: Coordinate Change](#sec-23-3)
   - [Exercise 1.23: Fill in the details](#sec-24)
   - [Exercise 1.24: Constraint forces](#sec-25)
   - [Exercise 1.25: Foucalt pendulum Lagrangian](#sec-26)
@@ -2937,6 +2940,8 @@ Here is how we model constraint forces. Each pair of particles has some constrai
         (square l))))
 ```
 
+    #| U-constraint |#
+
 And here's a Lagrangian for two free particles, subject to a constraint potential \\(F\\) acting between them.
 
 ```scheme
@@ -2955,6 +2960,8 @@ And here's a Lagrangian for two free particles, subject to a constraint potentia
           (KE-particle m1 qdot1))
        (U-constraint q0 q1 F l))))
 ```
+
+    #| L-free-constrained |#
 
 Finally, the path. This is rectangular coordinates for each piece, plus \\(F\\) between them.
 
@@ -3223,17 +3230,257 @@ The only remaining equation is \eqref{eq:constraint-force} from above. This rema
 (load "ch1/utils.scm")
 ```
 
+> Show that the Lagrangian (1.93) can be used to describe the driven pendulum (section 1.6.2), where the position of the pivot is a specified function of time: Derive the equations of motion using the Newtonian constraint force prescription, and show that they are the same as the Lagrange equations. Be sure to examine the equations for the constraint forces as well as the position of the pendulum bob.
+
+I might be slightly misunderstanding this question. The problem states that we should use equations 1.91 and 1.92 in the book to express the equations of motion of the driven pendulum, and then to rederive the equations of motion using the Lagrangian.
+
+The final note about examining the constraint forces means that we'll need to follow the approach of equation 1.21 and include a coordinate transformation from some \\(c(t)\\), and then substitute \\(c(t) = l\\) down the road.
+
+## Part A: Newton's Equations<a id="sec-23-1"></a>
+
+Step one is to use 1.91 and 1.92 in the book to express \\(F = ma\\). The only potential is a uniform gravitational potential:
+
+\begin{equation}
+V(t, \theta, \dot{\theta}) = m g (y\_s(t) - l \cos \theta)
+\end{equation}
+
+So equation 1.91 becomes, for the single pendulum bob:
+
+\begin{equation}
+\begin{aligned}
+m D^2x(t) & = F(t) {{-x(t)} \over l} \cr
+m D^2y(t) & = -mgl + F(t) {{y\_s(t) - y(t)} \over l}
+\end{aligned}
+\end{equation}
+
+The assumption here is that the pendulum support sits at \\((0, y\_s(t))\\).
+
+## Part B: Lagrangian<a id="sec-23-2"></a>
+
+Now write the Lagrangian for the driven pendulum in rectangular coordinates. The constraint force takes the same shape as in exercise 1.21:
+
+```scheme
+(define (U-constraint q0 q1 F l)
+  (* (/ F (* 2 l))
+     (- (square (- q1 q0))
+        (square l))))
+```
+
+The Lagrangian is similar, but only involves a single particle &#x2013; the pendulum bob. We can generate the constraint force by directly building the support's coordinates, rather than extracting them from the local tuple.
+
+```scheme
+(define ((L-driven-free m l y U) local)
+  (let* ((extract (extract-particle 2))
+         (bob (extract local 0))
+         (q (coordinate bob))
+         (qdot (velocity bob))
+         (F (ref (coordinate local) 2)))
+    (- (KE-particle m qdot)
+       (U q)
+       (U-constraint (up 0 (y (time local)))
+                     q
+                     F
+                     l))))
+```
+
+Here is the now-familiar equation for a uniform gravitational potential, acting on the \\(y\\) coordinate:
+
+```scheme
+(define ((U-gravity g m) q)
+  (let* ((y (ref q 1)))
+    (* m g y)))
+```
+
+    #| U-gravity |#
+
+Now use the new Lagrangian to generate equations of motion for the three coordinates \\(x\\), \\(y\\) and \\(F\\):
+
+```scheme
+(let* ((q (up (literal-function 'x)
+              (literal-function 'y)
+              (literal-function 'F)))
+       (U (U-gravity 'g 'm))
+       (y (literal-function 'y_s))
+       (L (L-driven-free 'm 'l y U))
+       (f ((Lagrange-equations L) q)))
+  (->tex-equation
+   (f 't)))
+```
+
+\begin{equation}
+\begin{bmatrix} \displaystyle{ {{l m {D}^{2}x\left( t \right) + F\left( t \right) x\left( t \right)}\over {l}}} \cr \cr \displaystyle{ {{g l m + l m {D}^{2}y\left( t \right) - F\left( t \right) {y}\_{s}\left( t \right) + F\left( t \right) y\left( t \right)}\over {l}}} \cr \cr \displaystyle{ {{ - {{1}\over {2}} {l}^{2} + {{1}\over {2}} {\left( {y}\_{s}\left( t \right) \right)}^{2} - {y}\_{s}\left( t \right) y\left( t \right) + {{1}\over {2}} {\left( y\left( t \right) \right)}^{2} + {{1}\over {2}} {\left( x\left( t \right) \right)}^{2}}\over {l}}}\end{bmatrix}
+\end{equation}
+
+The first two equations of motion match the equations we derived in part A, using Newton's equations. The third states that
+
+\begin{equation}
+l^2 = x(t)^2 + (y\_s(t) - y(t))^&2
+\end{equation}
+
+Verified, with some extra terms to force the simplification:
+
+```scheme
+(let* ((q (up (literal-function 'x)
+              (literal-function 'y)
+              (literal-function 'F)))
+       (U (U-gravity 'g 'm))
+       (y (literal-function 'y_s))
+       (L (L-driven-free 'm 'l y U))
+       (f ((Lagrange-equations L) q))
+       (eq (ref (f 't) 2)))
+  (->tex-equation
+   (- eq
+      (/ (* 1/2 (- (+ (square ((literal-function 'x) 't))
+                      (square ((- y (literal-function 'y)) 't)))
+                   (square 'l)))
+         'l))))
+```
+
+\begin{equation}
+0
+\end{equation}
+
+## Part C: Coordinate Change<a id="sec-23-3"></a>
+
+Now we want to verify that we get the same Lagrangian and equations of motion as in 1.88 from the book. We also want to analyze the constraint forces. To do this we need to introduce a coordinate change.
+
+To analyze the constraint forces, we have to do the same trick as in exercise 1.21 and use a coordinate \\(c(t) = l\\). The new coordinates are \\((\theta, c, F)\\):
+
+```scheme
+(define ((driven-polar->rect y) local)
+  (let* ((q (coordinate local))
+         (theta (ref q 0))
+         (c (ref q 1))
+         (F (ref q 2)))
+    (up (* c (sin theta))
+        (- (y (time local)) (* c (cos theta)))
+        F)))
+```
+
+    #| driven-polar->rect |#
+
+Compose the coordinate change with the rectangular Lagrangian:
+
+```scheme
+(define (L-driven-pend m l y U)
+  (compose (L-driven-free m l y U)
+           (F->C (driven-polar->rect y))))
+```
+
+    #| L-driven-pend |#
+
+Examine the Lagrangian itself, after the coordinate transformation. (Notice that we're using a constant function for \\(c(t)\\) that always returns \\(l\\).)
+
+```scheme
+(let* ((q (up (literal-function 'theta)
+              (lambda (t) 'l)
+              (literal-function 'F)))
+       (y (literal-function 'y_s))
+       (L (L-driven-pend 'm 'l y (U-gravity 'g 'm)))
+       (f (compose L (Gamma q))))
+  (->tex-equation
+   (f 't)))
+```
+
+\begin{equation}
+{{1}\over {2}} {l}^{2} m {\left( D\theta\left( t \right) \right)}^{2} + l m D{y}\_{s}\left( t \right) \sin\left( \theta\left( t \right) \right) D\theta\left( t \right) + g l m \cos\left( \theta\left( t \right) \right) - g m {y}\_{s}\left( t \right) + {{1}\over {2}} m {\left( D{y}\_{s}\left( t \right) \right)}^{2}
+\end{equation}
+
+Looks just like equation 1.88.
+
+Next, examine the Lagrange equations, using the same substitution of \\(c(t) = l\\):
+
+```scheme
+(let* ((q (up (literal-function 'theta)
+              (lambda (t) 'l)
+              (literal-function 'F)))
+       (y (literal-function 'y_s))
+       (L (L-driven-pend 'm 'l y (U-gravity 'g 'm)))
+       (f ((Lagrange-equations L) q)))
+  (->tex-equation
+   (f 't)))
+```
+
+\begin{equation}
+\begin{bmatrix} \displaystyle{ g l m \sin\left( \theta\left( t \right) \right) + {l}^{2} m {D}^{2}\theta\left( t \right) + l m {D}^{2}{y}\_{s}\left( t \right) \sin\left( \theta\left( t \right) \right)} \cr \cr \displaystyle{  - l m {\left( D\theta\left( t \right) \right)}^{2} - g m \cos\left( \theta\left( t \right) \right) - m {D}^{2}{y}\_{s}\left( t \right) \cos\left( \theta\left( t \right) \right) + F\left( t \right)} \cr \cr \displaystyle{ 0}\end{bmatrix}
+\end{equation}
+
+The third equation is 0 because of the substitution of constant \\(c(t) = l\\). The first equation of motion, for \\(\theta\\), is identical to the equation on page 52.
+
+The second equation describes the constraint force on the driven pendulum as a function of the other coordinates and the support position.
+
 # Exercise 1.23: Fill in the details<a id="sec-24"></a>
 
 ```scheme
 (load "ch1/utils.scm")
 ```
 
+TODO: Expand out the explicit Lagrangian, using a coordinate transformation, and do the manual substitution&#x2026;
+
 # Exercise 1.24: Constraint forces<a id="sec-25"></a>
+
+This is a special case of a solution we found in exercise 1.22. In that exercise, we found the constraint forces on a driven pendulum. By setting \\(y\_s(t) = l\\), we can read off the constraint forces for the undriven pendulum.
 
 ```scheme
 (load "ch1/utils.scm")
 ```
+
+Take some definitions that we need:
+
+```scheme
+(define ((L-driven-free m l y U) local)
+  (let* ((extract (extract-particle 2))
+         (bob (extract local 0))
+         (q (coordinate bob))
+         (qdot (velocity bob))
+         (F (ref (coordinate local) 2)))
+    (- (KE-particle m qdot)
+       (U q)
+       (U-constraint (up 0 (y (time local)))
+                     q
+                     F
+                     l))))
+
+(define ((U-gravity g m) q)
+  (let* ((y (ref q 1)))
+    (* m g y)))
+
+(define ((driven-polar->rect y) local)
+  (let* ((q (coordinate local))
+         (theta (ref q 0))
+         (c (ref q 1))
+         (F (ref q 2)))
+    (up (* c (sin theta))
+        (- (y (time local)) (* c (cos theta)))
+        F)))
+
+(define (L-driven-pend m l y U)
+  (compose (L-driven-free m l y U)
+           (F->C (driven-polar->rect y))))
+```
+
+The second equation of motion, for the \\(c\\) coordinate, gives us an equation in terms of tension. Substitute in a constant pendulum support position by defining the support position function to be `(lambda (t) 'l)`:
+
+```scheme
+(let* ((q (up (literal-function 'theta)
+              (lambda (t) 'l)
+              (literal-function 'F)))
+       (y (lambda (t) 'l))
+       (L (L-driven-pend 'm 'l y (U-gravity 'g 'm)))
+       (f ((Lagrange-equations L) q)))
+  (->tex-equation
+   (ref (f 't) 1)))
+```
+
+\begin{equation}
+ - l m {\left( D\theta\left( t \right) \right)}^{2} - g m \cos\left( \theta\left( t \right) \right) + F\left( t \right)
+\end{equation}
+
+Solve for \\(F(t)\\), the tension on the pendulum linkage:
+
+\begin{equation}
+F(t) = m (g \cos \theta + l \dot{\theta}^2)
+\end{equation}
 
 # Exercise 1.25: Foucalt pendulum Lagrangian<a id="sec-26"></a>
 
