@@ -127,7 +127,7 @@ The first exercise gives us some practice thinking about the redundancy in diffe
 
 1.  Three juggling pins.
 
-    The system has ****18 degrees of freedom****. Each pin requires 3 coordinates to specify its center of mass, and 3 angles for each pin. If you assume that each pin is symmetric about its central axis, then it doesn't matter how far around the pin has rotated and you can make do with ****15 degrees of freedom****. 3 positions and 2 angles for each.
+    The system has ****18 degrees of freedom****. Each pin requires 3 coordinates to specify its center of mass, and 3 angles for each pin.
 
 2.  A spherical pendulum consisting of a point mass (the pendulum bob) hanging from a rigid massless rod attached to a fixed support point. The pendulum bob may move in any direction subject to the constraint imposed by the rigid rod. The point mass is subject to the uniform force of gravity.
 
