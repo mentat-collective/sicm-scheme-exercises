@@ -1,10 +1,10 @@
 # -*- org-download-image-dir: "images"; -*-
 #+title: Structure and Interpretation of Classical Mechanics
-#+subtitle: Computational Physics!
+#+subtitle: Computational Physics in Clojure
 #+startup: indent
-#+date: 2020-05-26
+#+date: 2020-11-13
 
-Welcome to my tour of Structure and Iynterpretation of Classical Mechanics. I'm
+Welcome to my tour of Structure and Interpretation of Classical Mechanics. I'm
 working on this book to develop my sense of the best way to do research in
 public; this book is heavy on math, programming and visualization, and should
 stress the normal tools.
@@ -144,18 +144,27 @@ coordinates that can be used to describe the behavior of the system.
 
 ** Exercise 1.3: Fermat optics
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-3.scm :comments org
+:header-args+: :tangle ch1/ex1_3.cljc :comments org
 :END:
 
-#+begin_src scheme :exports none
-(load "ch1/utils.scm")
+#+begin_src clojure :exports none
+(ns ch1.ex1-3
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.infix :as if]))
+
+(e/bootstrap-repl!)
+
+(defn ->tex-equation [e]
+  (let [eq (if/->TeX (simplify e))]
+    (println
+     (str "\\begin{equation}\n"
+          eq
+          "\n\\end{equation}"))))
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
-: ;... done
-: #| check-f |#
+: nilnil#'ch1.ex1-3/->tex-equation
 
 This problem has us exploring some consequences for optics of the principle of
 least time. [[https://tgvaughan.github.io/sicm/chapter001.html#Exe_1-3][Exercise 1.3]] states:
@@ -240,27 +249,28 @@ d(x_p) = \sqrt{y_1^2 + x_p^2} + \sqrt{(x_2 - x_p)^2 + y_2^2}
 
 For practice, we can also define this function in Scheme.
 
-#+begin_src scheme
-(define ((total-distance x1 y1 x2 y2) xp)
-  (+ (sqrt (+ (square (+ x1 xp))
-              (square y1)))
-     (sqrt (+ (square (- x2 (+ x1 xp)))
-              (square y2)))))
+#+begin_src clojure
+(defn total-distance [x1 y1 x2 y2]
+  (fn [xp]
+    (+ (sqrt (+ (square (+ x1 xp))
+                (square y1)))
+       (sqrt (+ (square (- x2 (+ x1 xp)))
+                (square y2))))))
 #+end_src
 
 #+RESULTS:
-: #| total-distance |#
+: #'ch1.ex1-3/total-distance
 
 Here's the function again, generated from code, with general $t_1$:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (->tex-equation
  ((total-distance 'x_1 'y_1 'x_2 'y_2) 'x_p))
 #+end_src
 
-#+RESULTS[084acf42d4fe771c97db9cf39e92c75383662d30]:
+#+RESULTS[04e61317301798230c621991e29e6d11cf4fa53d]:
 \begin{equation}
-\sqrt{{{x}_{1}}^{2} + 2 {x}_{1} {x}_{p} + {{x}_{p}}^{2} + {{y}_{1}}^{2}} + \sqrt{{{x}_{1}}^{2} - 2 {x}_{1} {x}_{2} + 2 {x}_{1} {x}_{p} + {{x}_{2}}^{2} - 2 {x}_{2} {x}_{p} + {{x}_{p}}^{2} + {{y}_{2}}^{2}}
+\sqrt {{x_1}^{2} + 2\,x_1\,x_p + {x_p}^{2} + {y_1}^{2}} + \sqrt {{x_1}^{2} -2\,x_1\,x_2 + 2\,x_1\,x_p + {x_2}^{2} -2\,x_2\,x_p + {x_p}^{2} + {y_2}^{2}}
 \end{equation}
 
 To find the $x_p$ that minimizes the total distance,
@@ -273,60 +283,42 @@ The derivative will look cleaner in code if we keep the components of the sum
 separate and prevent Scheme from "simplifying". Redefine the function to return
 a tuple:
 
-#+begin_src scheme
-(define ((total-distance* x1 y1 x2 y2) xp)
-  (up (sqrt (+ (square (+ x1 xp))
-               (square y1)))
-      (sqrt (+ (square (- x2 (+ x1 xp)))
-               (square y2)))))
+#+begin_src clojure
+(defn total-distance* [x1 y1 x2 y2]
+  (fn [xp]
+    (up (sqrt (+ (square (+ x1 xp))
+                 (square y1)))
+        (sqrt (+ (square (- x2 (+ x1 xp)))
+                 (square y2))))))
 #+end_src
 
 #+RESULTS:
-: #| total-distance* |#
+: #'ch1.ex1-3/total-distance*
 
 Here are the sum components:
 
-#+begin_src scheme :results value raw :exports both :cache yes
-(->tex-equation
- (up (/ (* 'x_2 'y_1) (+ (* 'y_1 (sqrt (/ (+ (* (expt 'x_2 2) (expt 'y_1 2)) (expt
-                                                                              'y_1 4) (* 2 (expt 'y_1 3) 'y_2) (* (expt 'y_1 2) (expt 'y_2 2))) (+ (expt 'y_1 2) (*
-                                                                                                                                                                  2 'y_1 'y_2) (expt 'y_2 2))))) (* 'y_2 (sqrt (/ (+ (* (expt 'x_2 2) (expt 'y_1 2))
-                                                                                                                                                                                                                     (expt 'y_1 4) (* 2 (expt 'y_1 3) 'y_2) (* (expt 'y_1 2) (expt 'y_2 2))) (+ (expt
-                                                                                                                                                                                                                                                                                                 'y_1 2) (* 2 'y_1 'y_2) (expt 'y_2 2)))))))
-     (/ (* -1 'x_2 'y_2) (+ (* 'y_1 (sqrt (/ (+
-                                              (* (expt 'x_2 2) (expt 'y_2 2)) (* (expt 'y_1 2) (expt 'y_2 2)) (* 2 'y_1 (expt 'y_2
-                                                                                                                              3)) (expt 'y_2 4)) (+ (expt 'y_1 2) (* 2 'y_1 'y_2) (expt 'y_2 2))))) (* 'y_2 (sqrt (/
-                                                                                                                                                                                                                   (+ (* (expt 'x_2 2) (expt 'y_2 2)) (* (expt 'y_1 2) (expt 'y_2 2)) (* 2 'y_1 (expt
-                                                                                                                                                                                                                                                                                                 'y_2 3)) (expt 'y_2 4)) (+ (expt 'y_1 2) (* 2 'y_1 'y_2) (expt 'y_2 2)))))))))
-#+end_src
-
-#+RESULTS[33ffde8707c80eff0f5178cd9b94ffc535a1f9c5]:
-\begin{equation}
-\begin{pmatrix} \displaystyle{ {{{x}_{2}}\over {\sqrt{{{x}_{2}}^{2} + {{y}_{1}}^{2} + 2 {y}_{1} {y}_{2} + {{y}_{2}}^{2}}}}} \cr \cr \displaystyle{ {{\left( - 1 \right) {x}_{2}}\over {\sqrt{{{x}_{2}}^{2} + {{y}_{1}}^{2} + 2 {y}_{1} {y}_{2} + {{y}_{2}}^{2}}}}}\end{pmatrix}
-\end{equation}
-
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (->tex-equation
  ((total-distance* 0 'y_1 'x_2 'y_2) 'x_p))
 #+end_src
 
-#+RESULTS[faeb94a9bd14088c3eca594cdf8cfd29912bd5b7]:
+#+RESULTS[f109347c1aeeca0d9930708f25b97ada609deca0]:
 \begin{equation}
-\begin{pmatrix} \displaystyle{ \sqrt{{{x}_{p}}^{2} + {{y}_{1}}^{2}}} \cr \cr \displaystyle{ \sqrt{{{x}_{2}}^{2} - 2 {x}_{2} {x}_{p} + {{x}_{p}}^{2} + {{y}_{2}}^{2}}}\end{pmatrix}
+\begin{pmatrix}\displaystyle{\sqrt {{x_p}^{2} + {y_1}^{2}}} \cr \cr \displaystyle{\sqrt {{x_2}^{2} -2\,x_2\,x_p + {x_p}^{2} + {y_2}^{2}}}\end{pmatrix}
 \end{equation}
 
 Taking a derivative is easy with =scmutils=. Just wrap the function in =D=:
 
-#+begin_src scheme :results value raw :exports both :cache yes
-(let* ((distance-fn (total-distance* 0 'y_1 'x_2 'y_2))
-       (derivative (D distance-fn)))
+#+begin_src clojure :results output raw :exports both :cache yes
+(let [distance-fn (total-distance* 0 'y_1 'x_2 'y_2)
+      derivative  (D distance-fn)]
   (->tex-equation
    (derivative 'x_p)))
 #+end_src
 
-#+RESULTS[80207419d8505baf14a15c6965a0fd8aa47ee907]:
+#+RESULTS[2da7be317e00ff5395dfef92ec529d68240add5b]:
 \begin{equation}
-\begin{pmatrix} \displaystyle{ {{{x}_{p}}\over {\sqrt{{{x}_{p}}^{2} + {{y}_{1}}^{2}}}}} \cr \cr \displaystyle{ {{ - {x}_{2} + {x}_{p}}\over {\sqrt{{{x}_{2}}^{2} - 2 {x}_{2} {x}_{p} + {{x}_{p}}^{2} + {{y}_{2}}^{2}}}}}\end{pmatrix}
+\begin{pmatrix}\displaystyle{\frac{x_p}{\sqrt {{x_p}^{2} + {y_1}^{2}}}} \cr \cr \displaystyle{\frac{- x_2 + x_p}{\sqrt {{x_2}^{2} -2\,x_2\,x_p + {x_p}^{2} + {y_2}^{2}}}}\end{pmatrix}
 \end{equation}
 
 The first component is the base of base $x_p$ of the left triangle over the
@@ -368,31 +360,68 @@ x_p = {{y_1 x_2} \over {y_1 + y_2}}
 Plug this in to the derivative of the original =total-distance= function, and we
 find that the derivative equals 0, as expected:
 
-#+begin_src scheme :results value raw :exports both
-(let* ((distance-fn (total-distance* 0 'y_1 'x_2 'y_2))
-       (derivative (D distance-fn)))
+#+begin_src clojure :results output raw :exports both :cache yes
+(let [distance-fn (total-distance* 0 'y_1 'x_2 'y_2)
+      derivative  (D distance-fn)]
   (->tex-equation
    (derivative (/ (* 'y_1 'x_2) (+ 'y_1 'y_2)))))
 #+end_src
 
-#+RESULTS:
+#+RESULTS[c971a3fbe7f21ac2fadbda521eaa0981bd365f64]:
 \begin{equation}
-\begin{pmatrix} \displaystyle{ {{{x}_{2}}\over {\sqrt{{{x}_{2}}^{2} + {{y}_{1}}^{2} + 2 {y}_{1} {y}_{2} + {{y}_{2}}^{2}}}}} \cr \cr \displaystyle{ {{\left( - 1 \right) {x}_{2}}\over {\sqrt{{{x}_{2}}^{2} + {{y}_{1}}^{2} + 2 {y}_{1} {y}_{2} + {{y}_{2}}^{2}}}}}\end{pmatrix}
+\begin{pmatrix}\displaystyle{\frac{x_2\,y_1}{y_1\,\sqrt {\frac{{x_2}^{2}\,{y_1}^{2} + {y_1}^{4} + 2\,{y_1}^{3}\,y_2 + {y_1}^{2}\,{y_2}^{2}}{{y_1}^{2} + 2\,y_1\,y_2 + {y_2}^{2}}} + y_2\,\sqrt {\frac{{x_2}^{2}\,{y_1}^{2} + {y_1}^{4} + 2\,{y_1}^{3}\,y_2 + {y_1}^{2}\,{y_2}^{2}}{{y_1}^{2} + 2\,y_1\,y_2 + {y_2}^{2}}}}} \cr \cr \displaystyle{\frac{- x_2\,y_2}{y_1\,\sqrt {\frac{{x_2}^{2}\,{y_2}^{2} + {y_1}^{2}\,{y_2}^{2} + 2\,y_1\,{y_2}^{3} + {y_2}^{4}}{{y_1}^{2} + 2\,y_1\,y_2 + {y_2}^{2}}} + y_2\,\sqrt {\frac{{x_2}^{2}\,{y_2}^{2} + {y_1}^{2}\,{y_2}^{2} + 2\,y_1\,{y_2}^{3} + {y_2}^{4}}{{y_1}^{2} + 2\,y_1\,y_2 + {y_2}^{2}}}}}\end{pmatrix}
+\end{equation}
+
+#+begin_src clojure :results output raw :exports both :cache yes
+(let [y_1 5
+      x_2 6
+      y_2 7
+      distance-fn (total-distance 0 y_1 x_2 y_2)
+      derivative  (D distance-fn)]
+  (->tex-equation
+   (derivative (/ (* y_1 x_2) (+ y_1 y_2)))))
+#+end_src
+
+#+RESULTS[db44f64f9df325c806076b76f0de3a3eeeedfe8b]:
+\begin{equation}
+0
+\end{equation}
+
+\begin{equation}
+y_1\,\sqrt {x_1 + x_2}
+\end{equation}
+
+#+begin_src clojure
+(defn cake [x] (/ x (sqrt (+ (square 'y_1) (square x)))))
+#+end_src
+
+#+RESULTS:
+: #'ch1.ex1-3/cake
+
+#+begin_src clojure :results output raw :exports both :cache yes
+(->tex-equation
+ (cake (/ (* 'y_1 'x_2) (+ 'y_1 'y_2))))
+#+end_src
+
+#+RESULTS[7f70f8c3c44cc5c5c83142386501d73023cd7ba6]:
+\begin{equation}
+\frac{x_2\,y_1}{y_1\,\sqrt {\frac{{x_2}^{2}\,{y_1}^{2} + {y_1}^{4} + 2\,{y_1}^{3}\,y_2 + {y_1}^{2}\,{y_2}^{2}}{{y_1}^{2} + 2\,y_1\,y_2 + {y_2}^{2}}} + y_2\,\sqrt {\frac{{x_2}^{2}\,{y_1}^{2} + {y_1}^{4} + 2\,{y_1}^{3}\,y_2 + {y_1}^{2}\,{y_2}^{2}}{{y_1}^{2} + 2\,y_1\,y_2 + {y_2}^{2}}}}
+\end{equation}
+
+#+begin_src clojure :results output raw :exports both :cache yes
+(->tex-equation
+ (+ (* (square 'y_1) (sqrt (/ (+ (* (expt 'x_2 2) (expt 'y_1 2)) (expt 'y_1 4) (* 2 (expt 'y_1 3) 'y_2) (* (expt 'y_1 2) (expt 'y_2 2))) (+ (expt 'y_1 2) (* 2 'y_1 'y_2) (expt 'y_2 2)))))
+    (* (square 'y_2) (sqrt (/ (+ (* (expt 'x_2 2) (expt 'y_1 2)) (expt 'y_1 4) (* 2 (expt 'y_1 3) 'y_2) (* (expt 'y_1 2) (expt 'y_2 2))) (+ (expt 'y_1 2) (* 2 'y_1 'y_2) (expt 'y_2 2)))))))
+#+end_src
+
+#+RESULTS[64daa90af1f97b2f5eb9c32dc9678dc4e8115447]:
+\begin{equation}
+{y_1}^{2}\,\sqrt {\frac{{x_2}^{2}\,{y_1}^{2} + {y_1}^{4} + 2\,{y_1}^{3}\,y_2 + {y_1}^{2}\,{y_2}^{2}}{{y_1}^{2} + 2\,y_1\,y_2 + {y_2}^{2}}} + {y_2}^{2}\,\sqrt {\frac{{x_2}^{2}\,{y_1}^{2} + {y_1}^{4} + 2\,{y_1}^{3}\,y_2 + {y_1}^{2}\,{y_2}^{2}}{{y_1}^{2} + 2\,y_1\,y_2 + {y_2}^{2}}}
 \end{equation}
 
 If a beam of light travels in a way that minimizes total distance (and therefore
 time in a constant medium), then it will reflect off of a mirror with the same
 angle at which it arrived. The law of reflection holds.
-
-#+begin_src scheme :results value raw :exports both :cache yes
-(->tex-equation
- (sqrt (* (expt 'y_1 2) (/ (+ (* (expt 'x_2 2) (expt 'y_1 2)) (expt 'y_1 4) (* 2 (expt 'y_1 3) 'y_2) (* (expt 'y_1 2) (expt 'y_2 2))) (+ (expt 'y_1 2) (* 2 'y_1 'y_2) (expt 'y_2 2))))))
-#+end_src
-
-#+RESULTS[b914d61d487efc096c9c1f2d55624b3d5c5bdab9]:
-\begin{equation}
-{{{{y}_{1}}^{2} \sqrt{{{x}_{2}}^{2} + {{y}_{1}}^{2} + 2 {y}_{1} {y}_{2} + {{y}_{2}}^{2}}}\over {{y}_{1} + {y}_{2}}}
-\end{equation}
 
 *** Law of Refraction
 
@@ -483,20 +512,20 @@ years. Spend a few minutes [[https://www.feynmanlectures.caltech.edu/I_26.html][
 
 ** Section 1.4: Computing Actions
 :PROPERTIES:
-:header-args+: :tangle ch1/sec1-4.scm :comments org
+:header-args+: :tangle ch1/sec1-4.cljc :comments org
 :END:
 
 I don't plan on doing this for every section in the book, but section 1.4 is the
 first place where we're introduced to Scheme, so I followed along and made a few
 notes.
 
-#+begin_src scheme :exports none
-(load "ch1/utils.scm")
+#+begin_src clojure :exports none
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
@@ -504,7 +533,7 @@ This is the first demo of how any of this stuff works, starting on page 15.
 Here's our first Lagrangian, super simple.
 
 #+name: L-free-particle
-#+begin_src scheme
+#+begin_src clojure
 (define ((L-free-particle mass) local)
   (let ((v (velocity local)))
     (* 1/2 mass (dot-product v v))))
@@ -524,7 +553,7 @@ Why? That's what we're trying to develop here.
 Suppose we let $q$ denote a coordinate path function that maps time to position
 components:
 
-#+begin_src scheme
+#+begin_src clojure
 (define q
   (up (literal-function 'x)
       (literal-function 'y)
@@ -539,7 +568,7 @@ time that gives the local tuple.
 
 The value $\Gamma$ returns is called the "local tuple":
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (->tex-equation
  ((Gamma q) 't))
 #+end_src
@@ -557,7 +586,7 @@ the coordinates.)
 Composing the Langrangian with $\Gamma[q]$ gives you a function that computes the
 Lagrangian at some instant:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (->tex-equation
  ((compose (L-free-particle 'm) (Gamma q)) 't))
 #+end_src
@@ -575,7 +604,7 @@ return the same value.
 
 This function calculates the action $S[q](t_1, t_2)$:
 
-#+begin_src scheme
+#+begin_src clojure
 (define (Lagrangian-action L q t1 t2)
   (definite-integral (compose L (Gamma q)) t1 t2))
 #+end_src
@@ -587,7 +616,7 @@ Here's an example path that a particle might take, moving along a straight line
 as a function of $t$.
 
 #+name: test-path
-#+begin_src scheme
+#+begin_src clojure
 (define (test-path t)
   (up (+ (* 4 t) 7)
       (+ (* 3 t) 5)
@@ -599,7 +628,7 @@ as a function of $t$.
 
 Calculate the action for a particle of mass 3, between $t_1 = 0$ and $t_2 = 10$:
 
-#+begin_src scheme :exports both :cache yes
+#+begin_src clojure :exports both :cache yes
 (Lagrangian-action (L-free-particle 3) test-path 0.0 10.0)
 #+end_src
 
@@ -677,20 +706,20 @@ Boom, solution achieved.
 
 ** Paths of Minimum Action
 :PROPERTIES:
-:header-args+: :tangle ch1/min-action-paths.scm :comments org
+:header-args+: :tangle ch1/min-action-paths.cljc :comments org
 :END:
 
 This section takes us through an example action calculation on a path with an
 adjustable "variation", or wiggle. We should see that, if we consider a
 "realizable path", then any wiggle we add will increase the calculated action.
 
-#+begin_src scheme :exports none
-(load "ch1/utils.scm")
+#+begin_src clojure :exports none
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
@@ -701,7 +730,7 @@ pinned.
 =make-eta= takes some path $\nu$ and returns a function that wiggles in some
 similar way to $\nu$, but equals 0 at $t_1$ and $t_2$:
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((make-eta nu t1 t2) t)
   (* (- t t1) (- t t2) (nu t)))
 #+end_src
@@ -713,7 +742,7 @@ Next, define a function that calculates the Lagrangian for a free particle, like
 before, but adds in the path variation $\eta$ multiplied by some small scaling factor
 $\epsilon$:
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((varied-free-particle-action mass q nu t1 t2) epsilon)
   (let ((eta (make-eta nu t1 t2)))
     (Lagrangian-action (L-free-particle mass)
@@ -730,7 +759,7 @@ path with this small wiggle (processed through =make-eta= to pin its endpoints)
 is larger (top entry) than the action of the non-varied path (bottom entry), as
 expected:
 
-#+begin_src scheme :results value raw :exports both :cache yes :noweb yes
+#+begin_src clojure :results output raw :exports both :cache yes :noweb yes
 <<test-path>>
 
 (let ((action-fn (varied-free-particle-action 3.0 test-path
@@ -753,7 +782,7 @@ What value of $\epsilon$ minimizes the action for the test path?
 We can search over values of $\epsilon$ from $-2.0$ to $1.0$ using the built-in
 =minimize= function:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let ((action-fn (varied-free-particle-action
                   3.0 test-path
                   (up sin cos square)
@@ -779,7 +808,7 @@ First we need a function that builds a path. This version generates a path of
 individual points, bracketed by the supplied start and end points $(t_0, q_0)$
 and $(t_1, q_1)$. $qs$ is a list of intermediate points.
 
-#+begin_src scheme
+#+begin_src clojure
 (define (make-path t0 q0 t1 q1 qs)
   (let ((n (length qs)))
     (let ((ts (linear-interpolants t0 t1 n)))
@@ -795,7 +824,7 @@ The next function sort-of-composes =make-path= and =Lagrangian-action= into a
 function that takes $L$ and the endpoints, and returns the total action along
 the path.
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((parametric-path-action L t0 q0 t1 q1) qs)
   (let ((path (make-path t0 q0 t1 q1 qs)))
     (Lagrangian-action L path t0 t1)))
@@ -810,7 +839,7 @@ modify in its attempt to find an action-minimizing path. The more points you
 specify, the longer minimization will take, but the more accurate the final path
 will be.
 
-#+begin_src scheme
+#+begin_src clojure
 (define (find-path L t0 q0 t1 q1 n)
   (let ((initial-qs (linear-interpolants q0 q1 n)))
     (let ((minimizing-qs
@@ -828,7 +857,7 @@ with spring constant $k$. Here is the Lagrangian, equal to the kinetic energy
 minus the potential from the spring:
 
 #+name: L-harmonic
-#+begin_src scheme
+#+begin_src clojure
 (define ((L-harmonic m k) local)
   (let ((q (coordinate local))
         (v (velocity local)))
@@ -842,7 +871,7 @@ minus the potential from the spring:
 Now we invoke the procedures we've built, and plot the final, path-minimizing
 trajectory.
 
-#+begin_src scheme
+#+begin_src clojure
 (define harmonic-path
   (find-path (L-harmonic 1.0 1.0) 0.0 1.0 :pi/2 0.0 3))
 
@@ -869,20 +898,20 @@ with period $2 \pi$.
 
 ** Exercise 1.5: Solution process
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-5.scm :comments org
+:header-args+: :tangle ch1/ex1_5.cljc :comments org
 :END:
 
 The goal of this The goal of this exercise is to watch the minimization process
 that we just discussed proceed, from the initial guess of a straight-line path
 to the final, natural looking harmonic oscillation.
 
-#+begin_src scheme :exports none
-(load "ch1/utils.scm")
+#+begin_src clojure :exports none
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
@@ -896,7 +925,7 @@ parametric-path-action to plot the path each time the action is computed.
 The functions the authors provide in the exercise define a window, and then a
 version of =parametric-path-action= that updates the graph as it minimizes:
 
-#+begin_src scheme :noweb yes
+#+begin_src clojure :noweb yes
 (define win2 (frame 0.0 :pi/2 0.0 1.2))
 
 <<L-harmonic>>
@@ -920,7 +949,7 @@ version of =parametric-path-action= that updates the graph as it minimizes:
 
 Run the minimization with the same parameters as in the previous section:
 
-#+begin_src scheme
+#+begin_src clojure
 (find-path (L-harmonic 1.0 1.0) 0.0 1.0 :pi/2 0.0 2)
 #+end_src
 
@@ -936,7 +965,7 @@ and watch the plot update:
 
 ** Exercise 1.6: Minimizing action
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-6.scm :comments org
+:header-args+: :tangle ch1/ex1_6.cljc :comments org
 :END:
 
 The authors have lightly demonstrated that plausible-looking paths have
@@ -954,8 +983,8 @@ unpleasant attack? You may find it illuminating to program it and see what
 happens.
 #+end_quote
 
-#+begin_src scheme :exports none
-(load "ch1/utils.scm")
+#+begin_src clojure :exports none
+(load "ch1/utils.cljc")
 #+end_src
 
 I spent a good amount of time thinking about this exercise. When I attempted to
@@ -995,7 +1024,7 @@ captured in the Lagrangian?
 
 Here's the implementation of the modification described earlier:
 
-#+begin_src scheme
+#+begin_src clojure
 
 (define (((parametric-path-action* win)
           Lagrangian t0 q0 offset0 t1 q1 offset1)
@@ -1022,7 +1051,7 @@ would be able to figure out how to undo your offset. (Try this as an exercise.)
 Next, a new version of =find-path= that passes the offsets through to the new
 =parametric-path-action*=:
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((find-path* win) L t0 q0 offset0 t1 q1 offset1 n)
   (let ((initial-qs (linear-interpolants q0 q1 n)))
     (let* ((action (parametric-path-action* win))
@@ -1039,7 +1068,7 @@ Next, a new version of =find-path= that passes the offsets through to the new
 And finally, a function that can execute runs of our formalism-killing
 experiment.
 
-#+begin_src scheme
+#+begin_src clojure
 (define (one-six offset0 offset1 n)
   (let* ((tmax 10)
          (win (frame -1 (+ tmax 1) -0.2 (+ 1.2 offset0 offset1)))
@@ -1071,7 +1100,7 @@ and end.
 
 Here's the code, and its output:
 
-#+begin_src scheme
+#+begin_src clojure
 (one-six 0 0 3)
 #+end_src
 
@@ -1091,7 +1120,7 @@ initial velocity of
 
 Here's a small positive velocity imposed at the beginning, and 0 at the end:
 
-#+begin_src scheme
+#+begin_src clojure
 (one-six 0.2 0 3)
 #+end_src
 
@@ -1104,7 +1133,7 @@ Here's a small positive velocity imposed at the beginning, and 0 at the end:
 The system takes longer to converge. Here's a larger impulse of 0.5 at the
 beginning:
 
-#+begin_src scheme
+#+begin_src clojure
 (one-six 0.5 0 3)
 #+end_src
 
@@ -1117,7 +1146,7 @@ beginning:
 
 And a moderate negative velocity, just for fun:
 
-#+begin_src scheme
+#+begin_src clojure
 (one-six -0.5 0 3)
 #+end_src
 
@@ -1131,7 +1160,7 @@ And a moderate negative velocity, just for fun:
 The process __does__ converge, but this is only because we only used 3
 intermediate points. If you bump up to 10 points, with this code:
 
-#+begin_src scheme
+#+begin_src clojure
 (one-six -0.5 0 10)
 #+end_src
 
@@ -1327,16 +1356,16 @@ Our goal is achieved.
 
 ** Exercise 1.8: Implementation of $\delta$
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-8.scm :comments org
+:header-args+: :tangle ch1/ex1_8.cljc :comments org
 :END:
 
-#+begin_src scheme :exports none
-(load "ch1/utils.scm")
+#+begin_src clojure :exports none
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
@@ -1364,7 +1393,7 @@ The key is equation 1.22 in the book:
 Given $g(\epsilon) = f[q + \epsilon \eta]$. Through the magic of automatic
 differentiation we can simply write:
 
-#+begin_src scheme
+#+begin_src clojure
 (define (((delta eta) f) q)
   (let ((g (lambda (eps)
              (f (+ q (* eps eta))))))
@@ -1381,7 +1410,7 @@ It's almost spooky, that $D$ can somehow figure out what to do here.
 Part B's problem description gave us a path-dependent function similar to this
 one:
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((fn sym) q)
   (let* ((Local (UP Real (UP* Real) (UP* Real)))
          (F (literal-function sym (-> Local Real))))
@@ -1403,7 +1432,7 @@ The textbook also gives us this function from $t \to (x, y)$ to test out the
 properties above. I've added an $\eta$ of the same type signature that we can
 use to add variation to the path.
 
-#+begin_src scheme
+#+begin_src clojure
 (define q (literal-function 'q (-> Real (UP Real Real))))
 (define eta (literal-function 'eta (-> Real (UP Real Real))))
 #+end_src
@@ -1425,7 +1454,7 @@ Equation \eqref{eq:var-prod} states the product rule for variations. Here it is
 in code. I've implemented the right and left sides and subtracted them. As
 expected, the result is 0:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((f (fn 'f))
        (g (fn 'g))
        (de (delta eta)))
@@ -1446,7 +1475,7 @@ expected, the result is 0:
 The sum rule is similar. Here's the Scheme implementation of equation
 \eqref{eq:var-sum}:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((f (fn 'f))
        (g (fn 'g))
        (de (delta eta)))
@@ -1467,7 +1496,7 @@ The sum rule is similar. Here's the Scheme implementation of equation
 Here's equation \eqref{eq:var-scalar} in code. The sides are equal, so their
 difference is 0:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((g (fn 'g))
        (de (delta eta)))
   (let ((left ((de (* 'c g)) q))
@@ -1486,7 +1515,7 @@ difference is 0:
 To compute the chain rule we'll need a version of =fn= that takes the derivative
 of the inner function:
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((Dfn sym) q)
   (let* ((Local (UP Real (UP* Real) (UP* Real)))
          (F (literal-function sym (-> Local Real))))
@@ -1499,7 +1528,7 @@ the function below.
 
 Here's a check that the two sides of equation \eqref{eq:var-chain} are equal:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((h (fn 'F))
        (dh (Dfn 'F))
        (de (delta eta)))
@@ -1519,7 +1548,7 @@ Here's a check that the two sides of equation \eqref{eq:var-chain} are equal:
 Our final test. Here's equation \eqref{eq:var-commute} in code, showing that the
 derivative commutes with the variation operator:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((f (fn 'f))
        (g (compose D f))
        (de (delta eta)))
@@ -1555,7 +1584,7 @@ Give it a try, then go examine exercise 1.12.
 
 ** Exercise 1.10: Higher-derivative Lagrangians
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-10.scm :comments org
+:header-args+: :tangle ch1/ex1_10.cljc :comments org
 :END:
 
 The only reason that the Lagrangians we've been considering don't take any local
@@ -1747,22 +1776,22 @@ these higher-dimensional Lagrange equations in Scheme.
 
 ** Exercise 1.11: Kepler's third law
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-11.scm :comments org
+:header-args+: :tangle ch1/ex1_11.cljc :comments org
 :END:
 
 This exercise asks us to derive [[https://en.wikipedia.org/wiki/Kepler%27s_laws_of_planetary_motion#Third_law_of_Kepler][Kepler's third law]] by considering a Langrangian
 that describes two particles rotating in a circular orbit around their center of
 mass at some rate.
 
-#+begin_src scheme :exports none
-(load "ch1/utils.scm")
+#+begin_src clojure :exports none
+(load "ch1/utils.cljc")
 #+end_src
 
 Here's the Lagrangian for "central force", in polar coordinates. This is
 rotational kinetic energy, minus some arbitrary potential $V$ that depends on
 the distance $r$ between the two particles.
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((L-central-polar m V) local)
   (let ((q (coordinate local))
         (qdot (velocity local)))
@@ -1778,7 +1807,7 @@ the distance $r$ between the two particles.
 
 This function defines gravitational potential energy:
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((gravitational-energy G m1 m2) r)
   (- (/ (* G m1 m2) r)))
 #+end_src
@@ -1789,7 +1818,7 @@ This function defines gravitational potential energy:
 What is the mass $m$ in the Lagrangian above? It's the "[[https://en.wikipedia.org/wiki/Reduced_mass][reduced mass]]", totally
 unjustified at this point in the book:
 
-#+begin_src scheme
+#+begin_src clojure
 (define (reduced-mass m1 m2)
   (/ (* m1 m2)
      (+ m1 m2)))
@@ -1804,7 +1833,7 @@ derivation]].
 The Lagrangian is written in terms of some angle $\phi$ and $r$, the distance
 between the two particles. $q$ defines a circular path:
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((q r omega) t)
   (let ((phi (* omega t)))
     (up r phi)))
@@ -1815,7 +1844,7 @@ between the two particles. $q$ defines a circular path:
 
 Write the Lagrange equations, given $r = a$ and $\omega = n$:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let ((eqfn (Lagrange-equations
              (L-central-polar (reduced-mass 'm1 'm2)
                               (gravitational-energy 'G 'm1 'm2)))))
@@ -1836,7 +1865,7 @@ you might notice that you can can factor out:
 
 Manually factor these out:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let ((eqfn (Lagrange-equations
              (L-central-polar (reduced-mass 'm1 'm2)
                               (gravitational-energy 'G 'm1 'm2)))))
@@ -1860,11 +1889,11 @@ n^2a^3 = G(m_1 + m_2)
 
 ** Exercise 1.12: Lagrange's equations (code)
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-12.scm :comments org
+:header-args+: :tangle ch1/ex1_12.cljc :comments org
 :END:
 
-#+begin_src scheme :exports none
-(load "ch1/utils.scm")
+#+begin_src clojure :exports none
+(load "ch1/utils.cljc")
 #+end_src
 
 This exercise asks us to write Scheme implementations for each of the three
@@ -1877,7 +1906,7 @@ Before we begin, here is a function that will display an up-tuple of:
 - $D(\partial_2 L \circ \Gamma[q])$, the derivative of our momenta
 - The Lagrange equations for the system.
 
-#+begin_src scheme
+#+begin_src clojure
 (define (lagrange-equation-steps L q)
   (let* ((p1 (compose ((partial 1) L) (Gamma q)))
          (p2 (compose ((partial 2) L) (Gamma q)))
@@ -1926,7 +1955,7 @@ and $\dot{\theta}$ is the angular velocity of the rod.
 
 Here is the Lagrangian described by the exercise:
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((L-pendulum m g l) local)
   (let ((theta (coordinate local))
         (theta_dot (velocity local)))
@@ -1939,7 +1968,7 @@ Here is the Lagrangian described by the exercise:
 
 And the steps that lead us to Lagrange's equations:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (lagrange-equation-steps
  (L-pendulum 'm 'g 'l)
  (literal-function 'theta))
@@ -1953,7 +1982,7 @@ And the steps that lead us to Lagrange's equations:
 The final entry is the Lagrange equation, equal to $0$. Divide out the shared
 factors of $m$ and $l$:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((L (L-pendulum 'm 'g 'l))
        (theta (literal-function 'theta))
        (eqs ((Lagrange-equations L) theta)))
@@ -1991,7 +2020,7 @@ trained that I simply start calculating.
 Define the Lagrangian to be the difference of the kinetic energy and some
 potential $V$ that has access to the coordinates:
 
-#+begin_src scheme
+#+begin_src clojure
 (define (((L-2d-potential m) V) local)
   (- (* 1/2 m (square (velocity local)))
      (V (coordinate local))))
@@ -2010,7 +2039,7 @@ discussion of coordinate transformations.
 
 Next define the potential from the problem description:
 
-#+begin_src scheme
+#+begin_src clojure
 (define (V q)
   (let ((x (ref q 0))
         (y (ref q 1)))
@@ -2027,7 +2056,7 @@ Next define the potential from the problem description:
 Our helpful function generates the Lagrange equations, along with each
 intermediate step:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (lagrange-equation-steps
  ((L-2d-potential 'm) V)
  (up (literal-function 'x)
@@ -2062,7 +2091,7 @@ So the particle has some generalized kinetic energy with terms for:
 
 Here is the Lagrangian:
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((L-sphere m R) local)
   (let* ((q (coordinate local))
          (qdot (velocity local))
@@ -2079,7 +2108,7 @@ Here is the Lagrangian:
 
 Here is the full derivation:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (lagrange-equation-steps
  (L-sphere 'm 'R)
  (up (literal-function 'theta)
@@ -2098,7 +2127,7 @@ factors that we can see by eye are missing.
 Isolate the Lagrange equations from the derivation and manually simplify each
 equation by dividing out, respectively, $mR^2$ and $mR^2 \sin \theta$:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((L (L-sphere 'm 'R))
        (theta (literal-function 'theta))
        (q (up theta (literal-function 'phi)))
@@ -2120,7 +2149,7 @@ These are the Lagrange equations for $\theta$ and $\phi$, respectively.
 
 ** Exercise 1.13: Higher-derivative Lagrangians (code)
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-13.scm :comments org
+:header-args+: :tangle ch1/ex1_13.cljc :comments org
 :END:
 
 This exercise completes exercise 1.10 by asking for implementations of the
@@ -2128,13 +2157,13 @@ higher-order Lagrange equations that we derived. This was a nice Scheme
 exercise; I would argue that this implementation should exist in the standard
 library. But that would ruin the fun of the exercise...
 
-#+begin_src scheme :exports none
-(load "ch1/utils.scm")
+#+begin_src clojure :exports none
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
@@ -2153,7 +2182,7 @@ the velocities.
 Now that we know the math, the implementation is a straightforward extension of
 the =Lagrange-equations= procedure presented in the book:
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((Lagrange-equations3 L) q)
   (let ((state-path (Gamma q 4)))
     (+ ((square D) (compose ((partial 3) L) state-path))
@@ -2180,7 +2209,7 @@ Do you recognize the resulting equation of motion?
 
 Here is the Lagrangian described in the problem:
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((L-1-13 m k) local)
   (let ((x (coordinate local))
         (a (acceleration local)))
@@ -2194,7 +2223,7 @@ Here is the Lagrangian described in the problem:
 Use the new function to generate the Lagrange equations. This call includes a
 factor of $-1$ to make the equation look nice:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (->tex-equation
  (- (((Lagrange-equations3 (L-1-13 'm 'k))
       (literal-function 'x)) 't)))
@@ -2245,7 +2274,7 @@ traveling around the cycle between $n \over l$ and ${n \over l} + 1$ times.
 =alternate= generates a list of $n$ total elements generated by walking around
 the ordered cycle of supplied =elems=:
 
-#+begin_src scheme
+#+begin_src clojure
 (define (cycle n elems)
   (apply append (make-list n elems)))
 
@@ -2266,7 +2295,7 @@ This function defines an internal function =term= that generates the $i$th term
 of the derivative combination described above. This sequence is zipped with the
 sequence of $1, -1$, and =fold-left= generates the sum.
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((Lagrange-equations* L n) q)
   (let ((state-path (Gamma q (1+ n))))
     (define (term i)
@@ -2286,7 +2315,7 @@ sequence of $1, -1$, and =fold-left= generates the sum.
 Generate the Lagrange equations from part b once more to check that we get the
 same result:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (->tex-equation
  (- (((Lagrange-equations* (L-1-13 'm 'k) 3)
       (literal-function 'x)) 't)))
@@ -2303,7 +2332,7 @@ implementation.
 
 ** Exercise 1.14: Coordinate-independence of Lagrange equations
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-14.scm :comments org
+:header-args+: :tangle ch1/ex1_14.cljc :comments org
 :END:
 
 Look carefully at what this exercise is asking us to do:
@@ -2344,19 +2373,19 @@ Fair warning: this is much more painful than transforming the Lagrangian
 devastating you with algebra as a way to show you the horror that the later
 techniques were developed to avoid. Let us proceed.
 
-#+begin_src scheme :exports none
-(load "ch1/utils.scm")
+#+begin_src clojure :exports none
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
 Here are the two Lagrangians from the book:
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((L-central-rectangular m U) local)
   (let ((q (coordinate local))
         (v (velocity local)))
@@ -2381,7 +2410,7 @@ Here are the two Lagrangians from the book:
 
 Here are the rectangular equations of motion:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (->tex-equation
  (((Lagrange-equations
     (L-central-rectangular 'm (literal-function 'U)))
@@ -2400,7 +2429,7 @@ Here are the rectangular equations of motion:
 
 And the polar Lagrange equations:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (->tex-equation
   (((Lagrange-equations
       (L-central-polar 'm (literal-function 'U)))
@@ -2446,7 +2475,7 @@ going. This is too devastating to imagine doing by hand. Let's move to Scheme.
 Write the coordinate transformation for polar coordinates to rectangular in
 Scheme:
 
-#+begin_src scheme
+#+begin_src clojure
 (define (p->r local)
   (let* ((polar-tuple (coordinate local))
          (r (ref polar-tuple 0))
@@ -2471,7 +2500,7 @@ general version that will convert as many path elements as you pass to it.
 Here are the rectangular positions, velocities and accelerations, written in
 polar coordinates:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let ((convert-path (F->C p->r))
       (polar-path (up 't
                       (up 'r 'phi)
@@ -2494,7 +2523,7 @@ me the strength to proceed.
 Write the rectangular Lagrange equations as a function of the local tuple, so we
 can call it directly:
 
-#+begin_src scheme
+#+begin_src clojure
 (define (rect-equations local)
   (let* ((q (coordinate local))
          (x (ref q 0))
@@ -2523,7 +2552,7 @@ can call it directly:
 Verify that these are, in fact, the rectangular equations of motion by passing
 in a symbolic rectangular local tuple:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let ((rect-path (up 't
                      (up 'x 'y)
                      (up 'xdot 'ydot)
@@ -2540,7 +2569,7 @@ in a symbolic rectangular local tuple:
 Now use the =p->r= conversion to substitute each of the rectangular values above
 with their associated polar values:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((convert-path (F->C p->r))
        (polar-path (up 't
                        (up 'r 'phi)
@@ -2574,7 +2603,7 @@ add them together and the unwanted terms all drop away.
 
 A similar trick recovers the second equation,given an extra factor of $r$:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((convert-path (F->C p->r))
        (polar-path (up 't
                        (up 'r 'phi)
@@ -2606,16 +2635,16 @@ answer here.
 
 ** Exercise 1.15: Equivalence
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-15.scm :comments org
+:header-args+: :tangle ch1/ex1_15.cljc :comments org
 :END:
 
-#+begin_src scheme :exports none
-(load "ch1/utils.scm")
+#+begin_src clojure :exports none
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
@@ -2726,7 +2755,7 @@ $F$. Looking ahead slightly, this is implemented as =F->C= on page 46.
 The following function is a slight redefinition that allows us to use an $F$
 that takes an explicit $(t, x')$, instead of the entire local tuple:
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((F->C* F) local)
   (let ((t (time local))
         (x (coordinate local))
@@ -2748,7 +2777,7 @@ The types here all imply that the path has one real coordinate. I did this to
 make the types easier to understand; the derivation applies equally well to
 paths with many dimensions.
 
-#+begin_src scheme
+#+begin_src clojure
 (define F
   (literal-function 'F (-> (X Real Real) Real)))
 
@@ -2773,7 +2802,7 @@ paths with many dimensions.
 When we apply $C$ to the primed local tuple, do we get the transformed tuple
 that we expect from 1.77 in the book?
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (->tex-equation
  ((compose C (Gamma qprime)) 't))
 #+end_src
@@ -2786,7 +2815,7 @@ that we expect from 1.77 in the book?
 This looks correct. We can also transform the path before passing it to
 $\Gamma$:
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((to-q F qp) t)
   (F t (qp t)))
 #+end_src
@@ -2796,7 +2825,7 @@ $\Gamma$:
 
 Subtract the two forms to see that they're equivalent:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (->tex-equations
  ((- (compose C (Gamma qprime))
      (Gamma (to-q F qprime)))
@@ -2811,7 +2840,7 @@ Subtract the two forms to see that they're equivalent:
 Now that we know $C$ is correct we can define $q$, the unprimed coordinate path
 function, and =Lprime=:
 
-#+begin_src scheme
+#+begin_src clojure
 (define q (to-q F qprime))
 (define Lprime (compose L C))
 #+end_src
@@ -2864,7 +2893,7 @@ local tuple.
 
 Example the value of $\partial_2C$ using our Scheme utilities:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (->tex-equation
  (((partial 2) C) (up 't 'xprime 'vprime))
  "eq:p2c")
@@ -2908,7 +2937,7 @@ Substitute the second term using \eqref{eq:p2c}:
 Expand using the product rule:
 
 \begin{equation}
-\label{eq:ex1-15-dp2l}
+\label{eq:ex1_15-dp2l}
   D(\partial_2L' \circ \Gamma[q']) = \left[ D(\partial_2L \circ \Gamma[q]) \right]\partial_1F(t, q'(t)) + (\partial_2L \circ \Gamma[q])D\left[ \partial_1F(t, q'(t)) \right]
 \end{equation}
 
@@ -2923,7 +2952,7 @@ Next, expand the $\partial_1 L'$ term:
 
 Calculate $\partial_1C$ using our Scheme utilities:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (->tex-equation
  (((partial 1) C) (up 't 'xprime 'vprime)))
 #+end_src
@@ -2983,7 +3012,7 @@ proof that the primed Lagrange equations are valid.
 
 First, consider $\partial_1 L' \circ \Gamma[q']$:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (->tex-equation
  ((compose ((partial 1) Lprime) (Gamma qprime))
   't))
@@ -2998,7 +3027,7 @@ This is completely insane, and already unhelpful. The argument to $L$, we know,
 is actually $\Gamma[q]$. Make a function that will replace the tuple with that
 reference:
 
-#+begin_src scheme
+#+begin_src clojure
 (define (->eq expr)
   (write-string
    (replace-all (->tex-equation* expr)
@@ -3011,7 +3040,7 @@ reference:
 
 Try again:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (->eq
  ((compose ((partial 1) Lprime) (Gamma qprime))
   't))
@@ -3028,7 +3057,7 @@ The $\partial_1 L \circ \Gamma[q]$ term of the unprimed Lagrange equations is
 nestled inside the expansion above, multiplied by a factor $\partial_1F(t,
 q'(t))$:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((factor (((partial 1) F) 't (qprime 't))))
   (->eq
    ((* factor (compose ((partial 1) L) (Gamma q)))
@@ -3042,7 +3071,7 @@ q'(t))$:
 
 Next, consider the $D(\partial_2 L' \circ \Gamma[q'])$ term:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (->eq
  ((D (compose ((partial 2) Lprime) (Gamma qprime)))
   't))
@@ -3060,7 +3089,7 @@ expands terms.
 But we know what we're looking for. Expand out the matching term of the unprimed
 Lagrange equations:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (->eq
  ((D (compose ((partial 2) L) (Gamma q)))
   't))
@@ -3078,7 +3107,7 @@ the expansion of the $\partial_1 L \circ \Gamma[q]$ term.
 Try writing out the primed Lagrange equations, and subtracting the unprimed
 Lagrange equations, scaled by this factor:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((primed-lagrange
         (- (D (compose ((partial 2) Lprime) (Gamma qprime)))
            (compose ((partial 1) Lprime) (Gamma qprime))))
@@ -3123,16 +3152,16 @@ I'm leaving intuitive cake on the table.
 
 ** Exercise 1.16: Central force motion
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-16.scm :comments org
+:header-args+: :tangle ch1/ex1_16.cljc :comments org
 :END:
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
@@ -3223,7 +3252,7 @@ L' = {1 \over 2} m (r^2 \dot{\phi}^2 \sin^2\phi + r^2 \dot{\theta}^2 + \dot{r}^2
 
 To show the rectangular Lagrangian, get the procedure from page 41:
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((L-central-rectangular m U) local)
   (let ((q (coordinate local))
         (v (velocity local)))
@@ -3235,7 +3264,7 @@ This is already written in a form that can handle an arbitrary number of
 coordiantes. Confirm the rectangular Lagrangian by passing in a local tuple with
 3 dimensional coordinates and velocities:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (->tex-equation
  ((L-central-rectangular 'm (literal-function 'U))
   (up 't
@@ -3252,7 +3281,7 @@ coordiantes. Confirm the rectangular Lagrangian by passing in a local tuple with
 Next, the spherical. Write down the coordinate transformation from spherical to
 rectangular coordinates as a Scheme procedure:
 
-#+begin_src scheme
+#+begin_src clojure
 (define (spherical->rect local)
   (let* ((q (coordinate local))
          (r (ref q 0))
@@ -3268,7 +3297,7 @@ rectangular coordinates as a Scheme procedure:
 
 Here are the velocities calculated above by hand:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (->tex-equation
  (velocity
   ((F->C spherical->rect)
@@ -3286,7 +3315,7 @@ Here are the velocities calculated above by hand:
 Now that we have $L$ and $C$, we can compose them to get $L'$, our spherical
 Lagrangian:
 
-#+begin_src scheme
+#+begin_src clojure
 (define (L-central-spherical m U)
   (compose (L-central-rectangular m U)
            (F->C spherical->rect)))
@@ -3297,7 +3326,7 @@ Lagrangian:
 
 Confirm that this is equivalent to the analytic solution:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (->tex-equation
  ((L-central-spherical 'm (literal-function 'U))
   (up 't
@@ -3328,16 +3357,16 @@ free you're in rotating spherical coords.
 
 ** Exercise 1.17: Bead on a helical wire
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-16.scm :comments org
+:header-args+: :tangle ch1/ex1_16.cljc :comments org
 :END:
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
@@ -3361,7 +3390,7 @@ I'll replace this with a better picture later, but this is the setup:
 #+attr_latex: :width 8cm
 [[file:images/Lagrangian_Mechanics/2020-06-25_11-03-55_screenshot.png]]
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((turns->rect d h) local)
   (let* ((turns (coordinate local))
          (theta (* turns 2 'pi)))
@@ -3377,7 +3406,7 @@ Or you could do this. Remember, these transformations need to be functions of a
 local tuple, so if you're going to compose them, remember to put =coordinate= at
 the beginning of the composition.
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((turns->x-theta h) q)
   (up (/ q h)
       (* q 2 'pi)))
@@ -3404,7 +3433,7 @@ the beginning of the composition.
 
 The transformations are identical:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (->tex-equation
  ((- (turns->rect 'd 'h)
      (turns->rect* 'd 'h))
@@ -3418,7 +3447,7 @@ The transformations are identical:
 
 Define the Lagrangian:
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((L-rectangular m U) local)
   (let ((q (coordinate local))
         (v (velocity local)))
@@ -3437,7 +3466,7 @@ Define the Lagrangian:
 
 The potential is a uniform gravitational acceleration:
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((U-grav m g) q)
   (* m g (ref q 2)))
 #+end_src
@@ -3447,7 +3476,7 @@ The potential is a uniform gravitational acceleration:
 
 Final Lagrangian:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (->tex-equation
  ((L-turns 'm 'd 'h (U-grav 'm 'g))
   (up 't 'n 'ndot)))
@@ -3460,7 +3489,7 @@ Final Lagrangian:
 
 Lagrange equations of motion:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((L (L-turns 'm 'd 'h (U-grav 'm 'g)))
        (n (literal-function 'n)))
   (->tex-equation
@@ -3474,16 +3503,16 @@ Lagrange equations of motion:
 
 ** Exercise 1.18: Bead on a triaxial surface
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-16.scm :comments org
+:header-args+: :tangle ch1/ex1_16.cljc :comments org
 :END:
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
@@ -3503,7 +3532,7 @@ The transformation to elliptical coordinates is very similar to the spherical
 coordinate transformation, but with a fixed $a$, $b$ and $c$ coefficient for
 each rectangular dimension, and no more radial degree of freedom:
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((elliptical->rect a b c) local)
   (let* ((q (coordinate local))
          (theta (ref q 0))
@@ -3518,7 +3547,7 @@ each rectangular dimension, and no more radial degree of freedom:
 
 Next, the Lagrangian:
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((L-free-particle m) local)
   (* 1/2 m (square
             (velocity local))))
@@ -3535,7 +3564,7 @@ Next, the Lagrangian:
 
 Final Lagrangian:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let ((local (up 't
                  (up 'theta 'phi)
                  (up 'thetadot 'phidot))))
@@ -3552,7 +3581,7 @@ I'm sure there's some simplification in there for us. But why?
 
 Lagrange equations of motion:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((L (L-central-triaxial 'm 'a 'b 'c))
        (theta (literal-function 'theta))
        (phi (literal-function 'phi)))
@@ -3571,20 +3600,20 @@ cool, but it's not comprehensible in this form.
 
 ** Exercise 1.19: Two-bar linkage
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-16.scm :comments org
+:header-args+: :tangle ch1/ex1_16.cljc :comments org
 :END:
 
 Double pendulum, sort of, except the whole thing can fly around the plane.
 
 The system description is:
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
@@ -3636,7 +3665,7 @@ since they can swing all the way around.
 
 Write the coordinate transformation in scheme.
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((double-linkage->rect l1 l2) local)
   (let* ((q (coordinate local))
          (theta (ref q 0))
@@ -3658,7 +3687,7 @@ Next, the Lagrangian given rectangular coordinates, assuming no constraints.
 Remember, we have a uniform gravitational field pointing down; this means that
 each of the components has a potential dragging on it.
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((L-double-linkage-rect m1 m2 m3 U) local)
   (let* ((v (velocity local))
          (vx1 (ref v 0))
@@ -3681,7 +3710,7 @@ each of the components has a potential dragging on it.
 
 And the composition:
 
-#+begin_src scheme
+#+begin_src clojure
 (define (L-double-linkage l1 l2 m1 m2 m3 U)
   (compose (L-double-linkage-rect m1 m2 m3 U)
            (F->C (double-linkage->rect l1 l2))))
@@ -3692,7 +3721,7 @@ And the composition:
 
 Gravitational potential:
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((U-gravity g m1 m2 m3) q)
   (let* ((y1 (ref q 1))
          (y2 (ref q 3))
@@ -3705,7 +3734,7 @@ Gravitational potential:
 #+RESULTS:
 : #| U-gravity |#
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let ((local (up 't
                  (up 'theta 'phi 'x_2 'y_2)
                  (up 'thetadot 'phidot 'xdot_2 'ydot_2)))
@@ -3721,7 +3750,7 @@ Gravitational potential:
 
 Lagrange equations of motion:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((U (U-gravity 'g 'm_1 'm_2 'm_3))
        (L (L-double-linkage 'l_1 'l_2 'm_1 'm_2 'm_3 U))
        (theta (literal-function 'theta))
@@ -3740,7 +3769,7 @@ Lagrange equations of motion:
 
 Kill some clear factors:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((U (U-gravity 'g 'm_1 'm_2 'm_3))
        (L (L-double-linkage 'l_1 'l_2 'm_1 'm_2 'm_3 U))
        (theta (literal-function 'theta))
@@ -3766,16 +3795,16 @@ there. We'll see when we get animation.
 
 ** Exercise 1.20: Sliding pendulum
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-16.scm :comments org
+:header-args+: :tangle ch1/ex1_16.cljc :comments org
 :END:
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
@@ -3815,7 +3844,7 @@ Draw these on the picture to make it clearer.
 
 Write the coordinate transformation in scheme.
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((sliding-pend->rect l) local)
   (let* ((q (coordinate local))
          (x1 (ref q 0))
@@ -3831,7 +3860,7 @@ Write the coordinate transformation in scheme.
 
 Next, the Lagrangian given rectangular coordinates, assuming no constraints:
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((L-sliding-pend-rect m1 m2 U) local)
   (let* ((v (velocity local))
          (vx1 (ref v 0))
@@ -3850,7 +3879,7 @@ Next, the Lagrangian given rectangular coordinates, assuming no constraints:
 
 And the composition:
 
-#+begin_src scheme
+#+begin_src clojure
 (define (L-sliding-pend l m1 m2 U)
   (compose (L-sliding-pend-rect m1 m2 U)
            (F->C (sliding-pend->rect l))))
@@ -3862,7 +3891,7 @@ And the composition:
 Gravitational potential. I could include the cart here, but since we know it's
 fixed gravitationally it wouldn't change the equations of motion.
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((U-gravity g m2) q)
   (let* ((y2 (ref q 3)))
     (* m2 g y2)))
@@ -3871,7 +3900,7 @@ fixed gravitationally it wouldn't change the equations of motion.
 #+RESULTS:
 : #| U-gravity |#
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let ((local (up 't
                  (up 'x_1 'theta)
                  (up 'xdot_1 'thetadot)))
@@ -3887,7 +3916,7 @@ fixed gravitationally it wouldn't change the equations of motion.
 
 Lagrange equations of motion:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((U (U-gravity 'g 'm_2))
        (L (L-sliding-pend 'l 'm_1 'm_2 U))
        (x1 (literal-function 'x_1))
@@ -3904,7 +3933,7 @@ Lagrange equations of motion:
 
 Cleaner:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((U (U-gravity 'g 'm_2))
        (L (L-sliding-pend 'l 'm_1 'm_2 U))
        (x1 (literal-function 'x_1))
@@ -3924,7 +3953,7 @@ Cleaner:
 
 ** Exercise 1.21: A dumbbell
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-21.scm :comments org
+:header-args+: :tangle ch1/ex1_21.cljc :comments org
 :END:
 
 The uneven dumbbell. We've just made it through four exercises which embrace the
@@ -3943,13 +3972,13 @@ that this move is allowed. Here's the setup:
 #+attr_latex: :width 8cm
 [[file:images/Lagrangian_Mechanics/2020-06-29_05-40-00_Art_P166.jpg]]
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
@@ -3972,7 +4001,7 @@ tuple.
 If we have the velocity and mass of a particle, its kinetic energy is easy to
 define:
 
-#+begin_src scheme
+#+begin_src clojure
 (define (KE-particle m v)
   (* 1/2 m (square v)))
 #+end_src
@@ -3985,7 +4014,7 @@ particle with 2 components, 3 for a particle in space, etc -- and returns a
 function of =local= and =i=, a particle index. This function can be used to
 extract a sub-local-tuple for that particle from a flattened list.
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((extract-particle pieces) local i)
   (let* ((indices (apply up (iota pieces (* i pieces))))
          (extract (lambda (tuple)
@@ -4028,7 +4057,7 @@ Here is how we model constraint forces. Each pair of particles has some
 constraint potential acting between them:
 
 #+name: U-constraint
-#+begin_src scheme
+#+begin_src clojure
 (define (U-constraint q0 q1 F l)
   (* (/ F (* 2 l))
      (- (square (- q1 q0))
@@ -4042,7 +4071,7 @@ And here's a Lagrangian for two free particles, subject to a constraint
 potential $F$ acting between them.
 
 #+name: L-free-constrained
-#+begin_src scheme
+#+begin_src clojure
 (define ((L-free-constrained m0 m1 l) local)
   (let* ((extract (extract-particle 2))
          (p0 (extract local 0))
@@ -4065,7 +4094,7 @@ potential $F$ acting between them.
 Finally, the path. This is rectangular coordinates for each piece, plus $F$
 between them.
 
-#+begin_src scheme
+#+begin_src clojure
 (define q-rect
   (up (literal-function 'x_0)
       (literal-function 'y_0)
@@ -4079,7 +4108,7 @@ between them.
 
 This shows the lagrangian itself, which answers part b:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((L (L-free-constrained 'm_0 'm_1 'l))
        (f (compose L (Gamma q-rect))))
   (->tex-equation
@@ -4094,7 +4123,7 @@ This shows the lagrangian itself, which answers part b:
 Here are the Lagrange equations, which, if you squint, are like Newton's
 equations from part a.
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((L (L-free-constrained 'm_0 'm_1 'l))
        (f ((Lagrange-equations L) q-rect)))
   (->tex-equation
@@ -4120,7 +4149,7 @@ freedom.
 
 First, the coordinate change:
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((cm-theta->rect m0 m1) local)
   (let* ((q (coordinate local))
          (x_cm (ref q 0))
@@ -4143,7 +4172,7 @@ First, the coordinate change:
 
 Then the coordinate change applied to the local tuple:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let ((local (up 't
                  (up 'x_cm 'y_cm 'theta 'c 'F)
                  (up 'xdot_cm 'ydot_cm 'thetadot 'cdot 'Fdot)))
@@ -4159,7 +4188,7 @@ Then the coordinate change applied to the local tuple:
 
 Then the Lagrangian in the new coordinates;
 
-#+begin_src scheme
+#+begin_src clojure
 (define (L-free-constrained* m0 m1 l)
   (compose (L-free-constrained m0 m1 l)
            (F->C (cm-theta->rect m0 m1))))
@@ -4170,7 +4199,7 @@ Then the Lagrangian in the new coordinates;
 
 This shows the lagrangian itself, after the coordinate transformation:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((q (up (literal-function 'x_cm)
               (literal-function 'y_cm)
               (literal-function 'theta)
@@ -4189,7 +4218,7 @@ This shows the lagrangian itself, after the coordinate transformation:
 
 Here are the Lagrange equations:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((q (up (literal-function 'x_cm)
               (literal-function 'y_cm)
               (literal-function 'theta)
@@ -4220,7 +4249,7 @@ $\theta$.
 We can substitute the constant value of $c$ using a function that always returns
 $l$ to get simplified equations:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((q (up (literal-function 'x_cm)
               (literal-function 'y_cm)
               (literal-function 'theta)
@@ -4242,7 +4271,7 @@ This is saying that the acceleration on the center of mass is 0.
 The fourth equation, the equation of motion for the $c(t)$, is interesting here.
 We need to pull in the definition of "reduced mass" from exercise 1.11:
 
-#+begin_src scheme
+#+begin_src clojure
 (define (reduced-mass m1 m2)
   (/ (* m1 m2)
      (+ m1 m2)))
@@ -4260,7 +4289,7 @@ F(t) = m l \dot{\theta}^2
 
 We can verify this with Scheme by subtracting the two equations:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((F (literal-function 'F))
        (theta (literal-function 'theta))
        (q (up (literal-function 'x_cm)
@@ -4300,7 +4329,7 @@ But let's go at it, for fun.
 
 Here's the Lagrangian of 2 free particles:
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((L-free2 m0 m1) local)
   (let* ((extract (extract-particle 2))
 
@@ -4321,7 +4350,7 @@ Here's the Lagrangian of 2 free particles:
 Then a version of =cm-theta->rect= where we ignore $F$, and sub in a constant
 $l$:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (define ((cm-theta->rect* m0 m1 l) local)
   (let* ((q (coordinate local))
          (x_cm (ref q 0))
@@ -4341,7 +4370,7 @@ $l$:
 
 The Lagrangian:
 
-#+begin_src scheme
+#+begin_src clojure
 (define (L-free-constrained2 m0 m1 l)
   (compose (L-free2 m0 m1)
            (F->C (cm-theta->rect* m0 m1 l))))
@@ -4352,7 +4381,7 @@ The Lagrangian:
 
 Equations:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((q (up (literal-function 'x_cm)
               (literal-function 'y_cm)
               (literal-function 'theta)
@@ -4376,16 +4405,16 @@ remains because the simplified Lagrangian ignores the $F$ term.
 
 ** Exercise 1.22: Driven pendulum
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-22.scm :comments org
+:header-args+: :tangle ch1/ex1_22.cljc :comments org
 :END:
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
@@ -4433,7 +4462,7 @@ The assumption here is that the pendulum support sits at $(0, y_s(t))$.
 Now write the Lagrangian for the driven pendulum in rectangular coordinates. The
 constraint force takes the same shape as in exercise 1.21:
 
-#+begin_src scheme :noweb yes
+#+begin_src clojure :noweb yes
 <<U-constraint>>
 #+end_src
 
@@ -4445,7 +4474,7 @@ bob. We can generate the constraint force by directly building the support's
 coordinates, rather than extracting them from the local tuple.
 
 #+name: L-driven-free
-#+begin_src scheme
+#+begin_src clojure
 (define ((L-driven-free m l y U) local)
   (let* ((extract (extract-particle 2))
          (bob (extract local 0))
@@ -4464,7 +4493,7 @@ Here is the now-familiar equation for a uniform gravitational potential, acting
 on the $y$ coordinate:
 
 #+name: U-gravity
-#+begin_src scheme
+#+begin_src clojure
 (define ((U-gravity g m) q)
   (let* ((y (ref q 1)))
     (* m g y)))
@@ -4476,7 +4505,7 @@ on the $y$ coordinate:
 Now use the new Lagrangian to generate equations of motion for the three
 coordinates $x$, $y$ and $F$:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((q (up (literal-function 'x)
               (literal-function 'y)
               (literal-function 'F)))
@@ -4502,7 +4531,7 @@ l^2 = x(t)^2 + (y_s(t) - y(t))^&2
 
 Verified, with some extra terms to force the simplification:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((q (up (literal-function 'x)
               (literal-function 'y)
               (literal-function 'F)))
@@ -4534,7 +4563,7 @@ To analyze the constraint forces, we have to do the same trick as in exercise
 1.21 and use a coordinate $c(t) = l$. The new coordinates are $(\theta, c, F)$:
 
 #+name: driven-polar->rect
-#+begin_src scheme
+#+begin_src clojure
 (define ((driven-polar->rect y) local)
   (let* ((q (coordinate local))
          (theta (ref q 0))
@@ -4551,7 +4580,7 @@ To analyze the constraint forces, we have to do the same trick as in exercise
 Compose the coordinate change with the rectangular Lagrangian:
 
 #+name: L-driven-pend
-#+begin_src scheme
+#+begin_src clojure
 (define (L-driven-pend m l y U)
   (compose (L-driven-free m l y U)
            (F->C (driven-polar->rect y))))
@@ -4563,7 +4592,7 @@ Compose the coordinate change with the rectangular Lagrangian:
 Examine the Lagrangian itself, after the coordinate transformation. (Notice that
 we're using a constant function for $c(t)$ that always returns $l$.)
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((q (up (literal-function 'theta)
               (lambda (t) 'l)
               (literal-function 'F)))
@@ -4583,7 +4612,7 @@ Looks just like equation 1.88.
 
 Next, examine the Lagrange equations, using the same substitution of $c(t) = l$:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((q (up (literal-function 'theta)
               (lambda (t) 'l)
               (literal-function 'F)))
@@ -4607,16 +4636,16 @@ function of the other coordinates and the support position.
 
 ** Exercise 1.23: Fill in the details
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-23.scm :comments org
+:header-args+: :tangle ch1/ex1_23.cljc :comments org
 :END:
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
@@ -4625,26 +4654,26 @@ do the manual substitution...
 
 ** Exercise 1.24: Constraint forces
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-24.scm :comments org
+:header-args+: :tangle ch1/ex1_24.cljc :comments org
 :END:
 
 This is a special case of a solution we found in exercise 1.22. In that
 exercise, we found the constraint forces on a driven pendulum. By setting
 $y_s(t) = l$, we can read off the constraint forces for the undriven pendulum.
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
 Take some definitions that we need:
 
-#+begin_src scheme :noweb yes
+#+begin_src clojure :noweb yes
 <<L-driven-free>>
 
 <<U-gravity>>
@@ -4667,7 +4696,7 @@ The second equation of motion, for the $c$ coordinate, gives us an equation in
 terms of tension. Substitute in a constant pendulum support position by defining
 the support position function to be =(lambda (t) 'l)=:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((q (up (literal-function 'theta)
               (lambda (t) 'l)
               (literal-function 'F)))
@@ -4693,63 +4722,63 @@ F(t) = m (g \cos \theta + l \dot{\theta}^2)
 
 ** Exercise 1.25: Foucalt pendulum Lagrangian
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-25.scm :comments org
+:header-args+: :tangle ch1/ex1_25.cljc :comments org
 :END:
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
 ** Exercise 1.26: Properties of $D_t$
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-26.scm :comments org
+:header-args+: :tangle ch1/ex1_26.cljc :comments org
 :END:
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
 ** Exercise 1.27: Lagrange equations for total time derivatives
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-27.scm :comments org
+:header-args+: :tangle ch1/ex1_27.cljc :comments org
 :END:
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
 ** Exercise 1.28: Total Time Derivatives
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-28.scm :comments org
+:header-args+: :tangle ch1/ex1_28.cljc :comments org
 :END:
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 *** part A
 
 nice, easy to guess.
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((FA m) local)
   (let ((x (coordinate local)))
     (* m x)))
@@ -4757,7 +4786,7 @@ nice, easy to guess.
 
 Show the function of t, and confirm that both methods are equivalent.
 
-#+begin_src scheme
+#+begin_src clojure
 (check-f (FA 'm)
          (literal-function 'x))
 #+end_src
@@ -4768,7 +4797,7 @@ NOT a total time derivative.
 
 Define G directly:
 
-#+begin_src scheme
+#+begin_src clojure
 (define ((GB m) local)
   (let* ((t (time local))
          (v_x (velocity local))
@@ -4779,7 +4808,7 @@ Define G directly:
 
 And show the full G, for fun:
 
-#+begin_src scheme
+#+begin_src clojure
 (let ((f (compose (GB 'm) (Gamma (literal-function 'x)))))
   (se (f 't)))
 #+end_src
@@ -4788,7 +4817,7 @@ And show the full G, for fun:
 It's easier to confirm that this is not a total time derivative by checking the
 partials.
 
-#+begin_src scheme
+#+begin_src clojure
 (define (GB-properties m)
   (let ((GB0 (lambda (local) 0))
         (GB1 (lambda (local)
@@ -4799,7 +4828,7 @@ partials.
 It's clear here that the second and third tuple entries aren't equal, so we
 don't have a total time derivative.
 
-#+begin_src scheme
+#+begin_src clojure
 (se (GB-properties 'm))
 #+end_src
 
@@ -4807,7 +4836,7 @@ don't have a total time derivative.
 
 no problem, we've got a total time derivative on our hands.
 
-#+begin_src scheme
+#+begin_src clojure
 (define (FC local)
   (let ((t (time local))
         (x (coordinate local)))
@@ -4827,7 +4856,7 @@ no problem, we've got a total time derivative on our hands.
 
 Boom, the second and third entries are equal, as we'd expect.
 
-#+begin_src scheme
+#+begin_src clojure
 (se GC-properties)
 #+end_src
 
@@ -4837,7 +4866,7 @@ Boom, the second and third entries are equal, as we'd expect.
 This is NOT a total time derivative; you can tell by taking the partials
 of each side, G0 and G1, as we'll see here.
 
-#+begin_src scheme
+#+begin_src clojure
 (define GD-properties
   (let ((GD0 (lambda (local)
                (* (coordinate local)
@@ -4849,7 +4878,7 @@ of each side, G0 and G1, as we'll see here.
 
 The partials for each side don't match.
 
-#+begin_src scheme
+#+begin_src clojure
 (se GD-properties)
 #+end_src
 
@@ -4861,7 +4890,7 @@ OH, but the secret is that Qdot is also a tuple, so you contract them together.
 
 Here's the function F that we can use to derive it:
 
-#+begin_src scheme
+#+begin_src clojure
 (define (FE local)
   (let* ((t (time local))
          (q (coordinate local))
@@ -4873,14 +4902,14 @@ Here's the function F that we can use to derive it:
 
 Boom, total time derivative!
 
-#+begin_src scheme
+#+begin_src clojure
 (check-f FE (up (literal-function 'x)
                 (literal-function 'y)))
 #+end_src
 
 And let's show that we pass the tests by decomposing this into G0 and G1:
 
-#+begin_src scheme
+#+begin_src clojure
 (define GE-properties
   (let (
         ;; any piece of the function without a velocity multiplied.
@@ -4911,7 +4940,7 @@ BOOM!
 
 We've recovered F; the partials are equal, and the final matrix is symmetric.
 
-#+begin_src scheme
+#+begin_src clojure
 (se GE-properties)
 #+end_src
 
@@ -4920,7 +4949,7 @@ We've recovered F; the partials are equal, and the final matrix is symmetric.
 This one is interesting, since the second partial is a tuple. This is not so
 obvious to me, so first let's check the properties:
 
-#+begin_src scheme
+#+begin_src clojure
 (define GF-properties
   (let (
         ;; any piece of the function without a velocity multiplied.
@@ -4953,30 +4982,30 @@ the first test here, since the second and third tuple entries are equal.
 BUT we fail the second test; the hessian that we get from ((partial 1) G1) is
 not symmetric.
 
-#+begin_src scheme
+#+begin_src clojure
 (se GF-properties)
 #+end_src
 
 
 ** Exercise 1.29: Galilean Invariance
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-29.scm :comments org
+:header-args+: :tangle ch1/ex1_29.cljc :comments org
 :END:
 
-#+begin_src scheme :exports none
-(load "ch1/utils.scm")
+#+begin_src clojure :exports none
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
 I'll do this for a single particle, since it's annoying to get the sum going
 for many; and the lagrangian is additive, so no problem.
 
-#+begin_src scheme
+#+begin_src clojure
 (define (uniform-translate-shift->rect local)
   (let* ((t (time local))
          (q (coordinate local))
@@ -4997,7 +5026,7 @@ for many; and the lagrangian is additive, so no problem.
 
 First, confirm that if we have a constant, we get what we expected from paper.
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((q (up (literal-function 'xprime)
               (lambda (t) 'Delta_x)
               (lambda (t) 'Delta_v)))
@@ -5013,7 +5042,7 @@ First, confirm that if we have a constant, we get what we expected from paper.
 We can change this a little to see the extra terms; substract off the free
 particle lagrangian, to see the extra stuff.
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((q (up (literal-function 'xprime)
               (lambda (t) 'Delta_x)
               (lambda (t) 'Delta_v)))
@@ -5034,7 +5063,7 @@ in there, and we know that total time derivatives have to be linear in the
 velocities. The function $F$ would have had to have a velocity in it, which is
 not allowed.
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((q (up (literal-function 'xprime)
               (literal-function 'Delta_x)
               (literal-function 'Delta_v)))
@@ -5056,7 +5085,7 @@ We know that we have a total derivative when $\Delta_x$ is constant, and we know
 that total time derivatives are linear, so let's substract off the total time
 derivative and see what happens:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let* ((q (lambda (dx)
             (up (literal-function 'xprime)
                 dx
@@ -5084,226 +5113,226 @@ Lagrangian value.
 
 ** Exercise 1.30: Orbits in a central potential
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-30.scm :comments org
+:header-args+: :tangle ch1/ex1_30.cljc :comments org
 :END:
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
 ** Exercise 1.31: Foucault pendulum evolution
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-31.scm :comments org
+:header-args+: :tangle ch1/ex1_31.cljc :comments org
 :END:
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
 ** Exercise 1.32: Time-dependent constraints
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-32.scm :comments org
+:header-args+: :tangle ch1/ex1_32.cljc :comments org
 :END:
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
 ** Exercise 1.33: Falling off a log
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-33.scm :comments org
+:header-args+: :tangle ch1/ex1_33.cljc :comments org
 :END:
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
 ** Exercise 1.34: Driven spherical pendulum
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-34.scm :comments org
+:header-args+: :tangle ch1/ex1_34.cljc :comments org
 :END:
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
 ** Exercise 1.35: Restricted equations of motion
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-35.scm :comments org
+:header-args+: :tangle ch1/ex1_35.cljc :comments org
 :END:
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
 ** Exercise 1.36: Noether integral
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-36.scm :comments org
+:header-args+: :tangle ch1/ex1_36.cljc :comments org
 :END:
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
 ** Exercise 1.37: Velocity transformation
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-37.scm :comments org
+:header-args+: :tangle ch1/ex1_37.cljc :comments org
 :END:
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
 ** Exercise 1.38: Properties of $E$
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-38.scm :comments org
+:header-args+: :tangle ch1/ex1_38.cljc :comments org
 :END:
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
 ** Exercise 1.39: Combining Lagrangians
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-39.scm :comments org
+:header-args+: :tangle ch1/ex1_39.cljc :comments org
 :END:
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
 ** Exercise 1.40: Bead on a triaxial surface
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-40.scm :comments org
+:header-args+: :tangle ch1/ex1_40.cljc :comments org
 :END:
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
 ** Exercise 1.41: Motion of a tiny golf ball
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-41.scm :comments org
+:header-args+: :tangle ch1/ex1_41.cljc :comments org
 :END:
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
 ** Exercise 1.42: Augmented Lagrangian
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-42.scm :comments org
+:header-args+: :tangle ch1/ex1_42.cljc :comments org
 :END:
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
 ** Exercise 1.43: A numerical investigation
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-43.scm :comments org
+:header-args+: :tangle ch1/ex1_43.cljc :comments org
 :END:
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
 ** Exercise 1.44: Double pendulum behavior
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-44.scm :comments org
+:header-args+: :tangle ch1/ex1_44.cljc :comments org
 :END:
 
-#+begin_src scheme
-(load "ch1/utils.scm")
+#+begin_src clojure
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
@@ -5420,19 +5449,19 @@ various idiosyncracies of the tuple and functional notation.
 
 ** Exercise 9.1 Chain Rule
      :PROPERTIES:
-     :header-args+: :tangle ch9/ex9-1.scm :comments org
+     :header-args+: :tangle ch9/ex9-1.cljc :comments org
      :END:
 
 You're supposed to do these by hand, so I'll do that in the textbook. But here,
 let's redo them on the machine.
 
-#+begin_src scheme :exports none
-(load "ch1/utils.scm")
+#+begin_src clojure :exports none
+(load "ch1/utils.cljc")
 #+end_src
 
 #+RESULTS:
-: ;Loading "ch1/utils.scm"...
-: ;  Loading "ch1/exdisplay.scm"... done
+: ;Loading "ch1/utils.cljc"...
+: ;  Loading "ch1/exdisplay.cljc"... done
 : ;... done
 : #| check-f |#
 
@@ -5440,7 +5469,7 @@ let's redo them on the machine.
 
 First, let's define the functions we need.
 
-#+begin_src scheme
+#+begin_src clojure
 (define (F x y)
   (* (square x)
      (cube y)))
@@ -5461,7 +5490,7 @@ First, let's define the functions we need.
 
  You can do this with explicit partials:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let ((f (down ((partial 0) F) ((partial 1) F))))
   (->tex-equation
    (f 'x 'y)))
@@ -5474,7 +5503,7 @@ First, let's define the functions we need.
 
 Or with the $D$ symbol:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (->tex-equation
  ((D F) 'x 'y))
 #+end_src
@@ -5486,7 +5515,7 @@ Or with the $D$ symbol:
 
 Or, we could show that they're equivalent this way:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (let ((f (down ((partial 0) F) ((partial 1) F))))
   (->tex-equation
    (- ((D F) 'x 'y)
@@ -5502,7 +5531,7 @@ Or, we could show that they're equivalent this way:
 
 $H$ is already that composition, so:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (->tex-equation
  ((D H) 'x 'y))
 #+end_src
@@ -5514,7 +5543,7 @@ $H$ is already that composition, so:
 
 ***** Compute $\partial_0 G(x, y)$ and $\partial_1 G(x, y)$
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (->tex-equation
  ((D G) 'x 'y))
 #+end_src
@@ -5526,7 +5555,7 @@ $H$ is already that composition, so:
 
 ***** Compute $DF(a, b)$, $DG(3, 5)$ and $DH(3a^2, 5b^3)$
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (->tex-equation
  (up ((D F) 'a 'b)
      ((D G) 3 5)
@@ -5540,17 +5569,17 @@ $H$ is already that composition, so:
 
 ** Exercise 9.2: Computing Derivatives
      :PROPERTIES:
-     :header-args+: :tangle ch9/ex9-2.scm :comments org
+     :header-args+: :tangle ch9/ex9-2.cljc :comments org
      :END:
 
-#+begin_src scheme :exports none
-(load "ch1/utils.scm")
+#+begin_src clojure :exports none
+(load "ch1/utils.cljc")
 #+end_src
 
 A further exercise is to try defining the functions so that they use explicit
 tuples, so you can compose them:
 
-#+begin_src scheme
+#+begin_src clojure
 (define (F* v)
   (let ((x (ref v 0))
         (y (ref v 1)))
@@ -5574,7 +5603,7 @@ tuples, so you can compose them:
 to be really pro, I'd make a function that takes these as arguments and prints a
 nice formatted exercise output. Let's do the final exercise, for fun:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (->tex-equation
  (up ((D F*) (up 'a 'b))
      ((D G*) (up 3 5))
@@ -5598,7 +5627,7 @@ First, let's get some code loaded up and written. Here's a block that converts
 polar coordinates to rectangular coordinates.
 
 #+name: p->r
-#+begin_src scheme :eval no
+#+begin_src clojure :eval no
 (define (p->r local)
   (let* ((polar-tuple (coordinate local))
          (r (ref polar-tuple 0))
@@ -5610,8 +5639,8 @@ polar coordinates to rectangular coordinates.
 
 This is some good stuff.
 
-#+begin_src scheme :results output :noweb yes :comments both
-(load "ch1/utils.scm")
+#+begin_src clojure :results output :noweb yes :comments both
+(load "ch1/utils.cljc")
 
 <<p->r>>
 
@@ -5621,7 +5650,7 @@ This is some good stuff.
 And another, that gets us from spherical to rectangular.
 
 #+name: spherical->rect
-#+begin_src scheme :eval no
+#+begin_src clojure :eval no
 (define (spherical->rect local)
   (let* ((spherical-tuple (coordinate local))
          (r (ref spherical-tuple 0))
@@ -5633,12 +5662,12 @@ And another, that gets us from spherical to rectangular.
 #+end_src
 
 #+RESULTS[f4f039075baf66ba4fe071844815bfcffe281eaa]:
-: ;Loading "ch1/utils.scm"... done
+: ;Loading "ch1/utils.cljc"... done
 : #| "" |#
 
 This block will generate a LaTeX version of the code I've supplied:
 
-#+begin_src scheme :results value raw :exports both :cache yes
+#+begin_src clojure :results output raw :exports both :cache yes
 (->tex-equation
  ((+ (literal-function 'c)
      (D (literal-function 'z)))
@@ -5654,7 +5683,7 @@ c\left( t \right) + Dz\left( t \right)
 
 You can even reference these with equation numbers, like Equation \eqref{eq:masterpiece} above.
 
-#+begin_src scheme :results value :exports both :cache yes
+#+begin_src clojure :results value :exports both :cache yes
 (up 1 2 't)
 #+end_src
 

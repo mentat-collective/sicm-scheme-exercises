@@ -867,22 +867,22 @@ USA.
 
 (define (tex:unparse-matrix uptable matrix-list)
   (let* ((displaystyle-rows
-	  (map (lambda (row)
-		 (map (lambda (elt)
-			(glue-horiz (list "\\displaystyle{ "
-					  elt
-					  "}")))
-		      row))
-	       matrix-list))
-	 (separated-rows
-	  (map (lambda (row) (glue-horiz (interpolate " & " row)))
-	       displaystyle-rows))
-	 (separated-columns
-	  (glue-horiz (interpolate " \\cr \\cr " separated-rows))))
+          (map (lambda (row)
+                 (map (lambda (elt)
+                        (glue-horiz (list "\\displaystyle{ "
+                                          elt
+                                          "}")))
+                      row))
+               matrix-list))
+         (separated-rows
+          (map (lambda (row) (glue-horiz (interpolate " & " row)))
+               displaystyle-rows))
+         (separated-columns
+          (glue-horiz (interpolate " \\cr \\cr " separated-rows))))
     #;
     (glue-horiz
-     (list "\\left\\{ \\matrix{ "
-	   separated-columns
+    (list "\\left\\{ \\matrix{ "
+    separated-columns
     "} \\right\\}"))
     (glue-horiz
      (list "\\left\\lgroup \\begin{matrix} "
@@ -891,18 +891,18 @@ USA.
 
 (define (tex:unparse-up uptable matrix-list)
   (let* ((displaystyle-rows
-	  (map (lambda (row)
-		 (map (lambda (elt)
-			(glue-horiz (list "\\displaystyle{ "
-					  elt
-					  "}")))
-		      row))
-	       matrix-list))
-	 (separated-rows
-	  (map (lambda (row) (glue-horiz (interpolate " & " row)))
-	       displaystyle-rows))
-	 (separated-columns
-	  (glue-horiz (interpolate " \\cr \\cr " separated-rows))))
+          (map (lambda (row)
+                 (map (lambda (elt)
+                        (glue-horiz (list "\\displaystyle{ "
+                                          elt
+                                          "}")))
+                      row))
+               matrix-list))
+         (separated-rows
+          (map (lambda (row) (glue-horiz (interpolate " & " row)))
+               displaystyle-rows))
+         (separated-columns
+          (glue-horiz (interpolate " \\cr \\cr " separated-rows))))
     (glue-horiz
      (list left-up-delimiter separated-columns right-up-delimiter))))
 
