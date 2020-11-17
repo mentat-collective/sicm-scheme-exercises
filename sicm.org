@@ -288,29 +288,10 @@ Here are the sum components:
 
 #+begin_src scheme :results value raw :exports both :cache yes
 (->tex-equation
- (up (/ (* 'x_2 'y_1) (+ (* 'y_1 (sqrt (/ (+ (* (expt 'x_2 2) (expt 'y_1 2)) (expt
-                                                                              'y_1 4) (* 2 (expt 'y_1 3) 'y_2) (* (expt 'y_1 2) (expt 'y_2 2))) (+ (expt 'y_1 2) (*
-                                                                                                                                                                  2 'y_1 'y_2) (expt 'y_2 2))))) (* 'y_2 (sqrt (/ (+ (* (expt 'x_2 2) (expt 'y_1 2))
-                                                                                                                                                                                                                     (expt 'y_1 4) (* 2 (expt 'y_1 3) 'y_2) (* (expt 'y_1 2) (expt 'y_2 2))) (+ (expt
-                                                                                                                                                                                                                                                                                                 'y_1 2) (* 2 'y_1 'y_2) (expt 'y_2 2)))))))
-     (/ (* -1 'x_2 'y_2) (+ (* 'y_1 (sqrt (/ (+
-                                              (* (expt 'x_2 2) (expt 'y_2 2)) (* (expt 'y_1 2) (expt 'y_2 2)) (* 2 'y_1 (expt 'y_2
-                                                                                                                              3)) (expt 'y_2 4)) (+ (expt 'y_1 2) (* 2 'y_1 'y_2) (expt 'y_2 2))))) (* 'y_2 (sqrt (/
-                                                                                                                                                                                                                   (+ (* (expt 'x_2 2) (expt 'y_2 2)) (* (expt 'y_1 2) (expt 'y_2 2)) (* 2 'y_1 (expt
-                                                                                                                                                                                                                                                                                                 'y_2 3)) (expt 'y_2 4)) (+ (expt 'y_1 2) (* 2 'y_1 'y_2) (expt 'y_2 2)))))))))
-#+end_src
-
-#+RESULTS[33ffde8707c80eff0f5178cd9b94ffc535a1f9c5]:
-\begin{equation}
-\begin{pmatrix} \displaystyle{ {{{x}_{2}}\over {\sqrt{{{x}_{2}}^{2} + {{y}_{1}}^{2} + 2 {y}_{1} {y}_{2} + {{y}_{2}}^{2}}}}} \cr \cr \displaystyle{ {{\left( - 1 \right) {x}_{2}}\over {\sqrt{{{x}_{2}}^{2} + {{y}_{1}}^{2} + 2 {y}_{1} {y}_{2} + {{y}_{2}}^{2}}}}}\end{pmatrix}
-\end{equation}
-
-#+begin_src scheme :results value raw :exports both :cache yes
-(->tex-equation
  ((total-distance* 0 'y_1 'x_2 'y_2) 'x_p))
 #+end_src
 
-#+RESULTS[faeb94a9bd14088c3eca594cdf8cfd29912bd5b7]:
+#+RESULTS[8080e49ee342b7a2a69c9c84337c37bc473a3c58]:
 \begin{equation}
 \begin{pmatrix} \displaystyle{ \sqrt{{{x}_{p}}^{2} + {{y}_{1}}^{2}}} \cr \cr \displaystyle{ \sqrt{{{x}_{2}}^{2} - 2 {x}_{2} {x}_{p} + {{x}_{p}}^{2} + {{y}_{2}}^{2}}}\end{pmatrix}
 \end{equation}
@@ -324,7 +305,7 @@ Taking a derivative is easy with =scmutils=. Just wrap the function in =D=:
    (derivative 'x_p)))
 #+end_src
 
-#+RESULTS[80207419d8505baf14a15c6965a0fd8aa47ee907]:
+#+RESULTS[5bbf36ca4a362ee2f2d2423071a6f818c8c93cab]:
 \begin{equation}
 \begin{pmatrix} \displaystyle{ {{{x}_{p}}\over {\sqrt{{{x}_{p}}^{2} + {{y}_{1}}^{2}}}}} \cr \cr \displaystyle{ {{ - {x}_{2} + {x}_{p}}\over {\sqrt{{{x}_{2}}^{2} - 2 {x}_{2} {x}_{p} + {{x}_{p}}^{2} + {{y}_{2}}^{2}}}}}\end{pmatrix}
 \end{equation}
@@ -368,31 +349,21 @@ x_p = {{y_1 x_2} \over {y_1 + y_2}}
 Plug this in to the derivative of the original =total-distance= function, and we
 find that the derivative equals 0, as expected:
 
-#+begin_src scheme :results value raw :exports both
-(let* ((distance-fn (total-distance* 0 'y_1 'x_2 'y_2))
+#+begin_src scheme :results value raw :exports both :cache yes
+(let* ((distance-fn (total-distance 0 'y_1 'x_2 'y_2))
        (derivative (D distance-fn)))
   (->tex-equation
    (derivative (/ (* 'y_1 'x_2) (+ 'y_1 'y_2)))))
 #+end_src
 
-#+RESULTS:
+#+RESULTS[535d1b50ac55ba86347a21920c8bbf87153148eb]:
 \begin{equation}
-\begin{pmatrix} \displaystyle{ {{{x}_{2}}\over {\sqrt{{{x}_{2}}^{2} + {{y}_{1}}^{2} + 2 {y}_{1} {y}_{2} + {{y}_{2}}^{2}}}}} \cr \cr \displaystyle{ {{\left( - 1 \right) {x}_{2}}\over {\sqrt{{{x}_{2}}^{2} + {{y}_{1}}^{2} + 2 {y}_{1} {y}_{2} + {{y}_{2}}^{2}}}}}\end{pmatrix}
+0
 \end{equation}
 
 If a beam of light travels in a way that minimizes total distance (and therefore
 time in a constant medium), then it will reflect off of a mirror with the same
 angle at which it arrived. The law of reflection holds.
-
-#+begin_src scheme :results value raw :exports both :cache yes
-(->tex-equation
- (sqrt (* (expt 'y_1 2) (/ (+ (* (expt 'x_2 2) (expt 'y_1 2)) (expt 'y_1 4) (* 2 (expt 'y_1 3) 'y_2) (* (expt 'y_1 2) (expt 'y_2 2))) (+ (expt 'y_1 2) (* 2 'y_1 'y_2) (expt 'y_2 2))))))
-#+end_src
-
-#+RESULTS[b914d61d487efc096c9c1f2d55624b3d5c5bdab9]:
-\begin{equation}
-{{{{y}_{1}}^{2} \sqrt{{{x}_{2}}^{2} + {{y}_{1}}^{2} + 2 {y}_{1} {y}_{2} + {{y}_{2}}^{2}}}\over {{y}_{1} + {y}_{2}}}
-\end{equation}
 
 *** Law of Refraction
 
