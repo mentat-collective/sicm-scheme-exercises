@@ -1,2 +1,2 @@
 {:deps
- {net.littleredcomputer/sicmutils {:mvn/version "0.13.1-SNAPSHOT"}}}
+ {sicmutils/sicmutils {:mvn/version "0.14.0"}}}

@@ -4,7 +4,7 @@
 #+startup: indent
 #+date: 2020-05-26
 
-Welcome to my tour of Structure and Iynterpretation of Classical Mechanics. I'm
+Welcome to my tour of Structure and Interpretation of Classical Mechanics. I'm
 working on this book to develop my sense of the best way to do research in
 public; this book is heavy on math, programming and visualization, and should
 stress the normal tools.

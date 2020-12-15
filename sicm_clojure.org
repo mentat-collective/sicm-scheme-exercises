@@ -492,7 +492,7 @@ notes.
             [sicmutils.infix :as if]
             [taoensso.timbre :refer [set-level!]]))
 
-(e/bootstrap-repl!)
+
 (set-level! :fatal)
 
 (defn ->tex-equation* [e]
