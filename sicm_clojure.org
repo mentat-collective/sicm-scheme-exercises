@@ -566,7 +566,7 @@ can a component of the coordinate path depend on the others? YES, and that would
 impose constraints beyond the degrees of freedom you'd guess by just counting
 the coordinates.)
 
-Composing the Langrangian with $\Gamma[q]$ gives you a function that computes the
+Composing the Lagrangian with $\Gamma[q]$ gives you a function that computes the
 Lagrangian at some instant:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
@@ -652,7 +652,7 @@ solution path is
 \end{equation}
 
 I'm not sure I see the point of this exercise, for developing intuition about
-Langrangian mechanics. I think it may be here to make sure we understand that
+Lagrangian mechanics. I think it may be here to make sure we understand that
 we're not minimizing the /function/ $L$. We're minimizing (finding the
 stationary point of) the integral of $L$ between $t_a$ and $t_b$.
 
@@ -1849,7 +1849,7 @@ these higher-dimensional Lagrange equations in Scheme.
 
 TODO continue from here.
 
-This exercise asks us to derive [[https://en.wikipedia.org/wiki/Kepler%27s_laws_of_planetary_motion#Third_law_of_Kepler][Kepler's third law]] by considering a Langrangian
+This exercise asks us to derive [[https://en.wikipedia.org/wiki/Kepler%27s_laws_of_planetary_motion#Third_law_of_Kepler][Kepler's third law]] by considering a Lagrangian
 that describes two particles rotating in a circular orbit around their center of
 mass at some rate.
 
@@ -3513,7 +3513,7 @@ Confirm that this is equivalent to the analytic solution:
 
 *** Discussion
 
-Langrangian coordinate transformation from spherical -> rectangular on paper,
+Lagrangian coordinate transformation from spherical -> rectangular on paper,
 which of course is a total nightmare, writing vx^2 + vy^2 + vz^2 and
 simplifying. BUT then, of course, you write down the spherical => rectangular
 position change...
