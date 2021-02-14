@@ -115,7 +115,7 @@ What seemed like a system that required 6 numbers actually required 5.
 
 Theo Jansen's incredible [Strandbeesten](https://www.youtube.com/watch?v=LewVEF2B_pM) are built out of copies of [Jansen's Linkage](https://en.wikipedia.org/wiki/Jansen%27s_linkage). Each of these legs has 11 pipes that flex and bend, but only **one** degree of freedom.
 
-![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-06-23_14-48-36_screenshot.png)
+![img](https://github.com/sicmutils/sicm-exercises/raw/master/images/Lagrangian_Mechanics/2020-06-23_14-48-36_screenshot.png)
 
 The first exercise gives us some practice thinking about the redundancy in different physical systems.
 
@@ -163,7 +163,7 @@ The [law of reflection](https://en.wikipedia.org/wiki/Reflection_(physics)#Laws_
 
 Here's the setup. The horizontal line is a mirror. The law states that \\(\theta\_1 = \theta\_2\\).
 
-![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-06-10_10-31-24_screenshot.png)
+![img](https://github.com/sicmutils/sicm-exercises/raw/master/images/Lagrangian_Mechanics/2020-06-10_10-31-24_screenshot.png)
 
 We have to show that if we consider all possible paths from a given starting point to a given endpoint, the path of minimum time will give us the law of reflection.
 
@@ -179,7 +179,7 @@ First, recall this fact from the problem text:
 
 There's no medium change, so if there were no mirror in its path, the light beam would continue in a straight line. Instead of figuring out what the beam will do when it hits the mirror, reflect the endpoint across the mirror and draw a straight line between the start and "end" points:
 
-![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-06-10_10-36-53_screenshot.png)
+![img](https://github.com/sicmutils/sicm-exercises/raw/master/images/Lagrangian_Mechanics/2020-06-10_10-36-53_screenshot.png)
 
 The angle that the beam makes with the plane of the mirror is the same on both sides of the mirror.
 
@@ -197,23 +197,24 @@ d(x\_p) = \sqrt{y\_1^2 + x\_p^2} + \sqrt{(x\_2 - x\_p)^2 + y\_2^2}
 
 For practice, we can also define this function in Scheme.
 
-```scheme
-(define ((total-distance x1 y1 x2 y2) xp)
-  (+ (sqrt (+ (square (+ x1 xp))
-              (square y1)))
-     (sqrt (+ (square (- x2 (+ x1 xp)))
-              (square y2)))))
+```clojure
+(defn total-distance [x1 y1 x2 y2]
+  (fn [xp]
+    (+ (sqrt (+ (square (+ x1 xp))
+                (square y1)))
+       (sqrt (+ (square (- x2 (+ x1 xp)))
+                (square y2))))))
 ```
 
 Here's the function again, generated from code, with general \\(t\_1\\):
 
-```scheme
+```clojure
 (->tex-equation
  ((total-distance 'x_1 'y_1 'x_2 'y_2) 'x_p))
 ```
 
 \begin{equation}
-\sqrt{{{x}\_{1}}^{2} + 2 {x}\_{1} {x}\_{p} + {{x}\_{p}}^{2} + {{y}\_{1}}^{2}} + \sqrt{{{x}\_{1}}^{2} - 2 {x}\_{1} {x}\_{2} + 2 {x}\_{1} {x}\_{p} + {{x}\_{2}}^{2} - 2 {x}\_{2} {x}\_{p} + {{x}\_{p}}^{2} + {{y}\_{2}}^{2}}
+\sqrt {{x\_1}^{2} + 2\,x\_1\,x\_p + {x\_p}^{2} + {y\_1}^{2}} + \sqrt {{x\_1}^{2} -2\,x\_1\,x\_2 + 2\,x\_1\,x\_p + {x\_2}^{2} -2\,x\_2\,x\_p + {x\_p}^{2} + {y\_2}^{2}}
 \end{equation}
 
 To find the \\(x\_p\\) that minimizes the total distance,
@@ -224,41 +225,42 @@ To find the \\(x\_p\\) that minimizes the total distance,
 
 The derivative will look cleaner in code if we keep the components of the sum separate and prevent Scheme from "simplifying". Redefine the function to return a tuple:
 
-```scheme
-(define ((total-distance* x1 y1 x2 y2) xp)
-  (up (sqrt (+ (square (+ x1 xp))
-               (square y1)))
-      (sqrt (+ (square (- x2 (+ x1 xp)))
-               (square y2)))))
+```clojure
+(defn total-distance* [x1 y1 x2 y2]
+  (fn [xp]
+    (up (sqrt (+ (square (+ x1 xp))
+                 (square y1)))
+        (sqrt (+ (square (- x2 (+ x1 xp)))
+                 (square y2))))))
 ```
 
 Here are the sum components:
 
-```scheme
+```clojure
 (->tex-equation
  ((total-distance* 0 'y_1 'x_2 'y_2) 'x_p))
 ```
 
 \begin{equation}
-\begin{pmatrix} \displaystyle{ \sqrt{{{x}\_{p}}^{2} + {{y}\_{1}}^{2}}} \cr \cr \displaystyle{ \sqrt{{{x}\_{2}}^{2} - 2 {x}\_{2} {x}\_{p} + {{x}\_{p}}^{2} + {{y}\_{2}}^{2}}}\end{pmatrix}
+\begin{pmatrix}\displaystyle{\sqrt {{x\_p}^{2} + {y\_1}^{2}}} \cr \cr \displaystyle{\sqrt {{x\_2}^{2} -2\,x\_2\,x\_p + {x\_p}^{2} + {y\_2}^{2}}}\end{pmatrix}
 \end{equation}
 
 Taking a derivative is easy with `scmutils`. Just wrap the function in `D`:
 
-```scheme
-(let* ((distance-fn (total-distance* 0 'y_1 'x_2 'y_2))
-       (derivative (D distance-fn)))
+```clojure
+(let [distance-fn (total-distance* 0 'y_1 'x_2 'y_2)
+      derivative  (D distance-fn)]
   (->tex-equation
    (derivative 'x_p)))
 ```
 
 \begin{equation}
-\begin{pmatrix} \displaystyle{ {{{x}\_{p}}\over {\sqrt{{{x}\_{p}}^{2} + {{y}\_{1}}^{2}}}}} \cr \cr \displaystyle{ {{ - {x}\_{2} + {x}\_{p}}\over {\sqrt{{{x}\_{2}}^{2} - 2 {x}\_{2} {x}\_{p} + {{x}\_{p}}^{2} + {{y}\_{2}}^{2}}}}}\end{pmatrix}
+\begin{pmatrix}\displaystyle{\frac{x\_p}{\sqrt {{x\_p}^{2} + {y\_1}^{2}}}} \cr \cr \displaystyle{\frac{- x\_2 + x\_p}{\sqrt {{x\_2}^{2} -2\,x\_2\,x\_p + {x\_p}^{2} + {y\_2}^{2}}}}\end{pmatrix}
 \end{equation}
 
 The first component is the base of base \\(x\_p\\) of the left triangle over the total length. This ratio is equal to \\(\cos \theta\_1\\):
 
-![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-06-10_10-36-53_screenshot.png)
+![img](https://github.com/sicmutils/sicm-exercises/raw/master/images/Lagrangian_Mechanics/2020-06-10_10-36-53_screenshot.png)
 
 The bottom component is \\(-\cos \theta\_2\\), or \\({- (x\_2 - x\_p)}\\) over the length of the right segment. Add these terms together, set them equal to 0 and rearrange:
 
@@ -285,9 +287,9 @@ x\_p = {{y\_1 x\_2} \over {y\_1 + y\_2}}
 
 Plug this in to the derivative of the original `total-distance` function, and we find that the derivative equals 0, as expected:
 
-```scheme
-(let* ((distance-fn (total-distance 0 'y_1 'x_2 'y_2))
-       (derivative (D distance-fn)))
+```clojure
+(let [distance-fn (total-distance 0 'y_1 'x_2 'y_2)
+      derivative  (D distance-fn)]
   (->tex-equation
    (derivative (/ (* 'y_1 'x_2) (+ 'y_1 'y_2)))))
 ```
@@ -310,7 +312,7 @@ First we'll tackle this with calculus.
 
 The setup here is slightly different. We have a light beam traveling from one medium to another and changing speeds at a boundary located \\(a\\) to the right of the starting point. The goal is to figure out the point where the light will hit the boundary, if we assume that the light will take the path of least time.
 
-![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-06-10_12-03-11_screenshot.png)
+![img](https://github.com/sicmutils/sicm-exercises/raw/master/images/Lagrangian_Mechanics/2020-06-10_12-03-11_screenshot.png)
 
 The refractive index \\(n\_i = {c \over v\_i}\\), the speed of light \\(c\\) in a vacuum over the speed in the material. Rearranging, \\(v\_i = {c \over n\_i}\\).
 
@@ -364,10 +366,11 @@ I don't plan on doing this for every section in the book, but section 1.4 is the
 
 This is the first demo of how any of this stuff works, starting on page 15. Here's our first Lagrangian, super simple.
 
-```scheme
-(define ((L-free-particle mass) local)
-  (let ((v (velocity local)))
-    (* 1/2 mass (dot-product v v))))
+```clojure
+(defn L-free-particle [mass]
+  (fn [local]
+    (let [v (velocity local)]
+      (* (/ 1 2) mass (square v)))))
 ```
 
 `L-free-particle` is a function that takes some `mass` and returns a *new* function. The new function takes an instance of a "local tuple" and returns the value of the "Lagrangian". This is the function that you query at every point along some evolving path in configuration space. For realizable physical paths, the integral of this function should by minimized, or stationary.
@@ -376,8 +379,8 @@ Why? That's what we're trying to develop here.
 
 Suppose we let \\(q\\) denote a coordinate path function that maps time to position components:
 
-```scheme
-(define q
+```clojure
+(def q
   (up (literal-function 'x)
       (literal-function 'y)
       (literal-function 'z)))
@@ -387,41 +390,41 @@ Suppose we let \\(q\\) denote a coordinate path function that maps time to posit
 
 The value \\(\Gamma\\) returns is called the "local tuple":
 
-```scheme
+```clojure
 (->tex-equation
  ((Gamma q) 't))
 ```
 
 \begin{equation}
-\begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{ x\left( t \right)} \cr \cr \displaystyle{ y\left( t \right)} \cr \cr \displaystyle{ z\left( t \right)}\end{pmatrix}} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{ Dx\left( t \right)} \cr \cr \displaystyle{ Dy\left( t \right)} \cr \cr \displaystyle{ Dz\left( t \right)}\end{pmatrix}}\end{pmatrix}
+\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{x\left(t\right)} \cr \cr \displaystyle{y\left(t\right)} \cr \cr \displaystyle{z\left(t\right)}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{Dx\left(t\right)} \cr \cr \displaystyle{Dy\left(t\right)} \cr \cr \displaystyle{Dz\left(t\right)}\end{pmatrix}}\end{pmatrix}
 \end{equation}
 
 This is just \\((t, q(t), (Dq)(t), ....)\\) Where \\(D\\) is the derivative. (Preview: can a component of the coordinate path depend on the others? YES, and that would impose constraints beyond the degrees of freedom you'd guess by just counting the coordinates.)
 
-Composing the Langrangian with \\(\Gamma[q]\\) gives you a function that computes the Lagrangian at some instant:
+Composing the Lagrangian with \\(\Gamma[q]\\) gives you a function that computes the Lagrangian at some instant:
 
-```scheme
+```clojure
 (->tex-equation
  ((compose (L-free-particle 'm) (Gamma q)) 't))
 ```
 
 \begin{equation}
-{{1}\over {2}} m {\left( Dz\left( t \right) \right)}^{2} + {{1}\over {2}} m {\left( Dy\left( t \right) \right)}^{2} + {{1}\over {2}} m {\left( Dx\left( t \right) \right)}^{2}
+\frac{1}{2}\,m\,{\left(Dx\left(t\right)\right)}^{2} + \frac{1}{2}\,m\,{\left(Dy\left(t\right)\right)}^{2} + \frac{1}{2}\,m\,{\left(Dz\left(t\right)\right)}^{2}
 \end{equation}
 
 This particular formula is written in terms of \\(x, y, z\\) coordinates, but that only came from the definition of \\(q\\). As we'll see later, you could write a coordinate transformation from some other totally different style of coordinates (called "generalized coordinates") and the Lagrangian would look different, but return the same value.
 
 This function calculates the action \\(S[q](t\_1, t\_2)\\):
 
-```scheme
-(define (Lagrangian-action L q t1 t2)
+```clojure
+(defn Lagrangian-action [L q t1 t2]
   (definite-integral (compose L (Gamma q)) t1 t2))
 ```
 
 Here's an example path that a particle might take, moving along a straight line as a function of \\(t\\).
 
-```scheme
-(define (test-path t)
+```clojure
+(defn test-path [t]
   (up (+ (* 4 t) 7)
       (+ (* 3 t) 5)
       (+ (* 2 t) 1)))
@@ -429,11 +432,11 @@ Here's an example path that a particle might take, moving along a straight line 
 
 Calculate the action for a particle of mass 3, between \\(t\_1 = 0\\) and \\(t\_2 = 10\\):
 
-```scheme
+```clojure
 (Lagrangian-action (L-free-particle 3) test-path 0.0 10.0)
 ```
 
-    #| 435. |#
+    435.0
 
 This happens to be the minimal action, since the path we provided was a uniform path and the Lagrangian was for a free particle. If we'd provided a different path, we would still get an action. Just not a stationary action. Infinitesimal wiggles would change the action.
 
@@ -455,7 +458,7 @@ L(t, x, v) = {1 \over 2}mv^2
 {m \over 2}{{(x\_b - x\_a)^2} \over {t\_b - t\_a}}
 \end{equation}
 
-I'm not sure I see the point of this exercise, for developing intuition about Langrangian mechanics. I think it may be here to make sure we understand that we're not minimizing the *function* \\(L\\). We're minimizing (finding the stationary point of) the integral of \\(L\\) between \\(t\_a\\) and \\(t\_b\\).
+I'm not sure I see the point of this exercise, for developing intuition about Lagrangian mechanics. I think it may be here to make sure we understand that we're not minimizing the *function* \\(L\\). We're minimizing (finding the stationary point of) the integral of \\(L\\) between \\(t\_a\\) and \\(t\_b\\).
 
 The velocity is constant between the two points, so it must be equal to the difference in position over the difference in time:
 
@@ -496,59 +499,64 @@ The only restriction on a variation is that it can't affect the endpoints of the
 
 `make-eta` takes some path \\(\nu\\) and returns a function that wiggles in some similar way to \\(\nu\\), but equals 0 at \\(t\_1\\) and \\(t\_2\\):
 
-```scheme
-(define ((make-eta nu t1 t2) t)
-  (* (- t t1) (- t t2) (nu t)))
+```clojure
+(defn make-eta [nu t1 t2]
+  (fn [t]
+    (* (- t t1) (- t t2) (nu t))))
 ```
 
 Next, define a function that calculates the Lagrangian for a free particle, like before, but adds in the path variation \\(\eta\\) multiplied by some small scaling factor \\(\epsilon\\):
 
-```scheme
-(define ((varied-free-particle-action mass q nu t1 t2) epsilon)
-  (let ((eta (make-eta nu t1 t2)))
-    (Lagrangian-action (L-free-particle mass)
-                       (+ q (* epsilon eta))
-                       t1
-                       t2)))
+```clojure
+(defn L-free-particle [mass]
+  (fn [local]
+    (let [v (velocity local)]
+      (* (/ 1 2) mass (square v)))))
+
+(defn varied-free-particle-action [mass q nu t1 t2]
+  (fn [epsilon]
+    (let [eta (make-eta nu t1 t2)]
+      (Lagrangian-action (L-free-particle mass)
+                         (+ q (* epsilon eta))
+                         t1
+                         t2))))
 ```
 
 Consider some variation like \\(v(t) = (\sin(t), \cos(t), t^2)\\). The action of the path with this small wiggle (processed through `make-eta` to pin its endpoints) is larger (top entry) than the action of the non-varied path (bottom entry), as expected:
 
-```scheme
-(define (test-path t)
+```clojure
+(defn test-path [t]
   (up (+ (* 4 t) 7)
       (+ (* 3 t) 5)
       (+ (* 2 t) 1)))
 
-(let ((action-fn (varied-free-particle-action 3.0 test-path
-                                              (up sin cos square)
-                                              0.0 10.0)))
+(let [action-fn (varied-free-particle-action 3.0 test-path
+                                             (up sin cos square)
+                                             0.0 10.0)]
   (->tex-equation
    (up (action-fn 0.001)
        (action-fn 0))))
 ```
 
-\#| test-path |#
-
 \begin{equation}
-\begin{pmatrix} \displaystyle{ 436.2912142857153} \cr \cr \displaystyle{ 435.}\end{pmatrix}
+\begin{pmatrix}\displaystyle{436.2912142857117} \cr \cr \displaystyle{435.0}\end{pmatrix}
 \end{equation}
 
 What value of \\(\epsilon\\) minimizes the action for the test path?
 
 We can search over values of \\(\epsilon\\) from \\(-2.0\\) to \\(1.0\\) using the built-in `minimize` function:
 
-```scheme
-(let ((action-fn (varied-free-particle-action
-                  3.0 test-path
-                  (up sin cos square)
-                  0.0 10.0)))
+```clojure
+(let [action-fn (varied-free-particle-action
+                 3.0 test-path
+                 (up sin cos square)
+                 0.0 10.0)]
   (->tex-equation
-   (car (minimize action-fn -2.0 1.0))))
+   (:result (minimize action-fn -2.0 1.0))))
 ```
 
 \begin{equation}
-5.134781488891349e-15
+5.155325078655824E-8
 \end{equation}
 
 The result shows that the minimum action occurs at \\(\epsilon = 0\\), up to numerical precision.
@@ -559,61 +567,60 @@ Is it possible to use this principle to actually *find* a path, instead of simpl
 
 First we need a function that builds a path. This version generates a path of individual points, bracketed by the supplied start and end points \\((t\_0, q\_0)\\) and \\((t\_1, q\_1)\\). \\(qs\\) is a list of intermediate points.
 
-```scheme
-(define (make-path t0 q0 t1 q1 qs)
-  (let ((n (length qs)))
-    (let ((ts (linear-interpolants t0 t1 n)))
-      (Lagrange-interpolation-function
-       (append (list q0) qs (list q1))
-       (append (list t0) ts (list t1))))))
+```clojure
+(defn make-path [t0 q0 t1 q1 qs]
+  (let [n  (count qs)
+        ts (linear-interpolants t0 t1 n)]
+    (Lagrange-interpolation-function
+     (concat [q0] qs [q1])
+     (concat [t0] ts [t1]))))
 ```
 
 The next function sort-of-composes `make-path` and `Lagrangian-action` into a function that takes \\(L\\) and the endpoints, and returns the total action along the path.
 
-```scheme
-(define ((parametric-path-action L t0 q0 t1 q1) qs)
-  (let ((path (make-path t0 q0 t1 q1 qs)))
-    (Lagrangian-action L path t0 t1)))
+```clojure
+(defn parametric-path-action [L t0 q0 t1 q1]
+  (fn [qs]
+    (let [path (make-path t0 q0 t1 q1 qs)]
+      (Lagrangian-action L path t0 t1))))
 ```
 
 Finally, `find-path` takes the previous function's arguments, plus a parameter \\(n\\). \\(n\\) controls how many intermediate points the optimizer will inject and modify in its attempt to find an action-minimizing path. The more points you specify, the longer minimization will take, but the more accurate the final path will be.
 
-```scheme
-(define (find-path L t0 q0 t1 q1 n)
-  (let ((initial-qs (linear-interpolants q0 q1 n)))
-    (let ((minimizing-qs
-           (multidimensional-minimize
-            (parametric-path-action L t0 q0 t1 q1)
-            initial-qs)))
-      (make-path t0 q0 t1 q1 minimizing-qs))))
+```clojure
+(defn find-path* [L t0 q0 t1 q1 n]
+  (let [initial-qs    (linear-interpolants q0 q1 n)
+        minimizing-qs (multidimensional-minimize
+                       (parametric-path-action L t0 q0 t1 q1)
+                       initial-qs)]
+    (make-path t0 q0 t1 q1 minimizing-qs)))
 ```
 
 Let's test it out with a Lagrangian for a one dimensional harmonic oscillator with spring constant \\(k\\). Here is the Lagrangian, equal to the kinetic energy minus the potential from the spring:
 
-```scheme
-(define ((L-harmonic m k) local)
-  (let ((q (coordinate local))
-        (v (velocity local)))
-    (- (* 1/2 m (square v))
-       (* 1/2 k (square q)))))
+```clojure
+(defn L-harmonic [m k]
+  (fn [local]
+    (let [q (coordinate local)
+          v (velocity local)]
+      (- (* (/ 1 2) m (square v))
+         (* (/ 1 2) k (square q))))))
 ```
-
-    #| L-harmonic |#
 
 Now we invoke the procedures we've built, and plot the final, path-minimizing trajectory.
 
-```scheme
-(define harmonic-path
-  (find-path (L-harmonic 1.0 1.0) 0.0 1.0 :pi/2 0.0 3))
+```clojure
+(def harmonic-path
+  (find-path* (L-harmonic 1.0 1.0) 0.0 1.0 (/ pi 2) 0.0 3))
 
-(define win2 (frame 0.0 :pi/2 0 1))
+;; (define win2 (frame 0.0 :pi/2 0 1))
 
-(plot-function win2 harmonic-path 0 :pi (/ :pi 100))
+;; (plot-function win2 harmonic-path 0 :pi (/ :pi 100))
 ```
 
 The path looks like a harmonic oscillator that starts high and bounces down, after \\(\pi \over 2\\) seconds, down to 0. This is the first quarter of a sine wave with period \\(2 \pi\\).
 
-![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-06-10_14-24-14_screenshot.png)
+![img](https://github.com/sicmutils/sicm-exercises/raw/master/images/Lagrangian_Mechanics/2020-06-10_14-24-14_screenshot.png)
 
 # Exercise 1.5: Solution process<a id="sec-6"></a>
 
@@ -625,14 +632,15 @@ The exercise states:
 
 The functions the authors provide in the exercise define a window, and then a version of `parametric-path-action` that updates the graph as it minimizes:
 
-```scheme
+```clojure
 (define win2 (frame 0.0 :pi/2 0.0 1.2))
 
-(define ((L-harmonic m k) local)
-  (let ((q (coordinate local))
-        (v (velocity local)))
-    (- (* 1/2 m (square v))
-       (* 1/2 k (square q)))))
+(defn L-harmonic [m k]
+  (fn [local]
+    (let [q (coordinate local)
+          v (velocity local)]
+      (- (* (/ 1 2) m (square v))
+         (* (/ 1 2) k (square q))))))
 
 (define ((parametric-path-action Lagrangian t0 q0 t1 q1)
          intermediate-qs)
@@ -646,13 +654,13 @@ The functions the authors provide in the exercise define a window, and then a ve
 
 Run the minimization with the same parameters as in the previous section:
 
-```scheme
+```clojure
 (find-path (L-harmonic 1.0 1.0) 0.0 1.0 :pi/2 0.0 2)
 ```
 
 and watch the plot update:
 
-![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-05-29_10-12-19_AJBpDgU.gif)
+![img](https://github.com/sicmutils/sicm-exercises/raw/master/images/Lagrangian_Mechanics/2020-05-29_10-12-19_AJBpDgU.gif)
 
 # Exercise 1.6: Minimizing action<a id="sec-7"></a>
 
@@ -682,50 +690,49 @@ I simply proceeded with the implementation, but I'd recommend you take a minute 
 
 Here's the implementation of the modification described earlier:
 
-```scheme
-
-(define (((parametric-path-action* win)
-          Lagrangian t0 q0 offset0 t1 q1 offset1)
-         intermediate-qs)
-  ;; See the two new points?
-  (let ((intermediate-qs* (append (list (+ q0 offset0))
-                                  intermediate-qs
-                                  (list (+ q1 offset1)))))
-    (let ((path (make-path t0 q0 t1 q1 intermediate-qs*)))
-      ;; display path
-      (graphics-clear win)
-      (plot-function win path t0 t1 (/ (- t1 t0) 100))
-      ;; compute action
-      (Lagrangian-action Lagrangian path t0 t1))))
+```clojure
+(defn parametric-path-action* [win]
+  (fn [Lagrangian t0 q0 offset0 t1 q1 offset1]
+    (fn [intermediate-qs]
+      ;; See the two new points?
+      (let [intermediate-qs* (concat [(+ q0 offset0)]
+                                     intermediate-qs
+                                     [(+ q1 offset1)])
+            path (make-path t0 q0 t1 q1 intermediate-qs*)]
+        ;; display path
+        (graphics-clear win)
+        (plot-function win path t0 t1 (/ (- t1 t0) 100))
+        ;; compute action
+        (Lagrangian-action Lagrangian path t0 t1)))))
 ```
 
 You might try a similar trick by modifying the first and last entries of `intermediate-qs` instead of appending a point, but I suspect that the optimizer would be able to figure out how to undo your offset. (Try this as an exercise.)
 
 Next, a new version of `find-path` that passes the offsets through to the new `parametric-path-action*`:
 
-```scheme
-(define ((find-path* win) L t0 q0 offset0 t1 q1 offset1 n)
-  (let ((initial-qs (linear-interpolants q0 q1 n)))
-    (let* ((action (parametric-path-action* win))
-           (minimizing-qs
-            (multidimensional-minimize
-             (action L t0 q0 offset0 t1 q1 offset1)
-             initial-qs)))
+```clojure
+(defn find-path* [win]
+  (fn [L t0 q0 offset0 t1 q1 offset1 n]
+    (let [initial-qs    (linear-interpolants q0 q1 n)
+          action        (parametric-path-action* win)
+          minimizing-qs (multidimensional-minimize
+                         (action L t0 q0 offset0 t1 q1 offset1)
+                         initial-qs)]
       (make-path t0 q0 t1 q1 minimizing-qs))))
 ```
 
 And finally, a function that can execute runs of our formalism-killing experiment.
 
-```scheme
-(define (one-six offset0 offset1 n)
-  (let* ((tmax 10)
-         (win (frame -1 (+ tmax 1) -0.2 (+ 1.2 offset0 offset1)))
-         (find (find-path* win))
-         (L (L-free-particle 3.0))
-         (path (find L
-                     0. 1. offset0
-                     tmax 0. offset1
-                     n)))
+```clojure
+(defn one-six [offset0 offset1 n]
+  (let [tmax 10
+        win  (frame -1 (+ tmax 1) -0.2 (+ 1.2 offset0 offset1))
+        find (find-path* win)
+        L    (L-free-particle 3.0)
+        path (find L
+                   0. 1. offset0
+                   tmax 0. offset1
+                   n)]
     (Lagrangian-action L path 0 tmax)))
 ```
 
@@ -739,11 +746,11 @@ Let's run the code with 0 offsets and 3 interpolation points. Note that this sho
 
 Here's the code, and its output:
 
-```scheme
+```clojure
 (one-six 0 0 3)
 ```
 
-![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-06-10_15-10-46_ex1_6_nooffset.gif)
+![img](https://github.com/sicmutils/sicm-exercises/raw/master/images/Lagrangian_Mechanics/2020-06-10_15-10-46_ex1_6_nooffset.gif)
 
 The path ends up looking almost sinusoidal, and takes a while to converge. This is the best polynomial that the system can come up with that matches the 7 points (3 interpolated, 2 offsets, 1 start and 1 end).
 
@@ -751,31 +758,31 @@ The actual realizable path should be a straight line between the two points. The
 
 Here's a small positive velocity imposed at the beginning, and 0 at the end:
 
-```scheme
+```clojure
 (one-six 0.2 0 3)
 ```
 
-![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-06-10_15-10-53_ex1_6_02offset.gif)
+![img](https://github.com/sicmutils/sicm-exercises/raw/master/images/Lagrangian_Mechanics/2020-06-10_15-10-53_ex1_6_02offset.gif)
 
 The system takes longer to converge. Here's a larger impulse of 0.5 at the beginning:
 
-```scheme
+```clojure
 (one-six 0.5 0 3)
 ```
 
-![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-06-10_15-11-10_ex1_6_05offset.gif)
+![img](https://github.com/sicmutils/sicm-exercises/raw/master/images/Lagrangian_Mechanics/2020-06-10_15-11-10_ex1_6_05offset.gif)
 
 And a moderate negative velocity, just for fun:
 
-```scheme
+```clojure
 (one-six -0.5 0 3)
 ```
 
-![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-06-10_15-11-27_ex1_6_neg5offset.gif)
+![img](https://github.com/sicmutils/sicm-exercises/raw/master/images/Lagrangian_Mechanics/2020-06-10_15-11-27_ex1_6_neg5offset.gif)
 
 The process <span class="underline"><span class="underline">does</span></span> converge, but this is only because we only used 3 intermediate points. If you bump up to 10 points, with this code:
 
-```scheme
+```clojure
 (one-six -0.5 0 10)
 ```
 
@@ -956,11 +963,13 @@ The key is equation 1.22 in the book:
 
 Given \\(g(\epsilon) = f[q + \epsilon \eta]\\). Through the magic of automatic differentiation we can simply write:
 
-```scheme
-(define (((delta eta) f) q)
-  (let ((g (lambda (eps)
-             (f (+ q (* eps eta))))))
-    ((D g) 0)))
+```clojure
+(defn delta [eta]
+  (fn [f]
+    (fn [q]
+      (letfn [(g [eps]
+                (f (+ q (* eps eta))))]
+        ((D g) 0)))))
 ```
 
 It's almost spooky, that \\(D\\) can somehow figure out what to do here.
@@ -969,22 +978,23 @@ It's almost spooky, that \\(D\\) can somehow figure out what to do here.
 
 Part B's problem description gave us a path-dependent function similar to this one:
 
-```scheme
-(define ((fn sym) q)
-  (let* ((Local (UP Real (UP* Real) (UP* Real)))
-         (F (literal-function sym (-> Local Real))))
-    (compose F (Gamma q))))
+```clojure
+(defn litfn [sym]
+  (fn [q]
+    (let [Local '(UP Real (UP* Real 2) (UP* Real 2))
+          F     (literal-function sym (list '-> Local 'Real))]
+      (compose F (Gamma q)))))
 ```
 
 I've modified it slightly to take in a symbol, since we'll need to generate multiple functions for a few of the rules.
 
-\\(fn\\) takes a symbol like \\(F\\) and a path function &#x2013; a function from \\(t\\) to any number of coordinates (see the `UP*`?) &#x2013; and returns a generic expression for a path dependent function \\(F\\) that acts via \\(F \circ \Gamma[q]\\). \\(F\\) might be a Lagrangian, for example.
+\\(litfn\\) takes a symbol like \\(F\\) and a path function &#x2013; a function from \\(t\\) to any number of coordinates (see the `UP*`?) &#x2013; and returns a generic expression for a path dependent function \\(F\\) that acts via \\(F \circ \Gamma[q]\\). \\(F\\) might be a Lagrangian, for example.
 
 The textbook also gives us this function from \\(t \to (x, y)\\) to test out the properties above. I've added an \\(\eta\\) of the same type signature that we can use to add variation to the path.
 
-```scheme
-(define q (literal-function 'q (-> Real (UP Real Real))))
-(define eta (literal-function 'eta (-> Real (UP Real Real))))
+```clojure
+(def q (literal-function 'q (-> Real (UP Real Real))))
+(def eta (literal-function 'eta (-> Real (UP Real Real))))
 ```
 
 These weren't easy to write down, but they really do constitute proofs. If you trust the system managing the algebra, then the equalities here are general. This is an area of computing I haven't worked with much, but I'm left with the eery feeling that these are more powerful than any tests I might have decided to write, if I weren't guided by this exercise.
@@ -993,15 +1003,15 @@ These weren't easy to write down, but they really do constitute proofs. If you t
 
 Equation \eqref{eq:var-prod} states the product rule for variations. Here it is in code. I've implemented the right and left sides and subtracted them. As expected, the result is 0:
 
-```scheme
-(let* ((f (fn 'f))
-       (g (fn 'g))
-       (de (delta eta)))
-  (let ((left ((de (* f g)) q))
-        (right (+ (* (g q) ((de f) q))
-                  (* (f q) ((de g) q)))))
-    (->tex-equation
-     ((- left right) 't))))
+```clojure
+(let [f     (litfn 'f)
+      g     (litfn 'g)
+      de    (delta eta)
+      left  ((de (* f g)) q)
+      right (+ (* (g q) ((de f) q))
+               (* (f q) ((de g) q)))]
+  (->tex-equation
+   ((- left right) 't)))
 ```
 
 \begin{equation}
@@ -1012,15 +1022,15 @@ Equation \eqref{eq:var-prod} states the product rule for variations. Here it is 
 
 The sum rule is similar. Here's the Scheme implementation of equation \eqref{eq:var-sum}:
 
-```scheme
-(let* ((f (fn 'f))
-       (g (fn 'g))
-       (de (delta eta)))
-  (let ((left ((de (+ f g)) q))
-        (right (+ ((de f) q)
-                  ((de g) q))))
-    (->tex-equation
-     ((- left right) 't))))
+```clojure
+(let [f     (litfn 'f)
+      g     (litfn 'g)
+      de    (delta eta)
+      left  ((de (+ f g)) q)
+      right (+ ((de f) q)
+               ((de g) q))]
+  (->tex-equation
+   ((- left right) 't)))
 ```
 
 \begin{equation}
@@ -1031,13 +1041,13 @@ The sum rule is similar. Here's the Scheme implementation of equation \eqref{eq:
 
 Here's equation \eqref{eq:var-scalar} in code. The sides are equal, so their difference is 0:
 
-```scheme
-(let* ((g (fn 'g))
-       (de (delta eta)))
-  (let ((left ((de (* 'c g)) q))
-        (right (* 'c ((de g) q))))
-    (->tex-equation
-     ((- left right) 't))))
+```clojure
+(let [g     (litfn 'g)
+      de    (delta eta)
+      left  ((de (* 'c g)) q)
+      right (* 'c ((de g) q))]
+  (->tex-equation
+   ((- left right) 't)))
 ```
 
 \begin{equation}
@@ -1048,25 +1058,26 @@ Here's equation \eqref{eq:var-scalar} in code. The sides are equal, so their dif
 
 To compute the chain rule we'll need a version of `fn` that takes the derivative of the inner function:
 
-```scheme
-(define ((Dfn sym) q)
-  (let* ((Local (UP Real (UP* Real) (UP* Real)))
-         (F (literal-function sym (-> Local Real))))
-    (compose (D F) (Gamma q))))
+```clojure
+(defn Dfn [sym]
+  (fn [q]
+    (let [Local '(UP Real (UP* Real 2) (UP* Real 2))
+          F     (literal-function sym ['-> Local 'Real])]
+      (compose (D F) (Gamma q)))))
 ```
 
 For the Scheme implementation, remember that both `fn` and `Dfn` have \\(\Gamma\\) baked in. The \\(g\\) in equation \eqref{eq:var-chain} is hardcoded to \\(\Gamma\\) in the function below.
 
 Here's a check that the two sides of equation \eqref{eq:var-chain} are equal:
 
-```scheme
-(let* ((h (fn 'F))
-       (dh (Dfn 'F))
-       (de (delta eta)))
-  (let ((left (de h))
-        (right (* dh (de Gamma))))
-    (->tex-equation
-     (((- left right) q) 't))))
+```clojure
+(let [h     (litfn 'F)
+      dh    (Dfn 'F)
+      de    (delta eta)
+      left  (de h)
+      right (* dh (de Gamma))]
+  (->tex-equation
+   (((- left right) q) 't)))
 ```
 
 \begin{equation}
@@ -1077,14 +1088,14 @@ Here's a check that the two sides of equation \eqref{eq:var-chain} are equal:
 
 Our final test. Here's equation \eqref{eq:var-commute} in code, showing that the derivative commutes with the variation operator:
 
-```scheme
-(let* ((f (fn 'f))
-       (g (compose D f))
-       (de (delta eta)))
-  (let ((left (D ((de f) q)))
-        (right ((de g) q)))
-    (->tex-equation
-     ((- left right) 't))))
+```clojure
+(let [f     (litfn 'f)
+      g     (compose D f)
+      de    (delta eta)
+      left  (D ((de f) q))
+      right ((de g) q)]
+  (->tex-equation
+   ((- left right) 't)))
 ```
 
 \begin{equation}
@@ -1262,11 +1273,13 @@ Exercise 1.13 implements a procedure that generates the residual required by the
 
 # Exercise 1.11: Kepler's third law<a id="sec-12"></a>
 
-This exercise asks us to derive [Kepler's third law](https://en.wikipedia.org/wiki/Kepler%27s_laws_of_planetary_motion#Third_law_of_Kepler) by considering a Langrangian that describes two particles rotating in a circular orbit around their center of mass at some rate.
+TODO continue from here.
+
+This exercise asks us to derive [Kepler's third law](https://en.wikipedia.org/wiki/Kepler%27s_laws_of_planetary_motion#Third_law_of_Kepler) by considering a Lagrangian that describes two particles rotating in a circular orbit around their center of mass at some rate.
 
 Here's the Lagrangian for "central force", in polar coordinates. This is rotational kinetic energy, minus some arbitrary potential \\(V\\) that depends on the distance \\(r\\) between the two particles.
 
-```scheme
+```clojure
 (define ((L-central-polar m V) local)
   (let ((q (coordinate local))
         (qdot (velocity local)))
@@ -1279,14 +1292,14 @@ Here's the Lagrangian for "central force", in polar coordinates. This is rotatio
 
 This function defines gravitational potential energy:
 
-```scheme
+```clojure
 (define ((gravitational-energy G m1 m2) r)
   (- (/ (* G m1 m2) r)))
 ```
 
 What is the mass \\(m\\) in the Lagrangian above? It's the "[reduced mass](https://en.wikipedia.org/wiki/Reduced_mass)", totally unjustified at this point in the book:
 
-```scheme
+```clojure
 (define (reduced-mass m1 m2)
   (/ (* m1 m2)
      (+ m1 m2)))
@@ -1296,7 +1309,7 @@ If you want to see why the reduced mass has the form it does, check out [this de
 
 The Lagrangian is written in terms of some angle \\(\phi\\) and \\(r\\), the distance between the two particles. \\(q\\) defines a circular path:
 
-```scheme
+```clojure
 (define ((q r omega) t)
   (let ((phi (* omega t)))
     (up r phi)))
@@ -1304,7 +1317,7 @@ The Lagrangian is written in terms of some angle \\(\phi\\) and \\(r\\), the dis
 
 Write the Lagrange equations, given \\(r = a\\) and \\(\omega = n\\):
 
-```scheme
+```clojure
 (let ((eqfn (Lagrange-equations
              (L-central-polar (reduced-mass 'm1 'm2)
                               (gravitational-energy 'G 'm1 'm2)))))
@@ -1323,7 +1336,7 @@ These two entries are *residuals*, equal to zero. Stare at the top residual and 
 
 Manually factor these out:
 
-```scheme
+```clojure
 (let ((eqfn (Lagrange-equations
              (L-central-polar (reduced-mass 'm1 'm2)
                               (gravitational-energy 'G 'm1 'm2)))))
@@ -1355,7 +1368,7 @@ Before we begin, here is a function that will display an up-tuple of:
 -   \\(D(\partial\_2 L \circ \Gamma[q])\\), the derivative of our momenta
 -   The Lagrange equations for the system.
 
-```scheme
+```clojure
 (define (lagrange-equation-steps L q)
   (let* ((p1 (compose ((partial 1) L) (Gamma q)))
          (p2 (compose ((partial 2) L) (Gamma q)))
@@ -1383,7 +1396,7 @@ From the book:
 
 Here is the Lagrangian described by the exercise:
 
-```scheme
+```clojure
 (define ((L-pendulum m g l) local)
   (let ((theta (coordinate local))
         (theta_dot (velocity local)))
@@ -1393,7 +1406,7 @@ Here is the Lagrangian described by the exercise:
 
 And the steps that lead us to Lagrange's equations:
 
-```scheme
+```clojure
 (lagrange-equation-steps
  (L-pendulum 'm 'g 'l)
  (literal-function 'theta))
@@ -1405,7 +1418,7 @@ And the steps that lead us to Lagrange's equations:
 
 The final entry is the Lagrange equation, equal to \\(0\\). Divide out the shared factors of \\(m\\) and \\(l\\):
 
-```scheme
+```clojure
 (let* ((L (L-pendulum 'm 'g 'l))
        (theta (literal-function 'theta))
        (eqs ((Lagrange-equations L) theta)))
@@ -1432,7 +1445,7 @@ I have no intuition for *what* this potential is, by the way. One term, \\({x^2 
 
 Define the Lagrangian to be the difference of the kinetic energy and some potential \\(V\\) that has access to the coordinates:
 
-```scheme
+```clojure
 (define (((L-2d-potential m) V) local)
   (- (* 1/2 m (square (velocity local)))
      (V (coordinate local))))
@@ -1444,7 +1457,7 @@ Note this for later, as this idea will become useful when the book reaches the d
 
 Next define the potential from the problem description:
 
-```scheme
+```clojure
 (define (V q)
   (let ((x (ref q 0))
         (y (ref q 1)))
@@ -1457,7 +1470,7 @@ Next define the potential from the problem description:
 
 Our helpful function generates the Lagrange equations, along with each intermediate step:
 
-```scheme
+```clojure
 (lagrange-equation-steps
  ((L-2d-potential 'm) V)
  (up (literal-function 'x)
@@ -1483,7 +1496,7 @@ So the particle has some generalized kinetic energy with terms for:
 
 Here is the Lagrangian:
 
-```scheme
+```clojure
 (define ((L-sphere m R) local)
   (let* ((q (coordinate local))
          (qdot (velocity local))
@@ -1497,7 +1510,7 @@ Here is the Lagrangian:
 
 Here is the full derivation:
 
-```scheme
+```clojure
 (lagrange-equation-steps
  (L-sphere 'm 'R)
  (up (literal-function 'theta)
@@ -1512,7 +1525,7 @@ The final Lagrange residuals have a few terms that we can divide out. Scheme doe
 
 Isolate the Lagrange equations from the derivation and manually simplify each equation by dividing out, respectively, \\(mR^2\\) and \\(mR^2 \sin \theta\\):
 
-```scheme
+```clojure
 (let* ((L (L-sphere 'm 'R))
        (theta (literal-function 'theta))
        (q (up theta (literal-function 'phi)))
@@ -1543,7 +1556,7 @@ From the book:
 
 Now that we know the math, the implementation is a straightforward extension of the `Lagrange-equations` procedure presented in the book:
 
-```scheme
+```clojure
 (define ((Lagrange-equations3 L) q)
   (let ((state-path (Gamma q 4)))
     (+ ((square D) (compose ((partial 3) L) state-path))
@@ -1565,7 +1578,7 @@ Now it's time to use the new function. From the book:
 
 Here is the Lagrangian described in the problem:
 
-```scheme
+```clojure
 (define ((L-1-13 m k) local)
   (let ((x (coordinate local))
         (a (acceleration local)))
@@ -1575,7 +1588,7 @@ Here is the Lagrangian described in the problem:
 
 Use the new function to generate the Lagrange equations. This call includes a factor of \\(-1\\) to make the equation look nice:
 
-```scheme
+```clojure
 (->tex-equation
  (- (((Lagrange-equations3 (L-1-13 'm 'k))
       (literal-function 'x)) 't)))
@@ -1610,7 +1623,7 @@ If you need to take \\(n\\) steps along a cycle of length \\(l\\), you'll end up
 
 `alternate` generates a list of \\(n\\) total elements generated by walking around the ordered cycle of supplied `elems`:
 
-```scheme
+```clojure
 (define (cycle n elems)
   (apply append (make-list n elems)))
 
@@ -1624,7 +1637,7 @@ Now, the general `Lagrange-equations*` implementation.
 
 This function defines an internal function `term` that generates the $i$th term of the derivative combination described above. This sequence is zipped with the sequence of \\(1, -1\\), and `fold-left` generates the sum.
 
-```scheme
+```clojure
 (define ((Lagrange-equations* L n) q)
   (let ((state-path (Gamma q (1+ n))))
     (define (term i)
@@ -1640,7 +1653,7 @@ This function defines an internal function `term` that generates the $i$th term 
 
 Generate the Lagrange equations from part b once more to check that we get the same result:
 
-```scheme
+```clojure
 (->tex-equation
  (- (((Lagrange-equations* (L-1-13 'm 'k) 3)
       (literal-function 'x)) 't)))
@@ -1674,7 +1687,7 @@ Fair warning: this is much more painful than transforming the Lagrangian *before
 
 Here are the two Lagrangians from the book:
 
-```scheme
+```clojure
 (define ((L-central-rectangular m U) local)
   (let ((q (coordinate local))
         (v (velocity local)))
@@ -1694,7 +1707,7 @@ Here are the two Lagrangians from the book:
 
 Here are the rectangular equations of motion:
 
-```scheme
+```clojure
 (->tex-equation
  (((Lagrange-equations
     (L-central-rectangular 'm (literal-function 'U)))
@@ -1711,7 +1724,7 @@ Here are the rectangular equations of motion:
 
 And the polar Lagrange equations:
 
-```scheme
+```clojure
 (->tex-equation
   (((Lagrange-equations
       (L-central-polar 'm (literal-function 'U)))
@@ -1748,7 +1761,7 @@ The rectangular equations of motion have second derivatives, so we need to keep 
 
 Write the coordinate transformation for polar coordinates to rectangular in Scheme:
 
-```scheme
+```clojure
 (define (p->r local)
   (let* ((polar-tuple (coordinate local))
          (r (ref polar-tuple 0))
@@ -1764,7 +1777,7 @@ The version that the book presents on page 46 can only generate a velocity trans
 
 Here are the rectangular positions, velocities and accelerations, written in polar coordinates:
 
-```scheme
+```clojure
 (let ((convert-path (F->C p->r))
       (polar-path (up 't
                       (up 'r 'phi)
@@ -1782,7 +1795,7 @@ Ordinarily, it would be too heartbreaking to substitute these in to the rectangu
 
 Write the rectangular Lagrange equations as a function of the local tuple, so we can call it directly:
 
-```scheme
+```clojure
 (define (rect-equations local)
   (let* ((q (coordinate local))
          (x (ref q 0))
@@ -1807,7 +1820,7 @@ Write the rectangular Lagrange equations as a function of the local tuple, so we
 
 Verify that these are, in fact, the rectangular equations of motion by passing in a symbolic rectangular local tuple:
 
-```scheme
+```clojure
 (let ((rect-path (up 't
                      (up 'x 'y)
                      (up 'xdot 'ydot)
@@ -1822,7 +1835,7 @@ Verify that these are, in fact, the rectangular equations of motion by passing i
 
 Now use the `p->r` conversion to substitute each of the rectangular values above with their associated polar values:
 
-```scheme
+```clojure
 (let* ((convert-path (F->C p->r))
        (polar-path (up 't
                        (up 'r 'phi)
@@ -1849,7 +1862,7 @@ I realized that I could recover the first equation through a linear combination 
 
 A similar trick recovers the second equation,given an extra factor of \\(r\\):
 
-```scheme
+```clojure
 (let* ((convert-path (F->C p->r))
        (polar-path (up 't
                        (up 'r 'phi)
@@ -1950,7 +1963,7 @@ Equation (1.77) in the book describes how to implement \\(C\\) given some arbitr
 
 The following function is a slight redefinition that allows us to use an \\(F\\) that takes an explicit \\((t, x')\\), instead of the entire local tuple:
 
-```scheme
+```clojure
 (define ((F->C* F) local)
   (let ((t (time local))
         (x (coordinate local))
@@ -1966,7 +1979,7 @@ Next we define \\(F\\), \\(C\\) and \\(L\\) as described above, as well as `qpri
 
 The types here all imply that the path has one real coordinate. I did this to make the types easier to understand; the derivation applies equally well to paths with many dimensions.
 
-```scheme
+```clojure
 (define F
   (literal-function 'F (-> (X Real Real) Real)))
 
@@ -1981,7 +1994,7 @@ The types here all imply that the path has one real coordinate. I did this to ma
 
 When we apply \\(C\\) to the primed local tuple, do we get the transformed tuple that we expect from 1.77 in the book?
 
-```scheme
+```clojure
 (->tex-equation
  ((compose C (Gamma qprime)) 't))
 ```
@@ -1992,14 +2005,14 @@ When we apply \\(C\\) to the primed local tuple, do we get the transformed tuple
 
 This looks correct. We can also transform the path before passing it to \\(\Gamma\\):
 
-```scheme
+```clojure
 (define ((to-q F qp) t)
   (F t (qp t)))
 ```
 
 Subtract the two forms to see that they're equivalent:
 
-```scheme
+```clojure
 (->tex-equations
  ((- (compose C (Gamma qprime))
      (Gamma (to-q F qprime)))
@@ -2012,7 +2025,7 @@ Subtract the two forms to see that they're equivalent:
 
 Now that we know \\(C\\) is correct we can define \\(q\\), the unprimed coordinate path function, and `Lprime`:
 
-```scheme
+```clojure
 (define q (to-q F qprime))
 (define Lprime (compose L C))
 ```
@@ -2050,7 +2063,7 @@ The tuple algebra described in Chapter 9 defines multiplication between an up an
 
 Example the value of \\(\partial\_2C\\) using our Scheme utilities:
 
-```scheme
+```clojure
 (->tex-equation
  (((partial 2) C) (up 't 'xprime 'vprime))
  "eq:p2c")
@@ -2092,7 +2105,7 @@ Substitute the second term using \eqref{eq:p2c}:
 Expand using the product rule:
 
 \begin{equation}
-\label{eq:ex1-15-dp2l}
+\label{eq:ex1\_15-dp2l}
   D(\partial\_2L' \circ \Gamma[q']) = \left[ D(\partial\_2L \circ \Gamma[q]) \right]\partial\_1F(t, q'(t)) + (\partial\_2L \circ \Gamma[q])D\left[ \partial\_1F(t, q'(t)) \right]
 \end{equation}
 
@@ -2106,7 +2119,7 @@ Next, expand the \\(\partial\_1 L'\\) term:
 
 Calculate \\(\partial\_1C\\) using our Scheme utilities:
 
-```scheme
+```clojure
 (->tex-equation
  (((partial 1) C) (up 't 'xprime 'vprime)))
 ```
@@ -2157,7 +2170,7 @@ Can we use Scheme to pursue the same derivation? If we can write the relationshi
 
 First, consider \\(\partial\_1 L' \circ \Gamma[q']\\):
 
-```scheme
+```clojure
 (->tex-equation
  ((compose ((partial 1) Lprime) (Gamma qprime))
   't))
@@ -2169,7 +2182,7 @@ D{q}^\prime\left( t \right) {\partial}\_{2}L\left( \begin{pmatrix} \displaystyle
 
 This is completely insane, and already unhelpful. The argument to \\(L\\), we know, is actually \\(\Gamma[q]\\). Make a function that will replace the tuple with that reference:
 
-```scheme
+```clojure
 (define (->eq expr)
   (write-string
    (replace-all (->tex-equation* expr)
@@ -2179,7 +2192,7 @@ This is completely insane, and already unhelpful. The argument to \\(L\\), we kn
 
 Try again:
 
-```scheme
+```clojure
 (->eq
  ((compose ((partial 1) Lprime) (Gamma qprime))
   't))
@@ -2193,7 +2206,7 @@ Ignore the parentheses around \\(\circ \Gamma[q]\\) and this looks better.
 
 The \\(\partial\_1 L \circ \Gamma[q]\\) term of the unprimed Lagrange equations is nestled inside the expansion above, multiplied by a factor \\(\partial\_1F(t, q'(t))\\):
 
-```scheme
+```clojure
 (let* ((factor (((partial 1) F) 't (qprime 't))))
   (->eq
    ((* factor (compose ((partial 1) L) (Gamma q)))
@@ -2206,7 +2219,7 @@ The \\(\partial\_1 L \circ \Gamma[q]\\) term of the unprimed Lagrange equations 
 
 Next, consider the \\(D(\partial\_2 L' \circ \Gamma[q'])\\) term:
 
-```scheme
+```clojure
 (->eq
  ((D (compose ((partial 2) Lprime) (Gamma qprime)))
   't))
@@ -2220,7 +2233,7 @@ This, again, is total madness. We really want some way to control how Scheme exp
 
 But we know what we're looking for. Expand out the matching term of the unprimed Lagrange equations:
 
-```scheme
+```clojure
 (->eq
  ((D (compose ((partial 2) L) (Gamma q)))
   't))
@@ -2234,7 +2247,7 @@ Staring at these two equations, it becomes clear that the first contains the sec
 
 Try writing out the primed Lagrange equations, and subtracting the unprimed Lagrange equations, scaled by this factor:
 
-```scheme
+```clojure
 (let* ((primed-lagrange
         (- (D (compose ((partial 2) Lprime) (Gamma qprime)))
            (compose ((partial 1) Lprime) (Gamma qprime))))
@@ -2269,8 +2282,25 @@ I learned quite a bit about functional notation from this exercise, and I think 
 
 # Exercise 1.16: Central force motion<a id="sec-17"></a>
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-16
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```
 
 This exercise gives you practice in writing Lagrangians as compositions.
@@ -2345,7 +2375,7 @@ L' = {1 \over 2} m (r^2 \dot{\phi}^2 \sin^2\phi + r^2 \dot{\theta}^2 + \dot{r}^2
 
 To show the rectangular Lagrangian, get the procedure from page 41:
 
-```scheme
+```clojure
 (define ((L-central-rectangular m U) local)
   (let ((q (coordinate local))
         (v (velocity local)))
@@ -2355,7 +2385,7 @@ To show the rectangular Lagrangian, get the procedure from page 41:
 
 This is already written in a form that can handle an arbitrary number of coordiantes. Confirm the rectangular Lagrangian by passing in a local tuple with 3 dimensional coordinates and velocities:
 
-```scheme
+```clojure
 (->tex-equation
  ((L-central-rectangular 'm (literal-function 'U))
   (up 't
@@ -2369,7 +2399,7 @@ This is already written in a form that can handle an arbitrary number of coordia
 
 Next, the spherical. Write down the coordinate transformation from spherical to rectangular coordinates as a Scheme procedure:
 
-```scheme
+```clojure
 (define (spherical->rect local)
   (let* ((q (coordinate local))
          (r (ref q 0))
@@ -2382,7 +2412,7 @@ Next, the spherical. Write down the coordinate transformation from spherical to 
 
 Here are the velocities calculated above by hand:
 
-```scheme
+```clojure
 (->tex-equation
  (velocity
   ((F->C spherical->rect)
@@ -2397,7 +2427,7 @@ Here are the velocities calculated above by hand:
 
 Now that we have \\(L\\) and \\(C\\), we can compose them to get \\(L'\\), our spherical Lagrangian:
 
-```scheme
+```clojure
 (define (L-central-spherical m U)
   (compose (L-central-rectangular m U)
            (F->C spherical->rect)))
@@ -2405,7 +2435,7 @@ Now that we have \\(L\\) and \\(C\\), we can compose them to get \\(L'\\), our s
 
 Confirm that this is equivalent to the analytic solution:
 
-```scheme
+```clojure
 (->tex-equation
  ((L-central-spherical 'm (literal-function 'U))
   (up 't
@@ -2419,7 +2449,7 @@ Confirm that this is equivalent to the analytic solution:
 
 ## Discussion<a id="sec-17-3"></a>
 
-Langrangian coordinate transformation from spherical -> rectangular on paper, which of course is a total nightmare, writing vx<sup>2</sup> + vy<sup>2</sup> + vz<sup>2</sup> and simplifying. BUT then, of course, you write down the spherical => rectangular position change&#x2026;
+Lagrangian coordinate transformation from spherical -> rectangular on paper, which of course is a total nightmare, writing vx<sup>2</sup> + vy<sup>2</sup> + vz<sup>2</sup> and simplifying. BUT then, of course, you write down the spherical => rectangular position change&#x2026;
 
 the explicit link to function composition, and how the new lagrangian is (Lagrangian A + A<-B + B<-C)&#x2026; really drives home how coordinate transforms can stack associatively through function composition. the lesson is, prove that the code works, then trust the program to go to crazy coordinate systems.
 
@@ -2427,8 +2457,25 @@ Later, the authors add in a very simple-to-write coordinate transform that has o
 
 # Exercise 1.17: Bead on a helical wire<a id="sec-18"></a>
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-3
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```
 
 This, and the next three exercises, are here to give you practice in the real art, of difficulty, of any dynamics problem. It's easy to change coordinates. So what coordinates do you use?
@@ -2437,9 +2484,9 @@ This, and the next three exercises, are here to give you practice in the real ar
 
 I'll replace this with a better picture later, but this is the setup:
 
-![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-06-25_11-03-55_screenshot.png)
+![img](https://github.com/sicmutils/sicm-exercises/raw/master/images/Lagrangian_Mechanics/2020-06-25_11-03-55_screenshot.png)
 
-```scheme
+```clojure
 (define ((turns->rect d h) local)
   (let* ((turns (coordinate local))
          (theta (* turns 2 'pi)))
@@ -2450,7 +2497,7 @@ I'll replace this with a better picture later, but this is the setup:
 
 Or you could do this. Remember, these transformations need to be functions of a local tuple, so if you're going to compose them, remember to put `coordinate` at the beginning of the composition.
 
-```scheme
+```clojure
 (define ((turns->x-theta h) q)
   (up (/ q h)
       (* q 2 'pi)))
@@ -2470,7 +2517,7 @@ Or you could do this. Remember, these transformations need to be functions of a 
 
 The transformations are identical:
 
-```scheme
+```clojure
 (->tex-equation
  ((- (turns->rect 'd 'h)
      (turns->rect* 'd 'h))
@@ -2483,7 +2530,7 @@ The transformations are identical:
 
 Define the Lagrangian:
 
-```scheme
+```clojure
 (define ((L-rectangular m U) local)
   (let ((q (coordinate local))
         (v (velocity local)))
@@ -2497,14 +2544,14 @@ Define the Lagrangian:
 
 The potential is a uniform gravitational acceleration:
 
-```scheme
+```clojure
 (define ((U-grav m g) q)
   (* m g (ref q 2)))
 ```
 
 Final Lagrangian:
 
-```scheme
+```clojure
 (->tex-equation
  ((L-turns 'm 'd 'h (U-grav 'm 'g))
   (up 't 'n 'ndot)))
@@ -2516,7 +2563,7 @@ Final Lagrangian:
 
 Lagrange equations of motion:
 
-```scheme
+```clojure
 (let* ((L (L-turns 'm 'd 'h (U-grav 'm 'g)))
        (n (literal-function 'n)))
   (->tex-equation
@@ -2529,8 +2576,25 @@ Lagrange equations of motion:
 
 # Exercise 1.18: Bead on a triaxial surface<a id="sec-19"></a>
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-18
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```
 
 > A bead of mass \\(m\\) moves without friction on a triaxial ellipsoidal surface. In rectangular coordinates the surface satisfies
@@ -2543,7 +2607,7 @@ Lagrange equations of motion:
 
 The transformation to elliptical coordinates is very similar to the spherical coordinate transformation, but with a fixed \\(a\\), \\(b\\) and \\(c\\) coefficient for each rectangular dimension, and no more radial degree of freedom:
 
-```scheme
+```clojure
 (define ((elliptical->rect a b c) local)
   (let* ((q (coordinate local))
          (theta (ref q 0))
@@ -2555,7 +2619,7 @@ The transformation to elliptical coordinates is very similar to the spherical co
 
 Next, the Lagrangian:
 
-```scheme
+```clojure
 (define ((L-free-particle m) local)
   (* 1/2 m (square
             (velocity local))))
@@ -2567,7 +2631,7 @@ Next, the Lagrangian:
 
 Final Lagrangian:
 
-```scheme
+```clojure
 (let ((local (up 't
                  (up 'theta 'phi)
                  (up 'thetadot 'phidot))))
@@ -2583,7 +2647,7 @@ I'm sure there's some simplification in there for us. But why?
 
 Lagrange equations of motion:
 
-```scheme
+```clojure
 (let* ((L (L-central-triaxial 'm 'a 'b 'c))
        (theta (literal-function 'theta))
        (phi (literal-function 'phi)))
@@ -2604,15 +2668,32 @@ Double pendulum, sort of, except the whole thing can fly around the plane.
 
 The system description is:
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-19
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```
 
 > The two-bar linkage shown in figure 1.3 is constrained to move in the plane. It is composed of three small massive bodies interconnected by two massless rigid rods in a uniform gravitational field with vertical acceleration g. The rods are pinned to the central body by a hinge that allows the linkage to fold. The system is arranged so that the hinge is completely free: the members can go through all configurations without collision. Formulate a Lagrangian that describes the system and find the Lagrange equations of motion. Use the computer to do this, because the equations are rather big.
 
 This is new. Now we have multiple bodies:
 
-![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-06-29_05-39-01_Art_P146.jpg)
+![img](https://github.com/sicmutils/sicm-exercises/raw/master/images/Lagrangian_Mechanics/2020-06-29_05-39-01_Art_P146.jpg)
 
 We can handle this by treating our coordinate space as having new dimensions for, say, \\(x\_0\\), \\(y\_0\\), \\(x\_1\\), \\(y\_1\\). The fact that multiple coordinates refer to the same particle doesn't matter for the Lagrangian. But it's a confusing API.
 
@@ -2638,7 +2719,7 @@ Sketch out why this makes sense. Each angle is positive CCW for consistency, sin
 
 Write the coordinate transformation in scheme.
 
-```scheme
+```clojure
 (define ((double-linkage->rect l1 l2) local)
   (let* ((q (coordinate local))
          (theta (ref q 0))
@@ -2655,7 +2736,7 @@ Write the coordinate transformation in scheme.
 
 Next, the Lagrangian given rectangular coordinates, assuming no constraints. Remember, we have a uniform gravitational field pointing down; this means that each of the components has a potential dragging on it.
 
-```scheme
+```clojure
 (define ((L-double-linkage-rect m1 m2 m3 U) local)
   (let* ((v (velocity local))
          (vx1 (ref v 0))
@@ -2675,7 +2756,7 @@ Next, the Lagrangian given rectangular coordinates, assuming no constraints. Rem
 
 And the composition:
 
-```scheme
+```clojure
 (define (L-double-linkage l1 l2 m1 m2 m3 U)
   (compose (L-double-linkage-rect m1 m2 m3 U)
            (F->C (double-linkage->rect l1 l2))))
@@ -2683,7 +2764,7 @@ And the composition:
 
 Gravitational potential:
 
-```scheme
+```clojure
 (define ((U-gravity g m1 m2 m3) q)
   (let* ((y1 (ref q 1))
          (y2 (ref q 3))
@@ -2693,7 +2774,7 @@ Gravitational potential:
             (* m3 y3)))))
 ```
 
-```scheme
+```clojure
 (let ((local (up 't
                  (up 'theta 'phi 'x_2 'y_2)
                  (up 'thetadot 'phidot 'xdot_2 'ydot_2)))
@@ -2708,7 +2789,7 @@ Gravitational potential:
 
 Lagrange equations of motion:
 
-```scheme
+```clojure
 (let* ((U (U-gravity 'g 'm_1 'm_2 'm_3))
        (L (L-double-linkage 'l_1 'l_2 'm_1 'm_2 'm_3 U))
        (theta (literal-function 'theta))
@@ -2726,7 +2807,7 @@ Lagrange equations of motion:
 
 Kill some clear factors:
 
-```scheme
+```clojure
 (let* ((U (U-gravity 'g 'm_1 'm_2 'm_3))
        (L (L-double-linkage 'l_1 'l_2 'm_1 'm_2 'm_3 U))
        (theta (literal-function 'theta))
@@ -2750,15 +2831,32 @@ This was not as gnarly as the previous problem. Perhaps I did something wrong th
 
 # Exercise 1.20: Sliding pendulum<a id="sec-21"></a>
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-20
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```
 
 > Consider a pendulum of length \\(l\\) attached to a support that is free to move horizontally, as shown in figure 1.4. Let the mass of the support be \\(m1\\) and the mass of the pendulum bob be \\(m2\\). Formulate a Lagrangian and derive Lagrange's equations for this system.
 
 This is interesting, and totally not-obvious how to represent with Newtonian mechanics. Here it is pretty simple. The setup:
 
-![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-06-29_05-39-33_Art_P147.jpg)
+![img](https://github.com/sicmutils/sicm-exercises/raw/master/images/Lagrangian_Mechanics/2020-06-29_05-39-33_Art_P147.jpg)
 
 We can use 2 coordinates:
 
@@ -2780,7 +2878,7 @@ Draw these on the picture to make it clearer.
 
 Write the coordinate transformation in scheme.
 
-```scheme
+```clojure
 (define ((sliding-pend->rect l) local)
   (let* ((q (coordinate local))
          (x1 (ref q 0))
@@ -2793,7 +2891,7 @@ Write the coordinate transformation in scheme.
 
 Next, the Lagrangian given rectangular coordinates, assuming no constraints:
 
-```scheme
+```clojure
 (define ((L-sliding-pend-rect m1 m2 U) local)
   (let* ((v (velocity local))
          (vx1 (ref v 0))
@@ -2809,7 +2907,7 @@ Next, the Lagrangian given rectangular coordinates, assuming no constraints:
 
 And the composition:
 
-```scheme
+```clojure
 (define (L-sliding-pend l m1 m2 U)
   (compose (L-sliding-pend-rect m1 m2 U)
            (F->C (sliding-pend->rect l))))
@@ -2817,13 +2915,13 @@ And the composition:
 
 Gravitational potential. I could include the cart here, but since we know it's fixed gravitationally it wouldn't change the equations of motion.
 
-```scheme
+```clojure
 (define ((U-gravity g m2) q)
   (let* ((y2 (ref q 3)))
     (* m2 g y2)))
 ```
 
-```scheme
+```clojure
 (let ((local (up 't
                  (up 'x_1 'theta)
                  (up 'xdot_1 'thetadot)))
@@ -2838,7 +2936,7 @@ Gravitational potential. I could include the cart here, but since we know it's f
 
 Lagrange equations of motion:
 
-```scheme
+```clojure
 (let* ((U (U-gravity 'g 'm_2))
        (L (L-sliding-pend 'l 'm_1 'm_2 U))
        (x1 (literal-function 'x_1))
@@ -2854,7 +2952,7 @@ Lagrange equations of motion:
 
 Cleaner:
 
-```scheme
+```clojure
 (let* ((U (U-gravity 'g 'm_2))
        (L (L-sliding-pend 'l 'm_1 'm_2 U))
        (x1 (literal-function 'x_1))
@@ -2878,10 +2976,27 @@ This exercise comes after a section called "Why it Works".
 
 The next exercise tries to do a coordinate change that is really careful about *not* changing the dimension of the configuration space, so that we can show that this move is allowed. Here's the setup:
 
-![img](https://github.com/sritchie/sicm/raw/master/images/Lagrangian_Mechanics/2020-06-29_05-40-00_Art_P166.jpg)
+![img](https://github.com/sicmutils/sicm-exercises/raw/master/images/Lagrangian_Mechanics/2020-06-29_05-40-00_Art_P166.jpg)
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-21
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```
 
 The idea here is to take the distance between the particles \\(l\\) and treat it as a new dimension \\(c\\).
@@ -2896,14 +3011,14 @@ Many exercises have been dealing with multiple particles so far. Let's introduce
 
 If we have the velocity and mass of a particle, its kinetic energy is easy to define:
 
-```scheme
+```clojure
 (define (KE-particle m v)
   (* 1/2 m (square v)))
 ```
 
 This next function, `extract-particle`, takes a number of components &#x2013; 2 for a particle with 2 components, 3 for a particle in space, etc &#x2013; and returns a function of `local` and `i`, a particle index. This function can be used to extract a sub-local-tuple for that particle from a flattened list.
 
-```scheme
+```clojure
 (define ((extract-particle pieces) local i)
   (let* ((indices (apply up (iota pieces (* i pieces))))
          (extract (lambda (tuple)
@@ -2933,7 +3048,7 @@ TODO: Write these down from the notebook.
 
 Here is how we model constraint forces. Each pair of particles has some constraint potential acting between them:
 
-```scheme
+```clojure
 (define (U-constraint q0 q1 F l)
   (* (/ F (* 2 l))
      (- (square (- q1 q0))
@@ -2944,7 +3059,7 @@ Here is how we model constraint forces. Each pair of particles has some constrai
 
 And here's a Lagrangian for two free particles, subject to a constraint potential \\(F\\) acting between them.
 
-```scheme
+```clojure
 (define ((L-free-constrained m0 m1 l) local)
   (let* ((extract (extract-particle 2))
          (p0 (extract local 0))
@@ -2965,7 +3080,7 @@ And here's a Lagrangian for two free particles, subject to a constraint potentia
 
 Finally, the path. This is rectangular coordinates for each piece, plus \\(F\\) between them.
 
-```scheme
+```clojure
 (define q-rect
   (up (literal-function 'x_0)
       (literal-function 'y_0)
@@ -2976,7 +3091,7 @@ Finally, the path. This is rectangular coordinates for each piece, plus \\(F\\) 
 
 This shows the lagrangian itself, which answers part b:
 
-```scheme
+```clojure
 (let* ((L (L-free-constrained 'm_0 'm_1 'l))
        (f (compose L (Gamma q-rect))))
   (->tex-equation
@@ -2989,7 +3104,7 @@ This shows the lagrangian itself, which answers part b:
 
 Here are the Lagrange equations, which, if you squint, are like Newton's equations from part a.
 
-```scheme
+```clojure
 (let* ((L (L-free-constrained 'm_0 'm_1 'l))
        (f ((Lagrange-equations L) q-rect)))
   (->tex-equation
@@ -3008,7 +3123,7 @@ This is a coordinate change that is very careful not to reduce the degrees of fr
 
 First, the coordinate change:
 
-```scheme
+```clojure
 (define ((cm-theta->rect m0 m1) local)
   (let* ((q (coordinate local))
          (x_cm (ref q 0))
@@ -3028,7 +3143,7 @@ First, the coordinate change:
 
 Then the coordinate change applied to the local tuple:
 
-```scheme
+```clojure
 (let ((local (up 't
                  (up 'x_cm 'y_cm 'theta 'c 'F)
                  (up 'xdot_cm 'ydot_cm 'thetadot 'cdot 'Fdot)))
@@ -3043,7 +3158,7 @@ Then the coordinate change applied to the local tuple:
 
 Then the Lagrangian in the new coordinates;
 
-```scheme
+```clojure
 (define (L-free-constrained* m0 m1 l)
   (compose (L-free-constrained m0 m1 l)
            (F->C (cm-theta->rect m0 m1))))
@@ -3051,7 +3166,7 @@ Then the Lagrangian in the new coordinates;
 
 This shows the lagrangian itself, after the coordinate transformation:
 
-```scheme
+```clojure
 (let* ((q (up (literal-function 'x_cm)
               (literal-function 'y_cm)
               (literal-function 'theta)
@@ -3069,7 +3184,7 @@ This shows the lagrangian itself, after the coordinate transformation:
 
 Here are the Lagrange equations:
 
-```scheme
+```clojure
 (let* ((q (up (literal-function 'x_cm)
               (literal-function 'y_cm)
               (literal-function 'theta)
@@ -3093,7 +3208,7 @@ That final equation states that \\(c(t) = l\\). Amazing!
 
 We can substitute the constant value of \\(c\\) using a function that always returns \\(l\\) to get simplified equations:
 
-```scheme
+```clojure
 (let* ((q (up (literal-function 'x_cm)
               (literal-function 'y_cm)
               (literal-function 'theta)
@@ -3113,7 +3228,7 @@ This is saying that the acceleration on the center of mass is 0.
 
 The fourth equation, the equation of motion for the \\(c(t)\\), is interesting here. We need to pull in the definition of "reduced mass" from exercise 1.11:
 
-```scheme
+```clojure
 (define (reduced-mass m1 m2)
   (/ (* m1 m2)
      (+ m1 m2)))
@@ -3128,7 +3243,7 @@ F(t) = m l \dot{\theta}^2
 
 We can verify this with Scheme by subtracting the two equations:
 
-```scheme
+```clojure
 (let* ((F (literal-function 'F))
        (theta (literal-function 'theta))
        (q (up (literal-function 'x_cm)
@@ -3160,7 +3275,7 @@ But let's go at it, for fun.
 
 Here's the Lagrangian of 2 free particles:
 
-```scheme
+```clojure
 (define ((L-free2 m0 m1) local)
   (let* ((extract (extract-particle 2))
 
@@ -3177,7 +3292,7 @@ Here's the Lagrangian of 2 free particles:
 
 Then a version of `cm-theta->rect` where we ignore \\(F\\), and sub in a constant \\(l\\):
 
-```scheme
+```clojure
 (define ((cm-theta->rect* m0 m1 l) local)
   (let* ((q (coordinate local))
          (x_cm (ref q 0))
@@ -3196,7 +3311,7 @@ Then a version of `cm-theta->rect` where we ignore \\(F\\), and sub in a constan
 
 The Lagrangian:
 
-```scheme
+```clojure
 (define (L-free-constrained2 m0 m1 l)
   (compose (L-free2 m0 m1)
            (F->C (cm-theta->rect* m0 m1 l))))
@@ -3204,7 +3319,7 @@ The Lagrangian:
 
 Equations:
 
-```scheme
+```clojure
 (let* ((q (up (literal-function 'x_cm)
               (literal-function 'y_cm)
               (literal-function 'theta)
@@ -3226,8 +3341,25 @@ The only remaining equation is \eqref{eq:constraint-force} from above. This rema
 
 # Exercise 1.22: Driven pendulum<a id="sec-23"></a>
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-22
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```
 
 > Show that the Lagrangian (1.93) can be used to describe the driven pendulum (section 1.6.2), where the position of the pivot is a specified function of time: Derive the equations of motion using the Newtonian constraint force prescription, and show that they are the same as the Lagrange equations. Be sure to examine the equations for the constraint forces as well as the position of the pendulum bob.
@@ -3259,7 +3391,7 @@ The assumption here is that the pendulum support sits at \\((0, y\_s(t))\\).
 
 Now write the Lagrangian for the driven pendulum in rectangular coordinates. The constraint force takes the same shape as in exercise 1.21:
 
-```scheme
+```clojure
 (define (U-constraint q0 q1 F l)
   (* (/ F (* 2 l))
      (- (square (- q1 q0))
@@ -3268,7 +3400,7 @@ Now write the Lagrangian for the driven pendulum in rectangular coordinates. The
 
 The Lagrangian is similar, but only involves a single particle &#x2013; the pendulum bob. We can generate the constraint force by directly building the support's coordinates, rather than extracting them from the local tuple.
 
-```scheme
+```clojure
 (define ((L-driven-free m l y U) local)
   (let* ((extract (extract-particle 2))
          (bob (extract local 0))
@@ -3285,7 +3417,7 @@ The Lagrangian is similar, but only involves a single particle &#x2013; the pend
 
 Here is the now-familiar equation for a uniform gravitational potential, acting on the \\(y\\) coordinate:
 
-```scheme
+```clojure
 (define ((U-gravity g m) q)
   (let* ((y (ref q 1)))
     (* m g y)))
@@ -3295,7 +3427,7 @@ Here is the now-familiar equation for a uniform gravitational potential, acting 
 
 Now use the new Lagrangian to generate equations of motion for the three coordinates \\(x\\), \\(y\\) and \\(F\\):
 
-```scheme
+```clojure
 (let* ((q (up (literal-function 'x)
               (literal-function 'y)
               (literal-function 'F)))
@@ -3319,7 +3451,7 @@ l^2 = x(t)^2 + (y\_s(t) - y(t))^&2
 
 Verified, with some extra terms to force the simplification:
 
-```scheme
+```clojure
 (let* ((q (up (literal-function 'x)
               (literal-function 'y)
               (literal-function 'F)))
@@ -3346,7 +3478,7 @@ Now we want to verify that we get the same Lagrangian and equations of motion as
 
 To analyze the constraint forces, we have to do the same trick as in exercise 1.21 and use a coordinate \\(c(t) = l\\). The new coordinates are \\((\theta, c, F)\\):
 
-```scheme
+```clojure
 (define ((driven-polar->rect y) local)
   (let* ((q (coordinate local))
          (theta (ref q 0))
@@ -3361,7 +3493,7 @@ To analyze the constraint forces, we have to do the same trick as in exercise 1.
 
 Compose the coordinate change with the rectangular Lagrangian:
 
-```scheme
+```clojure
 (define (L-driven-pend m l y U)
   (compose (L-driven-free m l y U)
            (F->C (driven-polar->rect y))))
@@ -3371,7 +3503,7 @@ Compose the coordinate change with the rectangular Lagrangian:
 
 Examine the Lagrangian itself, after the coordinate transformation. (Notice that we're using a constant function for \\(c(t)\\) that always returns \\(l\\).)
 
-```scheme
+```clojure
 (let* ((q (up (literal-function 'theta)
               (lambda (t) 'l)
               (literal-function 'F)))
@@ -3390,7 +3522,7 @@ Looks just like equation 1.88.
 
 Next, examine the Lagrange equations, using the same substitution of \\(c(t) = l\\):
 
-```scheme
+```clojure
 (let* ((q (up (literal-function 'theta)
               (lambda (t) 'l)
               (literal-function 'F)))
@@ -3411,8 +3543,25 @@ The second equation describes the constraint force on the driven pendulum as a f
 
 # Exercise 1.23: Fill in the details<a id="sec-24"></a>
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-23
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```
 
 TODO: Expand out the explicit Lagrangian, using a coordinate transformation, and do the manual substitution&#x2026;
@@ -3421,13 +3570,30 @@ TODO: Expand out the explicit Lagrangian, using a coordinate transformation, and
 
 This is a special case of a solution we found in exercise 1.22. In that exercise, we found the constraint forces on a driven pendulum. By setting \\(y\_s(t) = l\\), we can read off the constraint forces for the undriven pendulum.
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-24
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```
 
 Take some definitions that we need:
 
-```scheme
+```clojure
 (define ((L-driven-free m l y U) local)
   (let* ((extract (extract-particle 2))
          (bob (extract local 0))
@@ -3461,7 +3627,7 @@ Take some definitions that we need:
 
 The second equation of motion, for the \\(c\\) coordinate, gives us an equation in terms of tension. Substitute in a constant pendulum support position by defining the support position function to be `(lambda (t) 'l)`:
 
-```scheme
+```clojure
 (let* ((q (up (literal-function 'theta)
               (lambda (t) 'l)
               (literal-function 'F)))
@@ -3484,33 +3650,101 @@ F(t) = m (g \cos \theta + l \dot{\theta}^2)
 
 # Exercise 1.25: Foucalt pendulum Lagrangian<a id="sec-26"></a>
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-25
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```
 
 # Exercise 1.26: Properties of \\(D\_t\\)<a id="sec-27"></a>
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-26
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```
 
 # Exercise 1.27: Lagrange equations for total time derivatives<a id="sec-28"></a>
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-27
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```
 
 # Exercise 1.28: Total Time Derivatives<a id="sec-29"></a>
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-28
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```
 
 ## part A<a id="sec-29-1"></a>
 
 nice, easy to guess.
 
-```scheme
+```clojure
 (define ((FA m) local)
   (let ((x (coordinate local)))
     (* m x)))
@@ -3518,7 +3752,7 @@ nice, easy to guess.
 
 Show the function of t, and confirm that both methods are equivalent.
 
-```scheme
+```clojure
 (check-f (FA 'm)
          (literal-function 'x))
 ```
@@ -3529,7 +3763,7 @@ NOT a total time derivative.
 
 Define G directly:
 
-```scheme
+```clojure
 (define ((GB m) local)
   (let* ((t (time local))
          (v_x (velocity local))
@@ -3540,14 +3774,14 @@ Define G directly:
 
 And show the full G, for fun:
 
-```scheme
+```clojure
 (let ((f (compose (GB 'm) (Gamma (literal-function 'x)))))
   (se (f 't)))
 ```
 
 It's easier to confirm that this is not a total time derivative by checking the partials.
 
-```scheme
+```clojure
 (define (GB-properties m)
   (let ((GB0 (lambda (local) 0))
         (GB1 (lambda (local)
@@ -3557,7 +3791,7 @@ It's easier to confirm that this is not a total time derivative by checking the 
 
 It's clear here that the second and third tuple entries aren't equal, so we don't have a total time derivative.
 
-```scheme
+```clojure
 (se (GB-properties 'm))
 ```
 
@@ -3565,7 +3799,7 @@ It's clear here that the second and third tuple entries aren't equal, so we don'
 
 no problem, we've got a total time derivative on our hands.
 
-```scheme
+```clojure
 (define (FC local)
   (let ((t (time local))
         (x (coordinate local)))
@@ -3585,7 +3819,7 @@ no problem, we've got a total time derivative on our hands.
 
 Boom, the second and third entries are equal, as we'd expect.
 
-```scheme
+```clojure
 (se GC-properties)
 ```
 
@@ -3593,7 +3827,7 @@ Boom, the second and third entries are equal, as we'd expect.
 
 This is NOT a total time derivative; you can tell by taking the partials of each side, G0 and G1, as we'll see here.
 
-```scheme
+```clojure
 (define GD-properties
   (let ((GD0 (lambda (local)
                (* (coordinate local)
@@ -3605,7 +3839,7 @@ This is NOT a total time derivative; you can tell by taking the partials of each
 
 The partials for each side don't match.
 
-```scheme
+```clojure
 (se GD-properties)
 ```
 
@@ -3617,7 +3851,7 @@ OH, but the secret is that Qdot is also a tuple, so you contract them together.
 
 Here's the function F that we can use to derive it:
 
-```scheme
+```clojure
 (define (FE local)
   (let* ((t (time local))
          (q (coordinate local))
@@ -3629,14 +3863,14 @@ Here's the function F that we can use to derive it:
 
 Boom, total time derivative!
 
-```scheme
+```clojure
 (check-f FE (up (literal-function 'x)
                 (literal-function 'y)))
 ```
 
 And let's show that we pass the tests by decomposing this into G0 and G1:
 
-```scheme
+```clojure
 (define GE-properties
   (let (
         ;; any piece of the function without a velocity multiplied.
@@ -3667,7 +3901,7 @@ BOOM!
 
 We've recovered F; the partials are equal, and the final matrix is symmetric.
 
-```scheme
+```clojure
 (se GE-properties)
 ```
 
@@ -3675,7 +3909,7 @@ We've recovered F; the partials are equal, and the final matrix is symmetric.
 
 This one is interesting, since the second partial is a tuple. This is not so obvious to me, so first let's check the properties:
 
-```scheme
+```clojure
 (define GF-properties
   (let (
         ;; any piece of the function without a velocity multiplied.
@@ -3706,7 +3940,7 @@ AND it looks like we DO have a total time derivative, maybe. We certainly pass t
 
 BUT we fail the second test; the hessian that we get from ((partial 1) G1) is not symmetric.
 
-```scheme
+```clojure
 (se GF-properties)
 ```
 
@@ -3714,7 +3948,7 @@ BUT we fail the second test; the hessian that we get from ((partial 1) G1) is no
 
 I'll do this for a single particle, since it's annoying to get the sum going for many; and the lagrangian is additive, so no problem.
 
-```scheme
+```clojure
 (define (uniform-translate-shift->rect local)
   (let* ((t (time local))
          (q (coordinate local))
@@ -3730,7 +3964,7 @@ I'll do this for a single particle, since it's annoying to get the sum going for
 
 First, confirm that if we have a constant, we get what we expected from paper.
 
-```scheme
+```clojure
 (let* ((q (up (literal-function 'xprime)
               (lambda (t) 'Delta_x)
               (lambda (t) 'Delta_v)))
@@ -3742,7 +3976,7 @@ First, confirm that if we have a constant, we get what we expected from paper.
 
 We can change this a little to see the extra terms; substract off the free particle lagrangian, to see the extra stuff.
 
-```scheme
+```clojure
 (let* ((q (up (literal-function 'xprime)
               (lambda (t) 'Delta_x)
               (lambda (t) 'Delta_v)))
@@ -3756,7 +3990,7 @@ We can change this a little to see the extra terms; substract off the free parti
 
 Here's the gnarly version with both entries as actual functions. Can this be a total time derivative? It CANNOT be, because we have a \\((D \Delta\_v(t))^2\\) term in there, and we know that total time derivatives have to be linear in the velocities. The function \\(F\\) would have had to have a velocity in it, which is not allowed.
 
-```scheme
+```clojure
 (let* ((q (up (literal-function 'xprime)
               (literal-function 'Delta_x)
               (literal-function 'Delta_v)))
@@ -3772,7 +4006,7 @@ Let's simplify by making the \\(\Delta\_v\\) constant and see if there's anythin
 
 We know that we have a total derivative when \\(\Delta\_x\\) is constant, and we know that total time derivatives are linear, so let's substract off the total time derivative and see what happens:
 
-```scheme
+```clojure
 (let* ((q (lambda (dx)
             (up (literal-function 'xprime)
                 dx
@@ -3795,90 +4029,345 @@ SO, only if the shift and uniform translation are constant do we not affect the 
 
 # Exercise 1.30: Orbits in a central potential<a id="sec-31"></a>
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-30
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```
 
 # Exercise 1.31: Foucault pendulum evolution<a id="sec-32"></a>
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-31
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```
 
 # Exercise 1.32: Time-dependent constraints<a id="sec-33"></a>
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-32
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```
 
 # Exercise 1.33: Falling off a log<a id="sec-34"></a>
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-33
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```
 
 # Exercise 1.34: Driven spherical pendulum<a id="sec-35"></a>
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-34
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```
 
 # Exercise 1.35: Restricted equations of motion<a id="sec-36"></a>
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-35
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```
 
 # Exercise 1.36: Noether integral<a id="sec-37"></a>
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-36
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```
 
 # Exercise 1.37: Velocity transformation<a id="sec-38"></a>
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-37
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```
 
 # Exercise 1.38: Properties of \\(E\\)<a id="sec-39"></a>
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-38
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```
 
 # Exercise 1.39: Combining Lagrangians<a id="sec-40"></a>
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-39
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```
 
 # Exercise 1.40: Bead on a triaxial surface<a id="sec-41"></a>
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-40
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```
 
 # Exercise 1.41: Motion of a tiny golf ball<a id="sec-42"></a>
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-41
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```
 
 # Exercise 1.42: Augmented Lagrangian<a id="sec-43"></a>
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-42
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```
 
 # Exercise 1.43: A numerical investigation<a id="sec-44"></a>
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-43
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```
 
 # Exercise 1.44: Double pendulum behavior<a id="sec-45"></a>
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.ex1-44
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 ```

@@ -11,7 +11,7 @@ You're supposed to do these by hand, so I'll do that in the textbook. But here, 
 
     First, let's define the functions we need.
 
-    ```scheme
+    ```clojure
     (define (F x y)
       (* (square x)
          (cube y)))
@@ -25,7 +25,7 @@ You're supposed to do these by hand, so I'll do that in the textbook. But here, 
 
     You can do this with explicit partials:
 
-    ```scheme
+    ```clojure
     (let ((f (down ((partial 0) F) ((partial 1) F))))
       (->tex-equation
        (f 'x 'y)))
@@ -37,7 +37,7 @@ You're supposed to do these by hand, so I'll do that in the textbook. But here, 
 
     Or with the \\(D\\) symbol:
 
-    ```scheme
+    ```clojure
     (->tex-equation
      ((D F) 'x 'y))
     ```
@@ -48,7 +48,7 @@ You're supposed to do these by hand, so I'll do that in the textbook. But here, 
 
     Or, we could show that they're equivalent this way:
 
-    ```scheme
+    ```clojure
     (let ((f (down ((partial 0) F) ((partial 1) F))))
       (->tex-equation
        (- ((D F) 'x 'y)
@@ -63,7 +63,7 @@ You're supposed to do these by hand, so I'll do that in the textbook. But here, 
 
     \\(H\\) is already that composition, so:
 
-    ```scheme
+    ```clojure
     (->tex-equation
      ((D H) 'x 'y))
     ```
@@ -74,7 +74,7 @@ You're supposed to do these by hand, so I'll do that in the textbook. But here, 
 
 3.  Compute \\(\partial\_0 G(x, y)\\) and \\(\partial\_1 G(x, y)\\)
 
-    ```scheme
+    ```clojure
     (->tex-equation
      ((D G) 'x 'y))
     ```
@@ -85,7 +85,7 @@ You're supposed to do these by hand, so I'll do that in the textbook. But here, 
 
 4.  Compute \\(DF(a, b)\\), \\(DG(3, 5)\\) and \\(DH(3a^2, 5b^3)\\)
 
-    ```scheme
+    ```clojure
     (->tex-equation
      (up ((D F) 'a 'b)
          ((D G) 3 5)
@@ -100,7 +100,7 @@ You're supposed to do these by hand, so I'll do that in the textbook. But here, 
 
 A further exercise is to try defining the functions so that they use explicit tuples, so you can compose them:
 
-```scheme
+```clojure
 (define (F* v)
   (let ((x (ref v 0))
         (y (ref v 1)))
@@ -116,7 +116,7 @@ A further exercise is to try defining the functions so that they use explicit tu
 
 to be really pro, I'd make a function that takes these as arguments and prints a nice formatted exercise output. Let's do the final exercise, for fun:
 
-```scheme
+```clojure
 (->tex-equation
  (up ((D F*) (up 'a 'b))
      ((D G*) (up 3 5))

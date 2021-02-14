@@ -1420,7 +1420,9 @@ Our goal is achieved.
 #+end_src
 
 #+RESULTS:
-: nilnil{:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level nil, :rate-limit nil, :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11899]}}}#'ch1.ex1-8/->tex-equation*#'ch1.ex1-8/->tex-equation
+| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--12411]}}} |
+| #'ch1.ex1-8/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                                |
+| #'ch1.ex1-8/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                 |
 
 *** Part A: Implement $\delta_\eta$
 
@@ -1494,7 +1496,8 @@ use to add variation to the path.
 #+end_src
 
 #+RESULTS:
-: #'ch1.ex1-8/q#'ch1.ex1-8/eta
+| #'ch1.ex1-8/q   |
+| #'ch1.ex1-8/eta |
 
 These weren't easy to write down, but they really do constitute proofs. If you
 trust the system managing the algebra, then the equalities here are general.
@@ -1873,6 +1876,11 @@ mass at some rate.
   (println
    (->tex-equation* e)))
 #+end_src
+
+#+RESULTS:
+| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--12411]}}} |
+| #'ch1.ex1-11/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
+| #'ch1.ex1-11/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 Here's the Lagrangian for "central force", in polar coordinates. This is
 rotational kinetic energy, minus some arbitrary potential $V$ that depends on

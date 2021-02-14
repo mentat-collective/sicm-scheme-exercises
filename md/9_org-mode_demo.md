@@ -4,7 +4,7 @@ This is an example of how we might structure an org-mode file that can export ou
 
 First, let's get some code loaded up and written. Here's a block that converts polar coordinates to rectangular coordinates.
 
-```scheme
+```clojure
 (define (p->r local)
   (let* ((polar-tuple (coordinate local))
          (r (ref polar-tuple 0))
@@ -16,8 +16,25 @@ First, let's get some code loaded up and written. Here's a block that converts p
 
 This is some good stuff.
 
-```scheme
-(load "ch1/utils.scm")
+```clojure
+(ns ch1.demo
+  (:refer-clojure :exclude [+ - * / zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
+            [sicmutils.expression.render :as render]
+            [taoensso.timbre :refer [set-level!]]))
+
+(e/bootstrap-repl!)
+(set-level! :fatal)
+
+(defn ->tex-equation* [e]
+  (let [eq (render/->TeX (simplify e))]
+    (str "\\begin{equation}\n"
+         eq
+         "\n\\end{equation}")))
+
+(defn ->tex-equation [e]
+  (println
+   (->tex-equation* e)))
 
 (define (p->r local)
   (let* ((polar-tuple (coordinate local))
@@ -39,7 +56,7 @@ This is some good stuff.
 
 And another, that gets us from spherical to rectangular.
 
-```scheme
+```clojure
 (define (spherical->rect local)
   (let* ((spherical-tuple (coordinate local))
          (r (ref spherical-tuple 0))
@@ -50,12 +67,12 @@ And another, that gets us from spherical to rectangular.
         (* r (cos theta)))))
 ```
 
-    ;Loading "ch1/utils.scm"... done
+    ;Loading "src/ch1/utils.cljc"... done
     #| "" |#
 
 This block will generate a LaTeX version of the code I've supplied:
 
-```scheme
+```clojure
 (->tex-equation
  ((+ (literal-function 'c)
      (D (literal-function 'z)))
@@ -70,7 +87,7 @@ c\left( t \right) + Dz\left( t \right)
 
 You can even reference these with equation numbers, like Equation \eqref{eq:masterpiece} above.
 
-```scheme
+```clojure
 (up 1 2 't)
 ```
 
