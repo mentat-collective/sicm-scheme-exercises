@@ -1887,40 +1887,40 @@ rotational kinetic energy, minus some arbitrary potential $V$ that depends on
 the distance $r$ between the two particles.
 
 #+begin_src clojure
-(define ((L-central-polar m V) local)
-  (let ((q (coordinate local))
-        (qdot (velocity local)))
-    (let ((r (ref q 0))     (phi (ref q 1))
-          (rdot (ref qdot 0)) (phidot (ref qdot 1)))
-      (- (* 1/2 m
-            (+ (square rdot) (square (* r phidot))))
-         (V r)))))
+(defn L-central-polar [m V]
+  (fn [[_ [r phi] [rdot phidot]]]
+    (let [T (* (/ 1 2)
+               m
+               (+ (square rdot)
+                  (square (* r phidot))))]
+      (- T (V r)))))
 #+end_src
 
 #+RESULTS:
-: #| L-central-polar |#
+: #'ch1.ex1-11/L-central-polar
 
 This function defines gravitational potential energy:
 
 #+begin_src clojure
-(define ((gravitational-energy G m1 m2) r)
-  (- (/ (* G m1 m2) r)))
+(defn gravitational-energy [G m1 m2]
+  (fn [r]
+    (- (/ (* G m1 m2) r))))
 #+end_src
 
 #+RESULTS:
-: #| gravitational-energy |#
+: #'ch1.ex1-11/gravitational-energy
 
 What is the mass $m$ in the Lagrangian above? It's the "[[https://en.wikipedia.org/wiki/Reduced_mass][reduced mass]]", totally
 unjustified at this point in the book:
 
 #+begin_src clojure
-(define (reduced-mass m1 m2)
+(defn reduced-mass [m1 m2]
   (/ (* m1 m2)
      (+ m1 m2)))
 #+end_src
 
 #+RESULTS:
-: #| reduced-mass |#
+: #'ch1.ex1-11/reduced-mass
 
 If you want to see why the reduced mass has the form it does, check out [[https://en.wikipedia.org/wiki/Reduced_mass#Lagrangian_mechanics][this
 derivation]].
@@ -1929,28 +1929,31 @@ The Lagrangian is written in terms of some angle $\phi$ and $r$, the distance
 between the two particles. $q$ defines a circular path:
 
 #+begin_src clojure
-(define ((q r omega) t)
-  (let ((phi (* omega t)))
-    (up r phi)))
+(defn q [r omega]
+  (fn [t]
+    (let [phi (* omega t)]
+      (up r phi))))
 #+end_src
 
 #+RESULTS:
-: #| q |#
+: #'ch1.ex1-11/q
 
 Write the Lagrange equations, given $r = a$ and $\omega = n$:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let ((eqfn (Lagrange-equations
-             (L-central-polar (reduced-mass 'm1 'm2)
-                              (gravitational-energy 'G 'm1 'm2)))))
+(let [eqfn (Lagrange-equations
+            (L-central-polar (reduced-mass 'm1 'm2)
+                             (gravitational-energy 'G 'm1 'm2)))]
   (->tex-equation
    ((eqfn (q 'a 'n)) 't)))
 #+end_src
 
-#+RESULTS[e8565d29067487b8460bcb96e1a427d9eef22a0c]:
+#+RESULTS[2902046d19b74bbdcacd1ccd089cf30d1fea3c53]:
+:results:
 \begin{equation}
-\begin{bmatrix} \displaystyle{ {{ - {a}^{3} \cdot m1 \cdot m2 \cdot {n}^{2} + G {m1}^{2} \cdot m2 + G \cdot m1 \cdot {m2}^{2}}\over {{a}^{2} \cdot m1 + {a}^{2} \cdot m2}}} \cr \cr \displaystyle{ 0}\end{bmatrix}
+\begin{bmatrix}\displaystyle{\frac{- {a}^{3}\,\mathsf{m1}\,\mathsf{m2}\,{n}^{2} + G\,{\mathsf{m1}}^{2}\,\mathsf{m2} + G\,\mathsf{m1}\,{\mathsf{m2}}^{2}}{{a}^{2}\,\mathsf{m1} + {a}^{2}\,\mathsf{m2}}}&\displaystyle{0}\end{bmatrix}
 \end{equation}
+:end:
 
 These two entries are /residuals/, equal to zero. Stare at the top residual and
 you might notice that you can can factor out:
@@ -1961,19 +1964,22 @@ you might notice that you can can factor out:
 Manually factor these out:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let ((eqfn (Lagrange-equations
-             (L-central-polar (reduced-mass 'm1 'm2)
-                              (gravitational-energy 'G 'm1 'm2)))))
+(let [eqfn (Lagrange-equations
+            (L-central-polar
+             (reduced-mass 'm1 'm2)
+             (gravitational-energy 'G 'm1 'm2)))]
   (->tex-equation
    (* ((eqfn (q 'a 'n)) 't)
       (/ (square 'a)
          (reduced-mass 'm1 'm2)))))
 #+end_src
 
-#+RESULTS[847a32694f3f07ce8f6d0e332bcded15b1e9abc5]:
+#+RESULTS[24abe0f6a67adddccdf9e45ecfd6bf26c78ec9b3]:
+:results:
 \begin{equation}
-\begin{bmatrix} \displaystyle{  - {a}^{3} {n}^{2} + G \cdot m1 + G \cdot m2} \cr \cr \displaystyle{ 0}\end{bmatrix}
+\begin{bmatrix}\displaystyle{- {a}^{3}\,{n}^{2} + G\,\mathsf{m1} + G\,\mathsf{m2}}&\displaystyle{0}\end{bmatrix}
 \end{equation}
+:end:
 
 And, boom, with some cleanup, we see Kepler's third law:
 
