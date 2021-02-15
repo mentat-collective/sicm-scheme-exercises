@@ -3588,10 +3588,9 @@ free you're in rotating spherical coords.
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
+| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
+| #'ch1.ex1-17/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
+| #'ch1.ex1-17/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 This, and the next three exercises, are here to give you practice in the real
 art, of difficulty, of any dynamics problem. It's easy to change coordinates. So
@@ -3614,45 +3613,44 @@ I'll replace this with a better picture later, but this is the setup:
 [[file:images/Lagrangian_Mechanics/2020-06-25_11-03-55_screenshot.png]]
 
 #+begin_src clojure
-(define ((turns->rect d h) local)
-  (let* ((turns (coordinate local))
-         (theta (* turns 2 'pi)))
-    (up (/ turns h)
-        (* (/ d 2) (cos theta))
-        (* (/ d 2) (sin theta)))))
+(defn turns->rect [d h]
+  (fn [local]
+    (let [turns (coordinate local)
+          theta (* turns 2 'pi)]
+      (up (/ turns h)
+          (* (/ d 2) (cos theta))
+          (* (/ d 2) (sin theta))))))
 #+end_src
 
 #+RESULTS:
-: #| turns->rect |#
+: #'ch1.ex1-17/turns->rect
 
 Or you could do this. Remember, these transformations need to be functions of a
 local tuple, so if you're going to compose them, remember to put =coordinate= at
 the beginning of the composition.
 
 #+begin_src clojure
-(define ((turns->x-theta h) q)
-  (up (/ q h)
-      (* q 2 'pi)))
+(defn turns->x-theta [h]
+  (fn [q]
+    (up (/ q h)
+        (* q 2 'pi))))
 
-(define ((x-theta->rect d) q)
-  (let* ((x (ref q 0))
-         (theta (ref q 1)))
+(defn x-theta->rect [d]
+  (fn [[x theta]]
     (up x
         (* (/ d 2) (cos theta))
         (* (/ d 2) (sin theta)))))
 
-(define (turns->rect* d h)
+(defn turns->rect* [d h]
   (compose (x-theta->rect d)
            (turns->x-theta h)
            coordinate))
 #+end_src
 
 #+RESULTS:
-: #| turns->x-theta |#
-:
-: #| x-theta->rect |#
-:
-: #| turns->rect* |#
+| #'ch1.ex1-17/turns->x-theta |
+| #'ch1.ex1-17/x-theta->rect  |
+| #'ch1.ex1-17/turns->rect*   |
 
 The transformations are identical:
 
@@ -3663,39 +3661,40 @@ The transformations are identical:
   (up 't 'n 'ndot)))
 #+end_src
 
-#+RESULTS[3fa8a307ddde828e0f3b9b6c573e5935c577f76a]:
+#+RESULTS[d80c62cca2ab8d7539d44d2f9d8eec3a2b753ae7]:
+:results:
 \begin{equation}
-\begin{pmatrix} \displaystyle{ 0} \cr \cr \displaystyle{ 0} \cr \cr \displaystyle{ 0}\end{pmatrix}
+\begin{pmatrix}\displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{0}\end{pmatrix}
 \end{equation}
+:end:
 
 Define the Lagrangian:
 
 #+begin_src clojure
-(define ((L-rectangular m U) local)
-  (let ((q (coordinate local))
-        (v (velocity local)))
-    (- (* 1/2 m (square v))
+(defn L-rectangular [m U]
+  (fn [[_ q v]]
+    (- (* (/ 1 2) m (square v))
        (U q))))
 
-(define (L-turns m d h U)
+(defn L-turns [m d h U]
   (compose (L-rectangular m U)
            (F->C (turns->rect d h))))
 #+end_src
 
 #+RESULTS:
-: #| L-rectangular |#
-:
-: #| L-turns |#
+| #'ch1.ex1-17/L-rectangular |
+| #'ch1.ex1-17/L-turns       |
 
 The potential is a uniform gravitational acceleration:
 
 #+begin_src clojure
-(define ((U-grav m g) q)
-  (* m g (ref q 2)))
+(defn U-grav [m g]
+  (fn [q]
+    (* m g (ref q 2))))
 #+end_src
 
 #+RESULTS:
-: #| U-grav |#
+: #'ch1.ex1-17/U-grav
 
 Final Lagrangian:
 
@@ -3705,24 +3704,28 @@ Final Lagrangian:
   (up 't 'n 'ndot)))
 #+end_src
 
-#+RESULTS[a486b9871810f8a74d1883be47666fa323a6de81]:
+#+RESULTS[6b86a52ae07d6c47901b0c000b33b045bfd8c437]:
+:results:
 \begin{equation}
-{{{{1}\over {2}} {d}^{2} {h}^{2} m {\dot{n}}^{2} {\pi}^{2} - {{1}\over {2}} d g {h}^{2} m \sin\left( 2 n \pi \right) + {{1}\over {2}} m {\dot{n}}^{2}}\over {{h}^{2}}}
+\frac{{d}^{2}\,{h}^{2}\,m\,{\dot n}^{2}\,{\pi}^{2} - d\,g\,{h}^{2}\,m\,\sin\left(2\,n\,\pi\right) + m\,{\dot n}^{2}}{2\,{h}^{2}}
 \end{equation}
+:end:
 
 Lagrange equations of motion:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((L (L-turns 'm 'd 'h (U-grav 'm 'g)))
-       (n (literal-function 'n)))
+(let [L (L-turns 'm 'd 'h (U-grav 'm 'g))
+      n (literal-function 'n)]
   (->tex-equation
    (((Lagrange-equations L) n) 't)))
 #+end_src
 
-#+RESULTS[92605835c702fcc963cc25ca8ccd8832270e11f2]:
+#+RESULTS[352aa53da0936b44bcb5d807075be020c3741e81]:
+:results:
 \begin{equation}
-{{{d}^{2} {h}^{2} m {\pi}^{2} {D}^{2}n\left( t \right) + d g {h}^{2} m \pi \cos\left( 2 \pi n\left( t \right) \right) + m {D}^{2}n\left( t \right)}\over {{h}^{2}}}
+\frac{{d}^{2}\,{h}^{2}\,m\,{\pi}^{2}\,{D}^{2}n\left(t\right) + d\,g\,{h}^{2}\,m\,\pi\,\cos\left(2\,\pi\,n\left(t\right)\right) + m\,{D}^{2}n\left(t\right)}{{h}^{2}}
 \end{equation}
+:end:
 
 ** Exercise 1.18: Bead on a triaxial surface
 :PROPERTIES:
@@ -3751,10 +3754,9 @@ Lagrange equations of motion:
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
+| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
+| #'ch1.ex1-18/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
+| #'ch1.ex1-18/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 #+begin_quote
 A bead of mass $m$ moves without friction on a triaxial ellipsoidal surface. In
@@ -3773,67 +3775,68 @@ coordinate transformation, but with a fixed $a$, $b$ and $c$ coefficient for
 each rectangular dimension, and no more radial degree of freedom:
 
 #+begin_src clojure
-(define ((elliptical->rect a b c) local)
-  (let* ((q (coordinate local))
-         (theta (ref q 0))
-         (phi (ref q 1)))
+(defn elliptical->rect [a b c]
+  (fn [[_ [theta phi]]]
     (up (* a (sin theta) (cos phi))
         (* b (sin theta) (sin phi))
         (* c (cos theta)))))
 #+end_src
 
 #+RESULTS:
-: #| elliptical->rect |#
+: #'ch1.ex1-18/elliptical->rect
 
 Next, the Lagrangian:
 
 #+begin_src clojure
-(define ((L-free-particle m) local)
-  (* 1/2 m (square
-            (velocity local))))
+(defn L-free-particle [m]
+  (fn [[_ _ v]]
+    (* (/ 1 2) m (square v))))
 
-(define (L-central-triaxial m a b c)
+(defn L-central-triaxial [m a b c]
   (compose (L-free-particle m)
            (F->C (elliptical->rect a b c))))
 #+end_src
 
 #+RESULTS:
-: #| L-free-particle |#
-:
-: #| L-central-triaxial |#
+| #'ch1.ex1-18/L-free-particle    |
+| #'ch1.ex1-18/L-central-triaxial |
 
 Final Lagrangian:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let ((local (up 't
-                 (up 'theta 'phi)
-                 (up 'thetadot 'phidot))))
+(let [local (up 't
+                (up 'theta 'phi)
+                (up 'thetadot 'phidot))]
   (->tex-equation
    ((L-central-triaxial 'm 'a 'b 'c) local)))
 #+end_src
 
-#+RESULTS[96029124f8a649771c860516d1c6e668422de93e]:
+#+RESULTS[fcd78ebc3bbb3ac9713437c365f52ef1d1318e68]:
+:results:
 \begin{equation}
-{{1}\over {2}} {a}^{2} m {\dot{\phi}}^{2} {\left( \sin\left( \phi \right) \right)}^{2} {\left( \sin\left( \theta \right) \right)}^{2} - {a}^{2} m \dot{\phi} \dot{\theta} \sin\left( \phi \right) \sin\left( \theta \right) \cos\left( \phi \right) \cos\left( \theta \right) + {{1}\over {2}} {a}^{2} m {\dot{\theta}}^{2} {\left( \cos\left( \phi \right) \right)}^{2} {\left( \cos\left( \theta \right) \right)}^{2} + {{1}\over {2}} {b}^{2} m {\dot{\phi}}^{2} {\left( \sin\left( \theta \right) \right)}^{2} {\left( \cos\left( \phi \right) \right)}^{2} + {b}^{2} m \dot{\phi} \dot{\theta} \sin\left( \phi \right) \sin\left( \theta \right) \cos\left( \phi \right) \cos\left( \theta \right) + {{1}\over {2}} {b}^{2} m {\dot{\theta}}^{2} {\left( \sin\left( \phi \right) \right)}^{2} {\left( \cos\left( \theta \right) \right)}^{2} + {{1}\over {2}} {c}^{2} m {\dot{\theta}}^{2} {\left( \sin\left( \theta \right) \right)}^{2}
+\frac{1}{2}\,{a}^{2}\,m\,{\dot {\phi}}^{2}\,{\sin}^{2}\left(\phi\right)\,{\sin}^{2}\left(\theta\right) - {a}^{2}\,m\,\dot {\phi}\,\dot {\theta}\,\cos\left(\phi\right)\,\sin\left(\phi\right)\,\sin\left(\theta\right)\,\cos\left(\theta\right) + \frac{1}{2}\,{a}^{2}\,m\,{\dot {\theta}}^{2}\,{\cos}^{2}\left(\phi\right)\,{\cos}^{2}\left(\theta\right) + \frac{1}{2}\,{b}^{2}\,m\,{\dot {\phi}}^{2}\,{\cos}^{2}\left(\phi\right)\,{\sin}^{2}\left(\theta\right) + {b}^{2}\,m\,\dot {\phi}\,\dot {\theta}\,\cos\left(\phi\right)\,\sin\left(\phi\right)\,\sin\left(\theta\right)\,\cos\left(\theta\right) + \frac{1}{2}\,{b}^{2}\,m\,{\dot {\theta}}^{2}\,{\sin}^{2}\left(\phi\right)\,{\cos}^{2}\left(\theta\right) + \frac{1}{2}\,{c}^{2}\,m\,{\dot {\theta}}^{2}\,{\sin}^{2}\left(\theta\right)
 \end{equation}
+:end:
 
 I'm sure there's some simplification in there for us. But why?
 
 Lagrange equations of motion:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((L (L-central-triaxial 'm 'a 'b 'c))
-       (theta (literal-function 'theta))
-       (phi (literal-function 'phi)))
+(let [L (L-central-triaxial 'm 'a 'b 'c)
+      theta (literal-function 'theta)
+      phi (literal-function 'phi)]
   (->tex-equation
    (((Lagrange-equations L) (up theta phi))
     't)))
 #+end_src
 
-#+RESULTS[a4de48608ac69178397f5dbb9854dd6e4815faf5]:
+#+RESULTS[b269741f5838a9198c2eb167c0b1df70c4046a37]:
+:results:
 \begin{equation}
-\begin{bmatrix} \displaystyle{  - 2 {a}^{2} m \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) D\theta\left( t \right) D\phi\left( t \right) {\left( \cos\left( \theta\left( t \right) \right) \right)}^{2} - {a}^{2} m {\left( \cos\left( \phi\left( t \right) \right) \right)}^{2} {\left( D\theta\left( t \right) \right)}^{2} \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) - {a}^{2} m {\left( \cos\left( \phi\left( t \right) \right) \right)}^{2} {\left( D\phi\left( t \right) \right)}^{2} \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) - {b}^{2} m {\left( \sin\left( \phi\left( t \right) \right) \right)}^{2} {\left( D\theta\left( t \right) \right)}^{2} \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) - {b}^{2} m {\left( \sin\left( \phi\left( t \right) \right) \right)}^{2} {\left( D\phi\left( t \right) \right)}^{2} \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) + 2 {b}^{2} m \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) D\theta\left( t \right) D\phi\left( t \right) {\left( \cos\left( \theta\left( t \right) \right) \right)}^{2} - {a}^{2} m {D}^{2}\phi\left( t \right) \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) + {a}^{2} m {\left( \cos\left( \phi\left( t \right) \right) \right)}^{2} {\left( \cos\left( \theta\left( t \right) \right) \right)}^{2} {D}^{2}\theta\left( t \right) + {b}^{2} m {D}^{2}\phi\left( t \right) \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) + {b}^{2} m {\left( \sin\left( \phi\left( t \right) \right) \right)}^{2} {\left( \cos\left( \theta\left( t \right) \right) \right)}^{2} {D}^{2}\theta\left( t \right) + {c}^{2} m {\left( D\theta\left( t \right) \right)}^{2} \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) + {c}^{2} m {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} {D}^{2}\theta\left( t \right)} \cr \cr \displaystyle{ 2 {a}^{2} m {\left( \sin\left( \phi\left( t \right) \right) \right)}^{2} D\theta\left( t \right) D\phi\left( t \right) \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) + {a}^{2} m \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) {\left( D\theta\left( t \right) \right)}^{2} {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} + {a}^{2} m \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) {\left( D\phi\left( t \right) \right)}^{2} {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} - {b}^{2} m \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) {\left( D\theta\left( t \right) \right)}^{2} {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} - {b}^{2} m \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) {\left( D\phi\left( t \right) \right)}^{2} {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} + 2 {b}^{2} m {\left( \cos\left( \phi\left( t \right) \right) \right)}^{2} D\theta\left( t \right) D\phi\left( t \right) \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) + {a}^{2} m {D}^{2}\phi\left( t \right) {\left( \sin\left( \phi\left( t \right) \right) \right)}^{2} {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} - {a}^{2} m \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) {D}^{2}\theta\left( t \right) + {b}^{2} m {D}^{2}\phi\left( t \right) {\left( \cos\left( \phi\left( t \right) \right) \right)}^{2} {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} + {b}^{2} m \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) {D}^{2}\theta\left( t \right)}\end{bmatrix}
+\begin{bmatrix}\displaystyle{- {a}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right)\,{\cos}^{2}\left(\phi\left(t\right)\right) - {a}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right)\,{\cos}^{2}\left(\phi\left(t\right)\right) -2\,{a}^{2}\,m\,D\theta\left(t\right)\,D\phi\left(t\right)\,{\cos}^{2}\left(\theta\left(t\right)\right)\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) - {b}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right)\,{\sin}^{2}\left(\phi\left(t\right)\right) - {b}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right)\,{\sin}^{2}\left(\phi\left(t\right)\right) + 2\,{b}^{2}\,m\,D\theta\left(t\right)\,D\phi\left(t\right)\,{\cos}^{2}\left(\theta\left(t\right)\right)\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) - {a}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) + {a}^{2}\,m\,{D}^{2}\theta\left(t\right)\,{\cos}^{2}\left(\theta\left(t\right)\right)\,{\cos}^{2}\left(\phi\left(t\right)\right) + {b}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) + {b}^{2}\,m\,{D}^{2}\theta\left(t\right)\,{\cos}^{2}\left(\theta\left(t\right)\right)\,{\sin}^{2}\left(\phi\left(t\right)\right) + {c}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right) + {c}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right)} \cr \cr \displaystyle{{a}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) + {a}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) + 2\,{a}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right)\,{\sin}^{2}\left(\phi\left(t\right)\right) - {b}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) - {b}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) + 2\,{b}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right)\,{\cos}^{2}\left(\phi\left(t\right)\right) + {a}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)\,{\sin}^{2}\left(\phi\left(t\right)\right) - {a}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right)\,\cos\left(\theta\left(t\right)\right)\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) + {b}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)\,{\cos}^{2}\left(\phi\left(t\right)\right) + {b}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right)\,\cos\left(\theta\left(t\right)\right)\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right)}\end{bmatrix}
 \end{equation}
+:end:
 
 This is fairly horrifying. This really demands animation, as I bet it looks
 cool, but it's not comprehensible in this form.
@@ -3869,10 +3872,9 @@ The system description is:
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
+| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
+| #'ch1.ex1-19/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
+| #'ch1.ex1-19/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 #+begin_quote
 The two-bar linkage shown in figure 1.3 is constrained to move in the plane. It
