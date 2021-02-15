@@ -1878,7 +1878,7 @@ mass at some rate.
 #+end_src
 
 #+RESULTS:
-| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--12411]}}} |
+| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
 | #'ch1.ex1-11/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
 | #'ch1.ex1-11/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
@@ -2014,6 +2014,11 @@ n^2a^3 = G(m_1 + m_2)
    (->tex-equation* e)))
 #+end_src
 
+#+RESULTS:
+| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
+| #'ch1.ex1-12/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
+| #'ch1.ex1-12/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
+
 This exercise asks us to write Scheme implementations for each of the three
 systems described in [[https://tgvaughan.github.io/sicm/chapter001.html#Exe_1-9][Exercise 1.9]].
 
@@ -2025,17 +2030,17 @@ Before we begin, here is a function that will display an up-tuple of:
 - The Lagrange equations for the system.
 
 #+begin_src clojure
-(define (lagrange-equation-steps L q)
-  (let* ((p1 (compose ((partial 1) L) (Gamma q)))
-         (p2 (compose ((partial 2) L) (Gamma q)))
-         (dp2 (D p2)))
+(defn lagrange-equation-steps [L q]
+  (let [p1 (compose ((partial 1) L) (Gamma q))
+        p2 (compose ((partial 2) L) (Gamma q))
+        dp2 (D p2)]
     (->tex-equation
      ((up p1 p2 dp2 (- dp2 p1))
       't))))
 #+end_src
 
 #+RESULTS:
-: #| lagrange-equation-steps |#
+: #'ch1.ex1-12/lagrange-equation-steps
 
 These are the steps required on the road to a derivation of Lagrange's
 equations.
@@ -2074,15 +2079,14 @@ and $\dot{\theta}$ is the angular velocity of the rod.
 Here is the Lagrangian described by the exercise:
 
 #+begin_src clojure
-(define ((L-pendulum m g l) local)
-  (let ((theta (coordinate local))
-        (theta_dot (velocity local)))
-    (+ (* 1/2 m (square l) (square theta_dot))
+(defn L-pendulum [m g l]
+  (fn [[_ theta thetadot]]
+    (+ (* (/ 1 2) m (square l) (square thetadot))
        (* m g l (cos theta)))))
 #+end_src
 
 #+RESULTS:
-: #| L-pendulum |#
+: #'ch1.ex1-12/L-pendulum
 
 And the steps that lead us to Lagrange's equations:
 
@@ -2092,27 +2096,31 @@ And the steps that lead us to Lagrange's equations:
  (literal-function 'theta))
 #+end_src
 
-#+RESULTS[aaf5812bee20b3464cf996ad648f7000e663545b]:
+#+RESULTS[8692e377eeffd745ff1a673c4fe74dc75a4c094d]:
+:results:
 \begin{equation}
-\begin{pmatrix} \displaystyle{ \left( - 1 \right) g l m \sin\left( \theta\left( t \right) \right)} \cr \cr \displaystyle{ {l}^{2} m D\theta\left( t \right)} \cr \cr \displaystyle{ {l}^{2} m {D}^{2}\theta\left( t \right)} \cr \cr \displaystyle{ g l m \sin\left( \theta\left( t \right) \right) + {l}^{2} m {D}^{2}\theta\left( t \right)}\end{pmatrix}
+\begin{pmatrix}\displaystyle{- g\,l\,m\,\sin\left(\theta\left(t\right)\right)} \cr \cr \displaystyle{{l}^{2}\,m\,D\theta\left(t\right)} \cr \cr \displaystyle{{l}^{2}\,m\,{D}^{2}\theta\left(t\right)} \cr \cr \displaystyle{g\,l\,m\,\sin\left(\theta\left(t\right)\right) + {l}^{2}\,m\,{D}^{2}\theta\left(t\right)}\end{pmatrix}
 \end{equation}
+:end:
 
 The final entry is the Lagrange equation, equal to $0$. Divide out the shared
 factors of $m$ and $l$:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((L (L-pendulum 'm 'g 'l))
-       (theta (literal-function 'theta))
-       (eqs ((Lagrange-equations L) theta)))
+(let [L (L-pendulum 'm 'g 'l)
+      theta (literal-function 'theta)
+      eqs ((Lagrange-equations L) theta)]
   (->tex-equation
    ((/ eqs (* 'm 'l))
     't)))
 #+end_src
 
-#+RESULTS[4342304f5c2ad636bb5fde728172b8977ea32776]:
+#+RESULTS[7efe743ce04e6e3bffadc7f24477e6a160f1ae25]:
+:results:
 \begin{equation}
-g \sin\left( \theta\left( t \right) \right) + l {D}^{2}\theta\left( t \right)
+g\,\sin\left(\theta\left(t\right)\right) + l\,{D}^{2}\theta\left(t\right)
 \end{equation}
+:end:
 
 This is the [[https://en.wikipedia.org/wiki/Pendulum_(mathematics)][familiar equation of motion]] for a planar pendum.
 
@@ -2139,13 +2147,15 @@ Define the Lagrangian to be the difference of the kinetic energy and some
 potential $V$ that has access to the coordinates:
 
 #+begin_src clojure
-(define (((L-2d-potential m) V) local)
-  (- (* 1/2 m (square (velocity local)))
-     (V (coordinate local))))
+(defn L-2d-potential [m]
+  (fn [V]
+    (fn [local]
+      (- (* (/ 1 2) m (square (velocity local)))
+         (V (coordinate local))))))
 #+end_src
 
 #+RESULTS:
-: #| L-2d-potential |#
+: #'ch1.ex1-12/L-2d-potential
 
 Thanks to the tuple algebra of =scmutils=, This form of the Lagrangian is
 general enough that it would work for any number of dimensions in rectangular
@@ -2158,18 +2168,16 @@ discussion of coordinate transformations.
 Next define the potential from the problem description:
 
 #+begin_src clojure
-(define (V q)
-  (let ((x (ref q 0))
-        (y (ref q 1)))
-    (- (+ (/ (+ (square x)
-                (square y))
-             2)
-          (* (square x) y))
-       (/ (cube y) 3))))
+(defn V [[x y]]
+  (- (+ (/ (+ (square x)
+              (square y))
+           2)
+        (* (square x) y))
+     (/ (cube y) 3)))
 #+end_src
 
 #+RESULTS:
-: #| V |#
+: #'ch1.ex1-12/V
 
 Our helpful function generates the Lagrange equations, along with each
 intermediate step:
@@ -2181,10 +2189,12 @@ intermediate step:
      (literal-function 'y)))
 #+end_src
 
-#+RESULTS[934ef9c2a8a96a3dd4ad506e022deb8a6886de5c]:
+#+RESULTS[17d7d69d4939dbd6a928f8ded983fd5e23bba141]:
+:results:
 \begin{equation}
-\begin{pmatrix} \displaystyle{ \begin{bmatrix} \displaystyle{  - 2 y\left( t \right) x\left( t \right) - x\left( t \right)} \cr \cr \displaystyle{ {\left( y\left( t \right) \right)}^{2} - {\left( x\left( t \right) \right)}^{2} - y\left( t \right)}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ m Dx\left( t \right)} \cr \cr \displaystyle{ m Dy\left( t \right)}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ m {D}^{2}x\left( t \right)} \cr \cr \displaystyle{ m {D}^{2}y\left( t \right)}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ m {D}^{2}x\left( t \right) + 2 y\left( t \right) x\left( t \right) + x\left( t \right)} \cr \cr \displaystyle{ m {D}^{2}y\left( t \right) - {\left( y\left( t \right) \right)}^{2} + {\left( x\left( t \right) \right)}^{2} + y\left( t \right)}\end{bmatrix}}\end{pmatrix}
+\begin{pmatrix}\displaystyle{\begin{bmatrix}\displaystyle{-2\,x\left(t\right)\,y\left(t\right) - x\left(t\right)}&\displaystyle{- {\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2} - y\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{m\,Dx\left(t\right)}&\displaystyle{m\,Dy\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{m\,{D}^{2}x\left(t\right)}&\displaystyle{m\,{D}^{2}y\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{m\,{D}^{2}x\left(t\right) + 2\,x\left(t\right)\,y\left(t\right) + x\left(t\right)}&\displaystyle{m\,{D}^{2}y\left(t\right) + {\left(x\left(t\right)\right)}^{2} - {\left(y\left(t\right)\right)}^{2} + y\left(t\right)}\end{bmatrix}}\end{pmatrix}
 \end{equation}
+:end:
 
 The final down-tuple gives us the Lagrange equations that $x$ and $y$
 (respectively) must satisfy.
@@ -2210,19 +2220,15 @@ So the particle has some generalized kinetic energy with terms for:
 Here is the Lagrangian:
 
 #+begin_src clojure
-(define ((L-sphere m R) local)
-  (let* ((q (coordinate local))
-         (qdot (velocity local))
-         (theta (ref q 0))
-         (alpha (ref qdot 0))
-         (beta (ref qdot 1)))
-    (* 1/2 m (square R)
+(defn L-sphere [m R]
+  (fn [[_ [theta] [alpha beta]]]
+    (* (/ 1 2) m (square R)
        (+ (square alpha)
           (square (* beta (sin theta)))))))
 #+end_src
 
 #+RESULTS:
-: #| L-sphere |#
+: #'ch1.ex1-12/L-sphere
 
 Here is the full derivation:
 
@@ -2233,10 +2239,12 @@ Here is the full derivation:
      (literal-function 'phi)))
 #+end_src
 
-#+RESULTS[5d05668e1d73bcd0f884eb8ba013c4eb56e72fda]:
+#+RESULTS[162d4c40e024109c56ed452110f927703ac3f347]:
+:results:
 \begin{equation}
-\begin{pmatrix} \displaystyle{ \begin{bmatrix} \displaystyle{ {R}^{2} m \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) {\left( D\phi\left( t \right) \right)}^{2}} \cr \cr \displaystyle{ 0}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ {R}^{2} m D\theta\left( t \right)} \cr \cr \displaystyle{ {R}^{2} m {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} D\phi\left( t \right)}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ {R}^{2} m {D}^{2}\theta\left( t \right)} \cr \cr \displaystyle{ 2 {R}^{2} m \sin\left( \theta\left( t \right) \right) D\theta\left( t \right) \cos\left( \theta\left( t \right) \right) D\phi\left( t \right) + {R}^{2} m {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} {D}^{2}\phi\left( t \right)}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{  - {R}^{2} m \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) {\left( D\phi\left( t \right) \right)}^{2} + {R}^{2} m {D}^{2}\theta\left( t \right)} \cr \cr \displaystyle{ 2 {R}^{2} m \sin\left( \theta\left( t \right) \right) D\theta\left( t \right) \cos\left( \theta\left( t \right) \right) D\phi\left( t \right) + {R}^{2} m {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} {D}^{2}\phi\left( t \right)}\end{bmatrix}}\end{pmatrix}
+\begin{pmatrix}\displaystyle{\begin{bmatrix}\displaystyle{{R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right)}&\displaystyle{0}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{{R}^{2}\,m\,D\theta\left(t\right)}&\displaystyle{{R}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,D\phi\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{{R}^{2}\,m\,{D}^{2}\theta\left(t\right)}&\displaystyle{2\,{R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right) + {R}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{- {R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right) + {R}^{2}\,m\,{D}^{2}\theta\left(t\right)}&\displaystyle{2\,{R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right) + {R}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)}\end{bmatrix}}\end{pmatrix}
 \end{equation}
+:end:
 
 The final Lagrange residuals have a few terms that we can divide out. Scheme
 doesn't know that these are meant to be residuals, so it won't cancel out
@@ -2246,22 +2254,24 @@ Isolate the Lagrange equations from the derivation and manually simplify each
 equation by dividing out, respectively, $mR^2$ and $mR^2 \sin \theta$:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((L (L-sphere 'm 'R))
-       (theta (literal-function 'theta))
-       (q (up theta (literal-function 'phi)))
-       (le ((Lagrange-equations L) q)))
-  (let ((eq1 (ref le 0))
-        (eq2 (ref le 1)))
-    (->tex-equation
-     ((up (/ eq1 (* 'm (square 'R)))
-          (/ eq2 (* (sin theta) 'm (square 'R))))
-      't))))
+(let [L     (L-sphere 'm 'R)
+      theta (literal-function 'theta)
+      q     (up theta (literal-function 'phi))
+      le    ((Lagrange-equations L) q)
+      eq1   (ref le 0)
+      eq2   (ref le 1)]
+  (->tex-equation
+   ((up (/ eq1 (* 'm (square 'R)))
+        (/ eq2 (* (sin theta) 'm (square 'R))))
+    't)))
 #+end_src
 
-#+RESULTS[db89e66528e605f07cf1f57c845568eb0c67777c]:
+#+RESULTS[1427a5776b894b4c3c9590270967e51f9250679c]:
+:results:
 \begin{equation}
-\begin{pmatrix} \displaystyle{  - \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) {\left( D\phi\left( t \right) \right)}^{2} + {D}^{2}\theta\left( t \right)} \cr \cr \displaystyle{ 2 D\theta\left( t \right) \cos\left( \theta\left( t \right) \right) D\phi\left( t \right) + \sin\left( \theta\left( t \right) \right) {D}^{2}\phi\left( t \right)}\end{pmatrix}
+\begin{pmatrix}\displaystyle{- \sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right) + {D}^{2}\theta\left(t\right)} \cr \cr \displaystyle{2\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right) + \sin\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)}\end{pmatrix}
 \end{equation}
+:end:
 
 These are the Lagrange equations for $\theta$ and $\phi$, respectively.
 
@@ -2297,10 +2307,9 @@ library. But that would ruin the fun of the exercise...
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
+| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
+| #'ch1.ex1-13/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
+| #'ch1.ex1-13/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 *** Part A: Acceleration-dependent Lagrangian Implementation
 
@@ -2318,15 +2327,16 @@ Now that we know the math, the implementation is a straightforward extension of
 the =Lagrange-equations= procedure presented in the book:
 
 #+begin_src clojure
-(define ((Lagrange-equations3 L) q)
-  (let ((state-path (Gamma q 4)))
-    (+ ((square D) (compose ((partial 3) L) state-path))
-       (- (D (compose ((partial 2) L) state-path)))
-       (compose ((partial 1) L) state-path))))
+(defn Lagrange-equations3 [L]
+  (fn [q]
+    (let [state-path (Gamma q 4)]
+      (+ ((square D) (compose ((partial 3) L) state-path))
+         (- (D (compose ((partial 2) L) state-path)))
+         (compose ((partial 1) L) state-path)))))
 #+end_src
 
 #+RESULTS:
-: #| Lagrange-equations3 |#
+: #'ch1.ex1-13/Lagrange-equations3
 
 *** Part B: Applying HO-Lagrangians
 
@@ -2345,15 +2355,14 @@ Do you recognize the resulting equation of motion?
 Here is the Lagrangian described in the problem:
 
 #+begin_src clojure
-(define ((L-1-13 m k) local)
-  (let ((x (coordinate local))
-        (a (acceleration local)))
-    (- (* -1/2 m x a)
-       (* 1/2 k (square x)))))
+(defn L-1-13 [m k]
+  (fn [[_ x _ a]]
+    (- (* (/ -1 2) m x a)
+       (* (/ 1 2) k (square x)))))
 #+end_src
 
 #+RESULTS:
-: #| L-1-13 |#
+: #'ch1.ex1-13/L-1-13
 
 Use the new function to generate the Lagrange equations. This call includes a
 factor of $-1$ to make the equation look nice:
@@ -2364,10 +2373,12 @@ factor of $-1$ to make the equation look nice:
       (literal-function 'x)) 't)))
 #+end_src
 
-#+RESULTS[d9cb178c8c9c14831b8950938516b881e5599d78]:
+#+RESULTS[61892ce39a22b04d331c91394cb7ab4b8bbeec74]:
+:results:
 \begin{equation}
-k x\left( t \right) + m {D}^{2}x\left( t \right)
+k\,x\left(t\right) + m\,{D}^{2}x\left(t\right)
 \end{equation}
+:end:
 
 This looks like the equation of motion for a [[https://en.wikipedia.org/wiki/Harmonic_oscillator][classical harmonic oscillator]].
 Again, I leave this problem with no new physical intuition for what is going on
@@ -2401,51 +2412,30 @@ There are two ideas playing together here. Each term takes an element from:
 
 The alternating $1, -1$ sequence is similar to a more general idea: take any
 ordered collection arranged in a cycle, start at some point and walk around the
-cycle for $n$ steps.
-
-If you need to take $n$ steps along a cycle of length $l$, you'll end up
-traveling around the cycle between $n \over l$ and ${n \over l} + 1$ times.
-
-=alternate= generates a list of $n$ total elements generated by walking around
-the ordered cycle of supplied =elems=:
+cycle for $n$ steps. In Clojure this can be expressed as
 
 #+begin_src clojure
-(define (cycle n elems)
-  (apply append (make-list n elems)))
+(cycle [1 -1])
+#+end_src
 
-(define (alternating n elems)
-  (let* ((l (length elems))
-         (times (quotient (+ n (-1+ l)) l)))
-    (list-head (cycle times elems) n)))
+Now, the general =Lagrange-equations*= implementation:
+
+#+begin_src clojure
+(defn Lagrange-equations* [L n]
+  (fn [q]
+    (let [state-path (Gamma q (inc n))
+          terms (map (fn [coef i]
+                       (* coef
+                          ((expt D i)
+                           (compose ((partial (inc i)) L)
+                                    state-path))))
+                     (cycle [1 -1])
+                     (range n))]
+      (reduce + terms))))
 #+end_src
 
 #+RESULTS:
-: #| cycle |#
-:
-: #| alternating |#
-
-Now, the general =Lagrange-equations*= implementation.
-
-This function defines an internal function =term= that generates the $i$th term
-of the derivative combination described above. This sequence is zipped with the
-sequence of $1, -1$, and =fold-left= generates the sum.
-
-#+begin_src clojure
-(define ((Lagrange-equations* L n) q)
-  (let ((state-path (Gamma q (1+ n))))
-    (define (term i)
-      ((expt D i)
-       (compose ((partial (1+ i)) L) state-path)))
-    (let ((terms (map term (iota n))))
-      (fold-left (lambda (acc pair)
-                   (+ acc (apply * pair)))
-                 0
-                 (zip (alternating n '(1 -1))
-                      (reverse terms))))))
-#+end_src
-
-#+RESULTS:
-: #| Lagrange-equations* |#
+: #'ch1.ex1-13/Lagrange-equations*
 
 Generate the Lagrange equations from part b once more to check that we get the
 same result:
@@ -2456,10 +2446,12 @@ same result:
       (literal-function 'x)) 't)))
 #+end_src
 
-#+RESULTS[1393bf1b0b9cbfbd5c386cb8fcdd91c86cf38e32]:
+#+RESULTS[5d62001ce884887afa38fcf3763f9559ff8c65a8]:
+:results:
 \begin{equation}
-k x\left( t \right) + m {D}^{2}x\left( t \right)
+k\,x\left(t\right) + m\,{D}^{2}x\left(t\right)
 \end{equation}
+:end:
 
 There it is again, the harmonic oscillator. I don't have any intuition for
 higher order Lagrangians, so I can't cook up any further examples to test the
@@ -2515,8 +2507,11 @@ techniques were developed to avoid. Let us proceed.
             [sicmutils.expression.render :as render]
             [taoensso.timbre :refer [set-level!]]))
 
+(ns-unmap *ns* 'p->r)
 (e/bootstrap-repl!)
 (set-level! :fatal)
+(alter-var-root #'render/*TeX-vertical-down-tuples*
+                            (constantly true))
 
 (defn ->tex-equation* [e]
   (let [eq (render/->TeX (simplify e))]
@@ -2530,35 +2525,30 @@ techniques were developed to avoid. Let us proceed.
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
+| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
+| class java.lang.IllegalStateException                                                                                                                                                                                                                                                                                                                                                                      |
+| #'ch1.ex1-14/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
+| #'ch1.ex1-14/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 Here are the two Lagrangians from the book:
 
 #+begin_src clojure
-(define ((L-central-rectangular m U) local)
-  (let ((q (coordinate local))
-        (v (velocity local)))
-    (- (* 1/2 m (square v))
+(defn L-central-rectangular [m U]
+  (fn [[_ q v]]
+    (- (* (/ 1 2) m (square v))
        (U (sqrt (square q))))))
 
-(define ((L-central-polar m U) local)
-  (let ((q (coordinate local))
-        (qdot (velocity local)))
-    (let ((r (ref q 0)) (phi (ref q 1))
-          (rdot (ref qdot 0)) (phidot (ref qdot 1)))
-      (- (* 1/2 m
-            (+ (square rdot)
-               (square (* r phidot))) )
-         (U r)))))
+(defn L-central-polar [m U]
+  (fn [[_ [r phi] [rdot phidot]]]
+    (- (* (/ 1 2) m
+          (+ (square rdot)
+             (square (* r phidot))) )
+       (U r))))
 #+end_src
 
 #+RESULTS:
-: #| L-central-rectangular |#
-:
-: #| L-central-polar |#
+| #'ch1.ex1-14/L-central-rectangular |
+| #'ch1.ex1-14/L-central-polar       |
 
 Here are the rectangular equations of motion:
 
@@ -2568,16 +2558,15 @@ Here are the rectangular equations of motion:
     (L-central-rectangular 'm (literal-function 'U)))
    (up (literal-function 'x)
        (literal-function 'y)))
-  't)
- "eq:rect-equations")
+  't))
 #+end_src
 
-#+RESULTS[3d6b30672d7d2fe77035ee8a5ae5b0f3046f2f90]:
+#+RESULTS[3967e6cebac2565ddbf6b19314f6f46bd577b49f]:
+:results:
 \begin{equation}
-\begin{bmatrix} \displaystyle{ {{m {D}^{2}x\left( t \right) \sqrt{{\left( x\left( t \right) \right)}^{2} + {\left( y\left( t \right) \right)}^{2}} + x\left( t \right) DU\left( \sqrt{{\left( x\left( t \right) \right)}^{2} + {\left( y\left( t \right) \right)}^{2}} \right)}\over {\sqrt{{\left( x\left( t \right) \right)}^{2} + {\left( y\left( t \right) \right)}^{2}}}}} \cr \cr \displaystyle{ {{m \sqrt{{\left( x\left( t \right) \right)}^{2} + {\left( y\left( t \right) \right)}^{2}} {D}^{2}y\left( t \right) + y\left( t \right) DU\left( \sqrt{{\left( x\left( t \right) \right)}^{2} + {\left( y\left( t \right) \right)}^{2}} \right)}\over {\sqrt{{\left( x\left( t \right) \right)}^{2} + {\left( y\left( t \right) \right)}^{2}}}}}\end{bmatrix}
-\label{eq:rect-equations}
+\begin{bmatrix}\displaystyle{\frac{m\,{D}^{2}x\left(t\right)\,\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}} + x\left(t\right)\,DU\left(\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}\right)}{\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}}} \cr \cr \displaystyle{\frac{m\,{D}^{2}y\left(t\right)\,\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}} + y\left(t\right)\,DU\left(\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}\right)}{\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}}}\end{bmatrix}
 \end{equation}
-
+:end:
 
 And the polar Lagrange equations:
 
@@ -2590,10 +2579,12 @@ And the polar Lagrange equations:
    't))
 #+end_src
 
-#+RESULTS[557893e62f632f0900e9ece883c176eaf5bcfd05]:
+#+RESULTS[bc57f83721cb2697dcf71e970ec47a748cc4c542]:
+:results:
 \begin{equation}
-\begin{bmatrix} \displaystyle{  - m r\left( t \right) {\left( D\phi\left( t \right) \right)}^{2} + m {D}^{2}r\left( t \right) + DU\left( r\left( t \right) \right)} \cr \cr \displaystyle{ m {D}^{2}\phi\left( t \right) {\left( r\left( t \right) \right)}^{2} + 2 m r\left( t \right) D\phi\left( t \right) Dr\left( t \right)}\end{bmatrix}
+\begin{bmatrix}\displaystyle{- m\,{\left(D\phi\left(t\right)\right)}^{2}\,r\left(t\right) + m\,{D}^{2}r\left(t\right) + DU\left(r\left(t\right)\right)} \cr \cr \displaystyle{2\,m\,D\phi\left(t\right)\,r\left(t\right)\,Dr\left(t\right) + m\,{D}^{2}\phi\left(t\right)\,{\left(r\left(t\right)\right)}^{2}}\end{bmatrix}
 \end{equation}
+:end:
 
 Once again, our goal is to show that, if you can write down coordinate
 transformations for the coordinates, velocities and accelerations and substitute
@@ -2628,17 +2619,14 @@ Write the coordinate transformation for polar coordinates to rectangular in
 Scheme:
 
 #+begin_src clojure
-(define (p->r local)
-  (let* ((polar-tuple (coordinate local))
-         (r (ref polar-tuple 0))
-         (phi (ref polar-tuple 1))
-         (x (* r (cos phi)))
-         (y (* r (sin phi))))
+(defn p->r [[_ [r phi]]]
+  (let [x (* r (cos phi))
+        y (* r (sin phi))]
     (up x y)))
 #+end_src
 
 #+RESULTS:
-: #| p->r |#
+: #'ch1.ex1-14/p->r
 
 Now use =F->C=, first described on page 46. This is a function that takes a
 coordinate transformation like =p->r= and returns a /new/ function that can
@@ -2647,25 +2635,40 @@ discussed above.
 
 The version that the book presents on page 46 can only generate a velocity
 transformation given a coordinate transformation, but =scmutils= contains a more
-general version that will convert as many path elements as you pass to it.
+general version that will convert as many path elements as you pass to it:
+
+#+begin_src clojure
+(defn F->C* [F]
+  (fn [local]
+    (let [n (count local)
+          f-bar (fn [q-prime]
+                  (let [q (compose F (Gamma q-prime))]
+                    (Gamma q n)))]
+      ((Gamma-bar f-bar) local))))
+#+end_src
 
 Here are the rectangular positions, velocities and accelerations, written in
 polar coordinates:
 
+#+RESULTS:
+: #'ch1.ex1-14/F->C*
+
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let ((convert-path (F->C p->r))
-      (polar-path (up 't
-                      (up 'r 'phi)
-                      (up 'rdot 'phidot)
-                      (up 'rdotdot 'phidotdot))))
+(let [convert-path (F->C* p->r)
+      polar-path (up 't
+                     (up 'r 'phi)
+                     (up 'rdot 'phidot)
+                     (up 'rdotdot 'phidotdot))]
   (->tex-equation
    (convert-path polar-path)))
 #+end_src
 
-#+RESULTS[1bac37835829a8c17e06699ef20f2e42676725b9]:
+#+RESULTS[e924c0971d850d2534adb8e5010a70c8e0f38fa2]:
+:results:
 \begin{equation}
-\begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{ r \cos\left( \phi \right)} \cr \cr \displaystyle{ r \sin\left( \phi \right)}\end{pmatrix}} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{  - \dot{\phi} r \sin\left( \phi \right) + \dot{r} \cos\left( \phi \right)} \cr \cr \displaystyle{ \dot{\phi} r \cos\left( \phi \right) + \dot{r} \sin\left( \phi \right)}\end{pmatrix}} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{  - {\dot{\phi}}^{2} r \cos\left( \phi \right) - 2 \dot{\phi} \dot{r} \sin\left( \phi \right) - \ddot{\phi} r \sin\left( \phi \right) + \ddot{r} \cos\left( \phi \right)} \cr \cr \displaystyle{  - {\dot{\phi}}^{2} r \sin\left( \phi \right) + 2 \dot{\phi} \dot{r} \cos\left( \phi \right) + \ddot{\phi} r \cos\left( \phi \right) + \ddot{r} \sin\left( \phi \right)}\end{pmatrix}}\end{pmatrix}
+\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{r\,\cos\left(\phi\right)} \cr \cr \displaystyle{r\,\sin\left(\phi\right)}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{- \dot {\phi}\,r\,\sin\left(\phi\right) + \dot r\,\cos\left(\phi\right)} \cr \cr \displaystyle{\dot {\phi}\,r\,\cos\left(\phi\right) + \dot r\,\sin\left(\phi\right)}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{- {\dot {\phi}}^{2}\,r\,\cos\left(\phi\right) -2\,\dot {\phi}\,\dot r\,\sin\left(\phi\right) - \ddot {\phi}\,r\,\sin\left(\phi\right) + \ddot r\,\cos\left(\phi\right)} \cr \cr \displaystyle{- {\dot {\phi}}^{2}\,r\,\sin\left(\phi\right) + 2\,\dot {\phi}\,\dot r\,\cos\left(\phi\right) + \ddot {\phi}\,r\,\cos\left(\phi\right) + \ddot r\,\sin\left(\phi\right)}\end{pmatrix}}\end{pmatrix}
 \end{equation}
+:end:
 
 
 Ordinarily, it would be too heartbreaking to substitute these in to the
@@ -2676,20 +2679,8 @@ Write the rectangular Lagrange equations as a function of the local tuple, so we
 can call it directly:
 
 #+begin_src clojure
-(define (rect-equations local)
-  (let* ((q (coordinate local))
-         (x (ref q 0))
-         (y (ref q 1))
-
-         (v (velocity local))
-         (xdot (ref v 0))
-         (ydot (ref v 1))
-
-         (a (acceleration local))
-         (xdotdot (ref a 0))
-         (ydotdot (ref a 1))
-
-         (U (literal-function 'U)))
+(defn rect-equations [[_ [x y] [xdot ydot] [xdotdot ydotdot]]]
+  (let [U (literal-function 'U)]
     (up (/ (+ (* 'm xdotdot (sqrt (+ (square x) (square y))))
               (* x ((D U) (sqrt (+ (square x) (square y))))))
            (sqrt (+ (square x) (square y))))
@@ -2699,43 +2690,47 @@ can call it directly:
 #+end_src
 
 #+RESULTS:
-: #| rect-equations |#
+: #'ch1.ex1-14/rect-equations
 
 Verify that these are, in fact, the rectangular equations of motion by passing
 in a symbolic rectangular local tuple:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let ((rect-path (up 't
-                     (up 'x 'y)
-                     (up 'xdot 'ydot)
-                     (up 'xdotdot 'ydotdot))))
+(let [rect-path (up 't
+                    (up 'x 'y)
+                    (up 'xdot 'ydot)
+                    (up 'xdotdot 'ydotdot))]
   (->tex-equation
    (rect-equations rect-path)))
 #+end_src
 
-#+RESULTS[5e06ee310a8c8e3036c17c5863647c80960dc568]:
+#+RESULTS[9e387aa76a047a2865dbb698d44aede2e92f4f5d]:
+:results:
 \begin{equation}
-\begin{pmatrix} \displaystyle{ {{m \ddot{x} \sqrt{{x}^{2} + {y}^{2}} + x DU\left( \sqrt{{x}^{2} + {y}^{2}} \right)}\over {\sqrt{{x}^{2} + {y}^{2}}}}} \cr \cr \displaystyle{ {{m \ddot{y} \sqrt{{x}^{2} + {y}^{2}} + y DU\left( \sqrt{{x}^{2} + {y}^{2}} \right)}\over {\sqrt{{x}^{2} + {y}^{2}}}}}\end{pmatrix}
+\begin{pmatrix}\displaystyle{\frac{m\,\ddot x\,\sqrt {{x}^{2} + {y}^{2}} + x\,DU\left(\sqrt {{x}^{2} + {y}^{2}}\right)}{\sqrt {{x}^{2} + {y}^{2}}}} \cr \cr \displaystyle{\frac{m\,\ddot y\,\sqrt {{x}^{2} + {y}^{2}} + y\,DU\left(\sqrt {{x}^{2} + {y}^{2}}\right)}{\sqrt {{x}^{2} + {y}^{2}}}}\end{pmatrix}
 \end{equation}
+:end:
 
 Now use the =p->r= conversion to substitute each of the rectangular values above
 with their associated polar values:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((convert-path (F->C p->r))
-       (polar-path (up 't
-                       (up 'r 'phi)
-                       (up 'rdot 'phidot)
-                       (up 'rdotdot 'phidotdot)))
-       (local (convert-path polar-path)))
+(let [convert-path (F->C* p->r)
+      polar-path (up 't
+                     (up 'r 'phi)
+                     (up 'rdot 'phidot)
+                     (up 'rdotdot 'phidotdot))
+      local (convert-path polar-path)]
   (->tex-equation
    (rect-equations local)))
 #+end_src
 
-#+RESULTS[577a75ce68ba364856b29d9b49e8f95c130ec027]:
+#+RESULTS[26a8675d64ed69fcad5910c5c4eb4bcb2d03e123]:
+:results:
 \begin{equation}
-\begin{pmatrix} \displaystyle{  - m {\dot{\phi}}^{2} r \cos\left( \phi \right) - 2 m \dot{\phi} \dot{r} \sin\left( \phi \right) - m \ddot{\phi} r \sin\left( \phi \right) + m \ddot{r} \cos\left( \phi \right) + DU\left( r \right) \cos\left( \phi \right)} \cr \cr \displaystyle{  - m {\dot{\phi}}^{2} r \sin\left( \phi \right) + 2 m \dot{\phi} \dot{r} \cos\left( \phi \right) + m \ddot{\phi} r \cos\left( \phi \right) + m \ddot{r} \sin\left( \phi \right) + DU\left( r \right) \sin\left( \phi \right)}\end{pmatrix}
+\begin{pmatrix}\displaystyle{- m\,{\dot {\phi}}^{2}\,r\,\cos\left(\phi\right) -2\,m\,\dot {\phi}\,\dot r\,\sin\left(\phi\right) - m\,\ddot {\phi}\,r\,\sin\left(\phi\right) + m\,\ddot r\,\cos\left(\phi\right) + \cos\left(\phi\right)\,DU\left(r\right)} \cr \cr \displaystyle{- m\,{\dot {\phi}}^{2}\,r\,\sin\left(\phi\right) + 2\,m\,\dot {\phi}\,\dot r\,\cos\left(\phi\right) + m\,\ddot {\phi}\,r\,\cos\left(\phi\right) + m\,\ddot r\,\sin\left(\phi\right) + \sin\left(\phi\right)\,DU\left(r\right)}\end{pmatrix}
 \end{equation}
+:end:
 
 Oh no. This looks quite different from the polar Lagrange equations above. What
 is the problem?
@@ -2756,13 +2751,13 @@ add them together and the unwanted terms all drop away.
 A similar trick recovers the second equation,given an extra factor of $r$:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((convert-path (F->C p->r))
-       (polar-path (up 't
-                       (up 'r 'phi)
-                       (up 'rdot 'phidot)
-                       (up 'rdotdot 'phidotdot)))
-       (local (convert-path polar-path))
-       (eq (rect-equations local)))
+(let [convert-path (F->C* p->r)
+      polar-path (up 't
+                     (up 'r 'phi)
+                     (up 'rdot 'phidot)
+                     (up 'rdotdot 'phidotdot))
+      local (convert-path polar-path)
+      eq (rect-equations local)]
   (->tex-equation
    (up (+ (* (cos 'phi) (ref eq 0))
           (* (sin 'phi) (ref eq 1)))
@@ -2770,10 +2765,12 @@ A similar trick recovers the second equation,given an extra factor of $r$:
           (* 'r (sin 'phi) (ref eq 0))))))
 #+end_src
 
-#+RESULTS[4a5dd5a22afc855770bba85efe4a6bffecdc6228]:
+#+RESULTS[31292cb7054616c81374c2e2ffe2802e5f2ccddb]:
+:results:
 \begin{equation}
-\begin{pmatrix} \displaystyle{  - m {\dot{\phi}}^{2} r + m \ddot{r} + DU\left( r \right)} \cr \cr \displaystyle{ 2 m \dot{\phi} r \dot{r} + m \ddot{\phi} {r}^{2}}\end{pmatrix}
+\begin{pmatrix}\displaystyle{- m\,{\dot {\phi}}^{2}\,r + m\,\ddot r + DU\left(r\right)} \cr \cr \displaystyle{2\,m\,\dot {\phi}\,r\,\dot r + m\,\ddot {\phi}\,{r}^{2}}\end{pmatrix}
 \end{equation}
+:end:
 
 This was a powerful lesson. We're allowed to take a linear combination here
 because each equation is a residual, equal to zero. $a0 + b0 = 0$ for any $a$
@@ -2812,10 +2809,9 @@ answer here.
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
+| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
+| #'ch1.ex1-15/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
+| #'ch1.ex1-15/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 This is one of the more important exercises in the chapter. The problem asks for
 a proof that it's possible to absorb a coordinate transformation directly into
@@ -2925,10 +2921,8 @@ The following function is a slight redefinition that allows us to use an $F$
 that takes an explicit $(t, x')$, instead of the entire local tuple:
 
 #+begin_src clojure
-(define ((F->C* F) local)
-  (let ((t (time local))
-        (x (coordinate local))
-        (v (velocity local)))
+(defn F->C* [F]
+  (fn [[t x v]]
     (up t
         (F t x)
         (+ (((partial 0) F) t x)
@@ -2937,7 +2931,7 @@ that takes an explicit $(t, x')$, instead of the entire local tuple:
 #+end_src
 
 #+RESULTS[8ea33eda9107b7b0d6ce890f316eb453b2d96fca]:
-: #| F->C* |#
+: #'ch1.ex1-15/F->C*
 
 Next we define $F$, $C$ and $L$ as described above, as well as =qprime=, a
 function that can represent our unprimed coordinate path function.
@@ -2947,26 +2941,23 @@ make the types easier to understand; the derivation applies equally well to
 paths with many dimensions.
 
 #+begin_src clojure
-(define F
+(def F
   (literal-function 'F (-> (X Real Real) Real)))
 
-(define C (F->C* F))
+(def C (F->C* F))
 
-(define L
+(def L
   (literal-function 'L (-> (UP Real Real Real) Real)))
 
-(define qprime
+(def qprime
   (literal-function 'qprime))
 #+end_src
 
 #+RESULTS:
-: #| F |#
-:
-: #| C |#
-:
-: #| L |#
-:
-: #| qprime |#
+| #'ch1.ex1-15/F      |
+| #'ch1.ex1-15/C      |
+| #'ch1.ex1-15/L      |
+| #'ch1.ex1-15/qprime |
 
 When we apply $C$ to the primed local tuple, do we get the transformed tuple
 that we expect from 1.77 in the book?
@@ -2976,17 +2967,20 @@ that we expect from 1.77 in the book?
  ((compose C (Gamma qprime)) 't))
 #+end_src
 
-#+RESULTS[ecef7fe872de385af827c689dbd0db76aa5319f0]:
+#+RESULTS[1f5f0208c9f584ce58b23339a309ac4e76ea26a5]:
+:results:
 \begin{equation}
-\begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix}
+\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}
 \end{equation}
+:end:
 
 This looks correct. We can also transform the path before passing it to
 $\Gamma$:
 
 #+begin_src clojure
-(define ((to-q F qp) t)
-  (F t (qp t)))
+(defn to-q [F qp]
+  (fn [t]
+    (F t (qp t))))
 #+end_src
 
 #+RESULTS:
@@ -2995,29 +2989,30 @@ $\Gamma$:
 Subtract the two forms to see that they're equivalent:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(->tex-equations
+(->tex-equation
  ((- (compose C (Gamma qprime))
      (Gamma (to-q F qprime)))
   't))
 #+end_src
 
-#+RESULTS[10aea4a5b833aa00e0a1c63049d844dc37528289]:
+#+RESULTS[5f308ea5641c0b71d435390e6d78ce6f1f88c332]:
+:results:
 \begin{equation}
-\begin{pmatrix} \displaystyle{ 0} \cr \cr \displaystyle{ 0} \cr \cr \displaystyle{ 0}\end{pmatrix}
+\begin{pmatrix}\displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{0}\end{pmatrix}
 \end{equation}
+:end:
 
 Now that we know $C$ is correct we can define $q$, the unprimed coordinate path
 function, and =Lprime=:
 
 #+begin_src clojure
-(define q (to-q F qprime))
-(define Lprime (compose L C))
+(def q (to-q F qprime))
+(def Lprime (compose L C))
 #+end_src
 
 #+RESULTS:
-: #| q |#
-:
-: #| Lprime |#
+| #'ch1.ex1-15/q      |
+| #'ch1.ex1-15/Lprime |
 
 *** Derivation
 
@@ -3065,14 +3060,16 @@ Example the value of $\partial_2C$ using our Scheme utilities:
 #+begin_src clojure :results output drawer :exports both :cache yes
 (->tex-equation
  (((partial 2) C) (up 't 'xprime 'vprime))
- "eq:p2c")
+ #_"eq:p2c"
+ )
 #+end_src
 
-#+RESULTS[2ad70f16eca982284368a2f70f31de3b2de41025]:
+#+RESULTS[d4b759f3fa4e55e9e5bc8f29d624d4bafcbebb98]:
+:results:
 \begin{equation}
-\begin{pmatrix} \displaystyle{ 0} \cr \cr \displaystyle{ 0} \cr \cr \displaystyle{ {\partial}_{1}F\left( t, {x}^\prime \right)}\end{pmatrix}
-\label{eq:p2c}
+\begin{pmatrix}\displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{xprime}\right)}\end{pmatrix}
 \end{equation}
+:end:
 
 The first two components are 0, leaving us with:
 
@@ -3126,10 +3123,12 @@ Calculate $\partial_1C$ using our Scheme utilities:
  (((partial 1) C) (up 't 'xprime 'vprime)))
 #+end_src
 
-#+RESULTS[40670631406e70c2545a7426039a01214769d4fd]:
+#+RESULTS[d3684aee5eb9d10b180f4d6a936a99f1f9cc8149]:
+:results:
 \begin{equation}
-\begin{pmatrix} \displaystyle{ 0} \cr \cr \displaystyle{ {\partial}_{1}F\left( t, {x}^\prime \right)} \cr \cr \displaystyle{ {v}^\prime {{\partial}_{1}}^{2}\left( F \right)\left( t, {x}^\prime \right) + \left( {\partial}_{0} {\partial}_{1} \right)\left( F \right)\left( t, {x}^\prime \right)}\end{pmatrix}
+\begin{pmatrix}\displaystyle{0} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{xprime}\right)} \cr \cr \displaystyle{\mathsf{vprime}\,\partial_1\left(\partial_1F\right)\left(t, \mathsf{xprime}\right) + \partial_1\left(\partial_0F\right)\left(t, \mathsf{xprime}\right)}\end{pmatrix}
 \end{equation}
+:end:
 
 Expand the chain rule out and remove 0 terms, as before:
 
@@ -3187,25 +3186,29 @@ First, consider $\partial_1 L' \circ \Gamma[q']$:
   't))
 #+end_src
 
-#+RESULTS[5eac70f3edfcf5feeb3a2eb9b98d89646f21ade3]:
+#+RESULTS[451c6ba40c7c34a322ecf96d069c8b0db385fc11]:
+:results:
 \begin{equation}
-D{q}^\prime\left( t \right) {\partial}_{2}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {{\partial}_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) {\partial}_{1}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) + {\partial}_{2}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) \left( {\partial}_{0} {\partial}_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
+D\mathsf{qprime}\left(t\right)\,\partial_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial_1\left(\partial_1F\right)\left(t, \mathsf{qprime}\left(t\right)\right) + \partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial_1L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial_1\left(\partial_0F\right)\left(t, \mathsf{qprime}\left(t\right)\right)
 \end{equation}
+:end:
+
 
 This is completely insane, and already unhelpful. The argument to $L$, we know,
 is actually $\Gamma[q]$. Make a function that will replace the tuple with that
 reference:
 
 #+begin_src clojure
-(define (->eq expr)
-  (write-string
-   (replace-all (->tex-equation* expr)
-                (->tex* ((Gamma q) 't))
-                "\\circ \\Gamma[q]")))
+(defn ->eq [expr]
+  (println
+   (clojure.string/replace
+    (->tex-equation* expr)
+    (->TeX ((Gamma q) 't))
+    "\\circ \\Gamma[q]")))
 #+end_src
 
 #+RESULTS:
-: #| ->eq |#
+: #'ch1.ex1-15/->eq
 
 Try again:
 
@@ -3214,6 +3217,13 @@ Try again:
  ((compose ((partial 1) Lprime) (Gamma qprime))
   't))
 #+end_src
+
+#+RESULTS[aef7837374e06886cf6bf0bb9b099884deb1fcf9]:
+:results:
+\begin{equation}
+D\mathsf{qprime}\left(t\right)\,\partial_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial_1\left(\partial_1F\right)\left(t, \mathsf{qprime}\left(t\right)\right) + \partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial_1L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial_1\left(\partial_0F\right)\left(t, \mathsf{qprime}\left(t\right)\right)
+\end{equation}
+:end:
 
 #+RESULTS[ee6c612cadd91730dd0142a4dd7476fda80d6e07]:
 \begin{equation}
@@ -3227,16 +3237,18 @@ nestled inside the expansion above, multiplied by a factor $\partial_1F(t,
 q'(t))$:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((factor (((partial 1) F) 't (qprime 't))))
+(let [factor (((partial 1) F) 't (qprime 't))]
   (->eq
    ((* factor (compose ((partial 1) L) (Gamma q)))
     't)))
 #+end_src
 
-#+RESULTS[31b49f8349da58b715e99a7cbcdf983dc4e12d1e]:
+#+RESULTS[5f2c8a531cafcaf6e23b9f9cb3c38108b5d1e32d]:
+:results:
 \begin{equation}
-{\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) {\partial}_{1}L\left( \circ \Gamma[q] \right)
+\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial_1L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)
 \end{equation}
+:end:
 
 Next, consider the $D(\partial_2 L' \circ \Gamma[q'])$ term:
 
@@ -3246,10 +3258,12 @@ Next, consider the $D(\partial_2 L' \circ \Gamma[q'])$ term:
   't))
 #+end_src
 
-#+RESULTS[9813f05b0fc4d5e7ad9ce035bca6e494cb087d84]:
+#+RESULTS[afbf11e581f00b2dac21d9451826285a9302249d]:
+:results:
 \begin{equation}
-{\left( D{q}^\prime\left( t \right) \right)}^{2} {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) {{\partial}_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) {{\partial}_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) + D{q}^\prime\left( t \right) {\left( {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} \left( {\partial}_{1} {\partial}_{2} \right)\left( L \right)\left( \circ \Gamma[q] \right) + 2 D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) \left( {\partial}_{0} {\partial}_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right) {{\partial}_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) + {\left( {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} {D}^{2}{q}^\prime\left( t \right) {{\partial}_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) \left( {\partial}_{1} {\partial}_{2} \right)\left( L \right)\left( \circ \Gamma[q] \right) + D{q}^\prime\left( t \right) {\partial}_{2}L\left( \circ \Gamma[q] \right) {{\partial}_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) {{\partial}_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) {{\partial}_{0}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) \left( {\partial}_{0} {\partial}_{2} \right)\left( L \right)\left( \circ \Gamma[q] \right) + {\partial}_{2}L\left( \circ \Gamma[q] \right) \left( {\partial}_{0} {\partial}_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
+\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,{\left(D\mathsf{qprime}\left(t\right)\right)}^{2}\,\partial_1\left(\partial_1F\right)\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial_2\left(\partial_2L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + {\left(\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\right)}^{2}\,D\mathsf{qprime}\left(t\right)\,\partial_2\left(\partial_1L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + {\left(\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\right)}^{2}\,\partial_2\left(\partial_2L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,{D}^{2}\mathsf{qprime}\left(t\right) + 2\,\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right)\,\partial_1\left(\partial_0F\right)\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial_2\left(\partial_2L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial_2\left(\partial_1L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial_2\left(\partial_2L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial_0\left(\partial_0F\right)\left(t, \mathsf{qprime}\left(t\right)\right) + D\mathsf{qprime}\left(t\right)\,\partial_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial_1\left(\partial_1F\right)\left(t, \mathsf{qprime}\left(t\right)\right) + \partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial_2\left(\partial_0L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial_1\left(\partial_0F\right)\left(t, \mathsf{qprime}\left(t\right)\right)
 \end{equation}
+:end:
 
 
 This, again, is total madness. We really want some way to control how Scheme
@@ -3264,10 +3278,12 @@ Lagrange equations:
   't))
 #+end_src
 
-#+RESULTS[9937f7c80dcdc8744c8f2a1a57505172c55bee17]:
+#+RESULTS[9f2447845d506ca6e263e7660b89392436f92c9b]:
+:results:
 \begin{equation}
-{\left( D{q}^\prime\left( t \right) \right)}^{2} {{\partial}_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) {{\partial}_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) + D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) \left( {\partial}_{1} {\partial}_{2} \right)\left( L \right)\left( \circ \Gamma[q] \right) + 2 D{q}^\prime\left( t \right) \left( {\partial}_{0} {\partial}_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right) {{\partial}_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) + {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) {D}^{2}{q}^\prime\left( t \right) {{\partial}_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right) \left( {\partial}_{1} {\partial}_{2} \right)\left( L \right)\left( \circ \Gamma[q] \right) + {{\partial}_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) {{\partial}_{0}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + \left( {\partial}_{0} {\partial}_{2} \right)\left( L \right)\left( \circ \Gamma[q] \right)
+{\left(D\mathsf{qprime}\left(t\right)\right)}^{2}\,\partial_1\left(\partial_1F\right)\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial_2\left(\partial_2L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right)\,\partial_2\left(\partial_1L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial_2\left(\partial_2L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,{D}^{2}\mathsf{qprime}\left(t\right) + 2\,D\mathsf{qprime}\left(t\right)\,\partial_1\left(\partial_0F\right)\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial_2\left(\partial_2L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial_2\left(\partial_1L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial_2\left(\partial_2L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial_0\left(\partial_0F\right)\left(t, \mathsf{qprime}\left(t\right)\right) + \partial_2\left(\partial_0L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)
 \end{equation}
+:end:
 
 Staring at these two equations, it becomes clear that the first contains the
 second, multiplied by $\partial_1F(t, q'(t))$, the same factor that appeared in
@@ -3277,25 +3293,27 @@ Try writing out the primed Lagrange equations, and subtracting the unprimed
 Lagrange equations, scaled by this factor:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((primed-lagrange
-        (- (D (compose ((partial 2) Lprime) (Gamma qprime)))
-           (compose ((partial 1) Lprime) (Gamma qprime))))
+(let [primed-lagrange
+      (- (D (compose ((partial 2) Lprime) (Gamma qprime)))
+         (compose ((partial 1) Lprime) (Gamma qprime)))
 
-       (lagrange
-        (- (D (compose ((partial 2) L) (Gamma q)))
-           (compose ((partial 1) L) (Gamma q))))
+      lagrange
+      (- (D (compose ((partial 2) L) (Gamma q)))
+         (compose ((partial 1) L) (Gamma q)))
 
-       (factor
-        (compose coordinate ((partial 1) C) (Gamma qprime))))
+      factor
+      (compose coordinate ((partial 1) C) (Gamma qprime))]
   (->tex-equation
    ((- primed-lagrange (* factor lagrange))
     't)))
 #+end_src
 
-#+RESULTS[ae8a3f6f564ba9a64eff102d29316faebfb7e1f6]:
+#+RESULTS[4127490c1efb9f0f215d6d6d2ef970e154f15fd3]:
+:results:
 \begin{equation}
 0
 \end{equation}
+:end:
 
 Done! It seems that the extra terms on each side exactly cancel. As with the pen
 and paper derivation, we've shown that the primed Lagranged equations
@@ -3346,10 +3364,9 @@ I'm leaving intuitive cake on the table.
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
+| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
+| #'ch1.ex1-16/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
+| #'ch1.ex1-16/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 This exercise gives you practice in writing Lagrangians as compositions.
 
@@ -3439,12 +3456,14 @@ L' = {1 \over 2} m (r^2 \dot{\phi}^2 \sin^2\phi + r^2 \dot{\theta}^2 + \dot{r}^2
 To show the rectangular Lagrangian, get the procedure from page 41:
 
 #+begin_src clojure
-(define ((L-central-rectangular m U) local)
-  (let ((q (coordinate local))
-        (v (velocity local)))
-    (- (* 1/2 m (square v))
+(defn L-central-rectangular [m U]
+  (fn [[_ q v]]
+    (- (* (/ 1 2) m (square v))
        (U (sqrt (square q))))))
 #+end_src
+
+#+RESULTS:
+: #'ch1.ex1-16/L-central-rectangular
 
 This is already written in a form that can handle an arbitrary number of
 coordiantes. Confirm the rectangular Lagrangian by passing in a local tuple with
@@ -3458,28 +3477,25 @@ coordiantes. Confirm the rectangular Lagrangian by passing in a local tuple with
       (up 'v_x 'v_y 'v_z))))
 #+end_src
 
-#+RESULTS[9bf8352b0d3e667e7149e5519cc568efbbf2f331]:
+#+RESULTS[48fe8f2fe324e25d9c77de63020225ecda580b2c]:
+:results:
 \begin{equation}
-{{1}\over {2}} m {{v}_{x}}^{2} + {{1}\over {2}} m {{v}_{y}}^{2} + {{1}\over {2}} m {{v}_{z}}^{2} - U\left( \sqrt{{x}^{2} + {y}^{2} + {z}^{2}} \right)
+\frac{1}{2}\,m\,{v_x}^{2} + \frac{1}{2}\,m\,{v_y}^{2} + \frac{1}{2}\,m\,{v_z}^{2} - U\left(\sqrt {{x}^{2} + {y}^{2} + {z}^{2}}\right)
 \end{equation}
-
+:end:
 
 Next, the spherical. Write down the coordinate transformation from spherical to
 rectangular coordinates as a Scheme procedure:
 
 #+begin_src clojure
-(define (spherical->rect local)
-  (let* ((q (coordinate local))
-         (r (ref q 0))
-         (theta (ref q 1))
-         (phi (ref q 2)))
-    (up (* r (sin theta) (cos phi))
-        (* r (sin theta) (sin phi))
-        (* r (cos theta)))))
+(defn spherical->rect [[_ [r theta phi]]]
+  (up (* r (sin theta) (cos phi))
+      (* r (sin theta) (sin phi))
+      (* r (cos theta))))
 #+end_src
 
 #+RESULTS:
-: #| spherical->rect |#
+: #'ch1.ex1-16/spherical->rect
 
 Here are the velocities calculated above by hand:
 
@@ -3492,23 +3508,25 @@ Here are the velocities calculated above by hand:
        (up 'rdot 'thetadot 'phidot)))))
 #+end_src
 
-#+RESULTS[b41cbe257b2a859243c9b36052b54e533d08484e]:
+#+RESULTS[d6615496a08456c35cb47bb26a0a49fd19595ec8]:
+:results:
 \begin{equation}
-\begin{pmatrix} \displaystyle{  - \dot{\phi} r \sin\left( \phi \right) \sin\left( \theta \right) + r \dot{\theta} \cos\left( \phi \right) \cos\left( \theta \right) + \dot{r} \cos\left( \phi \right) \sin\left( \theta \right)} \cr \cr \displaystyle{ \dot{\phi} r \cos\left( \phi \right) \sin\left( \theta \right) + r \dot{\theta} \sin\left( \phi \right) \cos\left( \theta \right) + \dot{r} \sin\left( \phi \right) \sin\left( \theta \right)} \cr \cr \displaystyle{  - r \dot{\theta} \sin\left( \theta \right) + \dot{r} \cos\left( \theta \right)}\end{pmatrix}
+\begin{pmatrix}\displaystyle{- \dot {\phi}\,r\,\sin\left(\phi\right)\,\sin\left(\theta\right) + r\,\dot {\theta}\,\cos\left(\phi\right)\,\cos\left(\theta\right) + \dot r\,\cos\left(\phi\right)\,\sin\left(\theta\right)} \cr \cr \displaystyle{\dot {\phi}\,r\,\cos\left(\phi\right)\,\sin\left(\theta\right) + r\,\dot {\theta}\,\sin\left(\phi\right)\,\cos\left(\theta\right) + \dot r\,\sin\left(\phi\right)\,\sin\left(\theta\right)} \cr \cr \displaystyle{- r\,\dot {\theta}\,\sin\left(\theta\right) + \dot r\,\cos\left(\theta\right)}\end{pmatrix}
 \end{equation}
+:end:
 
 
 Now that we have $L$ and $C$, we can compose them to get $L'$, our spherical
 Lagrangian:
 
 #+begin_src clojure
-(define (L-central-spherical m U)
+(defn L-central-spherical [m U]
   (compose (L-central-rectangular m U)
            (F->C spherical->rect)))
 #+end_src
 
 #+RESULTS:
-: #| L-central-spherical |#
+: #'ch1.ex1-16/L-central-spherical
 
 Confirm that this is equivalent to the analytic solution:
 
@@ -3520,10 +3538,12 @@ Confirm that this is equivalent to the analytic solution:
       (up 'rdot 'thetadot 'phidot))))
 #+end_src
 
-#+RESULTS[e51d842361ff78bbab3e1c959cf534c69411b061]:
+#+RESULTS[c3f51d64c327238e347eaaac92139019d829e6bb]:
+:results:
 \begin{equation}
-{{1}\over {2}} m {\dot{\phi}}^{2} {r}^{2} {\left( \sin\left( \theta \right) \right)}^{2} + {{1}\over {2}} m {r}^{2} {\dot{\theta}}^{2} + {{1}\over {2}} m {\dot{r}}^{2} - U\left( r \right)
+\frac{1}{2}\,m\,{\dot {\phi}}^{2}\,{r}^{2}\,{\sin}^{2}\left(\theta\right) + \frac{1}{2}\,m\,{r}^{2}\,{\dot {\theta}}^{2} + \frac{1}{2}\,m\,{\dot r}^{2} - U\left(r\right)
 \end{equation}
+:end:
 
 *** Discussion
 
@@ -3547,7 +3567,7 @@ free you're in rotating spherical coords.
 :END:
 
 #+begin_src clojure
-(ns ch1.ex1-3
+(ns ch1.ex1-17
   (:refer-clojure :exclude [+ - * / zero? ref partial])
   (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
             [sicmutils.expression.render :as render]

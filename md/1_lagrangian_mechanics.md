@@ -963,7 +963,7 @@ The key is equation 1.22 in the book:
 
 Given \\(g(\epsilon) = f[q + \epsilon \eta]\\). Through the magic of automatic differentiation we can simply write:
 
-```clojure
+```clojurescript
 (defn delta [eta]
   (fn [f]
     (fn [q]
@@ -978,7 +978,7 @@ It's almost spooky, that \\(D\\) can somehow figure out what to do here.
 
 Part B's problem description gave us a path-dependent function similar to this one:
 
-```clojure
+```clojurescript
 (defn litfn [sym]
   (fn [q]
     (let [Local '(UP Real (UP* Real 2) (UP* Real 2))
@@ -992,7 +992,7 @@ I've modified it slightly to take in a symbol, since we'll need to generate mult
 
 The textbook also gives us this function from \\(t \to (x, y)\\) to test out the properties above. I've added an \\(\eta\\) of the same type signature that we can use to add variation to the path.
 
-```clojure
+```clojurescript
 (def q (literal-function 'q (-> Real (UP Real Real))))
 (def eta (literal-function 'eta (-> Real (UP Real Real))))
 ```
@@ -1003,7 +1003,7 @@ These weren't easy to write down, but they really do constitute proofs. If you t
 
 Equation \eqref{eq:var-prod} states the product rule for variations. Here it is in code. I've implemented the right and left sides and subtracted them. As expected, the result is 0:
 
-```clojure
+```clojurescript
 (let [f     (litfn 'f)
       g     (litfn 'g)
       de    (delta eta)
@@ -1022,15 +1022,14 @@ Equation \eqref{eq:var-prod} states the product rule for variations. Here it is 
 
 The sum rule is similar. Here's the Scheme implementation of equation \eqref{eq:var-sum}:
 
-```clojure
+```clojurescript
 (let [f     (litfn 'f)
       g     (litfn 'g)
       de    (delta eta)
       left  ((de (+ f g)) q)
       right (+ ((de f) q)
                ((de g) q))]
-  (->tex-equation
-   ((- left right) 't)))
+  ((- left right) 't))
 ```
 
 \begin{equation}
