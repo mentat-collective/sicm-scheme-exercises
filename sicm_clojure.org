@@ -3925,12 +3925,8 @@ since they can swing all the way around.
 Write the coordinate transformation in scheme.
 
 #+begin_src clojure
-(define ((double-linkage->rect l1 l2) local)
-  (let* ((q (coordinate local))
-         (theta (ref q 0))
-         (phi (ref q 1))
-         (x2 (ref q 2))
-         (y2 (ref q 3)))
+(defn double-linkage->rect [l1 l2]
+  (fn [[_ [theta phi x2 y2]]]
     (up (+ x2 (* l1 (sin theta)))
         (- y2 (* l1 (cos theta)))
         x2
@@ -3940,103 +3936,99 @@ Write the coordinate transformation in scheme.
 #+end_src
 
 #+RESULTS:
-: #| double-linkage->rect |#
+: #'ch1.ex1-19/double-linkage->rect
 
 Next, the Lagrangian given rectangular coordinates, assuming no constraints.
 Remember, we have a uniform gravitational field pointing down; this means that
 each of the components has a potential dragging on it.
 
 #+begin_src clojure
-(define ((L-double-linkage-rect m1 m2 m3 U) local)
-  (let* ((v (velocity local))
-         (vx1 (ref v 0))
-         (vy1 (ref v 1))
-         (vx2 (ref v 2))
-         (vy2 (ref v 3))
-         (vx3 (ref v 4))
-         (vy3 (ref v 5)))
+(defn L-double-linkage-rect [m1 m2 m3 U]
+  (fn [[_ q [vx1 vy1 vx2 vy2 vx3 vy3]]]
     (- (+ (* m1 (+ (square vx1)
                    (square vy1)))
           (* m2 (+ (square vx2)
                    (square vy2)))
           (* m3 (+ (square vx3)
                    (square vy3))))
-       (U (coordinate local)))))
+       (U q))))
 #+end_src
 
 #+RESULTS:
-: #| L-double-linkage-rect |#
+: #'ch1.ex1-19/L-double-linkage-rect
 
 And the composition:
 
 #+begin_src clojure
-(define (L-double-linkage l1 l2 m1 m2 m3 U)
+(defn L-double-linkage [l1 l2 m1 m2 m3 U]
   (compose (L-double-linkage-rect m1 m2 m3 U)
            (F->C (double-linkage->rect l1 l2))))
 #+end_src
 
 #+RESULTS:
-: #| L-double-linkage |#
+: #'ch1.ex1-19/L-double-linkage
 
 Gravitational potential:
 
 #+begin_src clojure
-(define ((U-gravity g m1 m2 m3) q)
-  (let* ((y1 (ref q 1))
-         (y2 (ref q 3))
-         (y3 (ref q 5)))
+(defn U-gravity [g m1 m2 m3]
+  (fn [[_ y1 _ y2 _ y3]]
     (* g (+ (* m1 y1)
             (* m2 y2)
             (* m3 y3)))))
 #+end_src
 
 #+RESULTS:
-: #| U-gravity |#
+: #'ch1.ex1-19/U-gravity
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let ((local (up 't
-                 (up 'theta 'phi 'x_2 'y_2)
-                 (up 'thetadot 'phidot 'xdot_2 'ydot_2)))
-      (U (U-gravity 'g 'm_1 'm_2 'm_3)))
+(let [local (up 't
+                (up 'theta 'phi 'x_2 'y_2)
+                (up 'thetadot 'phidot 'xdot_2 'ydot_2))
+      U (U-gravity 'g 'm_1 'm_2 'm_3)]
   (->tex-equation
    ((L-double-linkage 'l_1 'l_2 'm_1 'm_2 'm_3 U) local)))
 #+end_src
 
-#+RESULTS[871defa58c4637289b4aa4236e470eceed35fc24]:
+#+RESULTS[7e314cc3b3cb84abd7876d1fe94a09e71d080c76]:
+:results:
 \begin{equation}
-{{l}_{1}}^{2} {m}_{1} {\dot{\theta}}^{2} + 2 {l}_{1} {m}_{1} \dot{\theta} {\dot{x}}_{2} \cos\left( \theta \right) + 2 {l}_{1} {m}_{1} \dot{\theta} {\dot{y}}_{2} \sin\left( \theta \right) + {{l}_{2}}^{2} {m}_{3} {\dot{\phi}}^{2} + 2 {l}_{2} {m}_{3} \dot{\phi} {\dot{x}}_{2} \cos\left( \phi \right) + 2 {l}_{2} {m}_{3} \dot{\phi} {\dot{y}}_{2} \sin\left( \phi \right) + g {l}_{1} {m}_{1} \cos\left( \theta \right) + g {l}_{2} {m}_{3} \cos\left( \phi \right) - g {m}_{1} {y}_{2} - g {m}_{2} {y}_{2} - g {m}_{3} {y}_{2} + {m}_{1} {{\dot{x}}_{2}}^{2} + {m}_{1} {{\dot{y}}_{2}}^{2} + {m}_{2} {{\dot{x}}_{2}}^{2} + {m}_{2} {{\dot{y}}_{2}}^{2} + {m}_{3} {{\dot{x}}_{2}}^{2} + {m}_{3} {{\dot{y}}_{2}}^{2}
+{l_1}^{2}\,m_1\,{\dot {\theta}}^{2} + 2\,l_1\,m_1\,\dot {\theta}\,{\dot x}_2\,\cos\left(\theta\right) + 2\,l_1\,m_1\,\dot {\theta}\,{\dot y}_2\,\sin\left(\theta\right) + {l_2}^{2}\,m_3\,{\dot {\phi}}^{2} + 2\,l_2\,m_3\,\dot {\phi}\,{\dot x}_2\,\cos\left(\phi\right) + 2\,l_2\,m_3\,\dot {\phi}\,{\dot y}_2\,\sin\left(\phi\right) + g\,l_1\,m_1\,\cos\left(\theta\right) + g\,l_2\,m_3\,\cos\left(\phi\right) - g\,m_1\,y_2 - g\,m_2\,y_2 - g\,m_3\,y_2 + m_1\,{{\dot x}_2}^{2} + m_1\,{{\dot y}_2}^{2} + m_2\,{{\dot x}_2}^{2} + m_2\,{{\dot y}_2}^{2} + m_3\,{{\dot x}_2}^{2} + m_3\,{{\dot y}_2}^{2}
 \end{equation}
+:end:
 
 Lagrange equations of motion:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((U (U-gravity 'g 'm_1 'm_2 'm_3))
-       (L (L-double-linkage 'l_1 'l_2 'm_1 'm_2 'm_3 U))
-       (theta (literal-function 'theta))
-       (phi (literal-function 'phi))
-       (x2 (literal-function 'x_2))
-       (y2 (literal-function 'y_2)))
+(let [U (U-gravity 'g 'm_1 'm_2 'm_3)
+      L (L-double-linkage 'l_1 'l_2 'm_1 'm_2 'm_3 U)
+      theta (literal-function 'theta)
+      phi (literal-function 'phi)
+      x2 (literal-function 'x_2)
+      y2 (literal-function 'y_2)]
   (->tex-equation
    (((Lagrange-equations L) (up theta phi x2 y2))
     't)))
 #+end_src
 
-#+RESULTS[891b221c072e1a0a84d8a553f44953d7e1708fec]:
+#+RESULTS[8111d855bca7c3ac2cb695bd8f2a5d56bf96c50a]:
+:results:
 \begin{equation}
-\begin{bmatrix} \displaystyle{ g {l}_{1} {m}_{1} \sin\left( \theta\left( t \right) \right) + 2 {{l}_{1}}^{2} {m}_{1} {D}^{2}\theta\left( t \right) + 2 {l}_{1} {m}_{1} \sin\left( \theta\left( t \right) \right) {D}^{2}{y}_{2}\left( t \right) + 2 {l}_{1} {m}_{1} \cos\left( \theta\left( t \right) \right) {D}^{2}{x}_{2}\left( t \right)} \cr \cr \displaystyle{ g {l}_{2} {m}_{3} \sin\left( \phi\left( t \right) \right) + 2 {{l}_{2}}^{2} {m}_{3} {D}^{2}\phi\left( t \right) + 2 {l}_{2} {m}_{3} \sin\left( \phi\left( t \right) \right) {D}^{2}{y}_{2}\left( t \right) + 2 {l}_{2} {m}_{3} \cos\left( \phi\left( t \right) \right) {D}^{2}{x}_{2}\left( t \right)} \cr \cr \displaystyle{  - 2 {l}_{1} {m}_{1} \sin\left( \theta\left( t \right) \right) {\left( D\theta\left( t \right) \right)}^{2} - 2 {l}_{2} {m}_{3} \sin\left( \phi\left( t \right) \right) {\left( D\phi\left( t \right) \right)}^{2} + 2 {l}_{1} {m}_{1} {D}^{2}\theta\left( t \right) \cos\left( \theta\left( t \right) \right) + 2 {l}_{2} {m}_{3} {D}^{2}\phi\left( t \right) \cos\left( \phi\left( t \right) \right) + 2 {m}_{1} {D}^{2}{x}_{2}\left( t \right) + 2 {m}_{2} {D}^{2}{x}_{2}\left( t \right) + 2 {m}_{3} {D}^{2}{x}_{2}\left( t \right)} \cr \cr \displaystyle{ 2 {l}_{1} {m}_{1} {\left( D\theta\left( t \right) \right)}^{2} \cos\left( \theta\left( t \right) \right) + 2 {l}_{2} {m}_{3} {\left( D\phi\left( t \right) \right)}^{2} \cos\left( \phi\left( t \right) \right) + 2 {l}_{1} {m}_{1} {D}^{2}\theta\left( t \right) \sin\left( \theta\left( t \right) \right) + 2 {l}_{2} {m}_{3} {D}^{2}\phi\left( t \right) \sin\left( \phi\left( t \right) \right) + g {m}_{1} + g {m}_{2} + g {m}_{3} + 2 {m}_{1} {D}^{2}{y}_{2}\left( t \right) + 2 {m}_{2} {D}^{2}{y}_{2}\left( t \right) + 2 {m}_{3} {D}^{2}{y}_{2}\left( t \right)}\end{bmatrix}
+\begin{bmatrix}\displaystyle{g\,l_1\,m_1\,\sin\left(\theta\left(t\right)\right) + 2\,{l_1}^{2}\,m_1\,{D}^{2}\theta\left(t\right) + 2\,l_1\,m_1\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}y_2\left(t\right) + 2\,l_1\,m_1\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}x_2\left(t\right)} \cr \cr \displaystyle{g\,l_2\,m_3\,\sin\left(\phi\left(t\right)\right) + 2\,{l_2}^{2}\,m_3\,{D}^{2}\phi\left(t\right) + 2\,l_2\,m_3\,\cos\left(\phi\left(t\right)\right)\,{D}^{2}x_2\left(t\right) + 2\,l_2\,m_3\,\sin\left(\phi\left(t\right)\right)\,{D}^{2}y_2\left(t\right)} \cr \cr \displaystyle{-2\,l_1\,m_1\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2} -2\,l_2\,m_3\,{\left(D\phi\left(t\right)\right)}^{2}\,\sin\left(\phi\left(t\right)\right) + 2\,l_1\,m_1\,{D}^{2}\theta\left(t\right)\,\cos\left(\theta\left(t\right)\right) + 2\,l_2\,m_3\,{D}^{2}\phi\left(t\right)\,\cos\left(\phi\left(t\right)\right) + 2\,m_1\,{D}^{2}x_2\left(t\right) + 2\,m_2\,{D}^{2}x_2\left(t\right) + 2\,m_3\,{D}^{2}x_2\left(t\right)} \cr \cr \displaystyle{2\,l_1\,m_1\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right) + 2\,l_2\,m_3\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\phi\left(t\right)\right) + 2\,l_1\,m_1\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right) + 2\,l_2\,m_3\,{D}^{2}\phi\left(t\right)\,\sin\left(\phi\left(t\right)\right) + g\,m_1 + g\,m_2 + g\,m_3 + 2\,m_1\,{D}^{2}y_2\left(t\right) + 2\,m_2\,{D}^{2}y_2\left(t\right) + 2\,m_3\,{D}^{2}y_2\left(t\right)}\end{bmatrix}
 \end{equation}
+:end:
 
 Kill some clear factors:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((U (U-gravity 'g 'm_1 'm_2 'm_3))
-       (L (L-double-linkage 'l_1 'l_2 'm_1 'm_2 'm_3 U))
-       (theta (literal-function 'theta))
-       (phi (literal-function 'phi))
-       (x2 (literal-function 'x_2))
-       (y2 (literal-function 'y_2))
-       (eqs (((Lagrange-equations L) (up theta phi x2 y2))
-             't)))
+(let [U (U-gravity 'g 'm_1 'm_2 'm_3)
+      L (L-double-linkage 'l_1 'l_2 'm_1 'm_2 'm_3 U)
+      theta (literal-function 'theta)
+      phi (literal-function 'phi)
+      x2 (literal-function 'x_2)
+      y2 (literal-function 'y_2)
+      eqs (((Lagrange-equations L) (up theta phi x2 y2))
+           't)]
   (->tex-equation
    (up (/ (ref eqs 0) 'l_1 'm_1)
        (/ (ref eqs 1) 'l_2 'm_3)
@@ -4044,10 +4036,12 @@ Kill some clear factors:
        (ref eqs 3))))
 #+end_src
 
-#+RESULTS[9aef049c71af2604c4b6e5d179f815d38d262792]:
+#+RESULTS[47708c83042996fe022ee86787fc9dcb3ce03f71]:
+:results:
 \begin{equation}
-\begin{pmatrix} \displaystyle{ g \sin\left( \theta\left( t \right) \right) + 2 {l}_{1} {D}^{2}\theta\left( t \right) + 2 \sin\left( \theta\left( t \right) \right) {D}^{2}{y}_{2}\left( t \right) + 2 \cos\left( \theta\left( t \right) \right) {D}^{2}{x}_{2}\left( t \right)} \cr \cr \displaystyle{ g \sin\left( \phi\left( t \right) \right) + 2 {l}_{2} {D}^{2}\phi\left( t \right) + 2 \sin\left( \phi\left( t \right) \right) {D}^{2}{y}_{2}\left( t \right) + 2 \cos\left( \phi\left( t \right) \right) {D}^{2}{x}_{2}\left( t \right)} \cr \cr \displaystyle{  - {l}_{1} {m}_{1} \sin\left( \theta\left( t \right) \right) {\left( D\theta\left( t \right) \right)}^{2} - {l}_{2} {m}_{3} \sin\left( \phi\left( t \right) \right) {\left( D\phi\left( t \right) \right)}^{2} + {l}_{1} {m}_{1} {D}^{2}\theta\left( t \right) \cos\left( \theta\left( t \right) \right) + {l}_{2} {m}_{3} {D}^{2}\phi\left( t \right) \cos\left( \phi\left( t \right) \right) + {m}_{1} {D}^{2}{x}_{2}\left( t \right) + {m}_{2} {D}^{2}{x}_{2}\left( t \right) + {m}_{3} {D}^{2}{x}_{2}\left( t \right)} \cr \cr \displaystyle{ 2 {l}_{1} {m}_{1} {\left( D\theta\left( t \right) \right)}^{2} \cos\left( \theta\left( t \right) \right) + 2 {l}_{2} {m}_{3} {\left( D\phi\left( t \right) \right)}^{2} \cos\left( \phi\left( t \right) \right) + 2 {l}_{1} {m}_{1} {D}^{2}\theta\left( t \right) \sin\left( \theta\left( t \right) \right) + 2 {l}_{2} {m}_{3} {D}^{2}\phi\left( t \right) \sin\left( \phi\left( t \right) \right) + g {m}_{1} + g {m}_{2} + g {m}_{3} + 2 {m}_{1} {D}^{2}{y}_{2}\left( t \right) + 2 {m}_{2} {D}^{2}{y}_{2}\left( t \right) + 2 {m}_{3} {D}^{2}{y}_{2}\left( t \right)}\end{pmatrix}
+\begin{pmatrix}\displaystyle{g\,\sin\left(\theta\left(t\right)\right) + 2\,l_1\,{D}^{2}\theta\left(t\right) + 2\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}y_2\left(t\right) + 2\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}x_2\left(t\right)} \cr \cr \displaystyle{g\,\sin\left(\phi\left(t\right)\right) + 2\,l_2\,{D}^{2}\phi\left(t\right) + 2\,\cos\left(\phi\left(t\right)\right)\,{D}^{2}x_2\left(t\right) + 2\,\sin\left(\phi\left(t\right)\right)\,{D}^{2}y_2\left(t\right)} \cr \cr \displaystyle{- l_1\,m_1\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2} - l_2\,m_3\,{\left(D\phi\left(t\right)\right)}^{2}\,\sin\left(\phi\left(t\right)\right) + l_1\,m_1\,{D}^{2}\theta\left(t\right)\,\cos\left(\theta\left(t\right)\right) + l_2\,m_3\,{D}^{2}\phi\left(t\right)\,\cos\left(\phi\left(t\right)\right) + m_1\,{D}^{2}x_2\left(t\right) + m_2\,{D}^{2}x_2\left(t\right) + m_3\,{D}^{2}x_2\left(t\right)} \cr \cr \displaystyle{2\,l_1\,m_1\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right) + 2\,l_2\,m_3\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\phi\left(t\right)\right) + 2\,l_1\,m_1\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right) + 2\,l_2\,m_3\,{D}^{2}\phi\left(t\right)\,\sin\left(\phi\left(t\right)\right) + g\,m_1 + g\,m_2 + g\,m_3 + 2\,m_1\,{D}^{2}y_2\left(t\right) + 2\,m_2\,{D}^{2}y_2\left(t\right) + 2\,m_3\,{D}^{2}y_2\left(t\right)}\end{pmatrix}
 \end{equation}
+:end:
 
 This was not as gnarly as the previous problem. Perhaps I did something wrong
 there. We'll see when we get animation.
@@ -4079,10 +4073,9 @@ there. We'll see when we get animation.
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
+| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
+| #'ch1.ex1-20/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
+| #'ch1.ex1-20/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 #+begin_quote
 Consider a pendulum of length $l$ attached to a support that is free to move
@@ -4121,10 +4114,8 @@ Draw these on the picture to make it clearer.
 Write the coordinate transformation in scheme.
 
 #+begin_src clojure
-(define ((sliding-pend->rect l) local)
-  (let* ((q (coordinate local))
-         (x1 (ref q 0))
-         (theta (ref q 1)))
+(defn sliding-pend->rect [l]
+  (fn [[_ [x1 theta]]]
     (up x1
         l
         (+ x1 (* l (sin theta)))
@@ -4132,100 +4123,102 @@ Write the coordinate transformation in scheme.
 #+end_src
 
 #+RESULTS:
-: #| sliding-pend->rect |#
+: #'ch1.ex1-20/sliding-pend->rect
 
 Next, the Lagrangian given rectangular coordinates, assuming no constraints:
 
 #+begin_src clojure
-(define ((L-sliding-pend-rect m1 m2 U) local)
-  (let* ((v (velocity local))
-         (vx1 (ref v 0))
-         (vy1 (ref v 1))
-         (vx2 (ref v 2))
-         (vy2 (ref v 3)))
+(defn L-sliding-pend-rect [m1 m2 U]
+  (fn [[_ q [vx1 vy1 vx2 vy2]]]
     (- (+ (* m1 (+ (square vx1)
                    (square vy1)))
           (* m2 (+ (square vx2)
                    (square vy2))))
-       (U (coordinate local)))))
+       (U q))))
 #+end_src
 
 #+RESULTS:
-: #| L-sliding-pend-rect |#
+: #'ch1.ex1-20/L-sliding-pend-rect
 
 And the composition:
 
 #+begin_src clojure
-(define (L-sliding-pend l m1 m2 U)
+(defn L-sliding-pend [l m1 m2 U]
   (compose (L-sliding-pend-rect m1 m2 U)
            (F->C (sliding-pend->rect l))))
 #+end_src
 
 #+RESULTS:
-: #| L-sliding-pend |#
+: #'ch1.ex1-20/L-sliding-pend
 
 Gravitational potential. I could include the cart here, but since we know it's
 fixed gravitationally it wouldn't change the equations of motion.
 
 #+begin_src clojure
-(define ((U-gravity g m2) q)
-  (let* ((y2 (ref q 3)))
-    (* m2 g y2)))
+(defn U-gravity [g m2]
+  (fn [q]
+    (let [y2 (ref q 3)]
+      (* m2 g y2))))
 #+end_src
 
 #+RESULTS:
-: #| U-gravity |#
+: #'ch1.ex1-20/U-gravity
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let ((local (up 't
-                 (up 'x_1 'theta)
-                 (up 'xdot_1 'thetadot)))
-      (U (U-gravity 'g 'm_2)))
+(let [local (up 't
+                (up 'x_1 'theta)
+                (up 'xdot_1 'thetadot))
+      U (U-gravity 'g 'm_2)]
   (->tex-equation
    ((L-sliding-pend 'l 'm_1 'm_2 U) local)))
 #+end_src
 
-#+RESULTS[a0d77887cb7ea10a807f5718c1383453f676c148]:
+#+RESULTS[fc22b20384e52b4ad23139d2b1c43d2a54603e0b]:
+:results:
 \begin{equation}
-{l}^{2} {m}_{2} {\dot{\theta}}^{2} + 2 l {m}_{2} \dot{\theta} {\dot{x}}_{1} \cos\left( \theta \right) + g l {m}_{2} \cos\left( \theta \right) - g l {m}_{2} + {m}_{1} {{\dot{x}}_{1}}^{2} + {m}_{2} {{\dot{x}}_{1}}^{2}
+{l}^{2}\,m_2\,{\dot {\theta}}^{2} + 2\,l\,m_2\,\dot {\theta}\,{\dot x}_1\,\cos\left(\theta\right) + g\,l\,m_2\,\cos\left(\theta\right) - g\,l\,m_2 + m_1\,{{\dot x}_1}^{2} + m_2\,{{\dot x}_1}^{2}
 \end{equation}
+:end:
 
 Lagrange equations of motion:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((U (U-gravity 'g 'm_2))
-       (L (L-sliding-pend 'l 'm_1 'm_2 U))
-       (x1 (literal-function 'x_1))
-       (theta (literal-function 'theta)))
+(let [U (U-gravity 'g 'm_2)
+      L (L-sliding-pend 'l 'm_1 'm_2 U)
+      x1 (literal-function 'x_1)
+      theta (literal-function 'theta)]
   (->tex-equation
    (((Lagrange-equations L) (up x1 theta))
     't)))
 #+end_src
 
-#+RESULTS[a556eaea3f66fe4d94bd82a34c9f2e786a4187a1]:
+#+RESULTS[c0c8e336bd998f7713af3c7bdedd859cbf0262f0]:
+:results:
 \begin{equation}
-\begin{bmatrix} \displaystyle{  - 2 l {m}_{2} \sin\left( \theta\left( t \right) \right) {\left( D\theta\left( t \right) \right)}^{2} + 2 l {m}_{2} {D}^{2}\theta\left( t \right) \cos\left( \theta\left( t \right) \right) + 2 {m}_{1} {D}^{2}{x}_{1}\left( t \right) + 2 {m}_{2} {D}^{2}{x}_{1}\left( t \right)} \cr \cr \displaystyle{ g l {m}_{2} \sin\left( \theta\left( t \right) \right) + 2 {l}^{2} {m}_{2} {D}^{2}\theta\left( t \right) + 2 l {m}_{2} {D}^{2}{x}_{1}\left( t \right) \cos\left( \theta\left( t \right) \right)}\end{bmatrix}
+\begin{bmatrix}\displaystyle{-2\,l\,m_2\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2} + 2\,l\,m_2\,{D}^{2}\theta\left(t\right)\,\cos\left(\theta\left(t\right)\right) + 2\,m_1\,{D}^{2}x_1\left(t\right) + 2\,m_2\,{D}^{2}x_1\left(t\right)} \cr \cr \displaystyle{g\,l\,m_2\,\sin\left(\theta\left(t\right)\right) + 2\,{l}^{2}\,m_2\,{D}^{2}\theta\left(t\right) + 2\,l\,m_2\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}x_1\left(t\right)}\end{bmatrix}
 \end{equation}
+:end:
 
 Cleaner:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((U (U-gravity 'g 'm_2))
-       (L (L-sliding-pend 'l 'm_1 'm_2 U))
-       (x1 (literal-function 'x_1))
-       (theta (literal-function 'theta))
-       (eqs (((Lagrange-equations L) (up x1 theta))
-             't)))
+(let [U (U-gravity 'g 'm_2)
+      L (L-sliding-pend 'l 'm_1 'm_2 U)
+      x1 (literal-function 'x_1)
+      theta (literal-function 'theta)
+      eqs (((Lagrange-equations L) (up x1 theta))
+           't)]
   (->tex-equation
    (up (ref eqs 0)
        (/ (ref eqs 1) 'l 'm_2))))
 #+end_src
 
-#+RESULTS[f3d6bb9e68a92d9b0f1c99d8aef6c9b4028d4578]:
+#+RESULTS[2c1a674857979a2bacccb0bc8ff0e2de94f13774]:
+:results:
 \begin{equation}
-\begin{pmatrix} \displaystyle{  - 2 l {m}_{2} \sin\left( \theta\left( t \right) \right) {\left( D\theta\left( t \right) \right)}^{2} + 2 l {m}_{2} {D}^{2}\theta\left( t \right) \cos\left( \theta\left( t \right) \right) + 2 {m}_{1} {D}^{2}{x}_{1}\left( t \right) + 2 {m}_{2} {D}^{2}{x}_{1}\left( t \right)} \cr \cr \displaystyle{ g \sin\left( \theta\left( t \right) \right) + 2 l {D}^{2}\theta\left( t \right) + 2 {D}^{2}{x}_{1}\left( t \right) \cos\left( \theta\left( t \right) \right)}\end{pmatrix}
+\begin{pmatrix}\displaystyle{-2\,l\,m_2\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2} + 2\,l\,m_2\,{D}^{2}\theta\left(t\right)\,\cos\left(\theta\left(t\right)\right) + 2\,m_1\,{D}^{2}x_1\left(t\right) + 2\,m_2\,{D}^{2}x_1\left(t\right)} \cr \cr \displaystyle{g\,\sin\left(\theta\left(t\right)\right) + 2\,l\,{D}^{2}\theta\left(t\right) + 2\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}x_1\left(t\right)}\end{pmatrix}
 \end{equation}
-
+:end:
 
 ** Exercise 1.21: A dumbbell
 :PROPERTIES:
@@ -4270,10 +4263,9 @@ that this move is allowed. Here's the setup:
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
+| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
+| #'ch1.ex1-21/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
+| #'ch1.ex1-21/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 The idea here is to take the distance between the particles $l$ and treat it as
 a new dimension $c$.
@@ -4294,33 +4286,36 @@ tuple.
 If we have the velocity and mass of a particle, its kinetic energy is easy to
 define:
 
+#+name: KE-particle
 #+begin_src clojure
-(define (KE-particle m v)
-  (* 1/2 m (square v)))
+(defn KE-particle [m v]
+  (* (/ 1 2) m (square v)))
 #+end_src
 
 #+RESULTS:
-: #| KE-particle |#
+: #'ch1.ex1-21/KE-particle
 
 This next function, =extract-particle=, takes a number of components -- 2 for a
 particle with 2 components, 3 for a particle in space, etc -- and returns a
 function of =local= and =i=, a particle index. This function can be used to
 extract a sub-local-tuple for that particle from a flattened list.
 
+#+name: extract-particle
 #+begin_src clojure
-(define ((extract-particle pieces) local i)
-  (let* ((indices (apply up (iota pieces (* i pieces))))
-         (extract (lambda (tuple)
-                    (vector-map (lambda (i)
-                                  (ref tuple i))
-                                indices))))
-    (up (time local)
-        (extract (coordinate local))
-        (extract (velocity local)))))
+(defn extract-particle [pieces]
+  (fn [[t q v] i]
+    (let [indices (take pieces
+                        (iterate
+                         inc (* i pieces)))
+          extract (fn [tuple]
+                    (mapv (fn [i]
+                            (ref tuple i))
+                          indices))]
+      (up t (extract q) (extract v)))))
 #+end_src
 
 #+RESULTS:
-: #| extract-particle |#
+: #'ch1.ex1-21/extract-particle
 
 *** Part A: Newton's Equations
 
@@ -4345,50 +4340,44 @@ such that Lagrange's equations will yield the Newton's equations you derived in
 part *a*.
 #+end_quote
 
-
 Here is how we model constraint forces. Each pair of particles has some
 constraint potential acting between them:
 
 #+name: U-constraint
 #+begin_src clojure
-(define (U-constraint q0 q1 F l)
+(defn U-constraint [q0 q1 F l]
   (* (/ F (* 2 l))
      (- (square (- q1 q0))
         (square l))))
 #+end_src
 
-#+RESULTS:
-: #| U-constraint |#
+#+RESULTS: U-constraint
+: #'ch1.ex1-21/U-constraint
 
 And here's a Lagrangian for two free particles, subject to a constraint
 potential $F$ acting between them.
 
 #+name: L-free-constrained
 #+begin_src clojure
-(define ((L-free-constrained m0 m1 l) local)
-  (let* ((extract (extract-particle 2))
-         (p0 (extract local 0))
-         (q0 (coordinate p0))
-         (qdot0 (velocity p0))
-
-         (p1 (extract local 1))
-         (q1 (coordinate p1))
-         (qdot1 (velocity p1))
-
-         (F (ref (coordinate local) 4)))
-    (- (+ (KE-particle m0 qdot0)
-          (KE-particle m1 qdot1))
-       (U-constraint q0 q1 F l))))
+(defn L-free-constrained [m0 m1 l]
+  (fn [local]
+    (let [extract      (extract-particle 2)
+          [_ q0 qdot0] (extract local 0)
+          [_ q1 qdot1] (extract local 1)
+          F (ref (coordinate local) 4)]
+      (- (+ (KE-particle m0 qdot0)
+            (KE-particle m1 qdot1))
+         (U-constraint q0 q1 F l)))))
 #+end_src
 
-#+RESULTS:
-: #| L-free-constrained |#
+#+RESULTS: L-free-constrained
+: #'ch1.ex1-21/L-free-constrained
 
 Finally, the path. This is rectangular coordinates for each piece, plus $F$
 between them.
 
 #+begin_src clojure
-(define q-rect
+(def q-rect
   (up (literal-function 'x_0)
       (literal-function 'y_0)
       (literal-function 'x_1)
@@ -4397,36 +4386,40 @@ between them.
 #+end_src
 
 #+RESULTS:
-: #| q-rect |#
+: #'ch1.ex1-21/q-rect
 
 This shows the lagrangian itself, which answers part b:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((L (L-free-constrained 'm_0 'm_1 'l))
-       (f (compose L (Gamma q-rect))))
+(let [L (L-free-constrained 'm_0 'm_1 'l)
+      f (compose L (Gamma q-rect))]
   (->tex-equation
    (f 't)))
 #+end_src
 
-#+RESULTS[9e535179734061e62fa19be6d57ad8f8846008d9]:
+#+RESULTS[d2368821bb607531a6f2c19404301d2f48270db5]:
+:results:
 \begin{equation}
-{{{{1}\over {2}} l {m}_{0} {\left( D{x}_{0}\left( t \right) \right)}^{2} + {{1}\over {2}} l {m}_{0} {\left( D{y}_{0}\left( t \right) \right)}^{2} + {{1}\over {2}} l {m}_{1} {\left( D{x}_{1}\left( t \right) \right)}^{2} + {{1}\over {2}} l {m}_{1} {\left( D{y}_{1}\left( t \right) \right)}^{2} + {{1}\over {2}} {l}^{2} F\left( t \right) - {{1}\over {2}} F\left( t \right) {\left( {x}_{1}\left( t \right) \right)}^{2} + F\left( t \right) {x}_{1}\left( t \right) {x}_{0}\left( t \right) - {{1}\over {2}} F\left( t \right) {\left( {x}_{0}\left( t \right) \right)}^{2} - {{1}\over {2}} F\left( t \right) {\left( {y}_{1}\left( t \right) \right)}^{2} + F\left( t \right) {y}_{1}\left( t \right) {y}_{0}\left( t \right) - {{1}\over {2}} F\left( t \right) {\left( {y}_{0}\left( t \right) \right)}^{2}}\over {l}}
+\frac{l\,m_0\,{\left(Dx_0\left(t\right)\right)}^{2} + l\,m_0\,{\left(Dy_0\left(t\right)\right)}^{2} + l\,m_1\,{\left(Dx_1\left(t\right)\right)}^{2} + l\,m_1\,{\left(Dy_1\left(t\right)\right)}^{2} + {l}^{2}\,F\left(t\right) - F\left(t\right)\,{\left(x_1\left(t\right)\right)}^{2} + 2\,F\left(t\right)\,x_1\left(t\right)\,x_0\left(t\right) - F\left(t\right)\,{\left(x_0\left(t\right)\right)}^{2} - F\left(t\right)\,{\left(y_1\left(t\right)\right)}^{2} + 2\,F\left(t\right)\,y_1\left(t\right)\,y_0\left(t\right) - F\left(t\right)\,{\left(y_0\left(t\right)\right)}^{2}}{2\,l}
 \end{equation}
+:end:
 
 Here are the Lagrange equations, which, if you squint, are like Newton's
 equations from part a.
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((L (L-free-constrained 'm_0 'm_1 'l))
-       (f ((Lagrange-equations L) q-rect)))
+(let [L (L-free-constrained 'm_0 'm_1 'l)
+      f ((Lagrange-equations L) q-rect)]
   (->tex-equation
    (f 't)))
 #+end_src
 
-#+RESULTS[2d4f6bae712013ae3a23025d941fa644e6cbf412]:
+#+RESULTS[d0d0bf751a301e9187d5f12783654c2a8d47bb5f]:
+:results:
 \begin{equation}
-\begin{bmatrix} \displaystyle{ {{l {m}_{0} {D}^{2}{x}_{0}\left( t \right) - F\left( t \right) {x}_{1}\left( t \right) + F\left( t \right) {x}_{0}\left( t \right)}\over {l}}} \cr \cr \displaystyle{ {{l {m}_{0} {D}^{2}{y}_{0}\left( t \right) - F\left( t \right) {y}_{1}\left( t \right) + F\left( t \right) {y}_{0}\left( t \right)}\over {l}}} \cr \cr \displaystyle{ {{l {m}_{1} {D}^{2}{x}_{1}\left( t \right) + F\left( t \right) {x}_{1}\left( t \right) - F\left( t \right) {x}_{0}\left( t \right)}\over {l}}} \cr \cr \displaystyle{ {{l {m}_{1} {D}^{2}{y}_{1}\left( t \right) + F\left( t \right) {y}_{1}\left( t \right) - F\left( t \right) {y}_{0}\left( t \right)}\over {l}}} \cr \cr \displaystyle{ {{ - {{1}\over {2}} {l}^{2} + {{1}\over {2}} {\left( {x}_{1}\left( t \right) \right)}^{2} - {x}_{1}\left( t \right) {x}_{0}\left( t \right) + {{1}\over {2}} {\left( {x}_{0}\left( t \right) \right)}^{2} + {{1}\over {2}} {\left( {y}_{1}\left( t \right) \right)}^{2} - {y}_{1}\left( t \right) {y}_{0}\left( t \right) + {{1}\over {2}} {\left( {y}_{0}\left( t \right) \right)}^{2}}\over {l}}}\end{bmatrix}
+\begin{bmatrix}\displaystyle{\frac{l\,m_0\,{D}^{2}x_0\left(t\right) - F\left(t\right)\,x_1\left(t\right) + F\left(t\right)\,x_0\left(t\right)}{l}} \cr \cr \displaystyle{\frac{l\,m_0\,{D}^{2}y_0\left(t\right) - F\left(t\right)\,y_1\left(t\right) + F\left(t\right)\,y_0\left(t\right)}{l}} \cr \cr \displaystyle{\frac{l\,m_1\,{D}^{2}x_1\left(t\right) + F\left(t\right)\,x_1\left(t\right) - F\left(t\right)\,x_0\left(t\right)}{l}} \cr \cr \displaystyle{\frac{l\,m_1\,{D}^{2}y_1\left(t\right) + F\left(t\right)\,y_1\left(t\right) - F\left(t\right)\,y_0\left(t\right)}{l}} \cr \cr \displaystyle{\frac{- {l}^{2} + {\left(x_1\left(t\right)\right)}^{2} -2\,x_1\left(t\right)\,x_0\left(t\right) + {\left(x_0\left(t\right)\right)}^{2} + {\left(y_1\left(t\right)\right)}^{2} -2\,y_1\left(t\right)\,y_0\left(t\right) + {\left(y_0\left(t\right)\right)}^{2}}{2\,l}}\end{bmatrix}
 \end{equation}
+:end:
 
 *** Part C: Coordinate Change
 
@@ -4443,90 +4436,91 @@ freedom.
 First, the coordinate change:
 
 #+begin_src clojure
-(define ((cm-theta->rect m0 m1) local)
-  (let* ((q (coordinate local))
-         (x_cm (ref q 0))
-         (y_cm (ref q 1))
-         (theta (ref q 2))
-         (c (ref q 3))
-         (F (ref q 4))
-         (total-mass (+ m0 m1))
-         (m0-distance (* c (/ m1 total-mass)))
-         (m1-distance (* c (/ m0 total-mass))))
-    (up (- x_cm (* m0-distance (cos theta)))
-        (- y_cm (* m0-distance (sin theta)))
-        (+ x_cm (* m1-distance (cos theta)))
-        (+ y_cm (* m1-distance (sin theta)))
-        F)))
+(defn cm-theta->rect [m0 m1]
+  (fn [[_ [x_cm y_cm theta c F]]]
+    (let [total-mass (+ m0 m1)
+          m0-distance (* c (/ m1 total-mass))
+          m1-distance (* c (/ m0 total-mass))]
+      (up (- x_cm (* m0-distance (cos theta)))
+          (- y_cm (* m0-distance (sin theta)))
+          (+ x_cm (* m1-distance (cos theta)))
+          (+ y_cm (* m1-distance (sin theta)))
+          F))))
 #+end_src
 
 #+RESULTS:
-: #| cm-theta->rect |#
+: #'ch1.ex1-21/cm-theta->rect
 
 Then the coordinate change applied to the local tuple:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let ((local (up 't
-                 (up 'x_cm 'y_cm 'theta 'c 'F)
-                 (up 'xdot_cm 'ydot_cm 'thetadot 'cdot 'Fdot)))
-      (C (F->C (cm-theta->rect 'm_0 'm_1))))
+(let [local (up 't
+                (up 'x_cm 'y_cm 'theta 'c 'F)
+                (up 'xdot_cm 'ydot_cm 'thetadot 'cdot 'Fdot))
+      C (F->C (cm-theta->rect 'm_0 'm_1))]
   (->tex-equation
    (C local)))
 #+end_src
 
-#+RESULTS[2c67e287b90be4d75ab8c396222d968e56d71383]:
+#+RESULTS[347455a1bf6c85254eb86c4139b220b16c1aba78]:
+:results:
 \begin{equation}
-\begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{ {{ - c {m}_{1} \cos\left( \theta \right) + {m}_{0} {x}_{cm} + {m}_{1} {x}_{cm}}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ {{ - c {m}_{1} \sin\left( \theta \right) + {m}_{0} {y}_{cm} + {m}_{1} {y}_{cm}}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ {{c {m}_{0} \cos\left( \theta \right) + {m}_{0} {x}_{cm} + {m}_{1} {x}_{cm}}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ {{c {m}_{0} \sin\left( \theta \right) + {m}_{0} {y}_{cm} + {m}_{1} {y}_{cm}}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ F}\end{pmatrix}} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{ {{c {m}_{1} \dot{\theta} \sin\left( \theta \right) - \dot{c} {m}_{1} \cos\left( \theta \right) + {m}_{0} {\dot{x}}_{cm} + {m}_{1} {\dot{x}}_{cm}}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ {{ - c {m}_{1} \dot{\theta} \cos\left( \theta \right) - \dot{c} {m}_{1} \sin\left( \theta \right) + {m}_{0} {\dot{y}}_{cm} + {m}_{1} {\dot{y}}_{cm}}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ {{ - c {m}_{0} \dot{\theta} \sin\left( \theta \right) + \dot{c} {m}_{0} \cos\left( \theta \right) + {m}_{0} {\dot{x}}_{cm} + {m}_{1} {\dot{x}}_{cm}}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ {{c {m}_{0} \dot{\theta} \cos\left( \theta \right) + \dot{c} {m}_{0} \sin\left( \theta \right) + {m}_{0} {\dot{y}}_{cm} + {m}_{1} {\dot{y}}_{cm}}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ \dot{F}}\end{pmatrix}}\end{pmatrix}
+\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{\frac{- c\,m_1\,\cos\left(\theta\right) + m_0\,x_{cm} + m_1\,x_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\frac{- c\,m_1\,\sin\left(\theta\right) + m_0\,y_{cm} + m_1\,y_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\frac{c\,m_0\,\cos\left(\theta\right) + m_0\,x_{cm} + m_1\,x_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\frac{c\,m_0\,\sin\left(\theta\right) + m_0\,y_{cm} + m_1\,y_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{F}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{\frac{c\,m_1\,\dot {\theta}\,\sin\left(\theta\right) - \dot c\,m_1\,\cos\left(\theta\right) + m_0\,{\dot x}_{cm} + m_1\,{\dot x}_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\frac{- c\,m_1\,\dot {\theta}\,\cos\left(\theta\right) - \dot c\,m_1\,\sin\left(\theta\right) + m_0\,{\dot y}_{cm} + m_1\,{\dot y}_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\frac{- c\,m_0\,\dot {\theta}\,\sin\left(\theta\right) + \dot c\,m_0\,\cos\left(\theta\right) + m_0\,{\dot x}_{cm} + m_1\,{\dot x}_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\frac{c\,m_0\,\dot {\theta}\,\cos\left(\theta\right) + \dot c\,m_0\,\sin\left(\theta\right) + m_0\,{\dot y}_{cm} + m_1\,{\dot y}_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\dot F}\end{pmatrix}}\end{pmatrix}
 \end{equation}
+:end:
 
 Then the Lagrangian in the new coordinates;
 
 #+begin_src clojure
-(define (L-free-constrained* m0 m1 l)
+(defn L-free-constrained* [m0 m1 l]
   (compose (L-free-constrained m0 m1 l)
            (F->C (cm-theta->rect m0 m1))))
 #+end_src
 
 #+RESULTS:
-: #| L-free-constrained* |#
+: #'ch1.ex1-21/L-free-constrained*
 
 This shows the lagrangian itself, after the coordinate transformation:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((q (up (literal-function 'x_cm)
-              (literal-function 'y_cm)
-              (literal-function 'theta)
-              (literal-function 'c)
-              (literal-function 'F)))
-       (L (L-free-constrained* 'm_0 'm_1 'l))
-       (f (compose L (Gamma q))))
+(let [q (up (literal-function 'x_cm)
+            (literal-function 'y_cm)
+            (literal-function 'theta)
+            (literal-function 'c)
+            (literal-function 'F))
+      L (L-free-constrained* 'm_0 'm_1 'l)
+      f (compose L (Gamma q))]
   (->tex-equation
    (f 't)))
 #+end_src
 
-#+RESULTS[d36e7f3c5c5e5a8663d599a055face7a7f6ddb61]:
+#+RESULTS[8b78e339b654aa73cfb638fdc47564b178adbd47]:
+:results:
 \begin{equation}
-{{l {m}_{0} {m}_{1} {\left( c\left( t \right) \right)}^{2} {\left( D\theta\left( t \right) \right)}^{2} + l {{m}_{0}}^{2} {\left( D{x}_{cm}\left( t \right) \right)}^{2} + l {{m}_{0}}^{2} {\left( D{y}_{cm}\left( t \right) \right)}^{2} + 2 l {m}_{0} {m}_{1} {\left( D{x}_{cm}\left( t \right) \right)}^{2} + 2 l {m}_{0} {m}_{1} {\left( D{y}_{cm}\left( t \right) \right)}^{2} + l {m}_{0} {m}_{1} {\left( Dc\left( t \right) \right)}^{2} + l {{m}_{1}}^{2} {\left( D{x}_{cm}\left( t \right) \right)}^{2} + l {{m}_{1}}^{2} {\left( D{y}_{cm}\left( t \right) \right)}^{2} + {l}^{2} {m}_{0} F\left( t \right) + {l}^{2} {m}_{1} F\left( t \right) - {m}_{0} F\left( t \right) {\left( c\left( t \right) \right)}^{2} - {m}_{1} F\left( t \right) {\left( c\left( t \right) \right)}^{2}}\over {2 l {m}_{0} + 2 l {m}_{1}}}
+\frac{l\,m_0\,m_1\,{\left(D\theta\left(t\right)\right)}^{2}\,{\left(c\left(t\right)\right)}^{2} + l\,{m_0}^{2}\,{\left(Dx_{cm}\left(t\right)\right)}^{2} + l\,{m_0}^{2}\,{\left(Dy_{cm}\left(t\right)\right)}^{2} + 2\,l\,m_0\,m_1\,{\left(Dx_{cm}\left(t\right)\right)}^{2} + l\,m_0\,m_1\,{\left(Dc\left(t\right)\right)}^{2} + 2\,l\,m_0\,m_1\,{\left(Dy_{cm}\left(t\right)\right)}^{2} + l\,{m_1}^{2}\,{\left(Dx_{cm}\left(t\right)\right)}^{2} + l\,{m_1}^{2}\,{\left(Dy_{cm}\left(t\right)\right)}^{2} + {l}^{2}\,m_0\,F\left(t\right) + {l}^{2}\,m_1\,F\left(t\right) - m_0\,F\left(t\right)\,{\left(c\left(t\right)\right)}^{2} - m_1\,F\left(t\right)\,{\left(c\left(t\right)\right)}^{2}}{2\,l\,m_0 + 2\,l\,m_1}
 \end{equation}
+:end:
 
 Here are the Lagrange equations:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((q (up (literal-function 'x_cm)
-              (literal-function 'y_cm)
-              (literal-function 'theta)
-              (literal-function 'c)
-              (literal-function 'F)))
-       (L (L-free-constrained* 'm_0 'm_1 'l))
-       (f ((Lagrange-equations L) q)))
+(let [q (up (literal-function 'x_cm)
+            (literal-function 'y_cm)
+            (literal-function 'theta)
+            (literal-function 'c)
+            (literal-function 'F))
+      L (L-free-constrained* 'm_0 'm_1 'l)
+      f ((Lagrange-equations L) q)]
   (->tex-equation
    (f 't)))
 #+end_src
 
-#+RESULTS[c6a3572c8b6115d086c9f8ee85939b79942967ed]:
+#+RESULTS[3d9819d33ed9d856299f5d9565cb90bf0aaa263f]:
+:results:
 \begin{equation}
-\begin{bmatrix} \displaystyle{ {m}_{0} {D}^{2}{x}_{cm}\left( t \right) + {m}_{1} {D}^{2}{x}_{cm}\left( t \right)} \cr \cr \displaystyle{ {m}_{0} {D}^{2}{y}_{cm}\left( t \right) + {m}_{1} {D}^{2}{y}_{cm}\left( t \right)} \cr \cr \displaystyle{ {{2 {m}_{0} {m}_{1} Dc\left( t \right) c\left( t \right) D\theta\left( t \right) + {m}_{0} {m}_{1} {\left( c\left( t \right) \right)}^{2} {D}^{2}\theta\left( t \right)}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ {{ - l {m}_{0} {m}_{1} c\left( t \right) {\left( D\theta\left( t \right) \right)}^{2} + l {m}_{0} {m}_{1} {D}^{2}c\left( t \right) + {m}_{0} F\left( t \right) c\left( t \right) + {m}_{1} F\left( t \right) c\left( t \right)}\over {l {m}_{0} + l {m}_{1}}}} \cr \cr \displaystyle{ {{ - {{1}\over {2}} {l}^{2} + {{1}\over {2}} {\left( c\left( t \right) \right)}^{2}}\over {l}}}\end{bmatrix}
+\begin{bmatrix}\displaystyle{m_0\,{D}^{2}x_{cm}\left(t\right) + m_1\,{D}^{2}x_{cm}\left(t\right)} \cr \cr \displaystyle{m_0\,{D}^{2}y_{cm}\left(t\right) + m_1\,{D}^{2}y_{cm}\left(t\right)} \cr \cr \displaystyle{\frac{2\,m_0\,m_1\,D\theta\left(t\right)\,c\left(t\right)\,Dc\left(t\right) + m_0\,m_1\,{D}^{2}\theta\left(t\right)\,{\left(c\left(t\right)\right)}^{2}}{m_0 + m_1}} \cr \cr \displaystyle{\frac{- l\,m_0\,m_1\,{\left(D\theta\left(t\right)\right)}^{2}\,c\left(t\right) + l\,m_0\,m_1\,{D}^{2}c\left(t\right) + m_0\,F\left(t\right)\,c\left(t\right) + m_1\,F\left(t\right)\,c\left(t\right)}{l\,m_0 + l\,m_1}} \cr \cr \displaystyle{\frac{- {l}^{2} + {\left(c\left(t\right)\right)}^{2}}{2\,l}}\end{bmatrix}
 \end{equation}
+:end:
 
 That final equation states that $c(t) = l$. Amazing!
 
@@ -4543,21 +4537,23 @@ We can substitute the constant value of $c$ using a function that always returns
 $l$ to get simplified equations:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((q (up (literal-function 'x_cm)
-              (literal-function 'y_cm)
-              (literal-function 'theta)
-              (lambda (t) 'l)
-              (literal-function 'F)))
-       (L (L-free-constrained* 'm_0 'm_1 'l))
-       (f ((Lagrange-equations L) q)))
+(let [q (up (literal-function 'x_cm)
+            (literal-function 'y_cm)
+            (literal-function 'theta)
+            (fn [t] 'l)
+            (literal-function 'F))
+      L (L-free-constrained* 'm_0 'm_1 'l)
+      f ((Lagrange-equations L) q)]
   (->tex-equation
    (f 't)))
 #+end_src
 
-#+RESULTS[a51bdf5bbe673771262278b5dca048646c257752]:
+#+RESULTS[1d72de7d5c5f3f3c79cf20a41e64e48aa44e9dec]:
+:results:
 \begin{equation}
-\begin{bmatrix} \displaystyle{ {m}_{0} {D}^{2}{x}_{cm}\left( t \right) + {m}_{1} {D}^{2}{x}_{cm}\left( t \right)} \cr \cr \displaystyle{ {m}_{0} {D}^{2}{y}_{cm}\left( t \right) + {m}_{1} {D}^{2}{y}_{cm}\left( t \right)} \cr \cr \displaystyle{ {{{l}^{2} {m}_{0} {m}_{1} {D}^{2}\theta\left( t \right)}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ {{ - l {m}_{0} {m}_{1} {\left( D\theta\left( t \right) \right)}^{2} + {m}_{0} F\left( t \right) + {m}_{1} F\left( t \right)}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ 0}\end{bmatrix}
+\begin{bmatrix}\displaystyle{m_0\,{D}^{2}x_{cm}\left(t\right) + m_1\,{D}^{2}x_{cm}\left(t\right)} \cr \cr \displaystyle{m_0\,{D}^{2}y_{cm}\left(t\right) + m_1\,{D}^{2}y_{cm}\left(t\right)} \cr \cr \displaystyle{\frac{{l}^{2}\,m_0\,m_1\,{D}^{2}\theta\left(t\right)}{m_0 + m_1}} \cr \cr \displaystyle{\frac{- l\,m_0\,m_1\,{\left(D\theta\left(t\right)\right)}^{2} + m_0\,F\left(t\right) + m_1\,F\left(t\right)}{m_0 + m_1}} \cr \cr \displaystyle{0}\end{bmatrix}
 \end{equation}
+:end:
 
 This is saying that the acceleration on the center of mass is 0.
 
@@ -4565,13 +4561,13 @@ The fourth equation, the equation of motion for the $c(t)$, is interesting here.
 We need to pull in the definition of "reduced mass" from exercise 1.11:
 
 #+begin_src clojure
-(define (reduced-mass m1 m2)
+(defn reduced-mass [m1 m2]
   (/ (* m1 m2)
      (+ m1 m2)))
 #+end_src
 
 #+RESULTS:
-: #| reduced-mass |#
+: #'ch1.ex1-21/reduced-mass
 
 If we let $m$ be the reduced mass, this equation states:
 
@@ -4583,27 +4579,28 @@ F(t) = m l \dot{\theta}^2
 We can verify this with Scheme by subtracting the two equations:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((F (literal-function 'F))
-       (theta (literal-function 'theta))
-       (q (up (literal-function 'x_cm)
-              (literal-function 'y_cm)
-              theta
-              (lambda (t) 'l)
-              F))
-       (L (L-free-constrained* 'm_0 'm_1 'l))
-       (f ((Lagrange-equations L) q))
-
-       (m (reduced-mass 'm_0 'm_1)))
+(let [F (literal-function 'F)
+      theta (literal-function 'theta)
+      q (up (literal-function 'x_cm)
+            (literal-function 'y_cm)
+            theta
+            (fn [_] 'l)
+            F)
+      L (L-free-constrained* 'm_0 'm_1 'l)
+      f ((Lagrange-equations L) q)
+      m (reduced-mass 'm_0 'm_1)]
   (->tex-equation
    (- (ref (f 't) 3)
       (- (F 't)
          (* m 'l (square ((D theta) 't)))))))
 #+end_src
 
-#+RESULTS[98183c269755d12e4a77e511208ba05dd8872966]:
+#+RESULTS[302f96b7def456d623132eb3eff0160eeec5782e]:
+:results:
 \begin{equation}
 0
 \end{equation}
+:end:
 
 *** Part E: New Lagrangian
 
@@ -4623,39 +4620,31 @@ But let's go at it, for fun.
 Here's the Lagrangian of 2 free particles:
 
 #+begin_src clojure
-(define ((L-free2 m0 m1) local)
-  (let* ((extract (extract-particle 2))
-
-         (p0 (extract local 0))
-         (q0 (coordinate p0))
-         (qdot0 (velocity p0))
-
-         (p1 (extract local 1))
-         (q1 (coordinate p1))
-         (qdot1 (velocity p1)))
-    (+ (KE-particle m0 qdot0)
-       (KE-particle m1 qdot1))))
+(defn L-free2 [m0 m1]
+  (fn [local]
+    (let [extract (extract-particle 2)
+          [_ q0 qdot0] (extract local 0)
+          [_ q1 qdot1] (extract local 1)]
+      (+ (KE-particle m0 qdot0)
+         (KE-particle m1 qdot1)))))
 #+end_src
 
 #+RESULTS:
-: #| L-free2 |#
+: #'ch1.ex1-21/L-free2
 
 Then a version of =cm-theta->rect= where we ignore $F$, and sub in a constant
 $l$:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(define ((cm-theta->rect* m0 m1 l) local)
-  (let* ((q (coordinate local))
-         (x_cm (ref q 0))
-         (y_cm (ref q 1))
-         (theta (ref q 2))
-         (total-mass (+ m0 m1))
-         (m0-distance (* l (/ m1 total-mass)))
-         (m1-distance (* l (/ m0 total-mass))))
-    (up (- x_cm (* m0-distance (cos theta)))
-        (- y_cm (* m0-distance (sin theta)))
-        (+ x_cm (* m1-distance (cos theta)))
-        (+ y_cm (* m1-distance (sin theta))))))
+(defn cm-theta->rect* [m0 m1 l]
+  (fn [[_ [x_cm y_cm theta]]]
+    (let [total-mass (+ m0 m1)
+          m0-distance (* l (/ m1 total-mass))
+          m1-distance (* l (/ m0 total-mass))]
+      (up (- x_cm (* m0-distance (cos theta)))
+          (- y_cm (* m0-distance (sin theta)))
+          (+ x_cm (* m1-distance (cos theta)))
+          (+ y_cm (* m1-distance (sin theta)))))))
 #+end_src
 
 #+RESULTS[aee3cbebd833662ba2610e81cef9e42936dcb703]:
@@ -4664,34 +4653,36 @@ $l$:
 The Lagrangian:
 
 #+begin_src clojure
-(define (L-free-constrained2 m0 m1 l)
+(defn L-free-constrained2 [m0 m1 l]
   (compose (L-free2 m0 m1)
            (F->C (cm-theta->rect* m0 m1 l))))
 #+end_src
 
 #+RESULTS:
-: #| L-free-constrained2 |#
+: #'ch1.ex1-21/L-free-constrained2
 
 Equations:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((q (up (literal-function 'x_cm)
-              (literal-function 'y_cm)
-              (literal-function 'theta)
-              (lambda (t) 'l)
-              (literal-function 'F)))
-       (L1 (L-free-constrained* 'm_0 'm_1 'l))
-       (L2 (L-free-constrained2 'm_0 'm_1 'l)))
+(let [q (up (literal-function 'x_cm)
+            (literal-function 'y_cm)
+            (literal-function 'theta)
+            (fn [_] 'l)
+            (literal-function 'F))
+      L1 (L-free-constrained* 'm_0 'm_1 'l)
+      L2 (L-free-constrained2 'm_0 'm_1 'l)]
   (->tex-equation
    ((- ((Lagrange-equations L1) q)
        ((Lagrange-equations L2) q))
     't)))
 #+end_src
 
-#+RESULTS[132abd940897cd8f9d1e34d11fb3c415fce45a61]:
+#+RESULTS[56daae7aa9a507dbf47cb5c1718ab63fe0b0bf47]:
+:results:
 \begin{equation}
-\begin{bmatrix} \displaystyle{ 0} \cr \cr \displaystyle{ 0} \cr \cr \displaystyle{ 0} \cr \cr \displaystyle{ {{ - l {m}_{0} {m}_{1} {\left( D\theta\left( t \right) \right)}^{2} + {m}_{0} F\left( t \right) + {m}_{1} F\left( t \right)}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ 0}\end{bmatrix}
+\begin{bmatrix}\displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{\frac{- l\,m_0\,m_1\,{\left(D\theta\left(t\right)\right)}^{2} + m_0\,F\left(t\right) + m_1\,F\left(t\right)}{m_0 + m_1}} \cr \cr \displaystyle{0}\end{bmatrix}
 \end{equation}
+:end:
 
 The only remaining equation is \eqref{eq:constraint-force} from above. This
 remains because the simplified Lagrangian ignores the $F$ term.
@@ -4723,10 +4714,9 @@ remains because the simplified Lagrangian ignores the $F$ term.
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
+| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
+| #'ch1.ex1-22/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
+| #'ch1.ex1-22/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 #+begin_quote
 Show that the Lagrangian (1.93) can be used to describe the driven pendulum
@@ -4777,60 +4767,70 @@ constraint force takes the same shape as in exercise 1.21:
 #+end_src
 
 #+RESULTS:
-: #| U-constraint |#
+: #'ch1.ex1-22/U-constraint
 
 The Lagrangian is similar, but only involves a single particle -- the pendulum
 bob. We can generate the constraint force by directly building the support's
 coordinates, rather than extracting them from the local tuple.
 
 #+name: L-driven-free
-#+begin_src clojure
-(define ((L-driven-free m l y U) local)
-  (let* ((extract (extract-particle 2))
-         (bob (extract local 0))
-         (q (coordinate bob))
-         (qdot (velocity bob))
-         (F (ref (coordinate local) 2)))
-    (- (KE-particle m qdot)
-       (U q)
-       (U-constraint (up 0 (y (time local)))
-                     q
-                     F
-                     l))))
+#+begin_src clojure :noweb yes
+<<extract-particle>>
+
+<<KE-particle>>
+
+(defn L-driven-free [m l y U]
+  (fn [local]
+    (let [extract (extract-particle 2)
+          [_ q qdot] (extract local 0)
+          F (ref (coordinate local) 2)]
+      (- (KE-particle m qdot)
+         (U q)
+         (U-constraint (up 0 (y (state->t local)))
+                       q
+                       F
+                       l)))))
 #+end_src
+
+#+RESULTS: L-driven-free
+| #'ch1.ex1-24/extract-particle                 |
+| #'ch1.ex1-24/KE-particle                      |
+| class clojure.lang.Compiler$CompilerException |
 
 Here is the now-familiar equation for a uniform gravitational potential, acting
 on the $y$ coordinate:
 
 #+name: U-gravity
 #+begin_src clojure
-(define ((U-gravity g m) q)
-  (let* ((y (ref q 1)))
+(defn U-gravity [g m]
+  (fn [[_ y]]
     (* m g y)))
 #+end_src
 
-#+RESULTS:
-: #| U-gravity |#
+#+RESULTS: U-gravity
+: #'ch1.ex1-22/U-gravity
 
 Now use the new Lagrangian to generate equations of motion for the three
 coordinates $x$, $y$ and $F$:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((q (up (literal-function 'x)
-              (literal-function 'y)
-              (literal-function 'F)))
-       (U (U-gravity 'g 'm))
-       (y (literal-function 'y_s))
-       (L (L-driven-free 'm 'l y U))
-       (f ((Lagrange-equations L) q)))
+(let [q (up (literal-function 'x)
+            (literal-function 'y)
+            (literal-function 'F))
+      U (U-gravity 'g 'm)
+      y (literal-function 'y_s)
+      L (L-driven-free 'm 'l y U)
+      f ((Lagrange-equations L) q)]
   (->tex-equation
    (f 't)))
 #+end_src
 
-#+RESULTS[a7c6fc40bbcba84c2c0ef9058455e719c4ac8045]:
+#+RESULTS[d6d85683a3f6ea985c97b9668fc1e7ab706a91f8]:
+:results:
 \begin{equation}
-\begin{bmatrix} \displaystyle{ {{l m {D}^{2}x\left( t \right) + F\left( t \right) x\left( t \right)}\over {l}}} \cr \cr \displaystyle{ {{g l m + l m {D}^{2}y\left( t \right) - F\left( t \right) {y}_{s}\left( t \right) + F\left( t \right) y\left( t \right)}\over {l}}} \cr \cr \displaystyle{ {{ - {{1}\over {2}} {l}^{2} + {{1}\over {2}} {\left( {y}_{s}\left( t \right) \right)}^{2} - {y}_{s}\left( t \right) y\left( t \right) + {{1}\over {2}} {\left( y\left( t \right) \right)}^{2} + {{1}\over {2}} {\left( x\left( t \right) \right)}^{2}}\over {l}}}\end{bmatrix}
+\begin{bmatrix}\displaystyle{\frac{l\,m\,{D}^{2}x\left(t\right) + x\left(t\right)\,F\left(t\right)}{l}} \cr \cr \displaystyle{\frac{g\,l\,m + l\,m\,{D}^{2}y\left(t\right) + y\left(t\right)\,F\left(t\right) - F\left(t\right)\,y_s\left(t\right)}{l}} \cr \cr \displaystyle{\frac{- {l}^{2} + {\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2} -2\,y\left(t\right)\,y_s\left(t\right) + {\left(y_s\left(t\right)\right)}^{2}}{2\,l}}\end{bmatrix}
 \end{equation}
+:end:
 
 The first two equations of motion match the equations we derived in part A,
 using Newton's equations. The third states that
@@ -4842,26 +4842,29 @@ l^2 = x(t)^2 + (y_s(t) - y(t))^&2
 Verified, with some extra terms to force the simplification:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((q (up (literal-function 'x)
-              (literal-function 'y)
-              (literal-function 'F)))
-       (U (U-gravity 'g 'm))
-       (y (literal-function 'y_s))
-       (L (L-driven-free 'm 'l y U))
-       (f ((Lagrange-equations L) q))
-       (eq (ref (f 't) 2)))
+(let [q (up (literal-function 'x)
+            (literal-function 'y)
+            (literal-function 'F))
+      U (U-gravity 'g 'm)
+      y (literal-function 'y_s)
+      L (L-driven-free 'm 'l y U)
+      f ((Lagrange-equations L) q)
+      eq (ref (f 't) 2)]
   (->tex-equation
    (- eq
-      (/ (* 1/2 (- (+ (square ((literal-function 'x) 't))
-                      (square ((- y (literal-function 'y)) 't)))
-                   (square 'l)))
+      (/ (* (/ 1 2)
+            (- (+ (square ((literal-function 'x) 't))
+                  (square ((- y (literal-function 'y)) 't)))
+               (square 'l)))
          'l))))
 #+end_src
 
-#+RESULTS[2bf6d50380d98e5aff9861c349b4e289b31fa168]:
+#+RESULTS[8b5ed990be36d75f0e25a36aa7cb75b4da19e03a]:
+:results:
 \begin{equation}
 0
 \end{equation}
+:end:
 
 *** Part C: Coordinate Change
 
@@ -4874,69 +4877,70 @@ To analyze the constraint forces, we have to do the same trick as in exercise
 
 #+name: driven-polar->rect
 #+begin_src clojure
-(define ((driven-polar->rect y) local)
-  (let* ((q (coordinate local))
-         (theta (ref q 0))
-         (c (ref q 1))
-         (F (ref q 2)))
+(defn driven-polar->rect [y]
+  (fn [[t [theta c F]]]
     (up (* c (sin theta))
-        (- (y (time local)) (* c (cos theta)))
+        (- (y t) (* c (cos theta)))
         F)))
 #+end_src
 
-#+RESULTS:
-: #| driven-polar->rect |#
+#+RESULTS: driven-polar->rect
+: #'ch1.ex1-22/driven-polar->rect
 
 Compose the coordinate change with the rectangular Lagrangian:
 
 #+name: L-driven-pend
 #+begin_src clojure
-(define (L-driven-pend m l y U)
+(defn L-driven-pend [m l y U]
   (compose (L-driven-free m l y U)
            (F->C (driven-polar->rect y))))
 #+end_src
 
-#+RESULTS:
-: #| L-driven-pend |#
+#+RESULTS: L-driven-pend
+: #'ch1.ex1-22/L-driven-pend
 
 Examine the Lagrangian itself, after the coordinate transformation. (Notice that
 we're using a constant function for $c(t)$ that always returns $l$.)
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((q (up (literal-function 'theta)
-              (lambda (t) 'l)
-              (literal-function 'F)))
-       (y (literal-function 'y_s))
-       (L (L-driven-pend 'm 'l y (U-gravity 'g 'm)))
-       (f (compose L (Gamma q))))
+(let [q (up (literal-function 'theta)
+            (fn [_] 'l)
+            (literal-function 'F))
+      y (literal-function 'y_s)
+      L (L-driven-pend 'm 'l y (U-gravity 'g 'm))
+      f (compose L (Gamma q))]
   (->tex-equation
    (f 't)))
 #+end_src
 
-#+RESULTS[306c957e09bfd22ebe85e5c6fb9380ff977df1e9]:
+#+RESULTS[309d62d5c69997b9e151991d8f68e04511e6ad29]:
+:results:
 \begin{equation}
-{{1}\over {2}} {l}^{2} m {\left( D\theta\left( t \right) \right)}^{2} + l m D{y}_{s}\left( t \right) \sin\left( \theta\left( t \right) \right) D\theta\left( t \right) + g l m \cos\left( \theta\left( t \right) \right) - g m {y}_{s}\left( t \right) + {{1}\over {2}} m {\left( D{y}_{s}\left( t \right) \right)}^{2}
+\frac{1}{2}\,{l}^{2}\,m\,{\left(D\theta\left(t\right)\right)}^{2} + l\,m\,\sin\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,Dy_s\left(t\right) + g\,l\,m\,\cos\left(\theta\left(t\right)\right) - g\,m\,y_s\left(t\right) + \frac{1}{2}\,m\,{\left(Dy_s\left(t\right)\right)}^{2}
 \end{equation}
+:end:
 
 Looks just like equation 1.88.
 
 Next, examine the Lagrange equations, using the same substitution of $c(t) = l$:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((q (up (literal-function 'theta)
-              (lambda (t) 'l)
-              (literal-function 'F)))
-       (y (literal-function 'y_s))
-       (L (L-driven-pend 'm 'l y (U-gravity 'g 'm)))
-       (f ((Lagrange-equations L) q)))
+(let [q (up (literal-function 'theta)
+            (fn [_] 'l)
+            (literal-function 'F))
+      y (literal-function 'y_s)
+      L (L-driven-pend 'm 'l y (U-gravity 'g 'm))
+      f ((Lagrange-equations L) q)]
   (->tex-equation
    (f 't)))
 #+end_src
 
-#+RESULTS[f9c380046af367934c5d46dd0d3793a1082a018e]:
+#+RESULTS[2f4e5344fe096110b5375d768b5ec95981ce34ac]:
+:results:
 \begin{equation}
-\begin{bmatrix} \displaystyle{ g l m \sin\left( \theta\left( t \right) \right) + {l}^{2} m {D}^{2}\theta\left( t \right) + l m {D}^{2}{y}_{s}\left( t \right) \sin\left( \theta\left( t \right) \right)} \cr \cr \displaystyle{  - l m {\left( D\theta\left( t \right) \right)}^{2} - g m \cos\left( \theta\left( t \right) \right) - m {D}^{2}{y}_{s}\left( t \right) \cos\left( \theta\left( t \right) \right) + F\left( t \right)} \cr \cr \displaystyle{ 0}\end{bmatrix}
+\begin{bmatrix}\displaystyle{g\,l\,m\,\sin\left(\theta\left(t\right)\right) + {l}^{2}\,m\,{D}^{2}\theta\left(t\right) + l\,m\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}y_s\left(t\right)} \cr \cr \displaystyle{- l\,m\,{\left(D\theta\left(t\right)\right)}^{2} - g\,m\,\cos\left(\theta\left(t\right)\right) - m\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}y_s\left(t\right) + F\left(t\right)} \cr \cr \displaystyle{0}\end{bmatrix}
 \end{equation}
+:end:
 
 The third equation is 0 because of the substitution of constant $c(t) = l$. The
 first equation of motion, for $\theta$, is identical to the equation on page 52.
@@ -4971,10 +4975,9 @@ function of the other coordinates and the support position.
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
+| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
+| #'ch1.ex1-23/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
+| #'ch1.ex1-23/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 TODO: Expand out the explicit Lagrangian, using a coordinate transformation, and
 do the manual substitution...
@@ -5010,14 +5013,15 @@ $y_s(t) = l$, we can read off the constraint forces for the undriven pendulum.
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
+| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
+| #'ch1.ex1-24/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
+| #'ch1.ex1-24/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 Take some definitions that we need:
 
 #+begin_src clojure :noweb yes
+<<U-constraint>>
+
 <<L-driven-free>>
 
 <<U-gravity>>
@@ -5028,34 +5032,36 @@ Take some definitions that we need:
 #+end_src
 
 #+RESULTS:
-: #| L-driven-free |#
-:
-: #| U-gravity |#
-:
-: #| driven-polar->rect |#
-:
-: #| L-driven-pend |#
+| #'ch1.ex1-24/U-constraint       |
+| #'ch1.ex1-24/extract-particle   |
+| #'ch1.ex1-24/KE-particle        |
+| #'ch1.ex1-24/L-driven-free      |
+| #'ch1.ex1-24/U-gravity          |
+| #'ch1.ex1-24/driven-polar->rect |
+| #'ch1.ex1-24/L-driven-pend      |
 
 The second equation of motion, for the $c$ coordinate, gives us an equation in
 terms of tension. Substitute in a constant pendulum support position by defining
 the support position function to be =(lambda (t) 'l)=:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((q (up (literal-function 'theta)
-              (lambda (t) 'l)
-              (literal-function 'F)))
-       (y (lambda (t) 'l))
-       (L (L-driven-pend 'm 'l y (U-gravity 'g 'm)))
-       (f ((Lagrange-equations L) q)))
+(let [q (up (literal-function 'theta)
+            (fn [_] 'l)
+            (literal-function 'F))
+      y (fn [_] 'l)
+      L (L-driven-pend 'm 'l y (U-gravity 'g 'm))
+      f ((Lagrange-equations L) q)]
   (->tex-equation
    (ref (f 't) 1)))
 #+end_src
 
 
-#+RESULTS[ef32abeb390f21f1abca982d55c01e5ea78b4d80]:
+#+RESULTS[cb25190a3517f2c5140e4f3c5f7feaf98caaeadf]:
+:results:
 \begin{equation}
- - l m {\left( D\theta\left( t \right) \right)}^{2} - g m \cos\left( \theta\left( t \right) \right) + F\left( t \right)
+- l\,m\,{\left(D\theta\left(t\right)\right)}^{2} - g\,m\,\cos\left(\theta\left(t\right)\right) + F\left(t\right)
 \end{equation}
+:end:
 
 Solve for $F(t)$, the tension on the pendulum linkage:
 
@@ -5123,10 +5129,9 @@ F(t) = m (g \cos \theta + l \dot{\theta}^2)
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
+| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
+| #'ch1.ex1-26/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
+| #'ch1.ex1-26/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 ** Exercise 1.27: Lagrange equations for total time derivatives
 :PROPERTIES:
@@ -5186,15 +5191,25 @@ F(t) = m (g \cos \theta + l \dot{\theta}^2)
    (->tex-equation* e)))
 #+end_src
 
+#+RESULTS:
+| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
+| #'ch1.ex1-28/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
+| #'ch1.ex1-28/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
+
 *** part A
+
+TODO: Port the check-f stuff from utils.scm.
 
 nice, easy to guess.
 
 #+begin_src clojure
-(define ((FA m) local)
-  (let ((x (coordinate local)))
+(defn FA [m]
+  (fn [[_ x]]
     (* m x)))
 #+end_src
+
+#+RESULTS:
+: #'ch1.ex1-28/FA
 
 Show the function of t, and confirm that both methods are equivalent.
 
@@ -5210,38 +5225,49 @@ NOT a total time derivative.
 Define G directly:
 
 #+begin_src clojure
-(define ((GB m) local)
-  (let* ((t (time local))
-         (v_x (velocity local))
-         (GB0 0)
-         (GB1 (* m (cos t))))
-    (+ GB0 (* GB1 v_x))))
+(defn GB [m]
+  (fn [[t _ v_x]]
+    (let [GB0 0
+          GB1 (* m (cos t))]
+      (+ GB0 (* GB1 v_x)))))
 #+end_src
+
+#+RESULTS:
+: #'ch1.ex1-28/GB
 
 And show the full G, for fun:
 
-#+begin_src clojure
-(let ((f (compose (GB 'm) (Gamma (literal-function 'x)))))
-  (se (f 't)))
+#+begin_src clojure :results output drawer :exports both :cache yes
+(let [f (compose (GB 'm) (Gamma (literal-function 'x)))]
+  (->tex-equation
+   (f 't)))
 #+end_src
 
+#+RESULTS[854a7dd78cd3079bdf438b65c97ca014f49344db]:
+:results:
+\begin{equation}
+m\,Dx\left(t\right)\,\cos\left(t\right)
+\end{equation}
+:end:
 
 It's easier to confirm that this is not a total time derivative by checking the
 partials.
 
 #+begin_src clojure
-(define (GB-properties m)
-  (let ((GB0 (lambda (local) 0))
-        (GB1 (lambda (local)
-               (* m (cos (time local))))))
-    (G-properties GB0 GB1 (literal-function 'x))))
+(defn GB-properties [m]
+  (let [GB0 (fn [local] 0)
+        GB1 (fn [[t]]
+              (* m (cos t)))]
+    (G-properties
+     GB0 GB1 (literal-function 'x))))
 #+end_src
 
 It's clear here that the second and third tuple entries aren't equal, so we
 don't have a total time derivative.
 
-#+begin_src clojure
-(se (GB-properties 'm))
+#+begin_src clojure :results output drawer :exports both :cache yes
+(->tex-equation
+ (GB-properties 'm))
 #+end_src
 
 *** Part C
@@ -5249,27 +5275,24 @@ don't have a total time derivative.
 no problem, we've got a total time derivative on our hands.
 
 #+begin_src clojure
-(define (FC local)
-  (let ((t (time local))
-        (x (coordinate local)))
-    (* x (cos t))))
+(defn FC [[t x]]
+  (* x (cos t)))
 
 (check-f FC (literal-function 'x))
 
-(define GC-properties
-  (let ((GC0 (lambda (local)
-               (* -1
-                  (coordinate local)
-                  (sin (time local)))))
-        (GC1 (lambda (local)
-               (cos (time local)))))
-    (G-properties GC0 GC1 (literal-function 'x))))
+(def GC-properties
+  (let [GC0 (fn [[t q]]
+              (* -1 q (sin t)))
+        GC1 (fn [[t]]
+              (cos t))]
+    (G-properties
+     GC0 GC1 (literal-function 'x))))
 #+end_src
 
 Boom, the second and third entries are equal, as we'd expect.
 
-#+begin_src clojure
-(se GC-properties)
+#+begin_src clojure :results output drawer :exports both :cache yes
+(->tex-equation GC-properties)
 #+end_src
 
 
@@ -5279,19 +5302,19 @@ This is NOT a total time derivative; you can tell by taking the partials
 of each side, G0 and G1, as we'll see here.
 
 #+begin_src clojure
-(define GD-properties
-  (let ((GD0 (lambda (local)
-               (* (coordinate local)
-                  (sin (time local)))))
-        (GD1 (lambda (local)
-               (cos (time local)))))
-    (G-properties GD0 GD1 (literal-function 'x))))
+(def GD-properties
+  (let [GD0 (fn [[t q]]
+              (* q (sin t)))
+        GD1 (fn [[t]]
+              (cos t))]
+    (G-properties
+     GD0 GD1 (literal-function 'x))))
 #+end_src
 
 The partials for each side don't match.
 
-#+begin_src clojure
-(se GD-properties)
+#+begin_src clojure :results output drawer :exports both :cache yes
+(->tex-equation GD-properties)
 #+end_src
 
 *** Part E
@@ -5303,14 +5326,13 @@ OH, but the secret is that Qdot is also a tuple, so you contract them together.
 Here's the function F that we can use to derive it:
 
 #+begin_src clojure
-(define (FE local)
-  (let* ((t (time local))
-         (q (coordinate local))
-         (x (ref q 0))
-         (y (ref q 1)))
-    (* (+ (square x) (square y))
-       (cos t))))
+(defn FE [[t [x y]]]
+  (* (+ (square x) (square y))
+     (cos t)))
 #+end_src
+
+#+RESULTS:
+: #'ch1.ex1-28/FE
 
 Boom, total time derivative!
 
@@ -5322,30 +5344,22 @@ Boom, total time derivative!
 And let's show that we pass the tests by decomposing this into G0 and G1:
 
 #+begin_src clojure
-(define GE-properties
-  (let (
-        ;; any piece of the function without a velocity multiplied.
-        (GE0 (lambda (local)
-               (let* ((t (time local))
-                      (q (coordinate local))
-                      (x (ref q 0))
-                      (y (ref q 1)))
-                 (* -1
-                    (+ (square x) (square y))
-                    (sin t)))))
+(def GE-properties
+  (let [;; any piece of the function without a velocity multiplied.
+        GE0 (fn [[t [x y]]]
+              (* -1
+                 (+ (square x) (square y))
+                 (sin t)))
 
         ;; The pieces multiplied by velocities, split into a down tuple of
         ;; components, one for each of the coordinate components.
-        (GE1 (lambda (local)
-               (let* ((t (time local))
-                      (q (coordinate local))
-                      (x (ref q 0))
-                      (y (ref q 1)))
-                 (down
-                  (* 2 x (cos t))
-                  (* 2 y (cos t)))))))
-    (G-properties GE0 GE1 (up (literal-function 'x)
-                              (literal-function 'y)))))
+        GE1 (fn [[t [x y]]]
+              (down
+               (* 2 x (cos t))
+               (* 2 y (cos t))))]
+    (G-properties
+     GE0 GE1 (up (literal-function 'x)
+                 (literal-function 'y)))))
 #+end_src
 
 BOOM!
@@ -5353,7 +5367,7 @@ BOOM!
 We've recovered F; the partials are equal, and the final matrix is symmetric.
 
 #+begin_src clojure
-(se GE-properties)
+(->tex-equation GE-properties)
 #+end_src
 
 *** Part F
@@ -5362,30 +5376,22 @@ This one is interesting, since the second partial is a tuple. This is not so
 obvious to me, so first let's check the properties:
 
 #+begin_src clojure
-(define GF-properties
-  (let (
-        ;; any piece of the function without a velocity multiplied.
-        (GF0 (lambda (local)
-               (let* ((t (time local))
-                      (q (coordinate local))
-                      (x (ref q 0))
-                      (y (ref q 1)))
-                 (* -1
-                    (+ (square x) (square y))
-                    (sin t)))))
+(def GF-properties
+  (let [;; any piece of the function without a velocity multiplied.
+        GF0 (fn [[t [x y]]]
+              (* -1
+                 (+ (square x) (square y))
+                 (sin t)))
 
         ;; The pieces multiplied by velocities, split into a down tuple of
         ;; components, one for each of the coordinate components.
-        (GF1 (lambda (local)
-               (let* ((t (time local))
-                      (q (coordinate local))
-                      (x (ref q 0))
-                      (y (ref q 1)))
-                 (down
-                  (+ (cube y) (* 2 x (cos t)))
-                  (+ x (* 2 y (cos t))))))))
-    (G-properties GF0 GF1 (up (literal-function 'x)
-                              (literal-function 'y)))))
+        G (fn [[t [x y]]]
+            (down
+             (+ (cube y) (* 2 x (cos t)))
+             (+ x (* 2 y (cos t)))))]
+    (G-properties
+     GF0 GF1 (up (literal-function 'x)
+                 (literal-function 'y)))))
 #+end_src
 
 AND it looks like we DO have a total time derivative, maybe. We certainly pass
@@ -5395,7 +5401,7 @@ BUT we fail the second test; the hessian that we get from ((partial 1) G1) is
 not symmetric.
 
 #+begin_src clojure
-(se GF-properties)
+(->tex-equation GF-properties)
 #+end_src
 
 
@@ -5426,65 +5432,66 @@ not symmetric.
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
+| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
+| #'ch1.ex1-29/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
+| #'ch1.ex1-29/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 I'll do this for a single particle, since it's annoying to get the sum going
 for many; and the lagrangian is additive, so no problem.
 
-#+begin_src clojure
-(define (uniform-translate-shift->rect local)
-  (let* ((t (time local))
-         (q (coordinate local))
-         (xprime (ref q 0))
-         (delta_x (ref q 1))
-         (delta_v (ref q 2)))
-    (+ xprime delta_x (* t delta_v))))
+#+begin_src clojure :noweb yes
+<<L-free-particle>>
 
-(define (L-translate-shift m)
+(defn uniform-translate-shift->rect
+  [[t [xprime delta_x delta_v]]]
+  (+ xprime delta_x (* t delta_v)))
+
+(defn L-translate-shift [m]
   (compose (L-free-particle m)
            (F->C uniform-translate-shift->rect)))
 #+end_src
 
 #+RESULTS:
-: #| uniform-translate-shift->rect |#
-:
-: #| L-translate-shift |#
+| #'ch1.ex1-29/L-free-particle               |
+| #'ch1.ex1-29/uniform-translate-shift->rect |
+| #'ch1.ex1-29/L-translate-shift             |
 
 First, confirm that if we have a constant, we get what we expected from paper.
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((q (up (literal-function 'xprime)
-              (lambda (t) 'Delta_x)
-              (lambda (t) 'Delta_v)))
-       (f (compose (L-translate-shift 'm) (Gamma q))))
+(let [q (up (literal-function 'xprime)
+            (fn [_] 'Delta_x)
+            (fn [_] 'Delta_v))
+      f (compose (L-translate-shift 'm) (Gamma q))]
   (->tex-equation (f 't)))
 #+end_src
 
-#+RESULTS[5d2b4de08cfab4779bf7cdab31d518191b40a4d2]:
-\[\begin{equation}
-{{1}\over {2}} {{\Delta}_{v}}^{2} m + {\Delta}_{v} m D{x}^\prime\left( t \right) + {{1}\over {2}} m {\left( D{x}^\prime\left( t \right) \right)}^{2}
-\end{equation}\]
+#+RESULTS[92401efb05c9e5c5f907eaeacdfd349a99c25533]:
+:results:
+\begin{equation}
+\frac{1}{2}\,{{\Delta}_v}^{2}\,m + {\Delta}_v\,m\,D\mathsf{xprime}\left(t\right) + \frac{1}{2}\,m\,{\left(D\mathsf{xprime}\left(t\right)\right)}^{2}
+\end{equation}
+:end:
 
 We can change this a little to see the extra terms; substract off the free
-particle lagrangian, to see the extra stuff.
+particle Lagrangian, to see the extra stuff.
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((q (up (literal-function 'xprime)
-              (lambda (t) 'Delta_x)
-              (lambda (t) 'Delta_v)))
-       (L (- (L-translate-shift 'm)
-             (L-free-particle 'm)))
-       (f (compose L (Gamma q))))
+(let [q (up (literal-function 'xprime)
+            (fn [_] 'Delta_x)
+            (fn [_] 'Delta_v))
+      L (- (L-translate-shift 'm)
+           (L-free-particle 'm))
+      f (compose L (Gamma q))]
   (->tex-equation (f 't)))
 #+end_src
 
-#+RESULTS[c17004e61fec7edb3835203cdc99c562940bee7c]:
-\[\begin{equation}
-{{1}\over {2}} {{\Delta}_{v}}^{2} m + {\Delta}_{v} m D{x}^\prime\left( t \right)
-\end{equation}\]
+#+RESULTS[dbd808acbafa7aeae5940f2fa7adddf4081f74c5]:
+:results:
+\begin{equation}
+\frac{1}{2}\,{{\Delta}_v}^{2}\,m + {\Delta}_v\,m\,D\mathsf{xprime}\left(t\right)
+\end{equation}
+:end:
 
 Here's the gnarly version with both entries as actual functions. Can this be a
 total time derivative? It CANNOT be, because we have a $(D \Delta_v(t))^2$ term
@@ -5493,19 +5500,21 @@ velocities. The function $F$ would have had to have a velocity in it, which is
 not allowed.
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((q (up (literal-function 'xprime)
-              (literal-function 'Delta_x)
-              (literal-function 'Delta_v)))
-       (L (- (L-translate-shift 'm)
-             (L-free-particle 'm)))
-       (f (compose L (Gamma q))))
+(let [q (up (literal-function 'xprime)
+            (literal-function 'Delta_x)
+            (literal-function 'Delta_v))
+      L (- (L-translate-shift 'm)
+           (L-free-particle 'm))
+      f (compose L (Gamma q))]
   (->tex-equation (f 't)))
 #+end_src
 
-#+RESULTS[ded4f6dec25954c9b7536153e1db8db0315cb399]:
-\[ \begin{equation}
-{{1}\over {2}} m {t}^{2} {\left( D{\Delta}_{v}\left( t \right) \right)}^{2} + m t D{x}^\prime\left( t \right) D{\Delta}_{v}\left( t \right) + m t D{\Delta}_{v}\left( t \right) {\Delta}_{v}\left( t \right) + m t D{\Delta}_{v}\left( t \right) D{\Delta}_{x}\left( t \right) + m D{x}^\prime\left( t \right) {\Delta}_{v}\left( t \right) + m D{x}^\prime\left( t \right) D{\Delta}_{x}\left( t \right) - {{1}\over {2}} m {\left( D{\Delta}_{v}\left( t \right) \right)}^{2} + {{1}\over {2}} m {\left( {\Delta}_{v}\left( t \right) \right)}^{2} + m {\Delta}_{v}\left( t \right) D{\Delta}_{x}\left( t \right)
-\end{equation} \]
+#+RESULTS[3aa25b5514b22239dfb4232a0abd79833eff29ab]:
+:results:
+\begin{equation}
+\frac{1}{2}\,m\,{t}^{2}\,{\left(D{\Delta}_v\left(t\right)\right)}^{2} + m\,t\,D\mathsf{xprime}\left(t\right)\,D{\Delta}_v\left(t\right) + m\,t\,{\Delta}_v\left(t\right)\,D{\Delta}_v\left(t\right) + m\,t\,D{\Delta}_x\left(t\right)\,D{\Delta}_v\left(t\right) + m\,D\mathsf{xprime}\left(t\right)\,{\Delta}_v\left(t\right) + m\,D\mathsf{xprime}\left(t\right)\,D{\Delta}_x\left(t\right) + \frac{1}{2}\,m\,{\left({\Delta}_v\left(t\right)\right)}^{2} + m\,{\Delta}_v\left(t\right)\,D{\Delta}_x\left(t\right) + \frac{-1}{2}\,m\,{\left(D{\Delta}_v\left(t\right)\right)}^{2}
+\end{equation}
+:end:
 
 Let's simplify by making the $\Delta_v$ constant and see if there's anything so
 obvious about $\Delta_x$.
@@ -5515,24 +5524,26 @@ that total time derivatives are linear, so let's substract off the total time
 derivative and see what happens:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let* ((q (lambda (dx)
-            (up (literal-function 'xprime)
-                dx
-                (lambda (t) 'Delta_v))))
-       (L (- (L-translate-shift 'm)
-             (L-free-particle 'm)))
-       (f (lambda (dx)
-            (compose L (Gamma (q dx))))))
+(let [q (fn [dx]
+          (up (literal-function 'xprime)
+              dx
+              (fn [_] 'Delta_v)))
+      L (- (L-translate-shift 'm)
+           (L-free-particle 'm))
+      f (fn [dx]
+          (compose L (Gamma (q dx))))]
   (->tex-equation
    ((- (f (literal-function 'Delta_x))
-       (f (lambda (t) 'Delta_x)))
+       (f (fn [_] 'Delta_x)))
     't)))
 #+end_src
 
-#+RESULTS[1a9463beb2f26c1661f1978633ca830ba12f73ec]:
-\[\begin{equation}
-{\Delta}_{v} m D{\Delta}_{x}\left( t \right) + m D{x}^\prime\left( t \right) D{\Delta}_{x}\left( t \right)
-\end{equation}\]
+#+RESULTS[c69796e7a6c18d350def3f016364a0f66bc44275]:
+:results:
+\begin{equation}
+{\Delta}_v\,m\,D{\Delta}_x\left(t\right) + m\,D\mathsf{xprime}\left(t\right)\,D{\Delta}_x\left(t\right)
+\end{equation}
+:end:
 
 Take a look. there is a quadratic velocity term in here! We have $D \Delta_x(t)
 D x'(t)$. This is not allowed in a total time derivative.
@@ -6161,46 +6172,45 @@ let's redo them on the machine.
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
+| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
+| #'ch1.ex9-1/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                                |
+| #'ch1.ex9-1/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                 |
 
 ***** Compute $\partial_0 F(x, y)$ and $\partial_1 F(x, y)$
 
 First, let's define the functions we need.
 
 #+begin_src clojure
-(define (F x y)
+(defn F [x y]
   (* (square x)
      (cube y)))
 
-(define (G x y)
+(defn G [x y]
   (up (F x y) y))
 
-(define (H x y)
+(defn H [x y]
   (F (F x y) y))
 #+end_src
 
 #+RESULTS:
-: #| F |#
-:
-: #| G |#
-:
-: #| H |#
+| #'ch1.ex9-1/F |
+| #'ch1.ex9-1/G |
+| #'ch1.ex9-1/H |
 
  You can do this with explicit partials:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let ((f (down ((partial 0) F) ((partial 1) F))))
+(let [f (down ((partial 0) F) ((partial 1) F))]
   (->tex-equation
    (f 'x 'y)))
 #+end_src
 
-#+RESULTS[b8eaf52d98e5903b52306509dcdc8f8eeb97144c]:
+#+RESULTS[c3bf3ad567f028b1677f9cc8d62f1a6f97ee8abe]:
+:results:
 \begin{equation}
-\begin{bmatrix} \displaystyle{ 2 x {y}^{3}} \cr \cr \displaystyle{ 3 {x}^{2} {y}^{2}}\end{bmatrix}
+\begin{bmatrix}\displaystyle{2\,x\,{y}^{3}} \cr \cr \displaystyle{3\,{x}^{2}\,{y}^{2}}\end{bmatrix}
 \end{equation}
+:end:
 
 Or with the $D$ symbol:
 
@@ -6209,24 +6219,28 @@ Or with the $D$ symbol:
  ((D F) 'x 'y))
 #+end_src
 
-#+RESULTS[f3fba605ac97a3ebd30b4a96aca31eed921e2e93]:
+#+RESULTS[8d696e3f24120cfbd568683f92ebdd7032efcb5d]:
+:results:
 \begin{equation}
-\begin{bmatrix} \displaystyle{ 2 x {y}^{3}} \cr \cr \displaystyle{ 3 {x}^{2} {y}^{2}}\end{bmatrix}
+\begin{bmatrix}\displaystyle{2\,x\,{y}^{3}} \cr \cr \displaystyle{3\,{x}^{2}\,{y}^{2}}\end{bmatrix}
 \end{equation}
+:end:
 
 Or, we could show that they're equivalent this way:
 
 #+begin_src clojure :results output drawer :exports both :cache yes
-(let ((f (down ((partial 0) F) ((partial 1) F))))
+(let [f (down ((partial 0) F) ((partial 1) F))]
   (->tex-equation
    (- ((D F) 'x 'y)
       (f 'x 'y))))
 #+end_src
 
-#+RESULTS[bbfc31a98ddca1b434403a34cefb730e354f1be8]:
+#+RESULTS[6d4c38fd412bd39afe95140f0884842dd2b09142]:
+:results:
 \begin{equation}
-\begin{bmatrix} \displaystyle{ 0} \cr \cr \displaystyle{ 0}\end{bmatrix}
+\begin{bmatrix}\displaystyle{0} \cr \cr \displaystyle{0}\end{bmatrix}
 \end{equation}
+:end:
 
 ***** Compute $\partial_0 F(F(x, y), y)$ and $\partial_1 F(F(x, y), y)$
 
@@ -6237,10 +6251,12 @@ $H$ is already that composition, so:
  ((D H) 'x 'y))
 #+end_src
 
-#+RESULTS[22a0dfcbcf713d36b0f899b6baac6dbf1ec4b56d]:
+#+RESULTS[a05f78c71d33d44a8a212479682bdd829a067b8f]:
+:results:
 \begin{equation}
-\begin{bmatrix} \displaystyle{ 4 {x}^{3} {y}^{9}} \cr \cr \displaystyle{ 9 {x}^{4} {y}^{8}}\end{bmatrix}
+\begin{bmatrix}\displaystyle{4\,{x}^{3}\,{y}^{9}} \cr \cr \displaystyle{9\,{x}^{4}\,{y}^{8}}\end{bmatrix}
 \end{equation}
+:end:
 
 ***** Compute $\partial_0 G(x, y)$ and $\partial_1 G(x, y)$
 
@@ -6249,10 +6265,12 @@ $H$ is already that composition, so:
  ((D G) 'x 'y))
 #+end_src
 
-#+RESULTS[548f447f81ffe817f686965fb5fdc1d0cbecc5f9]:
+#+RESULTS[459066205bb9b26a3738baaa5eb88506ee123770]:
+:results:
 \begin{equation}
-\begin{bmatrix} \displaystyle{ \begin{pmatrix} \displaystyle{ 2 x {y}^{3}} \cr \cr \displaystyle{ 0}\end{pmatrix}} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{ 3 {x}^{2} {y}^{2}} \cr \cr \displaystyle{ 1}\end{pmatrix}}\end{bmatrix}
+\begin{bmatrix}\displaystyle{\begin{pmatrix}\displaystyle{2\,x\,{y}^{3}} \cr \cr \displaystyle{0}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{3\,{x}^{2}\,{y}^{2}} \cr \cr \displaystyle{1}\end{pmatrix}}\end{bmatrix}
 \end{equation}
+:end:
 
 ***** Compute $DF(a, b)$, $DG(3, 5)$ and $DH(3a^2, 5b^3)$
 
@@ -6263,10 +6281,12 @@ $H$ is already that composition, so:
      ((D H) (* 3 (square 'a)) (* 5 (cube 'b)))))
 #+end_src
 
-#+RESULTS[e0ef4bfc15551f9d05baeb3970cd8dafaf02db65]:
+#+RESULTS[61a932b835a8c894cd73f0755d78807f618cae2b]:
+:results:
 \begin{equation}
-\begin{pmatrix} \displaystyle{ \begin{bmatrix} \displaystyle{ 2 a {b}^{3}} \cr \cr \displaystyle{ 3 {a}^{2} {b}^{2}}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ \begin{pmatrix} \displaystyle{ 750} \cr \cr \displaystyle{ 0}\end{pmatrix}} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{ 675} \cr \cr \displaystyle{ 1}\end{pmatrix}}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ 210937500 {a}^{6} {b}^{27}} \cr \cr \displaystyle{ 284765625 {a}^{8} {b}^{24}}\end{bmatrix}}\end{pmatrix}
+\begin{pmatrix}\displaystyle{\begin{bmatrix}\displaystyle{2\,a\,{b}^{3}} \cr \cr \displaystyle{3\,{a}^{2}\,{b}^{2}}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{\begin{pmatrix}\displaystyle{750} \cr \cr \displaystyle{0}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{675} \cr \cr \displaystyle{1}\end{pmatrix}}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{210937500\,{a}^{6}\,{b}^{27}} \cr \cr \displaystyle{284765625\,{a}^{8}\,{b}^{24}}\end{bmatrix}}\end{pmatrix}
 \end{equation}
+:end:
 
 ** Exercise 9.2: Computing Derivatives
      :PROPERTIES:
@@ -6294,29 +6314,28 @@ $H$ is already that composition, so:
    (->tex-equation* e)))
 #+end_src
 
+#+RESULTS:
+| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
+| #'ch1.ex9-2/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                                |
+| #'ch1.ex9-2/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                 |
+
 A further exercise is to try defining the functions so that they use explicit
 tuples, so you can compose them:
 
 #+begin_src clojure
-(define (F* v)
-  (let ((x (ref v 0))
-        (y (ref v 1)))
-    (* (square x) (cube y))))
+(defn F* [[x y]]
+  (* (square x) (cube y)))
 
-(define (G* v)
-  (let ((x (ref v 0))
-        (y (ref v 1)))
-    (up (F* v) y)))
+(defn G* [[_ y :as v]]
+  (up (F* v) y))
 
-(define H* (compose F* G*))
+(def H* (compose F* G*))
 #+end_src
 
 #+RESULTS:
-: #| F* |#
-:
-: #| G* |#
-:
-: #| H* |#
+| #'ch1.ex9-2/F* |
+| #'ch1.ex9-2/G* |
+| #'ch1.ex9-2/H* |
 
 to be really pro, I'd make a function that takes these as arguments and prints a
 nice formatted exercise output. Let's do the final exercise, for fun:
@@ -6328,10 +6347,12 @@ nice formatted exercise output. Let's do the final exercise, for fun:
      ((D H*) (up (* 3 (square 'a)) (* 5 (cube 'b))))))
 #+end_src
 
-#+RESULTS[1e43354828c8ce0ba497bcc6bd9e64c4f4e20419]:
+#+RESULTS[773a57c47d9567bae4db718e63c27c47ff94b5fa]:
+:results:
 \begin{equation}
-\begin{pmatrix} \displaystyle{ \begin{bmatrix} \displaystyle{ 2 a {b}^{3}} \cr \cr \displaystyle{ 3 {a}^{2} {b}^{2}}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ \begin{pmatrix} \displaystyle{ 750} \cr \cr \displaystyle{ 0}\end{pmatrix}} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{ 675} \cr \cr \displaystyle{ 1}\end{pmatrix}}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ 210937500 {a}^{6} {b}^{27}} \cr \cr \displaystyle{ 284765625 {a}^{8} {b}^{24}}\end{bmatrix}}\end{pmatrix}
+\begin{pmatrix}\displaystyle{\begin{bmatrix}\displaystyle{2\,a\,{b}^{3}} \cr \cr \displaystyle{3\,{a}^{2}\,{b}^{2}}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{\begin{pmatrix}\displaystyle{750} \cr \cr \displaystyle{0}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{675} \cr \cr \displaystyle{1}\end{pmatrix}}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{210937500\,{a}^{6}\,{b}^{27}} \cr \cr \displaystyle{284765625\,{a}^{8}\,{b}^{24}}\end{bmatrix}}\end{pmatrix}
 \end{equation}
+:end:
 
 * Org-Mode Demo
   :PROPERTIES:
@@ -6346,12 +6367,10 @@ polar coordinates to rectangular coordinates.
 
 #+name: p->r
 #+begin_src clojure :eval no
-(define (p->r local)
-  (let* ((polar-tuple (coordinate local))
-         (r (ref polar-tuple 0))
-         (phi (ref polar-tuple 1))
-         (x (* r (cos phi)))
-         (y (* r (sin phi))))
+(defn p->r [local]
+  (let [[r phi] (coordinate local)
+        x (* r (cos phi))
+        y (* r (sin phi))]
     (up x y)))
 #+end_src
 
@@ -6386,14 +6405,10 @@ And another, that gets us from spherical to rectangular.
 
 #+name: spherical->rect
 #+begin_src clojure :eval no
-(define (spherical->rect local)
-  (let* ((spherical-tuple (coordinate local))
-         (r (ref spherical-tuple 0))
-         (theta (ref spherical-tuple 1))
-         (phi (ref spherical-tuple 2)))
-    (up (* r (sin theta) (cos phi))
-        (* r (sin theta) (sin phi))
-        (* r (cos theta)))))
+(defn spherical->rect [[_ [r theta phi]]]
+  (up (* r (sin theta) (cos phi))
+      (* r (sin theta) (sin phi))
+      (* r (cos theta))))
 #+end_src
 
 #+RESULTS[f4f039075baf66ba4fe071844815bfcffe281eaa]:
@@ -6407,14 +6422,13 @@ This block will generate a LaTeX version of the code I've supplied:
  ((+ (literal-function 'c)
      (D (literal-function 'z)))
   't)
- "eq:masterpiece")
+ :label "eq:masterpiece")
 #+end_src
 
-#+RESULTS[b383d2f5d6c252ac04a5f44aaeaec678132b8449]:
-\begin{equation}
-c\left( t \right) + Dz\left( t \right)
-\label{eq:masterpiece}
-\end{equation}
+#+RESULTS[61f1eb11a14638204fb44bfc8e6b572ea379df1f]:
+:results:
+class clojure.lang.ArityException
+:end:
 
 You can even reference these with equation numbers, like Equation \eqref{eq:masterpiece} above.
 
@@ -6422,10 +6436,8 @@ You can even reference these with equation numbers, like Equation \eqref{eq:mast
 (up 1 2 't)
 #+end_src
 
-#+RESULTS:
-: #|
-: (up 1 2 t)
-: |#
+#+RESULTS[d71d450663a7baa1a74c0b54d9635bfc15f40e25]:
+| up | 1 | 2 | t |
 
 *** Equations
 
