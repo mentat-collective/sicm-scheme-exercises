@@ -213,10 +213,7 @@ Here's the function again, generated from code, with general \\(t\_1\\):
  ((total-distance 'x_1 'y_1 'x_2 'y_2) 'x_p))
 ```
 
-<div class="latex" id="orge581878">
-\begin{equation}\n\sqrt {{x_1}^{2} + 2\,x_1\,x_p + {x_p}^{2} + {y_1}^{2}} + \sqrt {{x_1}^{2} -2\,x_1\,x_2 + 2\,x_1\,x_p + {x_2}^{2} -2\,x_2\,x_p + {x_p}^{2} + {y_2}^{2}}\n\end{equation}
-
-</div>
+\begin{equation}\n\sqrt {{x\_1}^{2} + 2\,x\_1\,x\_p + {x\_p}^{2} + {y\_1}^{2}} + \sqrt {{x\_1}^{2} -2\,x\_1\,x\_2 + 2\,x\_1\,x\_p + {x\_2}^{2} -2\,x\_2\,x\_p + {x\_p}^{2} + {y\_2}^{2}}\n\end{equation}
 
 To find the \\(x\_p\\) that minimizes the total distance,
 
@@ -242,10 +239,7 @@ Here are the sum components:
  ((total-distance* 0 'y_1 'x_2 'y_2) 'x_p))
 ```
 
-<div class="results" id="orgd075247">
-\begin{equation}\n\begin{pmatrix}\displaystyle{\sqrt {{x_p}^{2} + {y_1}^{2}}} \cr \cr \displaystyle{\sqrt {{x_2}^{2} -2\,x_2\,x_p + {x_p}^{2} + {y_2}^{2}}}\end{pmatrix}\n\end{equation}
-
-</div>
+\begin{equation}\n\begin{pmatrix}\displaystyle{\sqrt {{x\_p}^{2} + {y\_1}^{2}}} \cr \cr \displaystyle{\sqrt {{x\_2}^{2} -2\,x\_2\,x\_p + {x\_p}^{2} + {y\_2}^{2}}}\end{pmatrix}\n\end{equation}
 
 Taking a derivative is easy with `scmutils`. Just wrap the function in `D`:
 
@@ -256,10 +250,7 @@ Taking a derivative is easy with `scmutils`. Just wrap the function in `D`:
    (derivative 'x_p)))
 ```
 
-<div class="results" id="org450f155">
-\begin{equation}\n\begin{pmatrix}\displaystyle{\frac{x_p}{\sqrt {{x_p}^{2} + {y_1}^{2}}}} \cr \cr \displaystyle{\frac{- x_2 + x_p}{\sqrt {{x_2}^{2} -2\,x_2\,x_p + {x_p}^{2} + {y_2}^{2}}}}\end{pmatrix}\n\end{equation}
-
-</div>
+\begin{equation}\n\begin{pmatrix}\displaystyle{\frac{x\_p}{\sqrt {{x\_p}^{2} + {y\_1}^{2}}}} \cr \cr \displaystyle{\frac{- x\_2 + x\_p}{\sqrt {{x\_2}^{2} -2\,x\_2\,x\_p + {x\_p}^{2} + {y\_2}^{2}}}}\end{pmatrix}\n\end{equation}
 
 The first component is the base of base \\(x\_p\\) of the left triangle over the total length. This ratio is equal to \\(\cos \theta\_1\\):
 
@@ -297,9 +288,7 @@ Plug this in to the derivative of the original `total-distance` function, and we
    (derivative (/ (* 'y_1 'x_2) (+ 'y_1 'y_2)))))
 ```
 
-\begin{equation}
-0
-\end{equation}
+\begin{equation}\n0\n\end{equation}
 
 If a beam of light travels in a way that minimizes total distance (and therefore time in a constant medium), then it will reflect off of a mirror with the same angle at which it arrived. The law of reflection holds.
 
@@ -398,9 +387,7 @@ The value \\(\Gamma\\) returns is called the "local tuple":
  ((Gamma q) 't))
 ```
 
-\begin{equation}
-\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{x\left(t\right)} \cr \cr \displaystyle{y\left(t\right)} \cr \cr \displaystyle{z\left(t\right)}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{Dx\left(t\right)} \cr \cr \displaystyle{Dy\left(t\right)} \cr \cr \displaystyle{Dz\left(t\right)}\end{pmatrix}}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{x\left(t\right)} \cr \cr \displaystyle{y\left(t\right)} \cr \cr \displaystyle{z\left(t\right)}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{Dx\left(t\right)} \cr \cr \displaystyle{Dy\left(t\right)} \cr \cr \displaystyle{Dz\left(t\right)}\end{pmatrix}}\end{pmatrix}\n\end{equation}
 
 This is just \\((t, q(t), (Dq)(t), ....)\\) Where \\(D\\) is the derivative. (Preview: can a component of the coordinate path depend on the others? YES, and that would impose constraints beyond the degrees of freedom you'd guess by just counting the coordinates.)
 
@@ -411,15 +398,15 @@ Composing the Lagrangian with \\(\Gamma[q]\\) gives you a function that computes
  ((compose (L-free-particle 'm) (Gamma q)) 't))
 ```
 
-\begin{equation}
-\frac{1}{2}\,m\,{\left(Dx\left(t\right)\right)}^{2} + \frac{1}{2}\,m\,{\left(Dy\left(t\right)\right)}^{2} + \frac{1}{2}\,m\,{\left(Dz\left(t\right)\right)}^{2}
-\end{equation}
+\begin{equation}\n\frac{1}{2}\,m\,{\left(Dx\left(t\right)\right)}^{2} + \frac{1}{2}\,m\,{\left(Dy\left(t\right)\right)}^{2} + \frac{1}{2}\,m\,{\left(Dz\left(t\right)\right)}^{2}\n\end{equation}
 
 This particular formula is written in terms of \\(x, y, z\\) coordinates, but that only came from the definition of \\(q\\). As we'll see later, you could write a coordinate transformation from some other totally different style of coordinates (called "generalized coordinates") and the Lagrangian would look different, but return the same value.
 
 This function calculates the action \\(S[q](t\_1, t\_2)\\):
 
 ```clojure
+(ns-unmap *ns* 'Lagrangian-action)
+
 (defn Lagrangian-action [L q t1 t2]
   (definite-integral (compose L (Gamma q)) t1 t2))
 ```
@@ -525,14 +512,18 @@ Next, define a function that calculates the Lagrangian for a free particle, like
                          t2))))
 ```
 
-Consider some variation like \\(v(t) = (\sin(t), \cos(t), t^2)\\). The action of the path with this small wiggle (processed through `make-eta` to pin its endpoints) is larger (top entry) than the action of the non-varied path (bottom entry), as expected:
+And a test path:
 
 ```clojure
 (defn test-path [t]
   (up (+ (* 4 t) 7)
       (+ (* 3 t) 5)
       (+ (* 2 t) 1)))
+```
 
+Consider some variation like \\(v(t) = (\sin(t), \cos(t), t^2)\\). The action of the path with this small wiggle (processed through `make-eta` to pin its endpoints) is larger (top entry) than the action of the non-varied path (bottom entry), as expected:
+
+```clojure
 (let [action-fn (varied-free-particle-action 3.0 test-path
                                              (up sin cos square)
                                              0.0 10.0)]
@@ -541,9 +532,7 @@ Consider some variation like \\(v(t) = (\sin(t), \cos(t), t^2)\\). The action of
        (action-fn 0))))
 ```
 
-\begin{equation}
-\begin{pmatrix}\displaystyle{436.2912142857117} \cr \cr \displaystyle{435.0}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{436.2912142857117} \cr \cr \displaystyle{435.0}\end{pmatrix}\n\end{equation}
 
 What value of \\(\epsilon\\) minimizes the action for the test path?
 
@@ -558,9 +547,7 @@ We can search over values of \\(\epsilon\\) from \\(-2.0\\) to \\(1.0\\) using t
    (:result (minimize action-fn -2.0 1.0))))
 ```
 
-\begin{equation}
-5.155325078655824E-8
-\end{equation}
+\begin{equation}\n5.155325078655824E-8\n\end{equation}
 
 The result shows that the minimum action occurs at \\(\epsilon = 0\\), up to numerical precision.
 
@@ -636,7 +623,8 @@ The exercise states:
 The functions the authors provide in the exercise define a window, and then a version of `parametric-path-action` that updates the graph as it minimizes:
 
 ```clojure
-(define win2 (frame 0.0 :pi/2 0.0 1.2))
+(comment
+  (define win2 (frame 0.0 :pi-over-2 0.0 1.2)))
 
 (defn L-harmonic [m k]
   (fn [local]
@@ -645,14 +633,15 @@ The functions the authors provide in the exercise define a window, and then a ve
       (- (* (/ 1 2) m (square v))
          (* (/ 1 2) k (square q))))))
 
-(define ((parametric-path-action Lagrangian t0 q0 t1 q1)
-         intermediate-qs)
-  (let ((path (make-path t0 q0 t1 q1 intermediate-qs)))
-    ;; display path
-    (graphics-clear win2)
-    (plot-function win2 path t0 t1 (/ (- t1 t0) 100))
-    ;; compute action
-    (Lagrangian-action Lagrangian path t0 t1)))
+(comment
+  (define ((parametric-path-action Lagrangian t0 q0 t1 q1)
+           intermediate-qs)
+    (let ((path (make-path t0 q0 t1 q1 intermediate-qs)))
+      ;; display path
+      (graphics-clear win2)
+      (plot-function win2 path t0 t1 (/ (- t1 t0) 100))
+      ;; compute action
+      (Lagrangian-action Lagrangian path t0 t1))))
 ```
 
 Run the minimization with the same parameters as in the previous section:
@@ -710,8 +699,6 @@ Here's the implementation of the modification described earlier:
 ```
 
 You might try a similar trick by modifying the first and last entries of `intermediate-qs` instead of appending a point, but I suspect that the optimizer would be able to figure out how to undo your offset. (Try this as an exercise.)
-
-Next, a new version of `find-path` that passes the offsets through to the new `parametric-path-action*`:
 
 ```clojure
 (defn find-path* [win]
@@ -1017,9 +1004,7 @@ Equation \eqref{eq:var-prod} states the product rule for variations. Here it is 
    ((- left right) 't)))
 ```
 
-\begin{equation}
-0
-\end{equation}
+\begin{equation}\n0\n\end{equation}
 
 ### Variation Sum Rule<a id="sec-9-2-2"></a>
 
@@ -1036,9 +1021,7 @@ The sum rule is similar. Here's the Scheme implementation of equation \eqref{eq:
    ((- left right) 't)))
 ```
 
-\begin{equation}
-0
-\end{equation}
+\begin{equation}\n0\n\end{equation}
 
 ### Variation Scalar Multiplication<a id="sec-9-2-3"></a>
 
@@ -1053,9 +1036,7 @@ Here's equation \eqref{eq:var-scalar} in code. The sides are equal, so their dif
    ((- left right) 't)))
 ```
 
-\begin{equation}
-0
-\end{equation}
+\begin{equation}\n0\n\end{equation}
 
 ### Chain Rule for Variations<a id="sec-9-2-4"></a>
 
@@ -1083,9 +1064,7 @@ Here's a check that the two sides of equation \eqref{eq:var-chain} are equal:
    (((- left right) q) 't)))
 ```
 
-\begin{equation}
-0
-\end{equation}
+\begin{equation}\n0\n\end{equation}
 
 ### \\(\delta\_\eta\\) commutes with \\(D\\)<a id="sec-9-2-5"></a>
 
@@ -1101,9 +1080,7 @@ Our final test. Here's equation \eqref{eq:var-commute} in code, showing that the
    ((- left right) 't)))
 ```
 
-\begin{equation}
-0
-\end{equation}
+\begin{equation}\n0\n\end{equation}
 
 # Exercise 1.9: Lagrange's equations<a id="sec-10"></a>
 
@@ -1329,9 +1306,7 @@ Write the Lagrange equations, given \\(r = a\\) and \\(\omega = n\\):
    ((eqfn (q 'a 'n)) 't)))
 ```
 
-\begin{equation}
-\begin{bmatrix}\displaystyle{\frac{- {a}^{3}\,\mathsf{m1}\,\mathsf{m2}\,{n}^{2} + G\,{\mathsf{m1}}^{2}\,\mathsf{m2} + G\,\mathsf{m1}\,{\mathsf{m2}}^{2}}{{a}^{2}\,\mathsf{m1} + {a}^{2}\,\mathsf{m2}}}&\displaystyle{0}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{\frac{- {a}^{3}\,\mathsf{m1}\,\mathsf{m2}\,{n}^{2} + G\,{\mathsf{m1}}^{2}\,\mathsf{m2} + G\,\mathsf{m1}\,{\mathsf{m2}}^{2}}{{a}^{2}\,\mathsf{m1} + {a}^{2}\,\mathsf{m2}}} \cr \cr \displaystyle{0}\end{bmatrix}\n\end{equation}
 
 These two entries are *residuals*, equal to zero. Stare at the top residual and you might notice that you can can factor out:
 
@@ -1351,9 +1326,7 @@ Manually factor these out:
          (reduced-mass 'm1 'm2)))))
 ```
 
-\begin{equation}
-\begin{bmatrix}\displaystyle{- {a}^{3}\,{n}^{2} + G\,\mathsf{m1} + G\,\mathsf{m2}}&\displaystyle{0}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{- {a}^{3}\,{n}^{2} + G\,\mathsf{m1} + G\,\mathsf{m2}} \cr \cr \displaystyle{0}\end{bmatrix}\n\end{equation}
 
 And, boom, with some cleanup, we see Kepler's third law:
 
@@ -1416,9 +1389,7 @@ And the steps that lead us to Lagrange's equations:
  (literal-function 'theta))
 ```
 
-\begin{equation}
-\begin{pmatrix}\displaystyle{- g\,l\,m\,\sin\left(\theta\left(t\right)\right)} \cr \cr \displaystyle{{l}^{2}\,m\,D\theta\left(t\right)} \cr \cr \displaystyle{{l}^{2}\,m\,{D}^{2}\theta\left(t\right)} \cr \cr \displaystyle{g\,l\,m\,\sin\left(\theta\left(t\right)\right) + {l}^{2}\,m\,{D}^{2}\theta\left(t\right)}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{- g\,l\,m\,\sin\left(\theta\left(t\right)\right)} \cr \cr \displaystyle{{l}^{2}\,m\,D\theta\left(t\right)} \cr \cr \displaystyle{{l}^{2}\,m\,{D}^{2}\theta\left(t\right)} \cr \cr \displaystyle{g\,l\,m\,\sin\left(\theta\left(t\right)\right) + {l}^{2}\,m\,{D}^{2}\theta\left(t\right)}\end{pmatrix}\n\end{equation}
 
 The final entry is the Lagrange equation, equal to \\(0\\). Divide out the shared factors of \\(m\\) and \\(l\\):
 
@@ -1431,9 +1402,7 @@ The final entry is the Lagrange equation, equal to \\(0\\). Divide out the share
     't)))
 ```
 
-\begin{equation}
-g\,\sin\left(\theta\left(t\right)\right) + l\,{D}^{2}\theta\left(t\right)
-\end{equation}
+\begin{equation}\ng\,\sin\left(\theta\left(t\right)\right) + l\,{D}^{2}\theta\left(t\right)\n\end{equation}
 
 This is the [familiar equation of motion](https://en.wikipedia.org/wiki/Pendulum_(mathematics)) for a planar pendum.
 
@@ -1481,9 +1450,7 @@ Our helpful function generates the Lagrange equations, along with each intermedi
      (literal-function 'y)))
 ```
 
-\begin{equation}
-\begin{pmatrix}\displaystyle{\begin{bmatrix}\displaystyle{-2\,x\left(t\right)\,y\left(t\right) - x\left(t\right)}&\displaystyle{- {\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2} - y\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{m\,Dx\left(t\right)}&\displaystyle{m\,Dy\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{m\,{D}^{2}x\left(t\right)}&\displaystyle{m\,{D}^{2}y\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{m\,{D}^{2}x\left(t\right) + 2\,x\left(t\right)\,y\left(t\right) + x\left(t\right)}&\displaystyle{m\,{D}^{2}y\left(t\right) + {\left(x\left(t\right)\right)}^{2} - {\left(y\left(t\right)\right)}^{2} + y\left(t\right)}\end{bmatrix}}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{\begin{bmatrix}\displaystyle{-2\,x\left(t\right)\,y\left(t\right) - x\left(t\right)} \cr \cr \displaystyle{- {\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2} - y\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{m\,Dx\left(t\right)} \cr \cr \displaystyle{m\,Dy\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{m\,{D}^{2}x\left(t\right)} \cr \cr \displaystyle{m\,{D}^{2}y\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{m\,{D}^{2}x\left(t\right) + 2\,x\left(t\right)\,y\left(t\right) + x\left(t\right)} \cr \cr \displaystyle{m\,{D}^{2}y\left(t\right) + {\left(x\left(t\right)\right)}^{2} - {\left(y\left(t\right)\right)}^{2} + y\left(t\right)}\end{bmatrix}}\end{pmatrix}\n\end{equation}
 
 The final down-tuple gives us the Lagrange equations that \\(x\\) and \\(y\\) (respectively) must satisfy.
 
@@ -1517,9 +1484,7 @@ Here is the full derivation:
      (literal-function 'phi)))
 ```
 
-\begin{equation}
-\begin{pmatrix}\displaystyle{\begin{bmatrix}\displaystyle{{R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right)}&\displaystyle{0}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{{R}^{2}\,m\,D\theta\left(t\right)}&\displaystyle{{R}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,D\phi\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{{R}^{2}\,m\,{D}^{2}\theta\left(t\right)}&\displaystyle{2\,{R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right) + {R}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{- {R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right) + {R}^{2}\,m\,{D}^{2}\theta\left(t\right)}&\displaystyle{2\,{R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right) + {R}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)}\end{bmatrix}}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{\begin{bmatrix}\displaystyle{{R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right)} \cr \cr \displaystyle{0}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{{R}^{2}\,m\,D\theta\left(t\right)} \cr \cr \displaystyle{{R}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,D\phi\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{{R}^{2}\,m\,{D}^{2}\theta\left(t\right)} \cr \cr \displaystyle{2\,{R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right) + {R}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{- {R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right) + {R}^{2}\,m\,{D}^{2}\theta\left(t\right)} \cr \cr \displaystyle{2\,{R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right) + {R}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)}\end{bmatrix}}\end{pmatrix}\n\end{equation}
 
 The final Lagrange residuals have a few terms that we can divide out. Scheme doesn't know that these are meant to be residuals, so it won't cancel out factors that we can see by eye are missing.
 
@@ -1538,9 +1503,7 @@ Isolate the Lagrange equations from the derivation and manually simplify each eq
     't)))
 ```
 
-\begin{equation}
-\begin{pmatrix}\displaystyle{- \sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right) + {D}^{2}\theta\left(t\right)} \cr \cr \displaystyle{2\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right) + \sin\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{- \sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right) + {D}^{2}\theta\left(t\right)} \cr \cr \displaystyle{2\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right) + \sin\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)}\end{pmatrix}\n\end{equation}
 
 These are the Lagrange equations for \\(\theta\\) and \\(\phi\\), respectively.
 
@@ -1594,9 +1557,7 @@ Use the new function to generate the Lagrange equations. This call includes a fa
       (literal-function 'x)) 't)))
 ```
 
-\begin{equation}
-k\,x\left(t\right) + m\,{D}^{2}x\left(t\right)
-\end{equation}
+\begin{equation}\nk\,x\left(t\right) + m\,{D}^{2}x\left(t\right)\n\end{equation}
 
 This looks like the equation of motion for a [classical harmonic oscillator](https://en.wikipedia.org/wiki/Harmonic_oscillator). Again, I leave this problem with no new physical intuition for what is going on here, or what type of system would need an acceleration dependent Lagrangian. I suspect that we could build a harmonic oscillator for Lagrange equations of any order by properly tuning the Lagrangian. But I don't know why this would be helpful.
 
@@ -1647,9 +1608,7 @@ Generate the Lagrange equations from part b once more to check that we get the s
       (literal-function 'x)) 't)))
 ```
 
-\begin{equation}
-k\,x\left(t\right) + m\,{D}^{2}x\left(t\right)
-\end{equation}
+\begin{equation}\nk\,x\left(t\right) + m\,{D}^{2}x\left(t\right)\n\end{equation}
 
 There it is again, the harmonic oscillator. I don't have any intuition for higher order Lagrangians, so I can't cook up any further examples to test the implementation.
 
@@ -1700,9 +1659,7 @@ Here are the rectangular equations of motion:
   't))
 ```
 
-\begin{equation}
-\begin{bmatrix}\displaystyle{\frac{m\,{D}^{2}x\left(t\right)\,\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}} + x\left(t\right)\,DU\left(\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}\right)}{\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}}} \cr \cr \displaystyle{\frac{m\,{D}^{2}y\left(t\right)\,\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}} + y\left(t\right)\,DU\left(\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}\right)}{\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}}}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{\frac{m\,{D}^{2}x\left(t\right)\,\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}} + x\left(t\right)\,DU\left(\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}\right)}{\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}}} \cr \cr \displaystyle{\frac{m\,{D}^{2}y\left(t\right)\,\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}} + y\left(t\right)\,DU\left(\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}\right)}{\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}}}\end{bmatrix}\n\end{equation}
 
 And the polar Lagrange equations:
 
@@ -1715,9 +1672,7 @@ And the polar Lagrange equations:
    't))
 ```
 
-\begin{equation}
-\begin{bmatrix}\displaystyle{- m\,{\left(D\phi\left(t\right)\right)}^{2}\,r\left(t\right) + m\,{D}^{2}r\left(t\right) + DU\left(r\left(t\right)\right)} \cr \cr \displaystyle{2\,m\,D\phi\left(t\right)\,r\left(t\right)\,Dr\left(t\right) + m\,{D}^{2}\phi\left(t\right)\,{\left(r\left(t\right)\right)}^{2}}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{- m\,{\left(D\phi\left(t\right)\right)}^{2}\,r\left(t\right) + m\,{D}^{2}r\left(t\right) + DU\left(r\left(t\right)\right)} \cr \cr \displaystyle{2\,m\,D\phi\left(t\right)\,r\left(t\right)\,Dr\left(t\right) + m\,{D}^{2}\phi\left(t\right)\,{\left(r\left(t\right)\right)}^{2}}\end{bmatrix}\n\end{equation}
 
 Once again, our goal is to show that, if you can write down coordinate transformations for the coordinates, velocities and accelerations and substitute them in to one set of Lagrange equations, the other will appear.
 
@@ -1744,6 +1699,8 @@ The rectangular equations of motion have second derivatives, so we need to keep 
 Write the coordinate transformation for polar coordinates to rectangular in Scheme:
 
 ```clojure
+(ns-unmap *ns* 'p->r)
+
 (defn p->r [[_ [r phi]]]
   (let [x (* r (cos phi))
         y (* r (sin phi))]
@@ -1752,24 +1709,12 @@ Write the coordinate transformation for polar coordinates to rectangular in Sche
 
 Now use `F->C`, first described on page 46. This is a function that takes a coordinate transformation like `p->r` and returns a *new* function that can convert an entire local tuple from one coordinate system to another; the \\(C\\) discussed above.
 
-The version that the book presents on page 46 can only generate a velocity transformation given a coordinate transformation, but `scmutils` contains a more general version that will convert as many path elements as you pass to it:
-
-```clojure
-(defn F->C* [F]
-  (fn [local]
-    (let [n (count local)
-          f-bar (fn [q-prime]
-                  (let [q (compose F (Gamma q-prime))]
-                    (Gamma q n)))]
-      ((Gamma-bar f-bar) local))))
-```
+The version that the book presents on page 46 can only generate a velocity transformation given a coordinate transformation, but `scmutils` contains a more general version that will convert as many path elements as you pass to it.
 
 Here are the rectangular positions, velocities and accelerations, written in polar coordinates:
 
-    #'ch1.ex1-14/F->C*
-
 ```clojure
-(let [convert-path (F->C* p->r)
+(let [convert-path (F->C p->r)
       polar-path (up 't
                      (up 'r 'phi)
                      (up 'rdot 'phidot)
@@ -1778,9 +1723,7 @@ Here are the rectangular positions, velocities and accelerations, written in pol
    (convert-path polar-path)))
 ```
 
-\begin{equation}
-\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{r\,\cos\left(\phi\right)} \cr \cr \displaystyle{r\,\sin\left(\phi\right)}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{- \dot {\phi}\,r\,\sin\left(\phi\right) + \dot r\,\cos\left(\phi\right)} \cr \cr \displaystyle{\dot {\phi}\,r\,\cos\left(\phi\right) + \dot r\,\sin\left(\phi\right)}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{- {\dot {\phi}}^{2}\,r\,\cos\left(\phi\right) -2\,\dot {\phi}\,\dot r\,\sin\left(\phi\right) - \ddot {\phi}\,r\,\sin\left(\phi\right) + \ddot r\,\cos\left(\phi\right)} \cr \cr \displaystyle{- {\dot {\phi}}^{2}\,r\,\sin\left(\phi\right) + 2\,\dot {\phi}\,\dot r\,\cos\left(\phi\right) + \ddot {\phi}\,r\,\cos\left(\phi\right) + \ddot r\,\sin\left(\phi\right)}\end{pmatrix}}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{r\,\cos\left(\phi\right)} \cr \cr \displaystyle{r\,\sin\left(\phi\right)}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{- \dot {\phi}\,r\,\sin\left(\phi\right) + \dot r\,\cos\left(\phi\right)} \cr \cr \displaystyle{\dot {\phi}\,r\,\cos\left(\phi\right) + \dot r\,\sin\left(\phi\right)}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{- {\dot {\phi}}^{2}\,r\,\cos\left(\phi\right) -2\,\dot {\phi}\,\dot r\,\sin\left(\phi\right) - \ddot {\phi}\,r\,\sin\left(\phi\right) + \ddot r\,\cos\left(\phi\right)} \cr \cr \displaystyle{- {\dot {\phi}}^{2}\,r\,\sin\left(\phi\right) + 2\,\dot {\phi}\,\dot r\,\cos\left(\phi\right) + \ddot {\phi}\,r\,\cos\left(\phi\right) + \ddot r\,\sin\left(\phi\right)}\end{pmatrix}}\end{pmatrix}\n\end{equation}
 
 Ordinarily, it would be too heartbreaking to substitute these in to the rectangular equations of motion. The fact that we have Scheme on our side gives me the strength to proceed.
 
@@ -1808,14 +1751,12 @@ Verify that these are, in fact, the rectangular equations of motion by passing i
    (rect-equations rect-path)))
 ```
 
-\begin{equation}
-\begin{pmatrix}\displaystyle{\frac{m\,\ddot x\,\sqrt {{x}^{2} + {y}^{2}} + x\,DU\left(\sqrt {{x}^{2} + {y}^{2}}\right)}{\sqrt {{x}^{2} + {y}^{2}}}} \cr \cr \displaystyle{\frac{m\,\ddot y\,\sqrt {{x}^{2} + {y}^{2}} + y\,DU\left(\sqrt {{x}^{2} + {y}^{2}}\right)}{\sqrt {{x}^{2} + {y}^{2}}}}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{\frac{m\,\ddot x\,\sqrt {{x}^{2} + {y}^{2}} + x\,DU\left(\sqrt {{x}^{2} + {y}^{2}}\right)}{\sqrt {{x}^{2} + {y}^{2}}}} \cr \cr \displaystyle{\frac{m\,\ddot y\,\sqrt {{x}^{2} + {y}^{2}} + y\,DU\left(\sqrt {{x}^{2} + {y}^{2}}\right)}{\sqrt {{x}^{2} + {y}^{2}}}}\end{pmatrix}\n\end{equation}
 
 Now use the `p->r` conversion to substitute each of the rectangular values above with their associated polar values:
 
 ```clojure
-(let [convert-path (F->C* p->r)
+(let [convert-path (F->C p->r)
       polar-path (up 't
                      (up 'r 'phi)
                      (up 'rdot 'phidot)
@@ -1825,9 +1766,7 @@ Now use the `p->r` conversion to substitute each of the rectangular values above
    (rect-equations local)))
 ```
 
-\begin{equation}
-\begin{pmatrix}\displaystyle{- m\,{\dot {\phi}}^{2}\,r\,\cos\left(\phi\right) -2\,m\,\dot {\phi}\,\dot r\,\sin\left(\phi\right) - m\,\ddot {\phi}\,r\,\sin\left(\phi\right) + m\,\ddot r\,\cos\left(\phi\right) + \cos\left(\phi\right)\,DU\left(r\right)} \cr \cr \displaystyle{- m\,{\dot {\phi}}^{2}\,r\,\sin\left(\phi\right) + 2\,m\,\dot {\phi}\,\dot r\,\cos\left(\phi\right) + m\,\ddot {\phi}\,r\,\cos\left(\phi\right) + m\,\ddot r\,\sin\left(\phi\right) + \sin\left(\phi\right)\,DU\left(r\right)}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{- m\,{\dot {\phi}}^{2}\,r\,\cos\left(\phi\right) -2\,m\,\dot {\phi}\,\dot r\,\sin\left(\phi\right) - m\,\ddot {\phi}\,r\,\sin\left(\phi\right) + m\,\ddot r\,\cos\left(\phi\right) + \cos\left(\phi\right)\,DU\left(r\right)} \cr \cr \displaystyle{- m\,{\dot {\phi}}^{2}\,r\,\sin\left(\phi\right) + 2\,m\,\dot {\phi}\,\dot r\,\cos\left(\phi\right) + m\,\ddot {\phi}\,r\,\cos\left(\phi\right) + m\,\ddot r\,\sin\left(\phi\right) + \sin\left(\phi\right)\,DU\left(r\right)}\end{pmatrix}\n\end{equation}
 
 Oh no. This looks quite different from the polar Lagrange equations above. What is the problem?
 
@@ -1856,9 +1795,7 @@ A similar trick recovers the second equation,given an extra factor of \\(r\\):
           (* 'r (sin 'phi) (ref eq 0))))))
 ```
 
-\begin{equation}
-\begin{pmatrix}\displaystyle{- m\,{\dot {\phi}}^{2}\,r + m\,\ddot r + DU\left(r\right)} \cr \cr \displaystyle{2\,m\,\dot {\phi}\,r\,\dot r + m\,\ddot {\phi}\,{r}^{2}}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{- m\,{\dot {\phi}}^{2}\,r + m\,\ddot r + DU\left(r\right)} \cr \cr \displaystyle{2\,m\,\dot {\phi}\,r\,\dot r + m\,\ddot {\phi}\,{r}^{2}}\end{pmatrix}\n\end{equation}
 
 This was a powerful lesson. We're allowed to take a linear combination here because each equation is a residual, equal to zero. \\(a0 + b0 = 0\\) for any \\(a\\) and \\(b\\), so any combination we generate is still a valid residual.
 
@@ -1976,9 +1913,7 @@ When we apply \\(C\\) to the primed local tuple, do we get the transformed tuple
  ((compose C (Gamma qprime)) 't))
 ```
 
-\begin{equation}
-\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, q^\prime\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, q^\prime\left(t\right)\right)\,Dq^\prime\left(t\right) + \partial\_0F\left(t, q^\prime\left(t\right)\right)}\end{pmatrix}\n\end{equation}
 
 This looks correct. We can also transform the path before passing it to \\(\Gamma\\):
 
@@ -1997,9 +1932,7 @@ Subtract the two forms to see that they're equivalent:
   't))
 ```
 
-\begin{equation}
-\begin{pmatrix}\displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{0}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{0}\end{pmatrix}\n\end{equation}
 
 Now that we know \\(C\\) is correct we can define \\(q\\), the unprimed coordinate path function, and `Lprime`:
 
@@ -2044,13 +1977,10 @@ Example the value of \\(\partial\_2C\\) using our Scheme utilities:
 ```clojure
 (->tex-equation
  (((partial 2) C) (up 't 'xprime 'vprime))
- #_"eq:p2c"
- )
+ :label "eq:p2c")
 ```
 
-\begin{equation}
-\begin{pmatrix}\displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{xprime}\right)}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\label{eq:p2c}\n\begin{pmatrix}\displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{\partial\_1F\left(t, x^\prime\right)}\end{pmatrix}\n\end{equation}
 
 The first two components are 0, leaving us with:
 
@@ -2102,9 +2032,7 @@ Calculate \\(\partial\_1C\\) using our Scheme utilities:
  (((partial 1) C) (up 't 'xprime 'vprime)))
 ```
 
-\begin{equation}
-\begin{pmatrix}\displaystyle{0} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{xprime}\right)} \cr \cr \displaystyle{\mathsf{vprime}\,\partial\_1\left(\partial\_1F\right)\left(t, \mathsf{xprime}\right) + \partial\_1\left(\partial\_0F\right)\left(t, \mathsf{xprime}\right)}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{0} \cr \cr \displaystyle{\partial\_1F\left(t, x^\prime\right)} \cr \cr \displaystyle{v^\prime\,{\partial\_1}^{2}F\left(t, x^\prime\right) + \left(\partial\_0\,\partial\_1\right)\left(F\right)\left(t, x^\prime\right)}\end{pmatrix}\n\end{equation}
 
 Expand the chain rule out and remove 0 terms, as before:
 
@@ -2154,19 +2082,16 @@ First, consider \\(\partial\_1 L' \circ \Gamma[q']\\):
   't))
 ```
 
-\begin{equation}
-D\mathsf{qprime}\left(t\right)\,\partial\_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial\_1\left(\partial\_1F\right)\left(t, \mathsf{qprime}\left(t\right)\right) + \partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial\_1L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial\_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial\_1\left(\partial\_0F\right)\left(t, \mathsf{qprime}\left(t\right)\right)
-\end{equation}
+\begin{equation}\nDq^\prime\left(t\right)\,\partial\_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, q^\prime\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, q^\prime\left(t\right)\right)\,Dq^\prime\left(t\right) + \partial\_0F\left(t, q^\prime\left(t\right)\right)}\end{pmatrix}\right)\,{\partial\_1}^{2}F\left(t, q^\prime\left(t\right)\right) + \partial\_1F\left(t, q^\prime\left(t\right)\right)\,\partial\_1L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, q^\prime\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, q^\prime\left(t\right)\right)\,Dq^\prime\left(t\right) + \partial\_0F\left(t, q^\prime\left(t\right)\right)}\end{pmatrix}\right) + \partial\_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, q^\prime\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, q^\prime\left(t\right)\right)\,Dq^\prime\left(t\right) + \partial\_0F\left(t, q^\prime\left(t\right)\right)}\end{pmatrix}\right)\,\left(\partial\_0\,\partial\_1\right)\left(F\right)\left(t, q^\prime\left(t\right)\right)\n\end{equation}
 
 This is completely insane, and already unhelpful. The argument to \\(L\\), we know, is actually \\(\Gamma[q]\\). Make a function that will replace the tuple with that reference:
 
 ```clojure
 (defn ->eq [expr]
-  (println
-   (clojure.string/replace
-    (->tex-equation* expr)
-    (->TeX ((Gamma q) 't))
-    "\\circ \\Gamma[q]")))
+  (string/replace
+   (->tex-equation expr)
+   (->TeX (simplify ((Gamma q) 't)))
+   "\\Gamma[q]\\left(t\\right)"))
 ```
 
 Try again:
@@ -2177,13 +2102,7 @@ Try again:
   't))
 ```
 
-\begin{equation}
-D\mathsf{qprime}\left(t\right)\,\partial\_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial\_1\left(\partial\_1F\right)\left(t, \mathsf{qprime}\left(t\right)\right) + \partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial\_1L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial\_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial\_1\left(\partial\_0F\right)\left(t, \mathsf{qprime}\left(t\right)\right)
-\end{equation}
-
-\begin{equation}
-D{q}^\prime\left( t \right) {\partial}\_{2}L\left( \circ \Gamma[q] \right) {{\partial}\_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}L\left( \circ \Gamma[q] \right) + {\partial}\_{2}L\left( \circ \Gamma[q] \right) \left( {\partial}\_{0} {\partial}\_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
-\end{equation}
+\begin{equation}\nDq^\prime\left(t\right)\,\partial\_2L\left(\Gamma[q]\left(t\right)\right)\,{\partial\_1}^{2}F\left(t, q^\prime\left(t\right)\right) + \partial\_1F\left(t, q^\prime\left(t\right)\right)\,\partial\_1L\left(\Gamma[q]\left(t\right)\right) + \partial\_2L\left(\Gamma[q]\left(t\right)\right)\,\left(\partial\_0\,\partial\_1\right)\left(F\right)\left(t, q^\prime\left(t\right)\right)\n\end{equation}
 
 Ignore the parentheses around \\(\circ \Gamma[q]\\) and this looks better.
 
