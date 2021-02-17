@@ -3873,9 +3873,6 @@ Goal is to assume that Newtonian mechanics' approach to constraints, shown [[htt
 I think, is correct, and then show that the resulting equations of motion let us
 treat the distance coordinate $c$ as a constant.
 
-Takes in any number of up tuples and zips them into a new list of up-tuples by
-taking each element.
-
 *** Multiple Particle API
 
 Many exercises have been dealing with multiple particles so far. Let's introduce
