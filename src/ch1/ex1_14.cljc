@@ -43,55 +43,33 @@
 
 
 (ns ch1.ex1-14
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 
 
 ;; #+RESULTS:
-;; : ;Loading "src/ch1/utils.cljc"...
-;; : ;  Loading "src/ch1/exdisplay.cljc"... done
-;; : ;... done
-;; : #| check-f |#
 
 ;; Here are the two Lagrangians from the book:
 
 
-(define ((L-central-rectangular m U) local)
-  (let ((q (coordinate local))
-        (v (velocity local)))
-    (- (* 1/2 m (square v))
+(defn L-central-rectangular [m U]
+  (fn [[_ q v]]
+    (- (* (/ 1 2) m (square v))
        (U (sqrt (square q))))))
 
-(define ((L-central-polar m U) local)
-  (let ((q (coordinate local))
-        (qdot (velocity local)))
-    (let ((r (ref q 0)) (phi (ref q 1))
-          (rdot (ref qdot 0)) (phidot (ref qdot 1)))
-      (- (* 1/2 m
-            (+ (square rdot)
-               (square (* r phidot))) )
-         (U r)))))
+(defn L-central-polar [m U]
+  (fn [[_ [r phi] [rdot phidot]]]
+    (- (* (/ 1 2) m
+          (+ (square rdot)
+             (square (* r phidot))) )
+       (U r))))
 
 
 ;; #+RESULTS:
-;; : #| L-central-rectangular |#
-;; :
-;; : #| L-central-polar |#
+;; | #'ch1.ex1-14/L-central-rectangular |
+;; | #'ch1.ex1-14/L-central-polar       |
 
 ;; Here are the rectangular equations of motion:
 
@@ -101,16 +79,13 @@
     (L-central-rectangular 'm (literal-function 'U)))
    (up (literal-function 'x)
        (literal-function 'y)))
-  't)
- "eq:rect-equations")
+  't))
 
 
-;; #+RESULTS[3d6b30672d7d2fe77035ee8a5ae5b0f3046f2f90]:
-;; \begin{equation}
-;; \begin{bmatrix} \displaystyle{ {{m {D}^{2}x\left( t \right) \sqrt{{\left( x\left( t \right) \right)}^{2} + {\left( y\left( t \right) \right)}^{2}} + x\left( t \right) DU\left( \sqrt{{\left( x\left( t \right) \right)}^{2} + {\left( y\left( t \right) \right)}^{2}} \right)}\over {\sqrt{{\left( x\left( t \right) \right)}^{2} + {\left( y\left( t \right) \right)}^{2}}}}} \cr \cr \displaystyle{ {{m \sqrt{{\left( x\left( t \right) \right)}^{2} + {\left( y\left( t \right) \right)}^{2}} {D}^{2}y\left( t \right) + y\left( t \right) DU\left( \sqrt{{\left( x\left( t \right) \right)}^{2} + {\left( y\left( t \right) \right)}^{2}} \right)}\over {\sqrt{{\left( x\left( t \right) \right)}^{2} + {\left( y\left( t \right) \right)}^{2}}}}}\end{bmatrix}
-;; \label{eq:rect-equations}
-;; \end{equation}
-
+;; #+RESULTS[f55b703ae21659a19cb902d3284e69c9431ca993]:
+;; :results:
+;; \begin{equation}\n\begin{bmatrix}\displaystyle{\frac{m\,{D}^{2}x\left(t\right)\,\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}} + x\left(t\right)\,DU\left(\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}\right)}{\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}}} \cr \cr \displaystyle{\frac{m\,{D}^{2}y\left(t\right)\,\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}} + y\left(t\right)\,DU\left(\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}\right)}{\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}}}\end{bmatrix}\n\end{equation}
+;; :end:
 
 ;; And the polar Lagrange equations:
 
@@ -123,10 +98,10 @@
    't))
 
 
-;; #+RESULTS[557893e62f632f0900e9ece883c176eaf5bcfd05]:
-;; \begin{equation}
-;; \begin{bmatrix} \displaystyle{  - m r\left( t \right) {\left( D\phi\left( t \right) \right)}^{2} + m {D}^{2}r\left( t \right) + DU\left( r\left( t \right) \right)} \cr \cr \displaystyle{ m {D}^{2}\phi\left( t \right) {\left( r\left( t \right) \right)}^{2} + 2 m r\left( t \right) D\phi\left( t \right) Dr\left( t \right)}\end{bmatrix}
-;; \end{equation}
+;; #+RESULTS[a620988f83689f15e829f5331507a4b13dc1170d]:
+;; :results:
+;; \begin{equation}\n\begin{bmatrix}\displaystyle{- m\,{\left(D\phi\left(t\right)\right)}^{2}\,r\left(t\right) + m\,{D}^{2}r\left(t\right) + DU\left(r\left(t\right)\right)} \cr \cr \displaystyle{2\,m\,D\phi\left(t\right)\,r\left(t\right)\,Dr\left(t\right) + m\,{D}^{2}\phi\left(t\right)\,{\left(r\left(t\right)\right)}^{2}}\end{bmatrix}\n\end{equation}
+;; :end:
 
 ;; Once again, our goal is to show that, if you can write down coordinate
 ;; transformations for the coordinates, velocities and accelerations and substitute
@@ -161,17 +136,16 @@
 ;; Scheme:
 
 
-(define (p->r local)
-  (let* ((polar-tuple (coordinate local))
-         (r (ref polar-tuple 0))
-         (phi (ref polar-tuple 1))
-         (x (* r (cos phi)))
-         (y (* r (sin phi))))
+(ns-unmap *ns* 'p->r)
+
+(defn p->r [[_ [r phi]]]
+  (let [x (* r (cos phi))
+        y (* r (sin phi))]
     (up x y)))
 
 
 ;; #+RESULTS:
-;; : #| p->r |#
+;; : #'ch1.ex1-14/p->r
 
 ;; Now use =F->C=, first described on page 46. This is a function that takes a
 ;; coordinate transformation like =p->r= and returns a /new/ function that can
@@ -186,19 +160,19 @@
 ;; polar coordinates:
 
 
-(let ((convert-path (F->C p->r))
-      (polar-path (up 't
-                      (up 'r 'phi)
-                      (up 'rdot 'phidot)
-                      (up 'rdotdot 'phidotdot))))
+(let [convert-path (F->C p->r)
+      polar-path (up 't
+                     (up 'r 'phi)
+                     (up 'rdot 'phidot)
+                     (up 'rdotdot 'phidotdot))]
   (->tex-equation
    (convert-path polar-path)))
 
 
-;; #+RESULTS[1bac37835829a8c17e06699ef20f2e42676725b9]:
-;; \begin{equation}
-;; \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{ r \cos\left( \phi \right)} \cr \cr \displaystyle{ r \sin\left( \phi \right)}\end{pmatrix}} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{  - \dot{\phi} r \sin\left( \phi \right) + \dot{r} \cos\left( \phi \right)} \cr \cr \displaystyle{ \dot{\phi} r \cos\left( \phi \right) + \dot{r} \sin\left( \phi \right)}\end{pmatrix}} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{  - {\dot{\phi}}^{2} r \cos\left( \phi \right) - 2 \dot{\phi} \dot{r} \sin\left( \phi \right) - \ddot{\phi} r \sin\left( \phi \right) + \ddot{r} \cos\left( \phi \right)} \cr \cr \displaystyle{  - {\dot{\phi}}^{2} r \sin\left( \phi \right) + 2 \dot{\phi} \dot{r} \cos\left( \phi \right) + \ddot{\phi} r \cos\left( \phi \right) + \ddot{r} \sin\left( \phi \right)}\end{pmatrix}}\end{pmatrix}
-;; \end{equation}
+;; #+RESULTS[e2bd34e522b8cce70c18db7df53796bde25bd468]:
+;; :results:
+;; \begin{equation}\n\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{r\,\cos\left(\phi\right)} \cr \cr \displaystyle{r\,\sin\left(\phi\right)}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{- \dot {\phi}\,r\,\sin\left(\phi\right) + \dot r\,\cos\left(\phi\right)} \cr \cr \displaystyle{\dot {\phi}\,r\,\cos\left(\phi\right) + \dot r\,\sin\left(\phi\right)}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{- {\dot {\phi}}^{2}\,r\,\cos\left(\phi\right) -2\,\dot {\phi}\,\dot r\,\sin\left(\phi\right) - \ddot {\phi}\,r\,\sin\left(\phi\right) + \ddot r\,\cos\left(\phi\right)} \cr \cr \displaystyle{- {\dot {\phi}}^{2}\,r\,\sin\left(\phi\right) + 2\,\dot {\phi}\,\dot r\,\cos\left(\phi\right) + \ddot {\phi}\,r\,\cos\left(\phi\right) + \ddot r\,\sin\left(\phi\right)}\end{pmatrix}}\end{pmatrix}\n\end{equation}
+;; :end:
 
 
 ;; Ordinarily, it would be too heartbreaking to substitute these in to the
@@ -209,20 +183,8 @@
 ;; can call it directly:
 
 
-(define (rect-equations local)
-  (let* ((q (coordinate local))
-         (x (ref q 0))
-         (y (ref q 1))
-
-         (v (velocity local))
-         (xdot (ref v 0))
-         (ydot (ref v 1))
-
-         (a (acceleration local))
-         (xdotdot (ref a 0))
-         (ydotdot (ref a 1))
-
-         (U (literal-function 'U)))
+(defn rect-equations [[_ [x y] [xdot ydot] [xdotdot ydotdot]]]
+  (let [U (literal-function 'U)]
     (up (/ (+ (* 'm xdotdot (sqrt (+ (square x) (square y))))
               (* x ((D U) (sqrt (+ (square x) (square y))))))
            (sqrt (+ (square x) (square y))))
@@ -232,43 +194,43 @@
 
 
 ;; #+RESULTS:
-;; : #| rect-equations |#
+;; : #'ch1.ex1-14/rect-equations
 
 ;; Verify that these are, in fact, the rectangular equations of motion by passing
 ;; in a symbolic rectangular local tuple:
 
 
-(let ((rect-path (up 't
-                     (up 'x 'y)
-                     (up 'xdot 'ydot)
-                     (up 'xdotdot 'ydotdot))))
+(let [rect-path (up 't
+                    (up 'x 'y)
+                    (up 'xdot 'ydot)
+                    (up 'xdotdot 'ydotdot))]
   (->tex-equation
    (rect-equations rect-path)))
 
 
-;; #+RESULTS[5e06ee310a8c8e3036c17c5863647c80960dc568]:
-;; \begin{equation}
-;; \begin{pmatrix} \displaystyle{ {{m \ddot{x} \sqrt{{x}^{2} + {y}^{2}} + x DU\left( \sqrt{{x}^{2} + {y}^{2}} \right)}\over {\sqrt{{x}^{2} + {y}^{2}}}}} \cr \cr \displaystyle{ {{m \ddot{y} \sqrt{{x}^{2} + {y}^{2}} + y DU\left( \sqrt{{x}^{2} + {y}^{2}} \right)}\over {\sqrt{{x}^{2} + {y}^{2}}}}}\end{pmatrix}
-;; \end{equation}
+;; #+RESULTS[fb8ae0e03bc4467f1f415842940cf6d93ce9f835]:
+;; :results:
+;; \begin{equation}\n\begin{pmatrix}\displaystyle{\frac{m\,\ddot x\,\sqrt {{x}^{2} + {y}^{2}} + x\,DU\left(\sqrt {{x}^{2} + {y}^{2}}\right)}{\sqrt {{x}^{2} + {y}^{2}}}} \cr \cr \displaystyle{\frac{m\,\ddot y\,\sqrt {{x}^{2} + {y}^{2}} + y\,DU\left(\sqrt {{x}^{2} + {y}^{2}}\right)}{\sqrt {{x}^{2} + {y}^{2}}}}\end{pmatrix}\n\end{equation}
+;; :end:
 
 ;; Now use the =p->r= conversion to substitute each of the rectangular values above
 ;; with their associated polar values:
 
 
-(let* ((convert-path (F->C p->r))
-       (polar-path (up 't
-                       (up 'r 'phi)
-                       (up 'rdot 'phidot)
-                       (up 'rdotdot 'phidotdot)))
-       (local (convert-path polar-path)))
+(let [convert-path (F->C p->r)
+      polar-path (up 't
+                     (up 'r 'phi)
+                     (up 'rdot 'phidot)
+                     (up 'rdotdot 'phidotdot))
+      local (convert-path polar-path)]
   (->tex-equation
    (rect-equations local)))
 
 
-;; #+RESULTS[577a75ce68ba364856b29d9b49e8f95c130ec027]:
-;; \begin{equation}
-;; \begin{pmatrix} \displaystyle{  - m {\dot{\phi}}^{2} r \cos\left( \phi \right) - 2 m \dot{\phi} \dot{r} \sin\left( \phi \right) - m \ddot{\phi} r \sin\left( \phi \right) + m \ddot{r} \cos\left( \phi \right) + DU\left( r \right) \cos\left( \phi \right)} \cr \cr \displaystyle{  - m {\dot{\phi}}^{2} r \sin\left( \phi \right) + 2 m \dot{\phi} \dot{r} \cos\left( \phi \right) + m \ddot{\phi} r \cos\left( \phi \right) + m \ddot{r} \sin\left( \phi \right) + DU\left( r \right) \sin\left( \phi \right)}\end{pmatrix}
-;; \end{equation}
+;; #+RESULTS[d93aab908497450ca88f46e35b1215c6708a4712]:
+;; :results:
+;; \begin{equation}\n\begin{pmatrix}\displaystyle{- m\,{\dot {\phi}}^{2}\,r\,\cos\left(\phi\right) -2\,m\,\dot {\phi}\,\dot r\,\sin\left(\phi\right) - m\,\ddot {\phi}\,r\,\sin\left(\phi\right) + m\,\ddot r\,\cos\left(\phi\right) + \cos\left(\phi\right)\,DU\left(r\right)} \cr \cr \displaystyle{- m\,{\dot {\phi}}^{2}\,r\,\sin\left(\phi\right) + 2\,m\,\dot {\phi}\,\dot r\,\cos\left(\phi\right) + m\,\ddot {\phi}\,r\,\cos\left(\phi\right) + m\,\ddot r\,\sin\left(\phi\right) + \sin\left(\phi\right)\,DU\left(r\right)}\end{pmatrix}\n\end{equation}
+;; :end:
 
 ;; Oh no. This looks quite different from the polar Lagrange equations above. What
 ;; is the problem?
@@ -289,13 +251,13 @@
 ;; A similar trick recovers the second equation,given an extra factor of $r$:
 
 
-(let* ((convert-path (F->C p->r))
-       (polar-path (up 't
-                       (up 'r 'phi)
-                       (up 'rdot 'phidot)
-                       (up 'rdotdot 'phidotdot)))
-       (local (convert-path polar-path))
-       (eq (rect-equations local)))
+(let [convert-path (F->C* p->r)
+      polar-path (up 't
+                     (up 'r 'phi)
+                     (up 'rdot 'phidot)
+                     (up 'rdotdot 'phidotdot))
+      local (convert-path polar-path)
+      eq (rect-equations local)]
   (->tex-equation
    (up (+ (* (cos 'phi) (ref eq 0))
           (* (sin 'phi) (ref eq 1)))

@@ -5,23 +5,11 @@
 
 
 (ns ch1.ex1-15
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [clojure.string :as string]
+            [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ;; Scheme Tools
 
 ;; Equation (1.77) in the book describes how to implement $C$ given some arbitrary
@@ -31,10 +19,8 @@
 ;; that takes an explicit $(t, x')$, instead of the entire local tuple:
 
 
-(define ((F->C* F) local)
-  (let ((t (time local))
-        (x (coordinate local))
-        (v (velocity local)))
+(defn F->C* [F]
+  (fn [[t x v]]
     (up t
         (F t x)
         (+ (((partial 0) F) t x)
@@ -43,7 +29,7 @@
 
 
 ;; #+RESULTS[8ea33eda9107b7b0d6ce890f316eb453b2d96fca]:
-;; : #| F->C* |#
+;; : #'ch1.ex1-15/F->C*
 
 ;; Next we define $F$, $C$ and $L$ as described above, as well as =qprime=, a
 ;; function that can represent our unprimed coordinate path function.
@@ -53,26 +39,23 @@
 ;; paths with many dimensions.
 
 
-(define F
+(def F
   (literal-function 'F (-> (X Real Real) Real)))
 
-(define C (F->C* F))
+(def C (F->C* F))
 
-(define L
+(def L
   (literal-function 'L (-> (UP Real Real Real) Real)))
 
-(define qprime
+(def qprime
   (literal-function 'qprime))
 
 
 ;; #+RESULTS:
-;; : #| F |#
-;; :
-;; : #| C |#
-;; :
-;; : #| L |#
-;; :
-;; : #| qprime |#
+;; | #'ch1.ex1-15/F      |
+;; | #'ch1.ex1-15/C      |
+;; | #'ch1.ex1-15/L      |
+;; | #'ch1.ex1-15/qprime |
 
 ;; When we apply $C$ to the primed local tuple, do we get the transformed tuple
 ;; that we expect from 1.77 in the book?
@@ -82,42 +65,43 @@
  ((compose C (Gamma qprime)) 't))
 
 
-;; #+RESULTS[ecef7fe872de385af827c689dbd0db76aa5319f0]:
-;; \begin{equation}
-;; \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix}
-;; \end{equation}
+;; #+RESULTS[2b72ef2c7d9041ccdec7885dcc252c5362969303]:
+;; :results:
+;; \begin{equation}\n\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, q^\prime\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, q^\prime\left(t\right)\right)\,Dq^\prime\left(t\right) + \partial_0F\left(t, q^\prime\left(t\right)\right)}\end{pmatrix}\n\end{equation}
+;; :end:
 
 ;; This looks correct. We can also transform the path before passing it to
 ;; $\Gamma$:
 
 
-(define ((to-q F qp) t)
-  (F t (qp t)))
+(defn to-q [F qp]
+  (fn [t]
+    (F t (qp t))))
 
 
 ;; #+RESULTS:
-;; : #| to-q |#
+;; : #'ch1.ex1-15/to-q
 
 ;; Subtract the two forms to see that they're equivalent:
 
 
-(->tex-equations
+(->tex-equation
  ((- (compose C (Gamma qprime))
      (Gamma (to-q F qprime)))
   't))
 
 
-;; #+RESULTS[10aea4a5b833aa00e0a1c63049d844dc37528289]:
-;; \begin{equation}
-;; \begin{pmatrix} \displaystyle{ 0} \cr \cr \displaystyle{ 0} \cr \cr \displaystyle{ 0}\end{pmatrix}
-;; \end{equation}
+;; #+RESULTS[2d8902854d6900eaf19d58d1b5ab9fb60bd831b4]:
+;; :results:
+;; \begin{equation}\n\begin{pmatrix}\displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{0}\end{pmatrix}\n\end{equation}
+;; :end:
 
 ;; Now that we know $C$ is correct we can define $q$, the unprimed coordinate path
 ;; function, and =Lprime=:
 
 
-(define q (to-q F qprime))
-(define Lprime (compose L C))
+(def q (to-q F qprime))
+(def Lprime (compose L C))
 ;; Derivation
 
 ;; Begin by calculating the components of the Lagrange equations in equation
@@ -164,14 +148,13 @@
 
 (->tex-equation
  (((partial 2) C) (up 't 'xprime 'vprime))
- "eq:p2c")
+ :label "eq:p2c")
 
 
-;; #+RESULTS[2ad70f16eca982284368a2f70f31de3b2de41025]:
-;; \begin{equation}
-;; \begin{pmatrix} \displaystyle{ 0} \cr \cr \displaystyle{ 0} \cr \cr \displaystyle{ {\partial}_{1}F\left( t, {x}^\prime \right)}\end{pmatrix}
-;; \label{eq:p2c}
-;; \end{equation}
+;; #+RESULTS[f3ea66e9d3343c80892faaabe92b413b063971f7]:
+;; :results:
+;; \begin{equation}\n\label{eq:p2c}\n\begin{pmatrix}\displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{\partial_1F\left(t, x^\prime\right)}\end{pmatrix}\n\end{equation}
+;; :end:
 
 ;; The first two components are 0, leaving us with:
 
@@ -237,25 +220,26 @@
   't))
 
 
-;; #+RESULTS[5eac70f3edfcf5feeb3a2eb9b98d89646f21ade3]:
-;; \begin{equation}
-;; D{q}^\prime\left( t \right) {\partial}_{2}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {{\partial}_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) {\partial}_{1}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) + {\partial}_{2}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) \left( {\partial}_{0} {\partial}_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
-;; \end{equation}
+;; #+RESULTS[a14cf0bec5b2aeb15eec4de504e22659b40491c0]:
+;; :results:
+;; \begin{equation}\nDq^\prime\left(t\right)\,\partial_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, q^\prime\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, q^\prime\left(t\right)\right)\,Dq^\prime\left(t\right) + \partial_0F\left(t, q^\prime\left(t\right)\right)}\end{pmatrix}\right)\,{\partial_1}^{2}F\left(t, q^\prime\left(t\right)\right) + \partial_1F\left(t, q^\prime\left(t\right)\right)\,\partial_1L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, q^\prime\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, q^\prime\left(t\right)\right)\,Dq^\prime\left(t\right) + \partial_0F\left(t, q^\prime\left(t\right)\right)}\end{pmatrix}\right) + \partial_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, q^\prime\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, q^\prime\left(t\right)\right)\,Dq^\prime\left(t\right) + \partial_0F\left(t, q^\prime\left(t\right)\right)}\end{pmatrix}\right)\,\left(\partial_0\,\partial_1\right)\left(F\right)\left(t, q^\prime\left(t\right)\right)\n\end{equation}
+;; :end:
+
 
 ;; This is completely insane, and already unhelpful. The argument to $L$, we know,
 ;; is actually $\Gamma[q]$. Make a function that will replace the tuple with that
 ;; reference:
 
 
-(define (->eq expr)
-  (write-string
-   (replace-all (->tex-equation* expr)
-                (->tex* ((Gamma q) 't))
-                "\\circ \\Gamma[q]")))
+(defn ->eq [expr]
+  (string/replace
+   (->tex-equation expr)
+   (->TeX (simplify ((Gamma q) 't)))
+   "\\Gamma[q]\\left(t\\right)"))
 
 
 ;; #+RESULTS:
-;; : #| ->eq |#
+;; : #'ch1.ex1-15/->eq
 
 ;; Try again:
 
@@ -265,28 +249,26 @@
   't))
 
 
-;; #+RESULTS[ee6c612cadd91730dd0142a4dd7476fda80d6e07]:
-;; \begin{equation}
-;; D{q}^\prime\left( t \right) {\partial}_{2}L\left( \circ \Gamma[q] \right) {{\partial}_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) {\partial}_{1}L\left( \circ \Gamma[q] \right) + {\partial}_{2}L\left( \circ \Gamma[q] \right) \left( {\partial}_{0} {\partial}_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
-;; \end{equation}
+;; #+RESULTS[faf6828253b9f230c0a91ac86f744888da752daf]:
+;; :results:
+;; \begin{equation}\nDq^\prime\left(t\right)\,\partial_2L\left(\Gamma[q]\left(t\right)\right)\,{\partial_1}^{2}F\left(t, q^\prime\left(t\right)\right) + \partial_1F\left(t, q^\prime\left(t\right)\right)\,\partial_1L\left(\Gamma[q]\left(t\right)\right) + \partial_2L\left(\Gamma[q]\left(t\right)\right)\,\left(\partial_0\,\partial_1\right)\left(F\right)\left(t, q^\prime\left(t\right)\right)\n\end{equation}
+;; :end:
 
-;; Ignore the parentheses around $\circ \Gamma[q]$ and this looks better.
-
-;; The $\partial_1 L \circ \Gamma[q]$ term of the unprimed Lagrange equations is
+;; The $\partial_1 L(\Gamma[q](t))$ term of the unprimed Lagrange equations is
 ;; nestled inside the expansion above, multiplied by a factor $\partial_1F(t,
 ;; q'(t))$:
 
 
-(let* ((factor (((partial 1) F) 't (qprime 't))))
+(let [factor (((partial 1) F) 't (qprime 't))]
   (->eq
    ((* factor (compose ((partial 1) L) (Gamma q)))
     't)))
 
 
-;; #+RESULTS[31b49f8349da58b715e99a7cbcdf983dc4e12d1e]:
-;; \begin{equation}
-;; {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) {\partial}_{1}L\left( \circ \Gamma[q] \right)
-;; \end{equation}
+;; #+RESULTS[4d38189f9b821ce2a0fb1b2731fd8eff80329182]:
+;; :results:
+;; \begin{equation}\n\partial_1F\left(t, q^\prime\left(t\right)\right)\,\partial_1L\left(\Gamma[q]\left(t\right)\right)\n\end{equation}
+;; :end:
 
 ;; Next, consider the $D(\partial_2 L' \circ \Gamma[q'])$ term:
 
@@ -296,11 +278,10 @@
   't))
 
 
-;; #+RESULTS[9813f05b0fc4d5e7ad9ce035bca6e494cb087d84]:
-;; \begin{equation}
-;; {\left( D{q}^\prime\left( t \right) \right)}^{2} {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) {{\partial}_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) {{\partial}_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) + D{q}^\prime\left( t \right) {\left( {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} \left( {\partial}_{1} {\partial}_{2} \right)\left( L \right)\left( \circ \Gamma[q] \right) + 2 D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) \left( {\partial}_{0} {\partial}_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right) {{\partial}_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) + {\left( {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} {D}^{2}{q}^\prime\left( t \right) {{\partial}_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) \left( {\partial}_{1} {\partial}_{2} \right)\left( L \right)\left( \circ \Gamma[q] \right) + D{q}^\prime\left( t \right) {\partial}_{2}L\left( \circ \Gamma[q] \right) {{\partial}_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) {{\partial}_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) {{\partial}_{0}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) \left( {\partial}_{0} {\partial}_{2} \right)\left( L \right)\left( \circ \Gamma[q] \right) + {\partial}_{2}L\left( \circ \Gamma[q] \right) \left( {\partial}_{0} {\partial}_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
-;; \end{equation}
-
+;; #+RESULTS[3f03581cccc9ece6ad0694aaa2c6404e4445ed97]:
+;; :results:
+;; \begin{equation}\n\partial_1F\left(t, q^\prime\left(t\right)\right)\,{\left(Dq^\prime\left(t\right)\right)}^{2}\,{\partial_1}^{2}F\left(t, q^\prime\left(t\right)\right)\,{\partial_2}^{2}L\left(\Gamma[q]\left(t\right)\right) + {\left(\partial_1F\left(t, q^\prime\left(t\right)\right)\right)}^{2}\,Dq^\prime\left(t\right)\,\left(\partial_1\,\partial_2\right)\left(L\right)\left(\Gamma[q]\left(t\right)\right) + {\left(\partial_1F\left(t, q^\prime\left(t\right)\right)\right)}^{2}\,{\partial_2}^{2}L\left(\Gamma[q]\left(t\right)\right)\,{D}^{2}q^\prime\left(t\right) + 2\,\partial_1F\left(t, q^\prime\left(t\right)\right)\,Dq^\prime\left(t\right)\,\left(\partial_0\,\partial_1\right)\left(F\right)\left(t, q^\prime\left(t\right)\right)\,{\partial_2}^{2}L\left(\Gamma[q]\left(t\right)\right) + \partial_0F\left(t, q^\prime\left(t\right)\right)\,\partial_1F\left(t, q^\prime\left(t\right)\right)\,\left(\partial_1\,\partial_2\right)\left(L\right)\left(\Gamma[q]\left(t\right)\right) + \partial_1F\left(t, q^\prime\left(t\right)\right)\,{\partial_2}^{2}L\left(\Gamma[q]\left(t\right)\right)\,{\partial_0}^{2}F\left(t, q^\prime\left(t\right)\right) + Dq^\prime\left(t\right)\,\partial_2L\left(\Gamma[q]\left(t\right)\right)\,{\partial_1}^{2}F\left(t, q^\prime\left(t\right)\right) + \partial_1F\left(t, q^\prime\left(t\right)\right)\,\left(\partial_0\,\partial_2\right)\left(L\right)\left(\Gamma[q]\left(t\right)\right) + \partial_2L\left(\Gamma[q]\left(t\right)\right)\,\left(\partial_0\,\partial_1\right)\left(F\right)\left(t, q^\prime\left(t\right)\right)\n\end{equation}
+;; :end:
 
 ;; This, again, is total madness. We really want some way to control how Scheme
 ;; expands terms.
@@ -314,10 +295,10 @@
   't))
 
 
-;; #+RESULTS[9937f7c80dcdc8744c8f2a1a57505172c55bee17]:
-;; \begin{equation}
-;; {\left( D{q}^\prime\left( t \right) \right)}^{2} {{\partial}_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) {{\partial}_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) + D{q}^\prime\left( t \right) {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) \left( {\partial}_{1} {\partial}_{2} \right)\left( L \right)\left( \circ \Gamma[q] \right) + 2 D{q}^\prime\left( t \right) \left( {\partial}_{0} {\partial}_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right) {{\partial}_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) + {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) {D}^{2}{q}^\prime\left( t \right) {{\partial}_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) + {\partial}_{0}F\left( t, {q}^\prime\left( t \right) \right) \left( {\partial}_{1} {\partial}_{2} \right)\left( L \right)\left( \circ \Gamma[q] \right) + {{\partial}_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) {{\partial}_{0}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + \left( {\partial}_{0} {\partial}_{2} \right)\left( L \right)\left( \circ \Gamma[q] \right)
-;; \end{equation}
+;; #+RESULTS[fe49bac2a687e3d14b31a41abfbb0ada1cbd5b03]:
+;; :results:
+;; \begin{equation}\n{\left(Dq^\prime\left(t\right)\right)}^{2}\,{\partial_1}^{2}F\left(t, q^\prime\left(t\right)\right)\,{\partial_2}^{2}L\left(\Gamma[q]\left(t\right)\right) + \partial_1F\left(t, q^\prime\left(t\right)\right)\,Dq^\prime\left(t\right)\,\left(\partial_1\,\partial_2\right)\left(L\right)\left(\Gamma[q]\left(t\right)\right) + \partial_1F\left(t, q^\prime\left(t\right)\right)\,{\partial_2}^{2}L\left(\Gamma[q]\left(t\right)\right)\,{D}^{2}q^\prime\left(t\right) + 2\,Dq^\prime\left(t\right)\,\left(\partial_0\,\partial_1\right)\left(F\right)\left(t, q^\prime\left(t\right)\right)\,{\partial_2}^{2}L\left(\Gamma[q]\left(t\right)\right) + \partial_0F\left(t, q^\prime\left(t\right)\right)\,\left(\partial_1\,\partial_2\right)\left(L\right)\left(\Gamma[q]\left(t\right)\right) + {\partial_2}^{2}L\left(\Gamma[q]\left(t\right)\right)\,{\partial_0}^{2}F\left(t, q^\prime\left(t\right)\right) + \left(\partial_0\,\partial_2\right)\left(L\right)\left(\Gamma[q]\left(t\right)\right)\n\end{equation}
+;; :end:
 
 ;; Staring at these two equations, it becomes clear that the first contains the
 ;; second, multiplied by $\partial_1F(t, q'(t))$, the same factor that appeared in
@@ -327,16 +308,16 @@
 ;; Lagrange equations, scaled by this factor:
 
 
-(let* ((primed-lagrange
-        (- (D (compose ((partial 2) Lprime) (Gamma qprime)))
-           (compose ((partial 1) Lprime) (Gamma qprime))))
+(let [primed-lagrange
+      (- (D (compose ((partial 2) Lprime) (Gamma qprime)))
+         (compose ((partial 1) Lprime) (Gamma qprime)))
 
-       (lagrange
-        (- (D (compose ((partial 2) L) (Gamma q)))
-           (compose ((partial 1) L) (Gamma q))))
+      lagrange
+      (- (D (compose ((partial 2) L) (Gamma q)))
+         (compose ((partial 1) L) (Gamma q)))
 
-       (factor
-        (compose coordinate ((partial 1) C) (Gamma qprime))))
+      factor
+      (compose coordinate ((partial 1) C) (Gamma qprime))]
   (->tex-equation
    ((- primed-lagrange (* factor lagrange))
     't)))

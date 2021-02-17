@@ -8,61 +8,46 @@
 
 
 (ns ch1.ex9-1
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 
 ;; Compute $\partial_0 F(x, y)$ and $\partial_1 F(x, y)$
 
 ;; First, let's define the functions we need.
 
 
-(define (F x y)
+(defn F [x y]
   (* (square x)
      (cube y)))
 
-(define (G x y)
+(defn G [x y]
   (up (F x y) y))
 
-(define (H x y)
+(defn H [x y]
   (F (F x y) y))
 
 
 
 ;; #+RESULTS:
-;; : #| F |#
-;; :
-;; : #| G |#
-;; :
-;; : #| H |#
+;; | #'ch1.ex9-1/F |
+;; | #'ch1.ex9-1/G |
+;; | #'ch1.ex9-1/H |
 
 ;;  You can do this with explicit partials:
 
 
-(let ((f (down ((partial 0) F) ((partial 1) F))))
+(let [f (down ((partial 0) F) ((partial 1) F))]
   (->tex-equation
    (f 'x 'y)))
 
 
 
-;; #+RESULTS[b8eaf52d98e5903b52306509dcdc8f8eeb97144c]:
-;; \begin{equation}
-;; \begin{bmatrix} \displaystyle{ 2 x {y}^{3}} \cr \cr \displaystyle{ 3 {x}^{2} {y}^{2}}\end{bmatrix}
-;; \end{equation}
+;; #+RESULTS[001293adfac6814bb5fa4a4ab4ceb7075b07b1ea]:
+;; :results:
+;; \begin{equation}\n\begin{bmatrix}\displaystyle{2\,x\,{y}^{3}} \cr \cr \displaystyle{3\,{x}^{2}\,{y}^{2}}\end{bmatrix}\n\end{equation}
+;; :end:
 
 ;; Or with the $D$ symbol:
 
@@ -72,15 +57,15 @@
 
 
 
-;; #+RESULTS[f3fba605ac97a3ebd30b4a96aca31eed921e2e93]:
-;; \begin{equation}
-;; \begin{bmatrix} \displaystyle{ 2 x {y}^{3}} \cr \cr \displaystyle{ 3 {x}^{2} {y}^{2}}\end{bmatrix}
-;; \end{equation}
+;; #+RESULTS[8e59ef099a4c489230981a00528990c427fb1b3b]:
+;; :results:
+;; \begin{equation}\n\begin{bmatrix}\displaystyle{2\,x\,{y}^{3}} \cr \cr \displaystyle{3\,{x}^{2}\,{y}^{2}}\end{bmatrix}\n\end{equation}
+;; :end:
 
 ;; Or, we could show that they're equivalent this way:
 
 
-(let ((f (down ((partial 0) F) ((partial 1) F))))
+(let [f (down ((partial 0) F) ((partial 1) F))]
   (->tex-equation
    (- ((D F) 'x 'y)
       (f 'x 'y))))

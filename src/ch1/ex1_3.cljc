@@ -2,26 +2,13 @@
 ;; :PROPERTIES:
 ;; :header-args+: :tangle src/ch1/ex1_3.cljc :comments org
 ;; :END:
-
+;; 0
 
 (ns ch1.ex1-3
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ;; Calculus
 
 ;; We can also solve this with calculus. Because the beam doesn't change media, its
@@ -58,9 +45,7 @@
 
 ;; #+RESULTS:
 ;; :results:
-;; \begin{equation}
-;; \sqrt {{x_1}^{2} + 2\,x_1\,x_p + {x_p}^{2} + {y_1}^{2}} + \sqrt {{x_1}^{2} -2\,x_1\,x_2 + 2\,x_1\,x_p + {x_2}^{2} -2\,x_2\,x_p + {x_p}^{2} + {y_2}^{2}}
-;; \end{equation}
+;; \begin{equation}\n\sqrt {{x_1}^{2} + 2\,x_1\,x_p + {x_p}^{2} + {y_1}^{2}} + \sqrt {{x_1}^{2} -2\,x_1\,x_2 + 2\,x_1\,x_p + {x_2}^{2} -2\,x_2\,x_p + {x_p}^{2} + {y_2}^{2}}\n\end{equation}
 ;; :end:
 
 ;; To find the $x_p$ that minimizes the total distance,
@@ -94,9 +79,7 @@
 
 ;; #+RESULTS:
 ;; :results:
-;; \begin{equation}
-;; \begin{pmatrix}\displaystyle{\sqrt {{x_p}^{2} + {y_1}^{2}}} \cr \cr \displaystyle{\sqrt {{x_2}^{2} -2\,x_2\,x_p + {x_p}^{2} + {y_2}^{2}}}\end{pmatrix}
-;; \end{equation}
+;; \begin{equation}\n\begin{pmatrix}\displaystyle{\sqrt {{x_p}^{2} + {y_1}^{2}}} \cr \cr \displaystyle{\sqrt {{x_2}^{2} -2\,x_2\,x_p + {x_p}^{2} + {y_2}^{2}}}\end{pmatrix}\n\end{equation}
 ;; :end:
 
 ;; Taking a derivative is easy with =scmutils=. Just wrap the function in =D=:
@@ -108,11 +91,9 @@
    (derivative 'x_p)))
 
 
-;; #+RESULTS[cc481176c8b6e8c6f374e007ce3e6c3a49259bca]:
+;; #+RESULTS:
 ;; :results:
-;; \begin{equation}
-;; \begin{pmatrix}\displaystyle{\frac{x_p}{\sqrt {{x_p}^{2} + {y_1}^{2}}}} \cr \cr \displaystyle{\frac{- x_2 + x_p}{\sqrt {{x_2}^{2} -2\,x_2\,x_p + {x_p}^{2} + {y_2}^{2}}}}\end{pmatrix}
-;; \end{equation}
+;; \begin{equation}\n\begin{pmatrix}\displaystyle{\frac{x_p}{\sqrt {{x_p}^{2} + {y_1}^{2}}}} \cr \cr \displaystyle{\frac{- x_2 + x_p}{\sqrt {{x_2}^{2} -2\,x_2\,x_p + {x_p}^{2} + {y_2}^{2}}}}\end{pmatrix}\n\end{equation}
 ;; :end:
 
 ;; The first component is the base of base $x_p$ of the left triangle over the

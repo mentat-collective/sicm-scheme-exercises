@@ -9,28 +9,13 @@
 
 
 (ns ch1.min-action-paths
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
 
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
-
 
 ;; #+RESULTS:
-;; : nilnil{:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level nil, :rate-limit nil, :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11899]}}}#'ch1.min-action-paths/->tex-equation*#'ch1.min-action-paths/->tex-equation
 
 ;; The only restriction on a variation is that it can't affect the endpoints of the
 ;; realizable path. the times and positions of the start and end of the path are
@@ -68,18 +53,26 @@
 
 
 ;; #+RESULTS:
-;; : #'ch1.min-action-paths/L-free-particle#'ch1.min-action-paths/varied-free-particle-action
+;; | #'ch1.min-action-paths/L-free-particle             |
+;; | #'ch1.min-action-paths/varied-free-particle-action |
 
-;; Consider some variation like $v(t) = (\sin(t), \cos(t), t^2)$. The action of the
-;; path with this small wiggle (processed through =make-eta= to pin its endpoints)
-;; is larger (top entry) than the action of the non-varied path (bottom entry), as
-;; expected:
+;; And a test path:
 
 
 (defn test-path [t]
   (up (+ (* 4 t) 7)
       (+ (* 3 t) 5)
       (+ (* 2 t) 1)))
+
+
+;; #+RESULTS:
+;; : #'ch1.min-action-paths/test-path
+
+;; Consider some variation like $v(t) = (\sin(t), \cos(t), t^2)$. The action of the
+;; path with this small wiggle (processed through =make-eta= to pin its endpoints)
+;; is larger (top entry) than the action of the non-varied path (bottom entry), as
+;; expected:
+
 
 (let [action-fn (varied-free-particle-action 3.0 test-path
                                              (up sin cos square)
@@ -89,11 +82,9 @@
        (action-fn 0))))
 
 
-;; #+RESULTS[340f6da5e1e5c212608e63a4628c04cb73b99255]:
+;; #+RESULTS[f240dd7f443a8db536bd9d297c61ad02a13bc1c4]:
 ;; :results:
-;; \begin{equation}
-;; \begin{pmatrix}\displaystyle{436.2912142857117} \cr \cr \displaystyle{435.0}\end{pmatrix}
-;; \end{equation}
+;; \begin{equation}\n\begin{pmatrix}\displaystyle{436.2912142857117} \cr \cr \displaystyle{435.0}\end{pmatrix}\n\end{equation}
 ;; :end:
 
 ;; What value of $\epsilon$ minimizes the action for the test path?

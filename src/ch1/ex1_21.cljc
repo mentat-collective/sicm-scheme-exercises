@@ -21,23 +21,10 @@
 
 
 (ns ch1.ex1-21
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ;; Multiple Particle API
 
 ;; Many exercises have been dealing with multiple particles so far. Let's introduce
@@ -47,29 +34,32 @@
 ;; If we have the velocity and mass of a particle, its kinetic energy is easy to
 ;; define:
 
+;; #+name: KE-particle
 
-(define (KE-particle m v)
-  (* 1/2 m (square v)))
+(defn KE-particle [m v]
+  (* (/ 1 2) m (square v)))
 
 
-;; #+RESULTS:
-;; : #| KE-particle |#
+;; #+RESULTS: KE-particle
+;; : #'ch1.ex1-21/KE-particle
 
 ;; This next function, =extract-particle=, takes a number of components -- 2 for a
 ;; particle with 2 components, 3 for a particle in space, etc -- and returns a
 ;; function of =local= and =i=, a particle index. This function can be used to
 ;; extract a sub-local-tuple for that particle from a flattened list.
 
+;; #+name: extract-particle
 
-(define ((extract-particle pieces) local i)
-  (let* ((indices (apply up (iota pieces (* i pieces))))
-         (extract (lambda (tuple)
-                    (vector-map (lambda (i)
-                                  (ref tuple i))
-                                indices))))
-    (up (time local)
-        (extract (coordinate local))
-        (extract (velocity local)))))
+(defn extract-particle [pieces]
+  (fn [[t q v] i]
+    (let [indices (take pieces
+                        (iterate
+                         inc (* i pieces)))
+          extract (fn [tuple]
+                    (mapv (fn [i]
+                            (ref tuple i))
+                          indices))]
+      (up t (extract q) (extract v)))))
 ;; Part B: Dumbbell Lagrangian
 
 ;; #+begin_quote
@@ -83,50 +73,44 @@
 ;; part *a*.
 ;; #+end_quote
 
-
 ;; Here is how we model constraint forces. Each pair of particles has some
 ;; constraint potential acting between them:
 
 ;; #+name: U-constraint
 
-(define (U-constraint q0 q1 F l)
+(defn U-constraint [q0 q1 F l]
   (* (/ F (* 2 l))
      (- (square (- q1 q0))
         (square l))))
 
 
-;; #+RESULTS:
-;; : #| U-constraint |#
+;; #+RESULTS: U-constraint
+;; : #'ch1.ex1-21/U-constraint
 
 ;; And here's a Lagrangian for two free particles, subject to a constraint
 ;; potential $F$ acting between them.
 
 ;; #+name: L-free-constrained
 
-(define ((L-free-constrained m0 m1 l) local)
-  (let* ((extract (extract-particle 2))
-         (p0 (extract local 0))
-         (q0 (coordinate p0))
-         (qdot0 (velocity p0))
-
-         (p1 (extract local 1))
-         (q1 (coordinate p1))
-         (qdot1 (velocity p1))
-
-         (F (ref (coordinate local) 4)))
-    (- (+ (KE-particle m0 qdot0)
-          (KE-particle m1 qdot1))
-       (U-constraint q0 q1 F l))))
+(defn L-free-constrained [m0 m1 l]
+  (fn [local]
+    (let [extract      (extract-particle 2)
+          [_ q0 qdot0] (extract local 0)
+          [_ q1 qdot1] (extract local 1)
+          F (ref (coordinate local) 4)]
+      (- (+ (KE-particle m0 qdot0)
+            (KE-particle m1 qdot1))
+         (U-constraint q0 q1 F l)))))
 
 
-;; #+RESULTS:
-;; : #| L-free-constrained |#
+;; #+RESULTS: L-free-constrained
+;; : #'ch1.ex1-21/L-free-constrained
 
 ;; Finally, the path. This is rectangular coordinates for each piece, plus $F$
 ;; between them.
 
 
-(define q-rect
+(def q-rect
   (up (literal-function 'x_0)
       (literal-function 'y_0)
       (literal-function 'x_1)
@@ -135,28 +119,28 @@
 
 
 ;; #+RESULTS:
-;; : #| q-rect |#
+;; : #'ch1.ex1-21/q-rect
 
 ;; This shows the lagrangian itself, which answers part b:
 
 
-(let* ((L (L-free-constrained 'm_0 'm_1 'l))
-       (f (compose L (Gamma q-rect))))
+(let [L (L-free-constrained 'm_0 'm_1 'l)
+      f (compose L (Gamma q-rect))]
   (->tex-equation
    (f 't)))
 
 
-;; #+RESULTS[9e535179734061e62fa19be6d57ad8f8846008d9]:
-;; \begin{equation}
-;; {{{{1}\over {2}} l {m}_{0} {\left( D{x}_{0}\left( t \right) \right)}^{2} + {{1}\over {2}} l {m}_{0} {\left( D{y}_{0}\left( t \right) \right)}^{2} + {{1}\over {2}} l {m}_{1} {\left( D{x}_{1}\left( t \right) \right)}^{2} + {{1}\over {2}} l {m}_{1} {\left( D{y}_{1}\left( t \right) \right)}^{2} + {{1}\over {2}} {l}^{2} F\left( t \right) - {{1}\over {2}} F\left( t \right) {\left( {x}_{1}\left( t \right) \right)}^{2} + F\left( t \right) {x}_{1}\left( t \right) {x}_{0}\left( t \right) - {{1}\over {2}} F\left( t \right) {\left( {x}_{0}\left( t \right) \right)}^{2} - {{1}\over {2}} F\left( t \right) {\left( {y}_{1}\left( t \right) \right)}^{2} + F\left( t \right) {y}_{1}\left( t \right) {y}_{0}\left( t \right) - {{1}\over {2}} F\left( t \right) {\left( {y}_{0}\left( t \right) \right)}^{2}}\over {l}}
-;; \end{equation}
+;; #+RESULTS[e63be69cd32356758d422b2755c95ce3365d7f22]:
+;; :results:
+;; \begin{equation}\n\frac{l\,m_0\,{\left(Dx_0\left(t\right)\right)}^{2} + l\,m_0\,{\left(Dy_0\left(t\right)\right)}^{2} + l\,m_1\,{\left(Dx_1\left(t\right)\right)}^{2} + l\,m_1\,{\left(Dy_1\left(t\right)\right)}^{2} + {l}^{2}\,F\left(t\right) - F\left(t\right)\,{\left(x_1\left(t\right)\right)}^{2} + 2\,F\left(t\right)\,x_1\left(t\right)\,x_0\left(t\right) - F\left(t\right)\,{\left(x_0\left(t\right)\right)}^{2} - F\left(t\right)\,{\left(y_1\left(t\right)\right)}^{2} + 2\,F\left(t\right)\,y_1\left(t\right)\,y_0\left(t\right) - F\left(t\right)\,{\left(y_0\left(t\right)\right)}^{2}}{2\,l}\n\end{equation}
+;; :end:
 
 ;; Here are the Lagrange equations, which, if you squint, are like Newton's
 ;; equations from part a.
 
 
-(let* ((L (L-free-constrained 'm_0 'm_1 'l))
-       (f ((Lagrange-equations L) q-rect)))
+(let [L (L-free-constrained 'm_0 'm_1 'l)
+      f ((Lagrange-equations L) q-rect)]
   (->tex-equation
    (f 't)))
 ;; Part C: Coordinate Change
@@ -174,82 +158,77 @@
 ;; First, the coordinate change:
 
 
-(define ((cm-theta->rect m0 m1) local)
-  (let* ((q (coordinate local))
-         (x_cm (ref q 0))
-         (y_cm (ref q 1))
-         (theta (ref q 2))
-         (c (ref q 3))
-         (F (ref q 4))
-         (total-mass (+ m0 m1))
-         (m0-distance (* c (/ m1 total-mass)))
-         (m1-distance (* c (/ m0 total-mass))))
-    (up (- x_cm (* m0-distance (cos theta)))
-        (- y_cm (* m0-distance (sin theta)))
-        (+ x_cm (* m1-distance (cos theta)))
-        (+ y_cm (* m1-distance (sin theta)))
-        F)))
+(defn cm-theta->rect [m0 m1]
+  (fn [[_ [x_cm y_cm theta c F]]]
+    (let [total-mass (+ m0 m1)
+          m0-distance (* c (/ m1 total-mass))
+          m1-distance (* c (/ m0 total-mass))]
+      (up (- x_cm (* m0-distance (cos theta)))
+          (- y_cm (* m0-distance (sin theta)))
+          (+ x_cm (* m1-distance (cos theta)))
+          (+ y_cm (* m1-distance (sin theta)))
+          F))))
 
 
 ;; #+RESULTS:
-;; : #| cm-theta->rect |#
+;; : #'ch1.ex1-21/cm-theta->rect
 
 ;; Then the coordinate change applied to the local tuple:
 
 
-(let ((local (up 't
-                 (up 'x_cm 'y_cm 'theta 'c 'F)
-                 (up 'xdot_cm 'ydot_cm 'thetadot 'cdot 'Fdot)))
-      (C (F->C (cm-theta->rect 'm_0 'm_1))))
+(let [local (up 't
+                (up 'x_cm 'y_cm 'theta 'c 'F)
+                (up 'xdot_cm 'ydot_cm 'thetadot 'cdot 'Fdot))
+      C (F->C (cm-theta->rect 'm_0 'm_1))]
   (->tex-equation
    (C local)))
 
 
-;; #+RESULTS[2c67e287b90be4d75ab8c396222d968e56d71383]:
-;; \begin{equation}
-;; \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{ {{ - c {m}_{1} \cos\left( \theta \right) + {m}_{0} {x}_{cm} + {m}_{1} {x}_{cm}}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ {{ - c {m}_{1} \sin\left( \theta \right) + {m}_{0} {y}_{cm} + {m}_{1} {y}_{cm}}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ {{c {m}_{0} \cos\left( \theta \right) + {m}_{0} {x}_{cm} + {m}_{1} {x}_{cm}}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ {{c {m}_{0} \sin\left( \theta \right) + {m}_{0} {y}_{cm} + {m}_{1} {y}_{cm}}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ F}\end{pmatrix}} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{ {{c {m}_{1} \dot{\theta} \sin\left( \theta \right) - \dot{c} {m}_{1} \cos\left( \theta \right) + {m}_{0} {\dot{x}}_{cm} + {m}_{1} {\dot{x}}_{cm}}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ {{ - c {m}_{1} \dot{\theta} \cos\left( \theta \right) - \dot{c} {m}_{1} \sin\left( \theta \right) + {m}_{0} {\dot{y}}_{cm} + {m}_{1} {\dot{y}}_{cm}}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ {{ - c {m}_{0} \dot{\theta} \sin\left( \theta \right) + \dot{c} {m}_{0} \cos\left( \theta \right) + {m}_{0} {\dot{x}}_{cm} + {m}_{1} {\dot{x}}_{cm}}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ {{c {m}_{0} \dot{\theta} \cos\left( \theta \right) + \dot{c} {m}_{0} \sin\left( \theta \right) + {m}_{0} {\dot{y}}_{cm} + {m}_{1} {\dot{y}}_{cm}}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ \dot{F}}\end{pmatrix}}\end{pmatrix}
-;; \end{equation}
+;; #+RESULTS[da7af001803256839a245be72183aa93c38421b0]:
+;; :results:
+;; \begin{equation}\n\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{\frac{- c\,m_1\,\cos\left(\theta\right) + m_0\,x_{cm} + m_1\,x_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\frac{- c\,m_1\,\sin\left(\theta\right) + m_0\,y_{cm} + m_1\,y_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\frac{c\,m_0\,\cos\left(\theta\right) + m_0\,x_{cm} + m_1\,x_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\frac{c\,m_0\,\sin\left(\theta\right) + m_0\,y_{cm} + m_1\,y_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{F}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{\frac{c\,m_1\,\dot {\theta}\,\sin\left(\theta\right) - \dot c\,m_1\,\cos\left(\theta\right) + m_0\,{\dot x}_{cm} + m_1\,{\dot x}_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\frac{- c\,m_1\,\dot {\theta}\,\cos\left(\theta\right) - \dot c\,m_1\,\sin\left(\theta\right) + m_0\,{\dot y}_{cm} + m_1\,{\dot y}_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\frac{- c\,m_0\,\dot {\theta}\,\sin\left(\theta\right) + \dot c\,m_0\,\cos\left(\theta\right) + m_0\,{\dot x}_{cm} + m_1\,{\dot x}_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\frac{c\,m_0\,\dot {\theta}\,\cos\left(\theta\right) + \dot c\,m_0\,\sin\left(\theta\right) + m_0\,{\dot y}_{cm} + m_1\,{\dot y}_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\dot F}\end{pmatrix}}\end{pmatrix}\n\end{equation}
+;; :end:
 
 ;; Then the Lagrangian in the new coordinates;
 
 
-(define (L-free-constrained* m0 m1 l)
+(defn L-free-constrained* [m0 m1 l]
   (compose (L-free-constrained m0 m1 l)
            (F->C (cm-theta->rect m0 m1))))
 
 
 ;; #+RESULTS:
-;; : #| L-free-constrained* |#
+;; : #'ch1.ex1-21/L-free-constrained*
 
 ;; This shows the lagrangian itself, after the coordinate transformation:
 
 
-(let* ((q (up (literal-function 'x_cm)
-              (literal-function 'y_cm)
-              (literal-function 'theta)
-              (literal-function 'c)
-              (literal-function 'F)))
-       (L (L-free-constrained* 'm_0 'm_1 'l))
-       (f (compose L (Gamma q))))
+(let [q (up (literal-function 'x_cm)
+            (literal-function 'y_cm)
+            (literal-function 'theta)
+            (literal-function 'c)
+            (literal-function 'F))
+      L (L-free-constrained* 'm_0 'm_1 'l)
+      f (compose L (Gamma q))]
   (->tex-equation
    (f 't)))
 
 
-;; #+RESULTS[d36e7f3c5c5e5a8663d599a055face7a7f6ddb61]:
-;; \begin{equation}
-;; {{l {m}_{0} {m}_{1} {\left( c\left( t \right) \right)}^{2} {\left( D\theta\left( t \right) \right)}^{2} + l {{m}_{0}}^{2} {\left( D{x}_{cm}\left( t \right) \right)}^{2} + l {{m}_{0}}^{2} {\left( D{y}_{cm}\left( t \right) \right)}^{2} + 2 l {m}_{0} {m}_{1} {\left( D{x}_{cm}\left( t \right) \right)}^{2} + 2 l {m}_{0} {m}_{1} {\left( D{y}_{cm}\left( t \right) \right)}^{2} + l {m}_{0} {m}_{1} {\left( Dc\left( t \right) \right)}^{2} + l {{m}_{1}}^{2} {\left( D{x}_{cm}\left( t \right) \right)}^{2} + l {{m}_{1}}^{2} {\left( D{y}_{cm}\left( t \right) \right)}^{2} + {l}^{2} {m}_{0} F\left( t \right) + {l}^{2} {m}_{1} F\left( t \right) - {m}_{0} F\left( t \right) {\left( c\left( t \right) \right)}^{2} - {m}_{1} F\left( t \right) {\left( c\left( t \right) \right)}^{2}}\over {2 l {m}_{0} + 2 l {m}_{1}}}
-;; \end{equation}
+;; #+RESULTS[62d1e8b27b38151e2129a897c3452f40326a4b41]:
+;; :results:
+;; \begin{equation}\n\frac{l\,m_0\,m_1\,{\left(D\theta\left(t\right)\right)}^{2}\,{\left(c\left(t\right)\right)}^{2} + l\,{m_0}^{2}\,{\left(Dx_{cm}\left(t\right)\right)}^{2} + l\,{m_0}^{2}\,{\left(Dy_{cm}\left(t\right)\right)}^{2} + 2\,l\,m_0\,m_1\,{\left(Dx_{cm}\left(t\right)\right)}^{2} + l\,m_0\,m_1\,{\left(Dc\left(t\right)\right)}^{2} + 2\,l\,m_0\,m_1\,{\left(Dy_{cm}\left(t\right)\right)}^{2} + l\,{m_1}^{2}\,{\left(Dx_{cm}\left(t\right)\right)}^{2} + l\,{m_1}^{2}\,{\left(Dy_{cm}\left(t\right)\right)}^{2} + {l}^{2}\,m_0\,F\left(t\right) + {l}^{2}\,m_1\,F\left(t\right) - m_0\,F\left(t\right)\,{\left(c\left(t\right)\right)}^{2} - m_1\,F\left(t\right)\,{\left(c\left(t\right)\right)}^{2}}{2\,l\,m_0 + 2\,l\,m_1}\n\end{equation}
+;; :end:
 
 ;; Here are the Lagrange equations:
 
 
-(let* ((q (up (literal-function 'x_cm)
-              (literal-function 'y_cm)
-              (literal-function 'theta)
-              (literal-function 'c)
-              (literal-function 'F)))
-       (L (L-free-constrained* 'm_0 'm_1 'l))
-       (f ((Lagrange-equations L) q)))
+(let [q (up (literal-function 'x_cm)
+            (literal-function 'y_cm)
+            (literal-function 'theta)
+            (literal-function 'c)
+            (literal-function 'F))
+      L (L-free-constrained* 'm_0 'm_1 'l)
+      f ((Lagrange-equations L) q)]
   (->tex-equation
    (f 't)))
 ;; Part D: Substitute $c(t) = l$
@@ -265,21 +244,21 @@
 ;; $l$ to get simplified equations:
 
 
-(let* ((q (up (literal-function 'x_cm)
-              (literal-function 'y_cm)
-              (literal-function 'theta)
-              (lambda (t) 'l)
-              (literal-function 'F)))
-       (L (L-free-constrained* 'm_0 'm_1 'l))
-       (f ((Lagrange-equations L) q)))
+(let [q (up (literal-function 'x_cm)
+            (literal-function 'y_cm)
+            (literal-function 'theta)
+            (fn [t] 'l)
+            (literal-function 'F))
+      L (L-free-constrained* 'm_0 'm_1 'l)
+      f ((Lagrange-equations L) q)]
   (->tex-equation
    (f 't)))
 
 
-;; #+RESULTS[a51bdf5bbe673771262278b5dca048646c257752]:
-;; \begin{equation}
-;; \begin{bmatrix} \displaystyle{ {m}_{0} {D}^{2}{x}_{cm}\left( t \right) + {m}_{1} {D}^{2}{x}_{cm}\left( t \right)} \cr \cr \displaystyle{ {m}_{0} {D}^{2}{y}_{cm}\left( t \right) + {m}_{1} {D}^{2}{y}_{cm}\left( t \right)} \cr \cr \displaystyle{ {{{l}^{2} {m}_{0} {m}_{1} {D}^{2}\theta\left( t \right)}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ {{ - l {m}_{0} {m}_{1} {\left( D\theta\left( t \right) \right)}^{2} + {m}_{0} F\left( t \right) + {m}_{1} F\left( t \right)}\over {{m}_{0} + {m}_{1}}}} \cr \cr \displaystyle{ 0}\end{bmatrix}
-;; \end{equation}
+;; #+RESULTS[2b3634b4f1f5384f5746863913dc914a5beed55a]:
+;; :results:
+;; \begin{equation}\n\begin{bmatrix}\displaystyle{m_0\,{D}^{2}x_{cm}\left(t\right) + m_1\,{D}^{2}x_{cm}\left(t\right)} \cr \cr \displaystyle{m_0\,{D}^{2}y_{cm}\left(t\right) + m_1\,{D}^{2}y_{cm}\left(t\right)} \cr \cr \displaystyle{\frac{{l}^{2}\,m_0\,m_1\,{D}^{2}\theta\left(t\right)}{m_0 + m_1}} \cr \cr \displaystyle{\frac{- l\,m_0\,m_1\,{\left(D\theta\left(t\right)\right)}^{2} + m_0\,F\left(t\right) + m_1\,F\left(t\right)}{m_0 + m_1}} \cr \cr \displaystyle{0}\end{bmatrix}\n\end{equation}
+;; :end:
 
 ;; This is saying that the acceleration on the center of mass is 0.
 
@@ -287,13 +266,13 @@
 ;; We need to pull in the definition of "reduced mass" from exercise 1.11:
 
 
-(define (reduced-mass m1 m2)
+(defn reduced-mass [m1 m2]
   (/ (* m1 m2)
      (+ m1 m2)))
 
 
 ;; #+RESULTS:
-;; : #| reduced-mass |#
+;; : #'ch1.ex1-21/reduced-mass
 
 ;; If we let $m$ be the reduced mass, this equation states:
 
@@ -305,17 +284,16 @@
 ;; We can verify this with Scheme by subtracting the two equations:
 
 
-(let* ((F (literal-function 'F))
-       (theta (literal-function 'theta))
-       (q (up (literal-function 'x_cm)
-              (literal-function 'y_cm)
-              theta
-              (lambda (t) 'l)
-              F))
-       (L (L-free-constrained* 'm_0 'm_1 'l))
-       (f ((Lagrange-equations L) q))
-
-       (m (reduced-mass 'm_0 'm_1)))
+(let [F (literal-function 'F)
+      theta (literal-function 'theta)
+      q (up (literal-function 'x_cm)
+            (literal-function 'y_cm)
+            theta
+            (fn [_] 'l)
+            F)
+      L (L-free-constrained* 'm_0 'm_1 'l)
+      f ((Lagrange-equations L) q)
+      m (reduced-mass 'm_0 'm_1)]
   (->tex-equation
    (- (ref (f 't) 3)
       (- (F 't)
@@ -338,65 +316,59 @@
 ;; Here's the Lagrangian of 2 free particles:
 
 
-(define ((L-free2 m0 m1) local)
-  (let* ((extract (extract-particle 2))
-
-         (p0 (extract local 0))
-         (q0 (coordinate p0))
-         (qdot0 (velocity p0))
-
-         (p1 (extract local 1))
-         (q1 (coordinate p1))
-         (qdot1 (velocity p1)))
-    (+ (KE-particle m0 qdot0)
-       (KE-particle m1 qdot1))))
+(defn L-free2 [m0 m1]
+  (fn [local]
+    (let [extract (extract-particle 2)
+          [_ q0 qdot0] (extract local 0)
+          [_ q1 qdot1] (extract local 1)]
+      (+ (KE-particle m0 qdot0)
+         (KE-particle m1 qdot1)))))
 
 
 ;; #+RESULTS:
-;; : #| L-free2 |#
+;; : #'ch1.ex1-21/L-free2
 
 ;; Then a version of =cm-theta->rect= where we ignore $F$, and sub in a constant
 ;; $l$:
 
 
-(define ((cm-theta->rect* m0 m1 l) local)
-  (let* ((q (coordinate local))
-         (x_cm (ref q 0))
-         (y_cm (ref q 1))
-         (theta (ref q 2))
-         (total-mass (+ m0 m1))
-         (m0-distance (* l (/ m1 total-mass)))
-         (m1-distance (* l (/ m0 total-mass))))
-    (up (- x_cm (* m0-distance (cos theta)))
-        (- y_cm (* m0-distance (sin theta)))
-        (+ x_cm (* m1-distance (cos theta)))
-        (+ y_cm (* m1-distance (sin theta))))))
+(defn cm-theta->rect* [m0 m1 l]
+  (fn [[_ [x_cm y_cm theta]]]
+    (let [total-mass (+ m0 m1)
+          m0-distance (* l (/ m1 total-mass))
+          m1-distance (* l (/ m0 total-mass))]
+      (up (- x_cm (* m0-distance (cos theta)))
+          (- y_cm (* m0-distance (sin theta)))
+          (+ x_cm (* m1-distance (cos theta)))
+          (+ y_cm (* m1-distance (sin theta)))))))
 
 
-;; #+RESULTS[aee3cbebd833662ba2610e81cef9e42936dcb703]:
-;; #| cm-theta->rect* |#
+;; #+RESULTS[3bad9e32d2f15dcf0db2e30f2a5c510d3e4bff2f]:
+;; :results:
+;; #'ch1.ex1-21/cm-theta->rect*
+;; :end:
 
 ;; The Lagrangian:
 
 
-(define (L-free-constrained2 m0 m1 l)
+(defn L-free-constrained2 [m0 m1 l]
   (compose (L-free2 m0 m1)
            (F->C (cm-theta->rect* m0 m1 l))))
 
 
 ;; #+RESULTS:
-;; : #| L-free-constrained2 |#
+;; : #'ch1.ex1-21/L-free-constrained2
 
 ;; Equations:
 
 
-(let* ((q (up (literal-function 'x_cm)
-              (literal-function 'y_cm)
-              (literal-function 'theta)
-              (lambda (t) 'l)
-              (literal-function 'F)))
-       (L1 (L-free-constrained* 'm_0 'm_1 'l))
-       (L2 (L-free-constrained2 'm_0 'm_1 'l)))
+(let [q (up (literal-function 'x_cm)
+            (literal-function 'y_cm)
+            (literal-function 'theta)
+            (fn [_] 'l)
+            (literal-function 'F))
+      L1 (L-free-constrained* 'm_0 'm_1 'l)
+      L2 (L-free-constrained2 'm_0 'm_1 'l)]
   (->tex-equation
    ((- ((Lagrange-equations L1) q)
        ((Lagrange-equations L2) q))

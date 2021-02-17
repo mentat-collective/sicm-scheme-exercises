@@ -21,22 +21,9 @@
 
 (ns ch1.ex1-6
   (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ;; Implementation
 
 ;; Here's the implementation of the modification described earlier:
@@ -57,15 +44,9 @@
         (Lagrangian-action Lagrangian path t0 t1)))))
 
 
-;; #+RESULTS:
-;; : #| parametric-path-action* |#
-
 ;; You might try a similar trick by modifying the first and last entries of
 ;; =intermediate-qs= instead of appending a point, but I suspect that the optimizer
 ;; would be able to figure out how to undo your offset. (Try this as an exercise.)
-
-;; Next, a new version of =find-path= that passes the offsets through to the new
-;; =parametric-path-action*=:
 
 
 (defn find-path* [win]
@@ -77,9 +58,6 @@
                          initial-qs)]
       (make-path t0 q0 t1 q1 minimizing-qs))))
 
-
-;; #+RESULTS:
-;; : #| find-path* |#
 
 ;; And finally, a function that can execute runs of our formalism-killing
 ;; experiment.

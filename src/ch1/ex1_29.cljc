@@ -5,85 +5,69 @@
 
 
 (ns ch1.ex1-29
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 
 
 ;; #+RESULTS:
-;; : ;Loading "src/ch1/utils.cljc"...
-;; : ;  Loading "src/ch1/exdisplay.cljc"... done
-;; : ;... done
-;; : #| check-f |#
 
 ;; I'll do this for a single particle, since it's annoying to get the sum going
 ;; for many; and the lagrangian is additive, so no problem.
 
 
-(define (uniform-translate-shift->rect local)
-  (let* ((t (time local))
-         (q (coordinate local))
-         (xprime (ref q 0))
-         (delta_x (ref q 1))
-         (delta_v (ref q 2)))
-    (+ xprime delta_x (* t delta_v))))
+(defn L-free-particle [mass]
+  (fn [local]
+    (let [v (velocity local)]
+      (* (/ 1 2) mass (square v)))))
 
-(define (L-translate-shift m)
+(defn uniform-translate-shift->rect
+  [[t [xprime delta_x delta_v]]]
+  (+ xprime delta_x (* t delta_v)))
+
+(defn L-translate-shift [m]
   (compose (L-free-particle m)
            (F->C uniform-translate-shift->rect)))
 
 
 ;; #+RESULTS:
-;; : #| uniform-translate-shift->rect |#
-;; :
-;; : #| L-translate-shift |#
+;; | #'ch1.ex1-29/L-free-particle               |
+;; | #'ch1.ex1-29/uniform-translate-shift->rect |
+;; | #'ch1.ex1-29/L-translate-shift             |
 
 ;; First, confirm that if we have a constant, we get what we expected from paper.
 
 
-(let* ((q (up (literal-function 'xprime)
-              (lambda (t) 'Delta_x)
-              (lambda (t) 'Delta_v)))
-       (f (compose (L-translate-shift 'm) (Gamma q))))
+(let [q (up (literal-function 'xprime)
+            (fn [_] 'Delta_x)
+            (fn [_] 'Delta_v))
+      f (compose (L-translate-shift 'm) (Gamma q))]
   (->tex-equation (f 't)))
 
 
-;; #+RESULTS[5d2b4de08cfab4779bf7cdab31d518191b40a4d2]:
-;; \[\begin{equation}
-;; {{1}\over {2}} {{\Delta}_{v}}^{2} m + {\Delta}_{v} m D{x}^\prime\left( t \right) + {{1}\over {2}} m {\left( D{x}^\prime\left( t \right) \right)}^{2}
-;; \end{equation}\]
+;; #+RESULTS[6d80ea55bf15d0e07af7448b1de2198d6e742243]:
+;; :results:
+;; \begin{equation}\n\frac{1}{2}\,{{\Delta}_v}^{2}\,m + {\Delta}_v\,m\,Dx^\prime\left(t\right) + \frac{1}{2}\,m\,{\left(Dx^\prime\left(t\right)\right)}^{2}\n\end{equation}
+;; :end:
 
 ;; We can change this a little to see the extra terms; substract off the free
-;; particle lagrangian, to see the extra stuff.
+;; particle Lagrangian, to see the extra stuff.
 
 
-(let* ((q (up (literal-function 'xprime)
-              (lambda (t) 'Delta_x)
-              (lambda (t) 'Delta_v)))
-       (L (- (L-translate-shift 'm)
-             (L-free-particle 'm)))
-       (f (compose L (Gamma q))))
+(let [q (up (literal-function 'xprime)
+            (fn [_] 'Delta_x)
+            (fn [_] 'Delta_v))
+      L (- (L-translate-shift 'm)
+           (L-free-particle 'm))
+      f (compose L (Gamma q))]
   (->tex-equation (f 't)))
 
 
-;; #+RESULTS[c17004e61fec7edb3835203cdc99c562940bee7c]:
-;; \[\begin{equation}
-;; {{1}\over {2}} {{\Delta}_{v}}^{2} m + {\Delta}_{v} m D{x}^\prime\left( t \right)
-;; \end{equation}\]
+;; #+RESULTS[6bd06cb88d4150ef03c736094abd817782efe2a4]:
+;; :results:
+;; \begin{equation}\n\frac{1}{2}\,{{\Delta}_v}^{2}\,m + {\Delta}_v\,m\,Dx^\prime\left(t\right)\n\end{equation}
+;; :end:
 
 ;; Here's the gnarly version with both entries as actual functions. Can this be a
 ;; total time derivative? It CANNOT be, because we have a $(D \Delta_v(t))^2$ term
@@ -92,19 +76,19 @@
 ;; not allowed.
 
 
-(let* ((q (up (literal-function 'xprime)
-              (literal-function 'Delta_x)
-              (literal-function 'Delta_v)))
-       (L (- (L-translate-shift 'm)
-             (L-free-particle 'm)))
-       (f (compose L (Gamma q))))
+(let [q (up (literal-function 'xprime)
+            (literal-function 'Delta_x)
+            (literal-function 'Delta_v))
+      L (- (L-translate-shift 'm)
+           (L-free-particle 'm))
+      f (compose L (Gamma q))]
   (->tex-equation (f 't)))
 
 
-;; #+RESULTS[ded4f6dec25954c9b7536153e1db8db0315cb399]:
-;; \[ \begin{equation}
-;; {{1}\over {2}} m {t}^{2} {\left( D{\Delta}_{v}\left( t \right) \right)}^{2} + m t D{x}^\prime\left( t \right) D{\Delta}_{v}\left( t \right) + m t D{\Delta}_{v}\left( t \right) {\Delta}_{v}\left( t \right) + m t D{\Delta}_{v}\left( t \right) D{\Delta}_{x}\left( t \right) + m D{x}^\prime\left( t \right) {\Delta}_{v}\left( t \right) + m D{x}^\prime\left( t \right) D{\Delta}_{x}\left( t \right) - {{1}\over {2}} m {\left( D{\Delta}_{v}\left( t \right) \right)}^{2} + {{1}\over {2}} m {\left( {\Delta}_{v}\left( t \right) \right)}^{2} + m {\Delta}_{v}\left( t \right) D{\Delta}_{x}\left( t \right)
-;; \end{equation} \]
+;; #+RESULTS[18dc1bcd401ff67e0be067f790f2c168f2185c00]:
+;; :results:
+;; \begin{equation}\n\frac{1}{2}\,m\,{t}^{2}\,{\left(D{\Delta}_v\left(t\right)\right)}^{2} + m\,t\,Dx^\prime\left(t\right)\,D{\Delta}_v\left(t\right) + m\,t\,D{\Delta}_x\left(t\right)\,D{\Delta}_v\left(t\right) + m\,t\,{\Delta}_v\left(t\right)\,D{\Delta}_v\left(t\right) + m\,Dx^\prime\left(t\right)\,D{\Delta}_x\left(t\right) + m\,Dx^\prime\left(t\right)\,{\Delta}_v\left(t\right) + m\,D{\Delta}_x\left(t\right)\,{\Delta}_v\left(t\right) + \frac{1}{2}\,m\,{\left({\Delta}_v\left(t\right)\right)}^{2} + \frac{-1}{2}\,m\,{\left(D{\Delta}_v\left(t\right)\right)}^{2}\n\end{equation}
+;; :end:
 
 ;; Let's simplify by making the $\Delta_v$ constant and see if there's anything so
 ;; obvious about $\Delta_x$.
@@ -114,15 +98,15 @@
 ;; derivative and see what happens:
 
 
-(let* ((q (lambda (dx)
-            (up (literal-function 'xprime)
-                dx
-                (lambda (t) 'Delta_v))))
-       (L (- (L-translate-shift 'm)
-             (L-free-particle 'm)))
-       (f (lambda (dx)
-            (compose L (Gamma (q dx))))))
+(let [q (fn [dx]
+          (up (literal-function 'xprime)
+              dx
+              (fn [_] 'Delta_v)))
+      L (- (L-translate-shift 'm)
+           (L-free-particle 'm))
+      f (fn [dx]
+          (compose L (Gamma (q dx))))]
   (->tex-equation
    ((- (f (literal-function 'Delta_x))
-       (f (lambda (t) 'Delta_x)))
+       (f (fn [_] 'Delta_x)))
     't)))

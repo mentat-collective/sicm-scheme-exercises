@@ -5,24 +5,13 @@
 
 
 (ns ch1.ex1-12
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
 
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
 
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
-
+;; #+RESULTS:
 
 ;; This exercise asks us to write Scheme implementations for each of the three
 ;; systems described in [[https://tgvaughan.github.io/sicm/chapter001.html#Exe_1-9][Exercise 1.9]].
@@ -35,10 +24,10 @@
 ;; - The Lagrange equations for the system.
 
 
-(define (lagrange-equation-steps L q)
-  (let* ((p1 (compose ((partial 1) L) (Gamma q)))
-         (p2 (compose ((partial 2) L) (Gamma q)))
-         (dp2 (D p2)))
+(defn lagrange-equation-steps [L q]
+  (let [p1 (compose ((partial 1) L) (Gamma q))
+        p2 (compose ((partial 2) L) (Gamma q))
+        dp2 (D p2)]
     (->tex-equation
      ((up p1 p2 dp2 (- dp2 p1))
       't))))
@@ -58,15 +47,14 @@
 ;; Here is the Lagrangian described by the exercise:
 
 
-(define ((L-pendulum m g l) local)
-  (let ((theta (coordinate local))
-        (theta_dot (velocity local)))
-    (+ (* 1/2 m (square l) (square theta_dot))
+(defn L-pendulum [m g l]
+  (fn [[_ theta thetadot]]
+    (+ (* (/ 1 2) m (square l) (square thetadot))
        (* m g l (cos theta)))))
 
 
 ;; #+RESULTS:
-;; : #| L-pendulum |#
+;; : #'ch1.ex1-12/L-pendulum
 
 ;; And the steps that lead us to Lagrange's equations:
 
@@ -76,18 +64,18 @@
  (literal-function 'theta))
 
 
-;; #+RESULTS[aaf5812bee20b3464cf996ad648f7000e663545b]:
-;; \begin{equation}
-;; \begin{pmatrix} \displaystyle{ \left( - 1 \right) g l m \sin\left( \theta\left( t \right) \right)} \cr \cr \displaystyle{ {l}^{2} m D\theta\left( t \right)} \cr \cr \displaystyle{ {l}^{2} m {D}^{2}\theta\left( t \right)} \cr \cr \displaystyle{ g l m \sin\left( \theta\left( t \right) \right) + {l}^{2} m {D}^{2}\theta\left( t \right)}\end{pmatrix}
-;; \end{equation}
+;; #+RESULTS[743c15f76087dcfc3e8f96fca6ff914111ae8809]:
+;; :results:
+;; \begin{equation}\n\begin{pmatrix}\displaystyle{- g\,l\,m\,\sin\left(\theta\left(t\right)\right)} \cr \cr \displaystyle{{l}^{2}\,m\,D\theta\left(t\right)} \cr \cr \displaystyle{{l}^{2}\,m\,{D}^{2}\theta\left(t\right)} \cr \cr \displaystyle{g\,l\,m\,\sin\left(\theta\left(t\right)\right) + {l}^{2}\,m\,{D}^{2}\theta\left(t\right)}\end{pmatrix}\n\end{equation}
+;; :end:
 
 ;; The final entry is the Lagrange equation, equal to $0$. Divide out the shared
 ;; factors of $m$ and $l$:
 
 
-(let* ((L (L-pendulum 'm 'g 'l))
-       (theta (literal-function 'theta))
-       (eqs ((Lagrange-equations L) theta)))
+(let [L (L-pendulum 'm 'g 'l)
+      theta (literal-function 'theta)
+      eqs ((Lagrange-equations L) theta)]
   (->tex-equation
    ((/ eqs (* 'm 'l))
     't)))
@@ -114,13 +102,15 @@
 ;; potential $V$ that has access to the coordinates:
 
 
-(define (((L-2d-potential m) V) local)
-  (- (* 1/2 m (square (velocity local)))
-     (V (coordinate local))))
+(defn L-2d-potential [m]
+  (fn [V]
+    (fn [local]
+      (- (* (/ 1 2) m (square (velocity local)))
+         (V (coordinate local))))))
 
 
 ;; #+RESULTS:
-;; : #| L-2d-potential |#
+;; : #'ch1.ex1-12/L-2d-potential
 
 ;; Thanks to the tuple algebra of =scmutils=, This form of the Lagrangian is
 ;; general enough that it would work for any number of dimensions in rectangular
@@ -133,18 +123,16 @@
 ;; Next define the potential from the problem description:
 
 
-(define (V q)
-  (let ((x (ref q 0))
-        (y (ref q 1)))
-    (- (+ (/ (+ (square x)
-                (square y))
-             2)
-          (* (square x) y))
-       (/ (cube y) 3))))
+(defn V [[x y]]
+  (- (+ (/ (+ (square x)
+              (square y))
+           2)
+        (* (square x) y))
+     (/ (cube y) 3)))
 
 
 ;; #+RESULTS:
-;; : #| V |#
+;; : #'ch1.ex1-12/V
 
 ;; Our helpful function generates the Lagrange equations, along with each
 ;; intermediate step:
@@ -175,19 +163,15 @@
 ;; Here is the Lagrangian:
 
 
-(define ((L-sphere m R) local)
-  (let* ((q (coordinate local))
-         (qdot (velocity local))
-         (theta (ref q 0))
-         (alpha (ref qdot 0))
-         (beta (ref qdot 1)))
-    (* 1/2 m (square R)
+(defn L-sphere [m R]
+  (fn [[_ [theta] [alpha beta]]]
+    (* (/ 1 2) m (square R)
        (+ (square alpha)
           (square (* beta (sin theta)))))))
 
 
 ;; #+RESULTS:
-;; : #| L-sphere |#
+;; : #'ch1.ex1-12/L-sphere
 
 ;; Here is the full derivation:
 
@@ -198,10 +182,10 @@
      (literal-function 'phi)))
 
 
-;; #+RESULTS[5d05668e1d73bcd0f884eb8ba013c4eb56e72fda]:
-;; \begin{equation}
-;; \begin{pmatrix} \displaystyle{ \begin{bmatrix} \displaystyle{ {R}^{2} m \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) {\left( D\phi\left( t \right) \right)}^{2}} \cr \cr \displaystyle{ 0}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ {R}^{2} m D\theta\left( t \right)} \cr \cr \displaystyle{ {R}^{2} m {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} D\phi\left( t \right)}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ {R}^{2} m {D}^{2}\theta\left( t \right)} \cr \cr \displaystyle{ 2 {R}^{2} m \sin\left( \theta\left( t \right) \right) D\theta\left( t \right) \cos\left( \theta\left( t \right) \right) D\phi\left( t \right) + {R}^{2} m {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} {D}^{2}\phi\left( t \right)}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{  - {R}^{2} m \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) {\left( D\phi\left( t \right) \right)}^{2} + {R}^{2} m {D}^{2}\theta\left( t \right)} \cr \cr \displaystyle{ 2 {R}^{2} m \sin\left( \theta\left( t \right) \right) D\theta\left( t \right) \cos\left( \theta\left( t \right) \right) D\phi\left( t \right) + {R}^{2} m {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} {D}^{2}\phi\left( t \right)}\end{bmatrix}}\end{pmatrix}
-;; \end{equation}
+;; #+RESULTS[c06373aad0b51e939e30b7df4899f73449bb4dc1]:
+;; :results:
+;; \begin{equation}\n\begin{pmatrix}\displaystyle{\begin{bmatrix}\displaystyle{{R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right)} \cr \cr \displaystyle{0}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{{R}^{2}\,m\,D\theta\left(t\right)} \cr \cr \displaystyle{{R}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,D\phi\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{{R}^{2}\,m\,{D}^{2}\theta\left(t\right)} \cr \cr \displaystyle{2\,{R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right) + {R}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{- {R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right) + {R}^{2}\,m\,{D}^{2}\theta\left(t\right)} \cr \cr \displaystyle{2\,{R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right) + {R}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)}\end{bmatrix}}\end{pmatrix}\n\end{equation}
+;; :end:
 
 ;; The final Lagrange residuals have a few terms that we can divide out. Scheme
 ;; doesn't know that these are meant to be residuals, so it won't cancel out
@@ -211,13 +195,13 @@
 ;; equation by dividing out, respectively, $mR^2$ and $mR^2 \sin \theta$:
 
 
-(let* ((L (L-sphere 'm 'R))
-       (theta (literal-function 'theta))
-       (q (up theta (literal-function 'phi)))
-       (le ((Lagrange-equations L) q)))
-  (let ((eq1 (ref le 0))
-        (eq2 (ref le 1)))
-    (->tex-equation
-     ((up (/ eq1 (* 'm (square 'R)))
-          (/ eq2 (* (sin theta) 'm (square 'R))))
-      't))))
+(let [L     (L-sphere 'm 'R)
+      theta (literal-function 'theta)
+      q     (up theta (literal-function 'phi))
+      le    ((Lagrange-equations L) q)
+      eq1   (ref le 0)
+      eq2   (ref le 1)]
+  (->tex-equation
+   ((up (/ eq1 (* 'm (square 'R)))
+        (/ eq2 (* (sin theta) 'm (square 'R))))
+    't)))

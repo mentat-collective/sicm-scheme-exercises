@@ -151,7 +151,7 @@ The first exercise gives us some practice thinking about the redundancy in diffe
 
 # Exercise 1.3: Fermat optics<a id="sec-2"></a>
 
-This problem has us exploring some consequences for optics of the principle of least time. [Exercise 1.3](https://tgvaughan.github.io/sicm/chapter001.html#Exe_1-3) states:
+0 This problem has us exploring some consequences for optics of the principle of least time. [Exercise 1.3](https://tgvaughan.github.io/sicm/chapter001.html#Exe_1-3) states:
 
 > Fermat observed that the laws of reflection and refraction could be accounted for by the following facts: Light travels in a straight line in any particular medium with a velocity that depends upon the medium. The path taken by a ray from a source to a destination through any sequence of media is a path of least total time, compared to neighboring paths. Show that these facts imply the laws of reflection and refraction.
 
@@ -2176,23 +2176,10 @@ I learned quite a bit about functional notation from this exercise, and I think 
 
 ```clojure
 (ns ch1.ex1-16
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
 
 This exercise gives you practice in writing Lagrangians as compositions.
@@ -2284,9 +2271,7 @@ This is already written in a form that can handle an arbitrary number of coordia
       (up 'v_x 'v_y 'v_z))))
 ```
 
-\begin{equation}
-\frac{1}{2}\,m\,{v\_x}^{2} + \frac{1}{2}\,m\,{v\_y}^{2} + \frac{1}{2}\,m\,{v\_z}^{2} - U\left(\sqrt {{x}^{2} + {y}^{2} + {z}^{2}}\right)
-\end{equation}
+\begin{equation}\n\frac{1}{2}\,m\,{v\_x}^{2} + \frac{1}{2}\,m\,{v\_y}^{2} + \frac{1}{2}\,m\,{v\_z}^{2} - U\left(\sqrt {{x}^{2} + {y}^{2} + {z}^{2}}\right)\n\end{equation}
 
 Next, the spherical. Write down the coordinate transformation from spherical to rectangular coordinates as a Scheme procedure:
 
@@ -2308,9 +2293,7 @@ Here are the velocities calculated above by hand:
        (up 'rdot 'thetadot 'phidot)))))
 ```
 
-\begin{equation}
-\begin{pmatrix}\displaystyle{- \dot {\phi}\,r\,\sin\left(\phi\right)\,\sin\left(\theta\right) + r\,\dot {\theta}\,\cos\left(\phi\right)\,\cos\left(\theta\right) + \dot r\,\cos\left(\phi\right)\,\sin\left(\theta\right)} \cr \cr \displaystyle{\dot {\phi}\,r\,\cos\left(\phi\right)\,\sin\left(\theta\right) + r\,\dot {\theta}\,\sin\left(\phi\right)\,\cos\left(\theta\right) + \dot r\,\sin\left(\phi\right)\,\sin\left(\theta\right)} \cr \cr \displaystyle{- r\,\dot {\theta}\,\sin\left(\theta\right) + \dot r\,\cos\left(\theta\right)}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{- \dot {\phi}\,r\,\sin\left(\phi\right)\,\sin\left(\theta\right) + r\,\dot {\theta}\,\cos\left(\phi\right)\,\cos\left(\theta\right) + \dot r\,\cos\left(\phi\right)\,\sin\left(\theta\right)} \cr \cr \displaystyle{\dot {\phi}\,r\,\cos\left(\phi\right)\,\sin\left(\theta\right) + r\,\dot {\theta}\,\sin\left(\phi\right)\,\cos\left(\theta\right) + \dot r\,\sin\left(\phi\right)\,\sin\left(\theta\right)} \cr \cr \displaystyle{- r\,\dot {\theta}\,\sin\left(\theta\right) + \dot r\,\cos\left(\theta\right)}\end{pmatrix}\n\end{equation}
 
 Now that we have \\(L\\) and \\(C\\), we can compose them to get \\(L'\\), our spherical Lagrangian:
 
@@ -2330,9 +2313,7 @@ Confirm that this is equivalent to the analytic solution:
       (up 'rdot 'thetadot 'phidot))))
 ```
 
-\begin{equation}
-\frac{1}{2}\,m\,{\dot {\phi}}^{2}\,{r}^{2}\,{\sin}^{2}\left(\theta\right) + \frac{1}{2}\,m\,{r}^{2}\,{\dot {\theta}}^{2} + \frac{1}{2}\,m\,{\dot r}^{2} - U\left(r\right)
-\end{equation}
+\begin{equation}\n\frac{1}{2}\,m\,{\dot {\phi}}^{2}\,{r}^{2}\,{\sin}^{2}\left(\theta\right) + \frac{1}{2}\,m\,{r}^{2}\,{\dot {\theta}}^{2} + \frac{1}{2}\,m\,{\dot r}^{2} - U\left(r\right)\n\end{equation}
 
 ## Discussion<a id="sec-17-3"></a>
 
@@ -2346,23 +2327,10 @@ Later, the authors add in a very simple-to-write coordinate transform that has o
 
 ```clojure
 (ns ch1.ex1-17
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
 
 This, and the next three exercises, are here to give you practice in the real art, of difficulty, of any dynamics problem. It's easy to change coordinates. So what coordinates do you use?
@@ -2412,9 +2380,7 @@ The transformations are identical:
   (up 't 'n 'ndot)))
 ```
 
-\begin{equation}
-\begin{pmatrix}\displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{0}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{0}\end{pmatrix}\n\end{equation}
 
 Define the Lagrangian:
 
@@ -2445,9 +2411,7 @@ Final Lagrangian:
   (up 't 'n 'ndot)))
 ```
 
-\begin{equation}
-\frac{{d}^{2}\,{h}^{2}\,m\,{\dot n}^{2}\,{\pi}^{2} - d\,g\,{h}^{2}\,m\,\sin\left(2\,n\,\pi\right) + m\,{\dot n}^{2}}{2\,{h}^{2}}
-\end{equation}
+\begin{equation}\n\frac{{d}^{2}\,{h}^{2}\,m\,{\dot n}^{2}\,{\pi}^{2} - d\,g\,{h}^{2}\,m\,\sin\left(2\,n\,\pi\right) + m\,{\dot n}^{2}}{2\,{h}^{2}}\n\end{equation}
 
 Lagrange equations of motion:
 
@@ -2458,31 +2422,16 @@ Lagrange equations of motion:
    (((Lagrange-equations L) n) 't)))
 ```
 
-\begin{equation}
-\frac{{d}^{2}\,{h}^{2}\,m\,{\pi}^{2}\,{D}^{2}n\left(t\right) + d\,g\,{h}^{2}\,m\,\pi\,\cos\left(2\,\pi\,n\left(t\right)\right) + m\,{D}^{2}n\left(t\right)}{{h}^{2}}
-\end{equation}
+\begin{equation}\n\frac{{d}^{2}\,{h}^{2}\,m\,{\pi}^{2}\,{D}^{2}n\left(t\right) + d\,g\,{h}^{2}\,m\,\pi\,\cos\left(2\,\pi\,n\left(t\right)\right) + m\,{D}^{2}n\left(t\right)}{{h}^{2}}\n\end{equation}
 
 # Exercise 1.18: Bead on a triaxial surface<a id="sec-19"></a>
 
 ```clojure
 (ns ch1.ex1-18
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
 
 > A bead of mass \\(m\\) moves without friction on a triaxial ellipsoidal surface. In rectangular coordinates the surface satisfies
@@ -2525,9 +2474,7 @@ Final Lagrangian:
    ((L-central-triaxial 'm 'a 'b 'c) local)))
 ```
 
-\begin{equation}
-\frac{1}{2}\,{a}^{2}\,m\,{\dot {\phi}}^{2}\,{\sin}^{2}\left(\phi\right)\,{\sin}^{2}\left(\theta\right) - {a}^{2}\,m\,\dot {\phi}\,\dot {\theta}\,\cos\left(\phi\right)\,\sin\left(\phi\right)\,\sin\left(\theta\right)\,\cos\left(\theta\right) + \frac{1}{2}\,{a}^{2}\,m\,{\dot {\theta}}^{2}\,{\cos}^{2}\left(\phi\right)\,{\cos}^{2}\left(\theta\right) + \frac{1}{2}\,{b}^{2}\,m\,{\dot {\phi}}^{2}\,{\cos}^{2}\left(\phi\right)\,{\sin}^{2}\left(\theta\right) + {b}^{2}\,m\,\dot {\phi}\,\dot {\theta}\,\cos\left(\phi\right)\,\sin\left(\phi\right)\,\sin\left(\theta\right)\,\cos\left(\theta\right) + \frac{1}{2}\,{b}^{2}\,m\,{\dot {\theta}}^{2}\,{\sin}^{2}\left(\phi\right)\,{\cos}^{2}\left(\theta\right) + \frac{1}{2}\,{c}^{2}\,m\,{\dot {\theta}}^{2}\,{\sin}^{2}\left(\theta\right)
-\end{equation}
+\begin{equation}\n\frac{1}{2}\,{a}^{2}\,m\,{\dot {\phi}}^{2}\,{\sin}^{2}\left(\theta\right)\,{\sin}^{2}\left(\phi\right) - {a}^{2}\,m\,\dot {\phi}\,\dot {\theta}\,\cos\left(\phi\right)\,\cos\left(\theta\right)\,\sin\left(\theta\right)\,\sin\left(\phi\right) + \frac{1}{2}\,{a}^{2}\,m\,{\dot {\theta}}^{2}\,{\cos}^{2}\left(\phi\right)\,{\cos}^{2}\left(\theta\right) + \frac{1}{2}\,{b}^{2}\,m\,{\dot {\phi}}^{2}\,{\cos}^{2}\left(\phi\right)\,{\sin}^{2}\left(\theta\right) + {b}^{2}\,m\,\dot {\phi}\,\dot {\theta}\,\cos\left(\phi\right)\,\cos\left(\theta\right)\,\sin\left(\theta\right)\,\sin\left(\phi\right) + \frac{1}{2}\,{b}^{2}\,m\,{\dot {\theta}}^{2}\,{\cos}^{2}\left(\theta\right)\,{\sin}^{2}\left(\phi\right) + \frac{1}{2}\,{c}^{2}\,m\,{\dot {\theta}}^{2}\,{\sin}^{2}\left(\theta\right)\n\end{equation}
 
 I'm sure there's some simplification in there for us. But why?
 
@@ -2542,9 +2489,7 @@ Lagrange equations of motion:
     't)))
 ```
 
-\begin{equation}
-\begin{bmatrix}\displaystyle{- {a}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right)\,{\cos}^{2}\left(\phi\left(t\right)\right) - {a}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right)\,{\cos}^{2}\left(\phi\left(t\right)\right) -2\,{a}^{2}\,m\,D\theta\left(t\right)\,D\phi\left(t\right)\,{\cos}^{2}\left(\theta\left(t\right)\right)\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) - {b}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right)\,{\sin}^{2}\left(\phi\left(t\right)\right) - {b}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right)\,{\sin}^{2}\left(\phi\left(t\right)\right) + 2\,{b}^{2}\,m\,D\theta\left(t\right)\,D\phi\left(t\right)\,{\cos}^{2}\left(\theta\left(t\right)\right)\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) - {a}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) + {a}^{2}\,m\,{D}^{2}\theta\left(t\right)\,{\cos}^{2}\left(\theta\left(t\right)\right)\,{\cos}^{2}\left(\phi\left(t\right)\right) + {b}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) + {b}^{2}\,m\,{D}^{2}\theta\left(t\right)\,{\cos}^{2}\left(\theta\left(t\right)\right)\,{\sin}^{2}\left(\phi\left(t\right)\right) + {c}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right) + {c}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right)} \cr \cr \displaystyle{{a}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) + {a}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) + 2\,{a}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right)\,{\sin}^{2}\left(\phi\left(t\right)\right) - {b}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) - {b}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) + 2\,{b}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right)\,{\cos}^{2}\left(\phi\left(t\right)\right) + {a}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)\,{\sin}^{2}\left(\phi\left(t\right)\right) - {a}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right)\,\cos\left(\theta\left(t\right)\right)\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) + {b}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)\,{\cos}^{2}\left(\phi\left(t\right)\right) + {b}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right)\,\cos\left(\theta\left(t\right)\right)\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right)}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{- {a}^{2}\,m\,{\cos}^{2}\left(\phi\left(t\right)\right)\,\cos\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,\sin\left(\theta\left(t\right)\right) - {a}^{2}\,m\,{\cos}^{2}\left(\phi\left(t\right)\right)\,\cos\left(\theta\left(t\right)\right)\,\sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2} -2\,{a}^{2}\,m\,\cos\left(\phi\left(t\right)\right)\,{\cos}^{2}\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,D\phi\left(t\right)\,\sin\left(\phi\left(t\right)\right) + 2\,{b}^{2}\,m\,\cos\left(\phi\left(t\right)\right)\,{\cos}^{2}\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,D\phi\left(t\right)\,\sin\left(\phi\left(t\right)\right) - {b}^{2}\,m\,\cos\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,\sin\left(\theta\left(t\right)\right)\,{\sin}^{2}\left(\phi\left(t\right)\right) - {b}^{2}\,m\,\cos\left(\theta\left(t\right)\right)\,\sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,{\sin}^{2}\left(\phi\left(t\right)\right) + {a}^{2}\,m\,{\cos}^{2}\left(\phi\left(t\right)\right)\,{\cos}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right) - {a}^{2}\,m\,\cos\left(\phi\left(t\right)\right)\,\cos\left(\theta\left(t\right)\right)\,\sin\left(\theta\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right)\,{D}^{2}\phi\left(t\right) + {b}^{2}\,m\,\cos\left(\phi\left(t\right)\right)\,\cos\left(\theta\left(t\right)\right)\,\sin\left(\theta\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right)\,{D}^{2}\phi\left(t\right) + {b}^{2}\,m\,{\cos}^{2}\left(\theta\left(t\right)\right)\,{\sin}^{2}\left(\phi\left(t\right)\right)\,{D}^{2}\theta\left(t\right) + {c}^{2}\,m\,\cos\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,\sin\left(\theta\left(t\right)\right) + {c}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right)} \cr \cr \displaystyle{{a}^{2}\,m\,\cos\left(\phi\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,{\sin}^{2}\left(\theta\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) + {a}^{2}\,m\,\cos\left(\phi\left(t\right)\right)\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\sin\left(\phi\left(t\right)\right) + 2\,{a}^{2}\,m\,\cos\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,\sin\left(\theta\left(t\right)\right)\,D\phi\left(t\right)\,{\sin}^{2}\left(\phi\left(t\right)\right) + 2\,{b}^{2}\,m\,{\cos}^{2}\left(\phi\left(t\right)\right)\,\cos\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,\sin\left(\theta\left(t\right)\right)\,D\phi\left(t\right) - {b}^{2}\,m\,\cos\left(\phi\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,{\sin}^{2}\left(\theta\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) - {b}^{2}\,m\,\cos\left(\phi\left(t\right)\right)\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\sin\left(\phi\left(t\right)\right) - {a}^{2}\,m\,\cos\left(\phi\left(t\right)\right)\,\cos\left(\theta\left(t\right)\right)\,\sin\left(\theta\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right)\,{D}^{2}\theta\left(t\right) + {a}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{\sin}^{2}\left(\phi\left(t\right)\right)\,{D}^{2}\phi\left(t\right) + {b}^{2}\,m\,{\cos}^{2}\left(\phi\left(t\right)\right)\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right) + {b}^{2}\,m\,\cos\left(\phi\left(t\right)\right)\,\cos\left(\theta\left(t\right)\right)\,\sin\left(\theta\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right)\,{D}^{2}\theta\left(t\right)}\end{bmatrix}\n\end{equation}
 
 This is fairly horrifying. This really demands animation, as I bet it looks cool, but it's not comprehensible in this form.
 
@@ -2556,23 +2501,10 @@ The system description is:
 
 ```clojure
 (ns ch1.ex1-19
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
 
 > The two-bar linkage shown in figure 1.3 is constrained to move in the plane. It is composed of three small massive bodies interconnected by two massless rigid rods in a uniform gravitational field with vertical acceleration g. The rods are pinned to the central body by a hinge that allows the linkage to fold. The system is arranged so that the hinge is completely free: the members can go through all configurations without collision. Formulate a Lagrangian that describes the system and find the Lagrange equations of motion. Use the computer to do this, because the equations are rather big.
@@ -2657,9 +2589,7 @@ Gravitational potential:
    ((L-double-linkage 'l_1 'l_2 'm_1 'm_2 'm_3 U) local)))
 ```
 
-\begin{equation}
-{l\_1}^{2}\,m\_1\,{\dot {\theta}}^{2} + 2\,l\_1\,m\_1\,\dot {\theta}\,{\dot x}\_2\,\cos\left(\theta\right) + 2\,l\_1\,m\_1\,\dot {\theta}\,{\dot y}\_2\,\sin\left(\theta\right) + {l\_2}^{2}\,m\_3\,{\dot {\phi}}^{2} + 2\,l\_2\,m\_3\,\dot {\phi}\,{\dot x}\_2\,\cos\left(\phi\right) + 2\,l\_2\,m\_3\,\dot {\phi}\,{\dot y}\_2\,\sin\left(\phi\right) + g\,l\_1\,m\_1\,\cos\left(\theta\right) + g\,l\_2\,m\_3\,\cos\left(\phi\right) - g\,m\_1\,y\_2 - g\,m\_2\,y\_2 - g\,m\_3\,y\_2 + m\_1\,{{\dot x}\_2}^{2} + m\_1\,{{\dot y}\_2}^{2} + m\_2\,{{\dot x}\_2}^{2} + m\_2\,{{\dot y}\_2}^{2} + m\_3\,{{\dot x}\_2}^{2} + m\_3\,{{\dot y}\_2}^{2}
-\end{equation}
+\begin{equation}\n{l\_1}^{2}\,m\_1\,{\dot {\theta}}^{2} + 2\,l\_1\,m\_1\,\dot {\theta}\,{\dot x}\_2\,\cos\left(\theta\right) + 2\,l\_1\,m\_1\,\dot {\theta}\,{\dot y}\_2\,\sin\left(\theta\right) + {l\_2}^{2}\,m\_3\,{\dot {\phi}}^{2} + 2\,l\_2\,m\_3\,\dot {\phi}\,{\dot x}\_2\,\cos\left(\phi\right) + 2\,l\_2\,m\_3\,\dot {\phi}\,{\dot y}\_2\,\sin\left(\phi\right) + g\,l\_1\,m\_1\,\cos\left(\theta\right) + g\,l\_2\,m\_3\,\cos\left(\phi\right) - g\,m\_1\,y\_2 - g\,m\_2\,y\_2 - g\,m\_3\,y\_2 + m\_1\,{{\dot x}\_2}^{2} + m\_1\,{{\dot y}\_2}^{2} + m\_2\,{{\dot x}\_2}^{2} + m\_2\,{{\dot y}\_2}^{2} + m\_3\,{{\dot x}\_2}^{2} + m\_3\,{{\dot y}\_2}^{2}\n\end{equation}
 
 Lagrange equations of motion:
 
@@ -2675,9 +2605,7 @@ Lagrange equations of motion:
     't)))
 ```
 
-\begin{equation}
-\begin{bmatrix}\displaystyle{g\,l\_1\,m\_1\,\sin\left(\theta\left(t\right)\right) + 2\,{l\_1}^{2}\,m\_1\,{D}^{2}\theta\left(t\right) + 2\,l\_1\,m\_1\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}y\_2\left(t\right) + 2\,l\_1\,m\_1\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}x\_2\left(t\right)} \cr \cr \displaystyle{g\,l\_2\,m\_3\,\sin\left(\phi\left(t\right)\right) + 2\,{l\_2}^{2}\,m\_3\,{D}^{2}\phi\left(t\right) + 2\,l\_2\,m\_3\,\cos\left(\phi\left(t\right)\right)\,{D}^{2}x\_2\left(t\right) + 2\,l\_2\,m\_3\,\sin\left(\phi\left(t\right)\right)\,{D}^{2}y\_2\left(t\right)} \cr \cr \displaystyle{-2\,l\_1\,m\_1\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2} -2\,l\_2\,m\_3\,{\left(D\phi\left(t\right)\right)}^{2}\,\sin\left(\phi\left(t\right)\right) + 2\,l\_1\,m\_1\,{D}^{2}\theta\left(t\right)\,\cos\left(\theta\left(t\right)\right) + 2\,l\_2\,m\_3\,{D}^{2}\phi\left(t\right)\,\cos\left(\phi\left(t\right)\right) + 2\,m\_1\,{D}^{2}x\_2\left(t\right) + 2\,m\_2\,{D}^{2}x\_2\left(t\right) + 2\,m\_3\,{D}^{2}x\_2\left(t\right)} \cr \cr \displaystyle{2\,l\_1\,m\_1\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right) + 2\,l\_2\,m\_3\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\phi\left(t\right)\right) + 2\,l\_1\,m\_1\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right) + 2\,l\_2\,m\_3\,{D}^{2}\phi\left(t\right)\,\sin\left(\phi\left(t\right)\right) + g\,m\_1 + g\,m\_2 + g\,m\_3 + 2\,m\_1\,{D}^{2}y\_2\left(t\right) + 2\,m\_2\,{D}^{2}y\_2\left(t\right) + 2\,m\_3\,{D}^{2}y\_2\left(t\right)}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{g\,l\_1\,m\_1\,\sin\left(\theta\left(t\right)\right) + 2\,{l\_1}^{2}\,m\_1\,{D}^{2}\theta\left(t\right) + 2\,l\_1\,m\_1\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}x\_2\left(t\right) + 2\,l\_1\,m\_1\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}y\_2\left(t\right)} \cr \cr \displaystyle{g\,l\_2\,m\_3\,\sin\left(\phi\left(t\right)\right) + 2\,{l\_2}^{2}\,m\_3\,{D}^{2}\phi\left(t\right) + 2\,l\_2\,m\_3\,\cos\left(\phi\left(t\right)\right)\,{D}^{2}x\_2\left(t\right) + 2\,l\_2\,m\_3\,\sin\left(\phi\left(t\right)\right)\,{D}^{2}y\_2\left(t\right)} \cr \cr \displaystyle{-2\,l\_1\,m\_1\,{\left(D\theta\left(t\right)\right)}^{2}\,\sin\left(\theta\left(t\right)\right) -2\,l\_2\,m\_3\,{\left(D\phi\left(t\right)\right)}^{2}\,\sin\left(\phi\left(t\right)\right) + 2\,l\_1\,m\_1\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right) + 2\,l\_2\,m\_3\,\cos\left(\phi\left(t\right)\right)\,{D}^{2}\phi\left(t\right) + 2\,m\_1\,{D}^{2}x\_2\left(t\right) + 2\,m\_2\,{D}^{2}x\_2\left(t\right) + 2\,m\_3\,{D}^{2}x\_2\left(t\right)} \cr \cr \displaystyle{2\,l\_1\,m\_1\,\cos\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2} + 2\,l\_2\,m\_3\,\cos\left(\phi\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2} + 2\,l\_1\,m\_1\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right) + 2\,l\_2\,m\_3\,\sin\left(\phi\left(t\right)\right)\,{D}^{2}\phi\left(t\right) + g\,m\_1 + g\,m\_2 + g\,m\_3 + 2\,m\_1\,{D}^{2}y\_2\left(t\right) + 2\,m\_2\,{D}^{2}y\_2\left(t\right) + 2\,m\_3\,{D}^{2}y\_2\left(t\right)}\end{bmatrix}\n\end{equation}
 
 Kill some clear factors:
 
@@ -2697,9 +2625,7 @@ Kill some clear factors:
        (ref eqs 3))))
 ```
 
-\begin{equation}
-\begin{pmatrix}\displaystyle{g\,\sin\left(\theta\left(t\right)\right) + 2\,l\_1\,{D}^{2}\theta\left(t\right) + 2\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}y\_2\left(t\right) + 2\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}x\_2\left(t\right)} \cr \cr \displaystyle{g\,\sin\left(\phi\left(t\right)\right) + 2\,l\_2\,{D}^{2}\phi\left(t\right) + 2\,\cos\left(\phi\left(t\right)\right)\,{D}^{2}x\_2\left(t\right) + 2\,\sin\left(\phi\left(t\right)\right)\,{D}^{2}y\_2\left(t\right)} \cr \cr \displaystyle{- l\_1\,m\_1\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2} - l\_2\,m\_3\,{\left(D\phi\left(t\right)\right)}^{2}\,\sin\left(\phi\left(t\right)\right) + l\_1\,m\_1\,{D}^{2}\theta\left(t\right)\,\cos\left(\theta\left(t\right)\right) + l\_2\,m\_3\,{D}^{2}\phi\left(t\right)\,\cos\left(\phi\left(t\right)\right) + m\_1\,{D}^{2}x\_2\left(t\right) + m\_2\,{D}^{2}x\_2\left(t\right) + m\_3\,{D}^{2}x\_2\left(t\right)} \cr \cr \displaystyle{2\,l\_1\,m\_1\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right) + 2\,l\_2\,m\_3\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\phi\left(t\right)\right) + 2\,l\_1\,m\_1\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right) + 2\,l\_2\,m\_3\,{D}^{2}\phi\left(t\right)\,\sin\left(\phi\left(t\right)\right) + g\,m\_1 + g\,m\_2 + g\,m\_3 + 2\,m\_1\,{D}^{2}y\_2\left(t\right) + 2\,m\_2\,{D}^{2}y\_2\left(t\right) + 2\,m\_3\,{D}^{2}y\_2\left(t\right)}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{g\,\sin\left(\theta\left(t\right)\right) + 2\,l\_1\,{D}^{2}\theta\left(t\right) + 2\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}x\_2\left(t\right) + 2\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}y\_2\left(t\right)} \cr \cr \displaystyle{g\,\sin\left(\phi\left(t\right)\right) + 2\,l\_2\,{D}^{2}\phi\left(t\right) + 2\,\cos\left(\phi\left(t\right)\right)\,{D}^{2}x\_2\left(t\right) + 2\,\sin\left(\phi\left(t\right)\right)\,{D}^{2}y\_2\left(t\right)} \cr \cr \displaystyle{- l\_1\,m\_1\,{\left(D\theta\left(t\right)\right)}^{2}\,\sin\left(\theta\left(t\right)\right) - l\_2\,m\_3\,{\left(D\phi\left(t\right)\right)}^{2}\,\sin\left(\phi\left(t\right)\right) + l\_1\,m\_1\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right) + l\_2\,m\_3\,\cos\left(\phi\left(t\right)\right)\,{D}^{2}\phi\left(t\right) + m\_1\,{D}^{2}x\_2\left(t\right) + m\_2\,{D}^{2}x\_2\left(t\right) + m\_3\,{D}^{2}x\_2\left(t\right)} \cr \cr \displaystyle{2\,l\_1\,m\_1\,\cos\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2} + 2\,l\_2\,m\_3\,\cos\left(\phi\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2} + 2\,l\_1\,m\_1\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right) + 2\,l\_2\,m\_3\,\sin\left(\phi\left(t\right)\right)\,{D}^{2}\phi\left(t\right) + g\,m\_1 + g\,m\_2 + g\,m\_3 + 2\,m\_1\,{D}^{2}y\_2\left(t\right) + 2\,m\_2\,{D}^{2}y\_2\left(t\right) + 2\,m\_3\,{D}^{2}y\_2\left(t\right)}\end{pmatrix}\n\end{equation}
 
 This was not as gnarly as the previous problem. Perhaps I did something wrong there. We'll see when we get animation.
 
@@ -2707,23 +2633,10 @@ This was not as gnarly as the previous problem. Perhaps I did something wrong th
 
 ```clojure
 (ns ch1.ex1-20
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
 
 > Consider a pendulum of length \\(l\\) attached to a support that is free to move horizontally, as shown in figure 1.4. Let the mass of the support be \\(m1\\) and the mass of the pendulum bob be \\(m2\\). Formulate a Lagrangian and derive Lagrange's equations for this system.
@@ -2799,9 +2712,7 @@ Gravitational potential. I could include the cart here, but since we know it's f
    ((L-sliding-pend 'l 'm_1 'm_2 U) local)))
 ```
 
-\begin{equation}
-{l}^{2}\,m\_2\,{\dot {\theta}}^{2} + 2\,l\,m\_2\,\dot {\theta}\,{\dot x}\_1\,\cos\left(\theta\right) + g\,l\,m\_2\,\cos\left(\theta\right) - g\,l\,m\_2 + m\_1\,{{\dot x}\_1}^{2} + m\_2\,{{\dot x}\_1}^{2}
-\end{equation}
+\begin{equation}\n{l}^{2}\,m\_2\,{\dot {\theta}}^{2} + 2\,l\,m\_2\,\dot {\theta}\,{\dot x}\_1\,\cos\left(\theta\right) + g\,l\,m\_2\,\cos\left(\theta\right) - g\,l\,m\_2 + m\_1\,{{\dot x}\_1}^{2} + m\_2\,{{\dot x}\_1}^{2}\n\end{equation}
 
 Lagrange equations of motion:
 
@@ -2815,9 +2726,7 @@ Lagrange equations of motion:
     't)))
 ```
 
-\begin{equation}
-\begin{bmatrix}\displaystyle{-2\,l\,m\_2\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2} + 2\,l\,m\_2\,{D}^{2}\theta\left(t\right)\,\cos\left(\theta\left(t\right)\right) + 2\,m\_1\,{D}^{2}x\_1\left(t\right) + 2\,m\_2\,{D}^{2}x\_1\left(t\right)} \cr \cr \displaystyle{g\,l\,m\_2\,\sin\left(\theta\left(t\right)\right) + 2\,{l}^{2}\,m\_2\,{D}^{2}\theta\left(t\right) + 2\,l\,m\_2\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}x\_1\left(t\right)}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{-2\,l\,m\_2\,{\left(D\theta\left(t\right)\right)}^{2}\,\sin\left(\theta\left(t\right)\right) + 2\,l\,m\_2\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right) + 2\,m\_1\,{D}^{2}x\_1\left(t\right) + 2\,m\_2\,{D}^{2}x\_1\left(t\right)} \cr \cr \displaystyle{g\,l\,m\_2\,\sin\left(\theta\left(t\right)\right) + 2\,{l}^{2}\,m\_2\,{D}^{2}\theta\left(t\right) + 2\,l\,m\_2\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}x\_1\left(t\right)}\end{bmatrix}\n\end{equation}
 
 Cleaner:
 
@@ -2833,9 +2742,7 @@ Cleaner:
        (/ (ref eqs 1) 'l 'm_2))))
 ```
 
-\begin{equation}
-\begin{pmatrix}\displaystyle{-2\,l\,m\_2\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2} + 2\,l\,m\_2\,{D}^{2}\theta\left(t\right)\,\cos\left(\theta\left(t\right)\right) + 2\,m\_1\,{D}^{2}x\_1\left(t\right) + 2\,m\_2\,{D}^{2}x\_1\left(t\right)} \cr \cr \displaystyle{g\,\sin\left(\theta\left(t\right)\right) + 2\,l\,{D}^{2}\theta\left(t\right) + 2\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}x\_1\left(t\right)}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{-2\,l\,m\_2\,{\left(D\theta\left(t\right)\right)}^{2}\,\sin\left(\theta\left(t\right)\right) + 2\,l\,m\_2\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right) + 2\,m\_1\,{D}^{2}x\_1\left(t\right) + 2\,m\_2\,{D}^{2}x\_1\left(t\right)} \cr \cr \displaystyle{g\,\sin\left(\theta\left(t\right)\right) + 2\,l\,{D}^{2}\theta\left(t\right) + 2\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}x\_1\left(t\right)}\end{pmatrix}\n\end{equation}
 
 # Exercise 1.21: A dumbbell<a id="sec-22"></a>
 
@@ -2849,23 +2756,10 @@ The next exercise tries to do a coordinate change that is really careful about *
 
 ```clojure
 (ns ch1.ex1-21
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
 
 The idea here is to take the distance between the particles \\(l\\) and treat it as a new dimension \\(c\\).
@@ -2885,8 +2779,6 @@ If we have the velocity and mass of a particle, its kinetic energy is easy to de
   (* (/ 1 2) m (square v)))
 ```
 
-    #'ch1.ex1-21/KE-particle
-
 This next function, `extract-particle`, takes a number of components &#x2013; 2 for a particle with 2 components, 3 for a particle in space, etc &#x2013; and returns a function of `local` and `i`, a particle index. This function can be used to extract a sub-local-tuple for that particle from a flattened list.
 
 ```clojure
@@ -2901,8 +2793,6 @@ This next function, `extract-particle`, takes a number of components &#x2013; 2 
                           indices))]
       (up t (extract q) (extract v)))))
 ```
-
-    #'ch1.ex1-21/extract-particle
 
 ## Part A: Newton's Equations<a id="sec-22-2"></a>
 
@@ -2963,9 +2853,7 @@ This shows the lagrangian itself, which answers part b:
    (f 't)))
 ```
 
-\begin{equation}
-\frac{l\,m\_0\,{\left(Dx\_0\left(t\right)\right)}^{2} + l\,m\_0\,{\left(Dy\_0\left(t\right)\right)}^{2} + l\,m\_1\,{\left(Dx\_1\left(t\right)\right)}^{2} + l\,m\_1\,{\left(Dy\_1\left(t\right)\right)}^{2} + {l}^{2}\,F\left(t\right) - F\left(t\right)\,{\left(x\_1\left(t\right)\right)}^{2} + 2\,F\left(t\right)\,x\_1\left(t\right)\,x\_0\left(t\right) - F\left(t\right)\,{\left(x\_0\left(t\right)\right)}^{2} - F\left(t\right)\,{\left(y\_1\left(t\right)\right)}^{2} + 2\,F\left(t\right)\,y\_1\left(t\right)\,y\_0\left(t\right) - F\left(t\right)\,{\left(y\_0\left(t\right)\right)}^{2}}{2\,l}
-\end{equation}
+\begin{equation}\n\frac{l\,m\_0\,{\left(Dx\_0\left(t\right)\right)}^{2} + l\,m\_0\,{\left(Dy\_0\left(t\right)\right)}^{2} + l\,m\_1\,{\left(Dx\_1\left(t\right)\right)}^{2} + l\,m\_1\,{\left(Dy\_1\left(t\right)\right)}^{2} + {l}^{2}\,F\left(t\right) - F\left(t\right)\,{\left(x\_1\left(t\right)\right)}^{2} + 2\,F\left(t\right)\,x\_1\left(t\right)\,x\_0\left(t\right) - F\left(t\right)\,{\left(x\_0\left(t\right)\right)}^{2} - F\left(t\right)\,{\left(y\_1\left(t\right)\right)}^{2} + 2\,F\left(t\right)\,y\_1\left(t\right)\,y\_0\left(t\right) - F\left(t\right)\,{\left(y\_0\left(t\right)\right)}^{2}}{2\,l}\n\end{equation}
 
 Here are the Lagrange equations, which, if you squint, are like Newton's equations from part a.
 
@@ -2976,9 +2864,7 @@ Here are the Lagrange equations, which, if you squint, are like Newton's equatio
    (f 't)))
 ```
 
-\begin{equation}
-\begin{bmatrix}\displaystyle{\frac{l\,m\_0\,{D}^{2}x\_0\left(t\right) - F\left(t\right)\,x\_1\left(t\right) + F\left(t\right)\,x\_0\left(t\right)}{l}} \cr \cr \displaystyle{\frac{l\,m\_0\,{D}^{2}y\_0\left(t\right) - F\left(t\right)\,y\_1\left(t\right) + F\left(t\right)\,y\_0\left(t\right)}{l}} \cr \cr \displaystyle{\frac{l\,m\_1\,{D}^{2}x\_1\left(t\right) + F\left(t\right)\,x\_1\left(t\right) - F\left(t\right)\,x\_0\left(t\right)}{l}} \cr \cr \displaystyle{\frac{l\,m\_1\,{D}^{2}y\_1\left(t\right) + F\left(t\right)\,y\_1\left(t\right) - F\left(t\right)\,y\_0\left(t\right)}{l}} \cr \cr \displaystyle{\frac{- {l}^{2} + {\left(x\_1\left(t\right)\right)}^{2} -2\,x\_1\left(t\right)\,x\_0\left(t\right) + {\left(x\_0\left(t\right)\right)}^{2} + {\left(y\_1\left(t\right)\right)}^{2} -2\,y\_1\left(t\right)\,y\_0\left(t\right) + {\left(y\_0\left(t\right)\right)}^{2}}{2\,l}}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{\frac{l\,m\_0\,{D}^{2}x\_0\left(t\right) - F\left(t\right)\,x\_1\left(t\right) + F\left(t\right)\,x\_0\left(t\right)}{l}} \cr \cr \displaystyle{\frac{l\,m\_0\,{D}^{2}y\_0\left(t\right) - F\left(t\right)\,y\_1\left(t\right) + F\left(t\right)\,y\_0\left(t\right)}{l}} \cr \cr \displaystyle{\frac{l\,m\_1\,{D}^{2}x\_1\left(t\right) + F\left(t\right)\,x\_1\left(t\right) - F\left(t\right)\,x\_0\left(t\right)}{l}} \cr \cr \displaystyle{\frac{l\,m\_1\,{D}^{2}y\_1\left(t\right) + F\left(t\right)\,y\_1\left(t\right) - F\left(t\right)\,y\_0\left(t\right)}{l}} \cr \cr \displaystyle{\frac{- {l}^{2} + {\left(x\_1\left(t\right)\right)}^{2} -2\,x\_1\left(t\right)\,x\_0\left(t\right) + {\left(x\_0\left(t\right)\right)}^{2} + {\left(y\_1\left(t\right)\right)}^{2} -2\,y\_1\left(t\right)\,y\_0\left(t\right) + {\left(y\_0\left(t\right)\right)}^{2}}{2\,l}}\end{bmatrix}\n\end{equation}
 
 ## Part C: Coordinate Change<a id="sec-22-4"></a>
 
@@ -3012,9 +2898,7 @@ Then the coordinate change applied to the local tuple:
    (C local)))
 ```
 
-\begin{equation}
-\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{\frac{- c\,m\_1\,\cos\left(\theta\right) + m\_0\,x\_{cm} + m\_1\,x\_{cm}}{m\_0 + m\_1}} \cr \cr \displaystyle{\frac{- c\,m\_1\,\sin\left(\theta\right) + m\_0\,y\_{cm} + m\_1\,y\_{cm}}{m\_0 + m\_1}} \cr \cr \displaystyle{\frac{c\,m\_0\,\cos\left(\theta\right) + m\_0\,x\_{cm} + m\_1\,x\_{cm}}{m\_0 + m\_1}} \cr \cr \displaystyle{\frac{c\,m\_0\,\sin\left(\theta\right) + m\_0\,y\_{cm} + m\_1\,y\_{cm}}{m\_0 + m\_1}} \cr \cr \displaystyle{F}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{\frac{c\,m\_1\,\dot {\theta}\,\sin\left(\theta\right) - \dot c\,m\_1\,\cos\left(\theta\right) + m\_0\,{\dot x}\_{cm} + m\_1\,{\dot x}\_{cm}}{m\_0 + m\_1}} \cr \cr \displaystyle{\frac{- c\,m\_1\,\dot {\theta}\,\cos\left(\theta\right) - \dot c\,m\_1\,\sin\left(\theta\right) + m\_0\,{\dot y}\_{cm} + m\_1\,{\dot y}\_{cm}}{m\_0 + m\_1}} \cr \cr \displaystyle{\frac{- c\,m\_0\,\dot {\theta}\,\sin\left(\theta\right) + \dot c\,m\_0\,\cos\left(\theta\right) + m\_0\,{\dot x}\_{cm} + m\_1\,{\dot x}\_{cm}}{m\_0 + m\_1}} \cr \cr \displaystyle{\frac{c\,m\_0\,\dot {\theta}\,\cos\left(\theta\right) + \dot c\,m\_0\,\sin\left(\theta\right) + m\_0\,{\dot y}\_{cm} + m\_1\,{\dot y}\_{cm}}{m\_0 + m\_1}} \cr \cr \displaystyle{\dot F}\end{pmatrix}}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{\frac{- c\,m\_1\,\cos\left(\theta\right) + m\_0\,x\_{cm} + m\_1\,x\_{cm}}{m\_0 + m\_1}} \cr \cr \displaystyle{\frac{- c\,m\_1\,\sin\left(\theta\right) + m\_0\,y\_{cm} + m\_1\,y\_{cm}}{m\_0 + m\_1}} \cr \cr \displaystyle{\frac{c\,m\_0\,\cos\left(\theta\right) + m\_0\,x\_{cm} + m\_1\,x\_{cm}}{m\_0 + m\_1}} \cr \cr \displaystyle{\frac{c\,m\_0\,\sin\left(\theta\right) + m\_0\,y\_{cm} + m\_1\,y\_{cm}}{m\_0 + m\_1}} \cr \cr \displaystyle{F}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{\frac{c\,m\_1\,\dot {\theta}\,\sin\left(\theta\right) - \dot c\,m\_1\,\cos\left(\theta\right) + m\_0\,{\dot x}\_{cm} + m\_1\,{\dot x}\_{cm}}{m\_0 + m\_1}} \cr \cr \displaystyle{\frac{- c\,m\_1\,\dot {\theta}\,\cos\left(\theta\right) - \dot c\,m\_1\,\sin\left(\theta\right) + m\_0\,{\dot y}\_{cm} + m\_1\,{\dot y}\_{cm}}{m\_0 + m\_1}} \cr \cr \displaystyle{\frac{- c\,m\_0\,\dot {\theta}\,\sin\left(\theta\right) + \dot c\,m\_0\,\cos\left(\theta\right) + m\_0\,{\dot x}\_{cm} + m\_1\,{\dot x}\_{cm}}{m\_0 + m\_1}} \cr \cr \displaystyle{\frac{c\,m\_0\,\dot {\theta}\,\cos\left(\theta\right) + \dot c\,m\_0\,\sin\left(\theta\right) + m\_0\,{\dot y}\_{cm} + m\_1\,{\dot y}\_{cm}}{m\_0 + m\_1}} \cr \cr \displaystyle{\dot F}\end{pmatrix}}\end{pmatrix}\n\end{equation}
 
 Then the Lagrangian in the new coordinates;
 
@@ -3038,9 +2922,7 @@ This shows the lagrangian itself, after the coordinate transformation:
    (f 't)))
 ```
 
-\begin{equation}
-\frac{l\,m\_0\,m\_1\,{\left(D\theta\left(t\right)\right)}^{2}\,{\left(c\left(t\right)\right)}^{2} + l\,{m\_0}^{2}\,{\left(Dx\_{cm}\left(t\right)\right)}^{2} + l\,{m\_0}^{2}\,{\left(Dy\_{cm}\left(t\right)\right)}^{2} + 2\,l\,m\_0\,m\_1\,{\left(Dx\_{cm}\left(t\right)\right)}^{2} + l\,m\_0\,m\_1\,{\left(Dc\left(t\right)\right)}^{2} + 2\,l\,m\_0\,m\_1\,{\left(Dy\_{cm}\left(t\right)\right)}^{2} + l\,{m\_1}^{2}\,{\left(Dx\_{cm}\left(t\right)\right)}^{2} + l\,{m\_1}^{2}\,{\left(Dy\_{cm}\left(t\right)\right)}^{2} + {l}^{2}\,m\_0\,F\left(t\right) + {l}^{2}\,m\_1\,F\left(t\right) - m\_0\,F\left(t\right)\,{\left(c\left(t\right)\right)}^{2} - m\_1\,F\left(t\right)\,{\left(c\left(t\right)\right)}^{2}}{2\,l\,m\_0 + 2\,l\,m\_1}
-\end{equation}
+\begin{equation}\n\frac{l\,m\_0\,m\_1\,{\left(D\theta\left(t\right)\right)}^{2}\,{\left(c\left(t\right)\right)}^{2} + l\,{m\_0}^{2}\,{\left(Dx\_{cm}\left(t\right)\right)}^{2} + l\,{m\_0}^{2}\,{\left(Dy\_{cm}\left(t\right)\right)}^{2} + 2\,l\,m\_0\,m\_1\,{\left(Dx\_{cm}\left(t\right)\right)}^{2} + l\,m\_0\,m\_1\,{\left(Dc\left(t\right)\right)}^{2} + 2\,l\,m\_0\,m\_1\,{\left(Dy\_{cm}\left(t\right)\right)}^{2} + l\,{m\_1}^{2}\,{\left(Dx\_{cm}\left(t\right)\right)}^{2} + l\,{m\_1}^{2}\,{\left(Dy\_{cm}\left(t\right)\right)}^{2} + {l}^{2}\,m\_0\,F\left(t\right) + {l}^{2}\,m\_1\,F\left(t\right) - m\_0\,F\left(t\right)\,{\left(c\left(t\right)\right)}^{2} - m\_1\,F\left(t\right)\,{\left(c\left(t\right)\right)}^{2}}{2\,l\,m\_0 + 2\,l\,m\_1}\n\end{equation}
 
 Here are the Lagrange equations:
 
@@ -3056,9 +2938,7 @@ Here are the Lagrange equations:
    (f 't)))
 ```
 
-\begin{equation}
-\begin{bmatrix}\displaystyle{m\_0\,{D}^{2}x\_{cm}\left(t\right) + m\_1\,{D}^{2}x\_{cm}\left(t\right)} \cr \cr \displaystyle{m\_0\,{D}^{2}y\_{cm}\left(t\right) + m\_1\,{D}^{2}y\_{cm}\left(t\right)} \cr \cr \displaystyle{\frac{2\,m\_0\,m\_1\,D\theta\left(t\right)\,c\left(t\right)\,Dc\left(t\right) + m\_0\,m\_1\,{D}^{2}\theta\left(t\right)\,{\left(c\left(t\right)\right)}^{2}}{m\_0 + m\_1}} \cr \cr \displaystyle{\frac{- l\,m\_0\,m\_1\,{\left(D\theta\left(t\right)\right)}^{2}\,c\left(t\right) + l\,m\_0\,m\_1\,{D}^{2}c\left(t\right) + m\_0\,F\left(t\right)\,c\left(t\right) + m\_1\,F\left(t\right)\,c\left(t\right)}{l\,m\_0 + l\,m\_1}} \cr \cr \displaystyle{\frac{- {l}^{2} + {\left(c\left(t\right)\right)}^{2}}{2\,l}}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{m\_0\,{D}^{2}x\_{cm}\left(t\right) + m\_1\,{D}^{2}x\_{cm}\left(t\right)} \cr \cr \displaystyle{m\_0\,{D}^{2}y\_{cm}\left(t\right) + m\_1\,{D}^{2}y\_{cm}\left(t\right)} \cr \cr \displaystyle{\frac{2\,m\_0\,m\_1\,D\theta\left(t\right)\,Dc\left(t\right)\,c\left(t\right) + m\_0\,m\_1\,{D}^{2}\theta\left(t\right)\,{\left(c\left(t\right)\right)}^{2}}{m\_0 + m\_1}} \cr \cr \displaystyle{\frac{- l\,m\_0\,m\_1\,{\left(D\theta\left(t\right)\right)}^{2}\,c\left(t\right) + l\,m\_0\,m\_1\,{D}^{2}c\left(t\right) + m\_0\,F\left(t\right)\,c\left(t\right) + m\_1\,F\left(t\right)\,c\left(t\right)}{l\,m\_0 + l\,m\_1}} \cr \cr \displaystyle{\frac{- {l}^{2} + {\left(c\left(t\right)\right)}^{2}}{2\,l}}\end{bmatrix}\n\end{equation}
 
 That final equation states that \\(c(t) = l\\). Amazing!
 
@@ -3080,9 +2960,7 @@ We can substitute the constant value of \\(c\\) using a function that always ret
    (f 't)))
 ```
 
-\begin{equation}
-\begin{bmatrix}\displaystyle{m\_0\,{D}^{2}x\_{cm}\left(t\right) + m\_1\,{D}^{2}x\_{cm}\left(t\right)} \cr \cr \displaystyle{m\_0\,{D}^{2}y\_{cm}\left(t\right) + m\_1\,{D}^{2}y\_{cm}\left(t\right)} \cr \cr \displaystyle{\frac{{l}^{2}\,m\_0\,m\_1\,{D}^{2}\theta\left(t\right)}{m\_0 + m\_1}} \cr \cr \displaystyle{\frac{- l\,m\_0\,m\_1\,{\left(D\theta\left(t\right)\right)}^{2} + m\_0\,F\left(t\right) + m\_1\,F\left(t\right)}{m\_0 + m\_1}} \cr \cr \displaystyle{0}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{m\_0\,{D}^{2}x\_{cm}\left(t\right) + m\_1\,{D}^{2}x\_{cm}\left(t\right)} \cr \cr \displaystyle{m\_0\,{D}^{2}y\_{cm}\left(t\right) + m\_1\,{D}^{2}y\_{cm}\left(t\right)} \cr \cr \displaystyle{\frac{{l}^{2}\,m\_0\,m\_1\,{D}^{2}\theta\left(t\right)}{m\_0 + m\_1}} \cr \cr \displaystyle{\frac{- l\,m\_0\,m\_1\,{\left(D\theta\left(t\right)\right)}^{2} + m\_0\,F\left(t\right) + m\_1\,F\left(t\right)}{m\_0 + m\_1}} \cr \cr \displaystyle{0}\end{bmatrix}\n\end{equation}
 
 This is saying that the acceleration on the center of mass is 0.
 
@@ -3120,9 +2998,7 @@ We can verify this with Scheme by subtracting the two equations:
          (* m 'l (square ((D theta) 't)))))))
 ```
 
-\begin{equation}
-0
-\end{equation}
+\begin{equation}\n0\n\end{equation}
 
 ## Part E: New Lagrangian<a id="sec-22-6"></a>
 
@@ -3158,7 +3034,7 @@ Then a version of `cm-theta->rect` where we ignore \\(F\\), and sub in a constan
           (+ y_cm (* m1-distance (sin theta)))))))
 ```
 
-\#| cm-theta->rect\* |#
+\#'ch1.ex1-21/cm-theta->rect\*
 
 The Lagrangian:
 
@@ -3184,9 +3060,7 @@ Equations:
     't)))
 ```
 
-\begin{equation}
-\begin{bmatrix}\displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{\frac{- l\,m\_0\,m\_1\,{\left(D\theta\left(t\right)\right)}^{2} + m\_0\,F\left(t\right) + m\_1\,F\left(t\right)}{m\_0 + m\_1}} \cr \cr \displaystyle{0}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{\frac{- l\,m\_0\,m\_1\,{\left(D\theta\left(t\right)\right)}^{2} + m\_0\,F\left(t\right) + m\_1\,F\left(t\right)}{m\_0 + m\_1}} \cr \cr \displaystyle{0}\end{bmatrix}\n\end{equation}
 
 The only remaining equation is \eqref{eq:constraint-force} from above. This remains because the simplified Lagrangian ignores the \\(F\\) term.
 
@@ -3194,23 +3068,10 @@ The only remaining equation is \eqref{eq:constraint-force} from above. This rema
 
 ```clojure
 (ns ch1.ex1-22
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
 
 > Show that the Lagrangian (1.93) can be used to describe the driven pendulum (section 1.6.2), where the position of the pivot is a specified function of time: Derive the equations of motion using the Newtonian constraint force prescription, and show that they are the same as the Lagrange equations. Be sure to examine the equations for the constraint forces as well as the position of the pendulum bob.
@@ -3301,9 +3162,7 @@ Now use the new Lagrangian to generate equations of motion for the three coordin
    (f 't)))
 ```
 
-\begin{equation}
-\begin{bmatrix}\displaystyle{\frac{l\,m\,{D}^{2}x\left(t\right) + x\left(t\right)\,F\left(t\right)}{l}} \cr \cr \displaystyle{\frac{g\,l\,m + l\,m\,{D}^{2}y\left(t\right) + y\left(t\right)\,F\left(t\right) - F\left(t\right)\,y\_s\left(t\right)}{l}} \cr \cr \displaystyle{\frac{- {l}^{2} + {\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2} -2\,y\left(t\right)\,y\_s\left(t\right) + {\left(y\_s\left(t\right)\right)}^{2}}{2\,l}}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{\frac{l\,m\,{D}^{2}x\left(t\right) + F\left(t\right)\,x\left(t\right)}{l}} \cr \cr \displaystyle{\frac{g\,l\,m + l\,m\,{D}^{2}y\left(t\right) + F\left(t\right)\,y\left(t\right) - F\left(t\right)\,y\_s\left(t\right)}{l}} \cr \cr \displaystyle{\frac{- {l}^{2} + {\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2} -2\,y\left(t\right)\,y\_s\left(t\right) + {\left(y\_s\left(t\right)\right)}^{2}}{2\,l}}\end{bmatrix}\n\end{equation}
 
 The first two equations of motion match the equations we derived in part A, using Newton's equations. The third states that
 
@@ -3331,9 +3190,7 @@ Verified, with some extra terms to force the simplification:
          'l))))
 ```
 
-\begin{equation}
-0
-\end{equation}
+\begin{equation}\n0\n\end{equation}
 
 ## Part C: Coordinate Change<a id="sec-23-3"></a>
 
@@ -3370,9 +3227,7 @@ Examine the Lagrangian itself, after the coordinate transformation. (Notice that
    (f 't)))
 ```
 
-\begin{equation}
-\frac{1}{2}\,{l}^{2}\,m\,{\left(D\theta\left(t\right)\right)}^{2} + l\,m\,\sin\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,Dy\_s\left(t\right) + g\,l\,m\,\cos\left(\theta\left(t\right)\right) - g\,m\,y\_s\left(t\right) + \frac{1}{2}\,m\,{\left(Dy\_s\left(t\right)\right)}^{2}
-\end{equation}
+\begin{equation}\n\frac{1}{2}\,{l}^{2}\,m\,{\left(D\theta\left(t\right)\right)}^{2} + l\,m\,D\theta\left(t\right)\,\sin\left(\theta\left(t\right)\right)\,Dy\_s\left(t\right) + g\,l\,m\,\cos\left(\theta\left(t\right)\right) - g\,m\,y\_s\left(t\right) + \frac{1}{2}\,m\,{\left(Dy\_s\left(t\right)\right)}^{2}\n\end{equation}
 
 Looks just like equation 1.88.
 
@@ -3389,9 +3244,7 @@ Next, examine the Lagrange equations, using the same substitution of \\(c(t) = l
    (f 't)))
 ```
 
-\begin{equation}
-\begin{bmatrix}\displaystyle{g\,l\,m\,\sin\left(\theta\left(t\right)\right) + {l}^{2}\,m\,{D}^{2}\theta\left(t\right) + l\,m\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}y\_s\left(t\right)} \cr \cr \displaystyle{- l\,m\,{\left(D\theta\left(t\right)\right)}^{2} - g\,m\,\cos\left(\theta\left(t\right)\right) - m\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}y\_s\left(t\right) + F\left(t\right)} \cr \cr \displaystyle{0}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{g\,l\,m\,\sin\left(\theta\left(t\right)\right) + {l}^{2}\,m\,{D}^{2}\theta\left(t\right) + l\,m\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}y\_s\left(t\right)} \cr \cr \displaystyle{- l\,m\,{\left(D\theta\left(t\right)\right)}^{2} - g\,m\,\cos\left(\theta\left(t\right)\right) - m\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}y\_s\left(t\right) + F\left(t\right)} \cr \cr \displaystyle{0}\end{bmatrix}\n\end{equation}
 
 The third equation is 0 because of the substitution of constant \\(c(t) = l\\). The first equation of motion, for \\(\theta\\), is identical to the equation on page 52.
 
@@ -3401,23 +3254,10 @@ The second equation describes the constraint force on the driven pendulum as a f
 
 ```clojure
 (ns ch1.ex1-23
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
 
 TODO: Expand out the explicit Lagrangian, using a coordinate transformation, and do the manual substitution&#x2026;
@@ -3428,23 +3268,10 @@ This is a special case of a solution we found in exercise 1.22. In that exercise
 
 ```clojure
 (ns ch1.ex1-24
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
 
 Take some definitions that we need:
@@ -3509,9 +3336,7 @@ The second equation of motion, for the \\(c\\) coordinate, gives us an equation 
    (ref (f 't) 1)))
 ```
 
-\begin{equation}
-- l\,m\,{\left(D\theta\left(t\right)\right)}^{2} - g\,m\,\cos\left(\theta\left(t\right)\right) + F\left(t\right)
-\end{equation}
+\begin{equation}\n- l\,m\,{\left(D\theta\left(t\right)\right)}^{2} - g\,m\,\cos\left(\theta\left(t\right)\right) + F\left(t\right)\n\end{equation}
 
 Solve for \\(F(t)\\), the tension on the pendulum linkage:
 
@@ -3523,92 +3348,40 @@ F(t) = m (g \cos \theta + l \dot{\theta}^2)
 
 ```clojure
 (ns ch1.ex1-25
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
 
 # Exercise 1.26: Properties of \\(D\_t\\)<a id="sec-27"></a>
 
 ```clojure
 (ns ch1.ex1-26
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
 
 # Exercise 1.27: Lagrange equations for total time derivatives<a id="sec-28"></a>
 
 ```clojure
 (ns ch1.ex1-27
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
 
 # Exercise 1.28: Total Time Derivatives<a id="sec-29"></a>
 
 ```clojure
 (ns ch1.ex1-28
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
 
 ## part A<a id="sec-29-1"></a>
@@ -3829,9 +3602,7 @@ First, confirm that if we have a constant, we get what we expected from paper.
   (->tex-equation (f 't)))
 ```
 
-\begin{equation}
-\frac{1}{2}\,{{\Delta}\_v}^{2}\,m + {\Delta}\_v\,m\,D\mathsf{xprime}\left(t\right) + \frac{1}{2}\,m\,{\left(D\mathsf{xprime}\left(t\right)\right)}^{2}
-\end{equation}
+\begin{equation}\n\frac{1}{2}\,{{\Delta}\_v}^{2}\,m + {\Delta}\_v\,m\,Dx^\prime\left(t\right) + \frac{1}{2}\,m\,{\left(Dx^\prime\left(t\right)\right)}^{2}\n\end{equation}
 
 We can change this a little to see the extra terms; substract off the free particle Lagrangian, to see the extra stuff.
 
@@ -3845,9 +3616,7 @@ We can change this a little to see the extra terms; substract off the free parti
   (->tex-equation (f 't)))
 ```
 
-\begin{equation}
-\frac{1}{2}\,{{\Delta}\_v}^{2}\,m + {\Delta}\_v\,m\,D\mathsf{xprime}\left(t\right)
-\end{equation}
+\begin{equation}\n\frac{1}{2}\,{{\Delta}\_v}^{2}\,m + {\Delta}\_v\,m\,Dx^\prime\left(t\right)\n\end{equation}
 
 Here's the gnarly version with both entries as actual functions. Can this be a total time derivative? It CANNOT be, because we have a \\((D \Delta\_v(t))^2\\) term in there, and we know that total time derivatives have to be linear in the velocities. The function \\(F\\) would have had to have a velocity in it, which is not allowed.
 
@@ -3861,9 +3630,7 @@ Here's the gnarly version with both entries as actual functions. Can this be a t
   (->tex-equation (f 't)))
 ```
 
-\begin{equation}
-\frac{1}{2}\,m\,{t}^{2}\,{\left(D{\Delta}\_v\left(t\right)\right)}^{2} + m\,t\,D\mathsf{xprime}\left(t\right)\,D{\Delta}\_v\left(t\right) + m\,t\,{\Delta}\_v\left(t\right)\,D{\Delta}\_v\left(t\right) + m\,t\,D{\Delta}\_x\left(t\right)\,D{\Delta}\_v\left(t\right) + m\,D\mathsf{xprime}\left(t\right)\,{\Delta}\_v\left(t\right) + m\,D\mathsf{xprime}\left(t\right)\,D{\Delta}\_x\left(t\right) + \frac{1}{2}\,m\,{\left({\Delta}\_v\left(t\right)\right)}^{2} + m\,{\Delta}\_v\left(t\right)\,D{\Delta}\_x\left(t\right) + \frac{-1}{2}\,m\,{\left(D{\Delta}\_v\left(t\right)\right)}^{2}
-\end{equation}
+\begin{equation}\n\frac{1}{2}\,m\,{t}^{2}\,{\left(D{\Delta}\_v\left(t\right)\right)}^{2} + m\,t\,Dx^\prime\left(t\right)\,D{\Delta}\_v\left(t\right) + m\,t\,D{\Delta}\_x\left(t\right)\,D{\Delta}\_v\left(t\right) + m\,t\,{\Delta}\_v\left(t\right)\,D{\Delta}\_v\left(t\right) + m\,Dx^\prime\left(t\right)\,D{\Delta}\_x\left(t\right) + m\,Dx^\prime\left(t\right)\,{\Delta}\_v\left(t\right) + m\,D{\Delta}\_x\left(t\right)\,{\Delta}\_v\left(t\right) + \frac{1}{2}\,m\,{\left({\Delta}\_v\left(t\right)\right)}^{2} + \frac{-1}{2}\,m\,{\left(D{\Delta}\_v\left(t\right)\right)}^{2}\n\end{equation}
 
 Let's simplify by making the \\(\Delta\_v\\) constant and see if there's anything so obvious about \\(\Delta\_x\\).
 
@@ -3884,9 +3651,7 @@ We know that we have a total derivative when \\(\Delta\_x\\) is constant, and we
     't)))
 ```
 
-\begin{equation}
-{\Delta}\_v\,m\,D{\Delta}\_x\left(t\right) + m\,D\mathsf{xprime}\left(t\right)\,D{\Delta}\_x\left(t\right)
-\end{equation}
+\begin{equation}\n{\Delta}\_v\,m\,D{\Delta}\_x\left(t\right) + m\,Dx^\prime\left(t\right)\,D{\Delta}\_x\left(t\right)\n\end{equation}
 
 Take a look. there is a quadratic velocity term in here! We have \\(D \Delta\_x(t) D x'(t)\\). This is not allowed in a total time derivative.
 
@@ -3896,343 +3661,148 @@ SO, only if the shift and uniform translation are constant do we not affect the 
 
 ```clojure
 (ns ch1.ex1-30
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
 
 # Exercise 1.31: Foucault pendulum evolution<a id="sec-32"></a>
 
 ```clojure
 (ns ch1.ex1-31
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
 
 # Exercise 1.32: Time-dependent constraints<a id="sec-33"></a>
 
 ```clojure
 (ns ch1.ex1-32
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
 
 # Exercise 1.33: Falling off a log<a id="sec-34"></a>
 
 ```clojure
 (ns ch1.ex1-33
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
 
 # Exercise 1.34: Driven spherical pendulum<a id="sec-35"></a>
 
 ```clojure
 (ns ch1.ex1-34
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
 
 # Exercise 1.35: Restricted equations of motion<a id="sec-36"></a>
 
 ```clojure
 (ns ch1.ex1-35
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
 
 # Exercise 1.36: Noether integral<a id="sec-37"></a>
 
 ```clojure
 (ns ch1.ex1-36
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
 
 # Exercise 1.37: Velocity transformation<a id="sec-38"></a>
 
 ```clojure
 (ns ch1.ex1-37
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
 
 # Exercise 1.38: Properties of \\(E\\)<a id="sec-39"></a>
 
 ```clojure
 (ns ch1.ex1-38
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
 
 # Exercise 1.39: Combining Lagrangians<a id="sec-40"></a>
 
 ```clojure
 (ns ch1.ex1-39
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
 
 # Exercise 1.40: Bead on a triaxial surface<a id="sec-41"></a>
 
 ```clojure
 (ns ch1.ex1-40
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
 
 # Exercise 1.41: Motion of a tiny golf ball<a id="sec-42"></a>
 
 ```clojure
 (ns ch1.ex1-41
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
 
 # Exercise 1.42: Augmented Lagrangian<a id="sec-43"></a>
 
 ```clojure
 (ns ch1.ex1-42
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
 
 # Exercise 1.43: A numerical investigation<a id="sec-44"></a>
 
 ```clojure
 (ns ch1.ex1-43
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
 
 # Exercise 1.44: Double pendulum behavior<a id="sec-45"></a>
 
 ```clojure
 (ns ch1.ex1-44
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 ```
