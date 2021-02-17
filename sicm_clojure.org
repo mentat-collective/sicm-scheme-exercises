@@ -146,19 +146,16 @@ coordinates that can be used to describe the behavior of the system.
 :PROPERTIES:
 :header-args+: :tangle src/ch1/ex1_3.cljc :comments org
 :END:
-
+0
 #+begin_src clojure :exports none
 (ns ch1.ex1-3
   (:refer-clojure :exclude [+ - * / compare zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [taoensso.timbre :refer [set-level!]]))
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
 #+end_src
 
 #+RESULTS:
-: '(:level :fatal  :ns-whitelist ()  :ns-blacklist ()  :ns-log-level ()  :middleware ()  :timestamp-opts (:pattern :iso8601  :locale :jvm-default  :timezone :utc)  :output-fn #function(taoensso.timbre/default-output-fn)  :appenders (:println (:enabled? true  :async? false  :min-level   :rate-limit   :output-fn :inherit  :fn #function(taoensso.timbre.appenders.core/println-appender/fn--11571))))
 
 This problem has us exploring some consequences for optics of the principle of
 least time. [[https://tgvaughan.github.io/sicm/chapter001.html#Exe_1-3][Exercise 1.3]] states:
@@ -469,15 +466,12 @@ notes.
 #+begin_src clojure :exports none
 (ns ch1.ex1-4
   (:refer-clojure :exclude [+ - * / compare zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [taoensso.timbre :refer [set-level!]]))
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
-(set-level! :fatal)
 (e/bootstrap-repl!)
 #+end_src
 
 #+RESULTS:
-: '(:level :fatal  :ns-whitelist ()  :ns-blacklist ()  :ns-log-level ()  :middleware ()  :timestamp-opts (:pattern :iso8601  :locale :jvm-default  :timezone :utc)  :output-fn #function(taoensso.timbre/default-output-fn)  :appenders (:println (:enabled? true  :async? false  :min-level   :rate-limit   :output-fn :inherit  :fn #function(taoensso.timbre.appenders.core/println-appender/fn--11571))))
 
 This is the first demo of how any of this stuff works, starting on page 15.
 Here's our first Lagrangian, super simple.
@@ -669,15 +663,12 @@ adjustable "variation", or wiggle. We should see that, if we consider a
 #+begin_src clojure :exports none
 (ns ch1.min-action-paths
   (:refer-clojure :exclude [+ - * / compare zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [taoensso.timbre :refer [set-level!]]))
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
 #+end_src
 
 #+RESULTS:
-: '(:level :fatal  :ns-whitelist ()  :ns-blacklist ()  :ns-log-level ()  :middleware ()  :timestamp-opts (:pattern :iso8601  :locale :jvm-default  :timezone :utc)  :output-fn #function(taoensso.timbre/default-output-fn)  :appenders (:println (:enabled? true  :async? false  :min-level   :rate-limit   :output-fn :inherit  :fn #function(taoensso.timbre.appenders.core/println-appender/fn--11571))))
 
 The only restriction on a variation is that it can't affect the endpoints of the
 realizable path. the times and positions of the start and end of the path are
@@ -872,27 +863,13 @@ to the final, natural looking harmonic oscillation.
 
 #+begin_src clojure :exports none
 (ns ch1.ex1-5
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-: nilnil{:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level nil, :rate-limit nil, :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11899]}}}#'ch1.ex1-5/->tex-equation*#'ch1.ex1-5/->tex-equation
 
 The exercise states:
 
@@ -905,26 +882,24 @@ The functions the authors provide in the exercise define a window, and then a
 version of =parametric-path-action= that updates the graph as it minimizes:
 
 #+begin_src clojure :noweb yes
-(define win2 (frame 0.0 :pi/2 0.0 1.2))
+(comment
+  (define win2 (frame 0.0 :pi-over-2 0.0 1.2)))
 
 <<L-harmonic>>
 
-(define ((parametric-path-action Lagrangian t0 q0 t1 q1)
-         intermediate-qs)
-  (let ((path (make-path t0 q0 t1 q1 intermediate-qs)))
-    ;; display path
-    (graphics-clear win2)
-    (plot-function win2 path t0 t1 (/ (- t1 t0) 100))
-    ;; compute action
-    (Lagrangian-action Lagrangian path t0 t1)))
+(comment
+  (define ((parametric-path-action Lagrangian t0 q0 t1 q1)
+           intermediate-qs)
+    (let ((path (make-path t0 q0 t1 q1 intermediate-qs)))
+      ;; display path
+      (graphics-clear win2)
+      (plot-function win2 path t0 t1 (/ (- t1 t0) 100))
+      ;; compute action
+      (Lagrangian-action Lagrangian path t0 t1))))
 #+end_src
 
 #+RESULTS:
-: #| win2 |#
-:
-: #| L-harmonic |#
-:
-: #| parametric-path-action |#
+: #'ch1.ex1-5/L-harmonic
 
 Run the minimization with the same parameters as in the previous section:
 
@@ -933,7 +908,7 @@ Run the minimization with the same parameters as in the previous section:
 #+end_src
 
 #+RESULTS:
-: #| poly |#
+: class java.lang.RuntimeException
 
 and watch the plot update:
 
@@ -965,26 +940,12 @@ happens.
 #+begin_src clojure :exports none
 (ns ch1.ex1-6
   (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-: nilnil{:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level nil, :rate-limit nil, :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11899]}}}#'ch1.ex1-6/->tex-equation*#'ch1.ex1-6/->tex-equation
 
 I spent a good amount of time thinking about this exercise. When I attempted to
 read this book in 2015, I found it very confusing.
@@ -1039,15 +1000,9 @@ Here's the implementation of the modification described earlier:
         (Lagrangian-action Lagrangian path t0 t1)))))
 #+end_src
 
-#+RESULTS:
-: #| parametric-path-action* |#
-
 You might try a similar trick by modifying the first and last entries of
 =intermediate-qs= instead of appending a point, but I suspect that the optimizer
 would be able to figure out how to undo your offset. (Try this as an exercise.)
-
-Next, a new version of =find-path= that passes the offsets through to the new
-=parametric-path-action*=:
 
 #+begin_src clojure
 (defn find-path* [win]
@@ -1059,9 +1014,6 @@ Next, a new version of =find-path= that passes the offsets through to the new
                          initial-qs)]
       (make-path t0 q0 t1 q1 minimizing-qs))))
 #+end_src
-
-#+RESULTS:
-: #| find-path* |#
 
 And finally, a function that can execute runs of our formalism-killing
 experiment.
@@ -1078,9 +1030,6 @@ experiment.
                    n)]
     (Lagrangian-action L path 0 tmax)))
 #+end_src
-
-#+RESULTS:
-: #| one-six |#
 
 =one-six= takes two offsets and runs the minimization routine against
 =L-free-particle=, moving from position 1 to 0 over 10 seconds. =n= controls the
@@ -1359,29 +1308,13 @@ Our goal is achieved.
 
 #+begin_src clojure :exports none
 (ns ch1.ex1-8
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--12411]}}} |
-| #'ch1.ex1-8/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                                |
-| #'ch1.ex1-8/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                 |
 
 *** Part A: Implement $\delta_\eta$
 
@@ -1481,11 +1414,9 @@ expected, the result is 0:
    ((- left right) 't)))
 #+end_src
 
-#+RESULTS[468092e143e233a3e0f893963daea3998798b183]:
+#+RESULTS[321ddea53c44a06c975007226cd36684c6c4da29]:
 :results:
-\begin{equation}
-0
-\end{equation}
+\begin{equation}\n0\n\end{equation}
 :end:
 
 **** Variation Sum Rule
@@ -1504,11 +1435,9 @@ The sum rule is similar. Here's the Scheme implementation of equation
    ((- left right) 't)))
 #+end_src
 
-#+RESULTS[6a21bcbe12ce82d1453a300e49017a851d2b7622]:
+#+RESULTS[8a0388d4fd58eb4efc0019b344c98f259f06f4b4]:
 :results:
-\begin{equation}
-0
-\end{equation}
+\begin{equation}\n0\n\end{equation}
 :end:
 
 **** Variation Scalar Multiplication
@@ -1525,11 +1454,9 @@ difference is 0:
    ((- left right) 't)))
 #+end_src
 
-#+RESULTS[66c3f07cb6e675e46596fc7772d7ad3f3291d19a]:
+#+RESULTS[678554af4d879f5952bf1c1af32e144ce270373d]:
 :results:
-\begin{equation}
-0
-\end{equation}
+\begin{equation}\n0\n\end{equation}
 :end:
 
 **** Chain Rule for Variations
@@ -1564,11 +1491,9 @@ Here's a check that the two sides of equation \eqref{eq:var-chain} are equal:
    (((- left right) q) 't)))
 #+end_src
 
-#+RESULTS[eefd5c91d853ea226ad9366e262186ab2220dda7]:
+#+RESULTS[dad18e4cf32b6ecefc1b42b4b5dda33b0c3de57e]:
 :results:
-\begin{equation}
-0
-\end{equation}
+\begin{equation}\n0\n\end{equation}
 :end:
 
 **** $\delta_\eta$ commutes with $D$
@@ -1586,11 +1511,9 @@ derivative commutes with the variation operator:
    ((- left right) 't)))
 #+end_src
 
-#+RESULTS[1f6c5245bd90bee573cf662b834d45ac1e5e4c33]:
+#+RESULTS[5c2d0b17c83ef6864d8a84205cc9fced5c4193d0]:
 :results:
-\begin{equation}
-0
-\end{equation}
+\begin{equation}\n0\n\end{equation}
 :end:
 
 ** Exercise 1.9: Lagrange's equations
@@ -1817,29 +1740,13 @@ mass at some rate.
 
 #+begin_src clojure :exports none
 (ns ch1.ex1-11
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
-| #'ch1.ex1-11/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
-| #'ch1.ex1-11/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 Here's the Lagrangian for "central force", in polar coordinates. This is
 rotational kinetic energy, minus some arbitrary potential $V$ that depends on
@@ -1907,11 +1814,9 @@ Write the Lagrange equations, given $r = a$ and $\omega = n$:
    ((eqfn (q 'a 'n)) 't)))
 #+end_src
 
-#+RESULTS[2902046d19b74bbdcacd1ccd089cf30d1fea3c53]:
+#+RESULTS[32acd89d915bf30f67fe60876abf42dd043e6cf0]:
 :results:
-\begin{equation}
-\begin{bmatrix}\displaystyle{\frac{- {a}^{3}\,\mathsf{m1}\,\mathsf{m2}\,{n}^{2} + G\,{\mathsf{m1}}^{2}\,\mathsf{m2} + G\,\mathsf{m1}\,{\mathsf{m2}}^{2}}{{a}^{2}\,\mathsf{m1} + {a}^{2}\,\mathsf{m2}}}&\displaystyle{0}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{\frac{- {a}^{3}\,\mathsf{m1}\,\mathsf{m2}\,{n}^{2} + G\,{\mathsf{m1}}^{2}\,\mathsf{m2} + G\,\mathsf{m1}\,{\mathsf{m2}}^{2}}{{a}^{2}\,\mathsf{m1} + {a}^{2}\,\mathsf{m2}}} \cr \cr \displaystyle{0}\end{bmatrix}\n\end{equation}
 :end:
 
 These two entries are /residuals/, equal to zero. Stare at the top residual and
@@ -1933,11 +1838,9 @@ Manually factor these out:
          (reduced-mass 'm1 'm2)))))
 #+end_src
 
-#+RESULTS[24abe0f6a67adddccdf9e45ecfd6bf26c78ec9b3]:
+#+RESULTS[ffbc93ac19020d53b3790978d178ac11b9dfd148]:
 :results:
-\begin{equation}
-\begin{bmatrix}\displaystyle{- {a}^{3}\,{n}^{2} + G\,\mathsf{m1} + G\,\mathsf{m2}}&\displaystyle{0}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{- {a}^{3}\,{n}^{2} + G\,\mathsf{m1} + G\,\mathsf{m2}} \cr \cr \displaystyle{0}\end{bmatrix}\n\end{equation}
 :end:
 
 And, boom, with some cleanup, we see Kepler's third law:
@@ -1954,29 +1857,13 @@ n^2a^3 = G(m_1 + m_2)
 
 #+begin_src clojure :exports none
 (ns ch1.ex1-12
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
-| #'ch1.ex1-12/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
-| #'ch1.ex1-12/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 This exercise asks us to write Scheme implementations for each of the three
 systems described in [[https://tgvaughan.github.io/sicm/chapter001.html#Exe_1-9][Exercise 1.9]].
@@ -2055,11 +1942,9 @@ And the steps that lead us to Lagrange's equations:
  (literal-function 'theta))
 #+end_src
 
-#+RESULTS[8692e377eeffd745ff1a673c4fe74dc75a4c094d]:
+#+RESULTS[743c15f76087dcfc3e8f96fca6ff914111ae8809]:
 :results:
-\begin{equation}
-\begin{pmatrix}\displaystyle{- g\,l\,m\,\sin\left(\theta\left(t\right)\right)} \cr \cr \displaystyle{{l}^{2}\,m\,D\theta\left(t\right)} \cr \cr \displaystyle{{l}^{2}\,m\,{D}^{2}\theta\left(t\right)} \cr \cr \displaystyle{g\,l\,m\,\sin\left(\theta\left(t\right)\right) + {l}^{2}\,m\,{D}^{2}\theta\left(t\right)}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{- g\,l\,m\,\sin\left(\theta\left(t\right)\right)} \cr \cr \displaystyle{{l}^{2}\,m\,D\theta\left(t\right)} \cr \cr \displaystyle{{l}^{2}\,m\,{D}^{2}\theta\left(t\right)} \cr \cr \displaystyle{g\,l\,m\,\sin\left(\theta\left(t\right)\right) + {l}^{2}\,m\,{D}^{2}\theta\left(t\right)}\end{pmatrix}\n\end{equation}
 :end:
 
 The final entry is the Lagrange equation, equal to $0$. Divide out the shared
@@ -2074,11 +1959,9 @@ factors of $m$ and $l$:
     't)))
 #+end_src
 
-#+RESULTS[7efe743ce04e6e3bffadc7f24477e6a160f1ae25]:
+#+RESULTS[2834830eb4c320d69127822e99ef98f03c17266a]:
 :results:
-\begin{equation}
-g\,\sin\left(\theta\left(t\right)\right) + l\,{D}^{2}\theta\left(t\right)
-\end{equation}
+\begin{equation}\ng\,\sin\left(\theta\left(t\right)\right) + l\,{D}^{2}\theta\left(t\right)\n\end{equation}
 :end:
 
 This is the [[https://en.wikipedia.org/wiki/Pendulum_(mathematics)][familiar equation of motion]] for a planar pendum.
@@ -2148,11 +2031,9 @@ intermediate step:
      (literal-function 'y)))
 #+end_src
 
-#+RESULTS[17d7d69d4939dbd6a928f8ded983fd5e23bba141]:
+#+RESULTS[1a8298f526dba47af25a926eb27fa8eaeade6ada]:
 :results:
-\begin{equation}
-\begin{pmatrix}\displaystyle{\begin{bmatrix}\displaystyle{-2\,x\left(t\right)\,y\left(t\right) - x\left(t\right)}&\displaystyle{- {\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2} - y\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{m\,Dx\left(t\right)}&\displaystyle{m\,Dy\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{m\,{D}^{2}x\left(t\right)}&\displaystyle{m\,{D}^{2}y\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{m\,{D}^{2}x\left(t\right) + 2\,x\left(t\right)\,y\left(t\right) + x\left(t\right)}&\displaystyle{m\,{D}^{2}y\left(t\right) + {\left(x\left(t\right)\right)}^{2} - {\left(y\left(t\right)\right)}^{2} + y\left(t\right)}\end{bmatrix}}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{\begin{bmatrix}\displaystyle{-2\,x\left(t\right)\,y\left(t\right) - x\left(t\right)} \cr \cr \displaystyle{- {\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2} - y\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{m\,Dx\left(t\right)} \cr \cr \displaystyle{m\,Dy\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{m\,{D}^{2}x\left(t\right)} \cr \cr \displaystyle{m\,{D}^{2}y\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{m\,{D}^{2}x\left(t\right) + 2\,x\left(t\right)\,y\left(t\right) + x\left(t\right)} \cr \cr \displaystyle{m\,{D}^{2}y\left(t\right) + {\left(x\left(t\right)\right)}^{2} - {\left(y\left(t\right)\right)}^{2} + y\left(t\right)}\end{bmatrix}}\end{pmatrix}\n\end{equation}
 :end:
 
 The final down-tuple gives us the Lagrange equations that $x$ and $y$
@@ -2198,11 +2079,9 @@ Here is the full derivation:
      (literal-function 'phi)))
 #+end_src
 
-#+RESULTS[162d4c40e024109c56ed452110f927703ac3f347]:
+#+RESULTS[c06373aad0b51e939e30b7df4899f73449bb4dc1]:
 :results:
-\begin{equation}
-\begin{pmatrix}\displaystyle{\begin{bmatrix}\displaystyle{{R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right)}&\displaystyle{0}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{{R}^{2}\,m\,D\theta\left(t\right)}&\displaystyle{{R}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,D\phi\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{{R}^{2}\,m\,{D}^{2}\theta\left(t\right)}&\displaystyle{2\,{R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right) + {R}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{- {R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right) + {R}^{2}\,m\,{D}^{2}\theta\left(t\right)}&\displaystyle{2\,{R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right) + {R}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)}\end{bmatrix}}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{\begin{bmatrix}\displaystyle{{R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right)} \cr \cr \displaystyle{0}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{{R}^{2}\,m\,D\theta\left(t\right)} \cr \cr \displaystyle{{R}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,D\phi\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{{R}^{2}\,m\,{D}^{2}\theta\left(t\right)} \cr \cr \displaystyle{2\,{R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right) + {R}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{- {R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right) + {R}^{2}\,m\,{D}^{2}\theta\left(t\right)} \cr \cr \displaystyle{2\,{R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right) + {R}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)}\end{bmatrix}}\end{pmatrix}\n\end{equation}
 :end:
 
 The final Lagrange residuals have a few terms that we can divide out. Scheme
@@ -2225,11 +2104,9 @@ equation by dividing out, respectively, $mR^2$ and $mR^2 \sin \theta$:
     't)))
 #+end_src
 
-#+RESULTS[1427a5776b894b4c3c9590270967e51f9250679c]:
+#+RESULTS[2e777ed55ac0222ef849e9bcbe11447d57c66d46]:
 :results:
-\begin{equation}
-\begin{pmatrix}\displaystyle{- \sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right) + {D}^{2}\theta\left(t\right)} \cr \cr \displaystyle{2\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right) + \sin\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{- \sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right) + {D}^{2}\theta\left(t\right)} \cr \cr \displaystyle{2\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right) + \sin\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)}\end{pmatrix}\n\end{equation}
 :end:
 
 These are the Lagrange equations for $\theta$ and $\phi$, respectively.
@@ -2246,29 +2123,13 @@ library. But that would ruin the fun of the exercise...
 
 #+begin_src clojure :exports none
 (ns ch1.ex1-13
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
-| #'ch1.ex1-13/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
-| #'ch1.ex1-13/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 *** Part A: Acceleration-dependent Lagrangian Implementation
 
@@ -2332,11 +2193,9 @@ factor of $-1$ to make the equation look nice:
       (literal-function 'x)) 't)))
 #+end_src
 
-#+RESULTS[61892ce39a22b04d331c91394cb7ab4b8bbeec74]:
+#+RESULTS[7293be1901118c736d2e76ed468443736302b371]:
 :results:
-\begin{equation}
-k\,x\left(t\right) + m\,{D}^{2}x\left(t\right)
-\end{equation}
+\begin{equation}\nk\,x\left(t\right) + m\,{D}^{2}x\left(t\right)\n\end{equation}
 :end:
 
 This looks like the equation of motion for a [[https://en.wikipedia.org/wiki/Harmonic_oscillator][classical harmonic oscillator]].
@@ -2373,7 +2232,7 @@ The alternating $1, -1$ sequence is similar to a more general idea: take any
 ordered collection arranged in a cycle, start at some point and walk around the
 cycle for $n$ steps. In Clojure this can be expressed as
 
-#+begin_src clojure
+#+begin_src clojure :eval no
 (cycle [1 -1])
 #+end_src
 
@@ -2405,11 +2264,9 @@ same result:
       (literal-function 'x)) 't)))
 #+end_src
 
-#+RESULTS[5d62001ce884887afa38fcf3763f9559ff8c65a8]:
+#+RESULTS[c2430bc6a6b01b7b4d1642fc676a159a6fcfd620]:
 :results:
-\begin{equation}
-k\,x\left(t\right) + m\,{D}^{2}x\left(t\right)
-\end{equation}
+\begin{equation}\nk\,x\left(t\right) + m\,{D}^{2}x\left(t\right)\n\end{equation}
 :end:
 
 There it is again, the harmonic oscillator. I don't have any intuition for
@@ -2461,33 +2318,13 @@ techniques were developed to avoid. Let us proceed.
 
 #+begin_src clojure :exports none
 (ns ch1.ex1-14
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
-(ns-unmap *ns* 'p->r)
 (e/bootstrap-repl!)
-(set-level! :fatal)
-(alter-var-root #'render/*TeX-vertical-down-tuples*
-                            (constantly true))
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
-| class java.lang.IllegalStateException                                                                                                                                                                                                                                                                                                                                                                      |
-| #'ch1.ex1-14/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
-| #'ch1.ex1-14/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 Here are the two Lagrangians from the book:
 
@@ -2520,11 +2357,9 @@ Here are the rectangular equations of motion:
   't))
 #+end_src
 
-#+RESULTS[3967e6cebac2565ddbf6b19314f6f46bd577b49f]:
+#+RESULTS[f55b703ae21659a19cb902d3284e69c9431ca993]:
 :results:
-\begin{equation}
-\begin{bmatrix}\displaystyle{\frac{m\,{D}^{2}x\left(t\right)\,\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}} + x\left(t\right)\,DU\left(\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}\right)}{\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}}} \cr \cr \displaystyle{\frac{m\,{D}^{2}y\left(t\right)\,\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}} + y\left(t\right)\,DU\left(\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}\right)}{\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}}}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{\frac{m\,{D}^{2}x\left(t\right)\,\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}} + x\left(t\right)\,DU\left(\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}\right)}{\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}}} \cr \cr \displaystyle{\frac{m\,{D}^{2}y\left(t\right)\,\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}} + y\left(t\right)\,DU\left(\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}\right)}{\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}}}\end{bmatrix}\n\end{equation}
 :end:
 
 And the polar Lagrange equations:
@@ -2538,11 +2373,9 @@ And the polar Lagrange equations:
    't))
 #+end_src
 
-#+RESULTS[bc57f83721cb2697dcf71e970ec47a748cc4c542]:
+#+RESULTS[a620988f83689f15e829f5331507a4b13dc1170d]:
 :results:
-\begin{equation}
-\begin{bmatrix}\displaystyle{- m\,{\left(D\phi\left(t\right)\right)}^{2}\,r\left(t\right) + m\,{D}^{2}r\left(t\right) + DU\left(r\left(t\right)\right)} \cr \cr \displaystyle{2\,m\,D\phi\left(t\right)\,r\left(t\right)\,Dr\left(t\right) + m\,{D}^{2}\phi\left(t\right)\,{\left(r\left(t\right)\right)}^{2}}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{- m\,{\left(D\phi\left(t\right)\right)}^{2}\,r\left(t\right) + m\,{D}^{2}r\left(t\right) + DU\left(r\left(t\right)\right)} \cr \cr \displaystyle{2\,m\,D\phi\left(t\right)\,r\left(t\right)\,Dr\left(t\right) + m\,{D}^{2}\phi\left(t\right)\,{\left(r\left(t\right)\right)}^{2}}\end{bmatrix}\n\end{equation}
 :end:
 
 Once again, our goal is to show that, if you can write down coordinate
@@ -2578,6 +2411,8 @@ Write the coordinate transformation for polar coordinates to rectangular in
 Scheme:
 
 #+begin_src clojure
+(ns-unmap *ns* 'p->r)
+
 (defn p->r [[_ [r phi]]]
   (let [x (* r (cos phi))
         y (* r (sin phi))]
@@ -2594,26 +2429,13 @@ discussed above.
 
 The version that the book presents on page 46 can only generate a velocity
 transformation given a coordinate transformation, but =scmutils= contains a more
-general version that will convert as many path elements as you pass to it:
-
-#+begin_src clojure
-(defn F->C* [F]
-  (fn [local]
-    (let [n (count local)
-          f-bar (fn [q-prime]
-                  (let [q (compose F (Gamma q-prime))]
-                    (Gamma q n)))]
-      ((Gamma-bar f-bar) local))))
-#+end_src
+general version that will convert as many path elements as you pass to it.
 
 Here are the rectangular positions, velocities and accelerations, written in
 polar coordinates:
 
-#+RESULTS:
-: #'ch1.ex1-14/F->C*
-
 #+begin_src clojure :results wrap :exports both :cache yes
-(let [convert-path (F->C* p->r)
+(let [convert-path (F->C p->r)
       polar-path (up 't
                      (up 'r 'phi)
                      (up 'rdot 'phidot)
@@ -2622,11 +2444,9 @@ polar coordinates:
    (convert-path polar-path)))
 #+end_src
 
-#+RESULTS[e924c0971d850d2534adb8e5010a70c8e0f38fa2]:
+#+RESULTS[e2bd34e522b8cce70c18db7df53796bde25bd468]:
 :results:
-\begin{equation}
-\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{r\,\cos\left(\phi\right)} \cr \cr \displaystyle{r\,\sin\left(\phi\right)}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{- \dot {\phi}\,r\,\sin\left(\phi\right) + \dot r\,\cos\left(\phi\right)} \cr \cr \displaystyle{\dot {\phi}\,r\,\cos\left(\phi\right) + \dot r\,\sin\left(\phi\right)}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{- {\dot {\phi}}^{2}\,r\,\cos\left(\phi\right) -2\,\dot {\phi}\,\dot r\,\sin\left(\phi\right) - \ddot {\phi}\,r\,\sin\left(\phi\right) + \ddot r\,\cos\left(\phi\right)} \cr \cr \displaystyle{- {\dot {\phi}}^{2}\,r\,\sin\left(\phi\right) + 2\,\dot {\phi}\,\dot r\,\cos\left(\phi\right) + \ddot {\phi}\,r\,\cos\left(\phi\right) + \ddot r\,\sin\left(\phi\right)}\end{pmatrix}}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{r\,\cos\left(\phi\right)} \cr \cr \displaystyle{r\,\sin\left(\phi\right)}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{- \dot {\phi}\,r\,\sin\left(\phi\right) + \dot r\,\cos\left(\phi\right)} \cr \cr \displaystyle{\dot {\phi}\,r\,\cos\left(\phi\right) + \dot r\,\sin\left(\phi\right)}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{- {\dot {\phi}}^{2}\,r\,\cos\left(\phi\right) -2\,\dot {\phi}\,\dot r\,\sin\left(\phi\right) - \ddot {\phi}\,r\,\sin\left(\phi\right) + \ddot r\,\cos\left(\phi\right)} \cr \cr \displaystyle{- {\dot {\phi}}^{2}\,r\,\sin\left(\phi\right) + 2\,\dot {\phi}\,\dot r\,\cos\left(\phi\right) + \ddot {\phi}\,r\,\cos\left(\phi\right) + \ddot r\,\sin\left(\phi\right)}\end{pmatrix}}\end{pmatrix}\n\end{equation}
 :end:
 
 
@@ -2663,18 +2483,16 @@ in a symbolic rectangular local tuple:
    (rect-equations rect-path)))
 #+end_src
 
-#+RESULTS[9e387aa76a047a2865dbb698d44aede2e92f4f5d]:
+#+RESULTS[fb8ae0e03bc4467f1f415842940cf6d93ce9f835]:
 :results:
-\begin{equation}
-\begin{pmatrix}\displaystyle{\frac{m\,\ddot x\,\sqrt {{x}^{2} + {y}^{2}} + x\,DU\left(\sqrt {{x}^{2} + {y}^{2}}\right)}{\sqrt {{x}^{2} + {y}^{2}}}} \cr \cr \displaystyle{\frac{m\,\ddot y\,\sqrt {{x}^{2} + {y}^{2}} + y\,DU\left(\sqrt {{x}^{2} + {y}^{2}}\right)}{\sqrt {{x}^{2} + {y}^{2}}}}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{\frac{m\,\ddot x\,\sqrt {{x}^{2} + {y}^{2}} + x\,DU\left(\sqrt {{x}^{2} + {y}^{2}}\right)}{\sqrt {{x}^{2} + {y}^{2}}}} \cr \cr \displaystyle{\frac{m\,\ddot y\,\sqrt {{x}^{2} + {y}^{2}} + y\,DU\left(\sqrt {{x}^{2} + {y}^{2}}\right)}{\sqrt {{x}^{2} + {y}^{2}}}}\end{pmatrix}\n\end{equation}
 :end:
 
 Now use the =p->r= conversion to substitute each of the rectangular values above
 with their associated polar values:
 
 #+begin_src clojure :results wrap :exports both :cache yes
-(let [convert-path (F->C* p->r)
+(let [convert-path (F->C p->r)
       polar-path (up 't
                      (up 'r 'phi)
                      (up 'rdot 'phidot)
@@ -2684,11 +2502,9 @@ with their associated polar values:
    (rect-equations local)))
 #+end_src
 
-#+RESULTS[26a8675d64ed69fcad5910c5c4eb4bcb2d03e123]:
+#+RESULTS[d93aab908497450ca88f46e35b1215c6708a4712]:
 :results:
-\begin{equation}
-\begin{pmatrix}\displaystyle{- m\,{\dot {\phi}}^{2}\,r\,\cos\left(\phi\right) -2\,m\,\dot {\phi}\,\dot r\,\sin\left(\phi\right) - m\,\ddot {\phi}\,r\,\sin\left(\phi\right) + m\,\ddot r\,\cos\left(\phi\right) + \cos\left(\phi\right)\,DU\left(r\right)} \cr \cr \displaystyle{- m\,{\dot {\phi}}^{2}\,r\,\sin\left(\phi\right) + 2\,m\,\dot {\phi}\,\dot r\,\cos\left(\phi\right) + m\,\ddot {\phi}\,r\,\cos\left(\phi\right) + m\,\ddot r\,\sin\left(\phi\right) + \sin\left(\phi\right)\,DU\left(r\right)}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{- m\,{\dot {\phi}}^{2}\,r\,\cos\left(\phi\right) -2\,m\,\dot {\phi}\,\dot r\,\sin\left(\phi\right) - m\,\ddot {\phi}\,r\,\sin\left(\phi\right) + m\,\ddot r\,\cos\left(\phi\right) + \cos\left(\phi\right)\,DU\left(r\right)} \cr \cr \displaystyle{- m\,{\dot {\phi}}^{2}\,r\,\sin\left(\phi\right) + 2\,m\,\dot {\phi}\,\dot r\,\cos\left(\phi\right) + m\,\ddot {\phi}\,r\,\cos\left(\phi\right) + m\,\ddot r\,\sin\left(\phi\right) + \sin\left(\phi\right)\,DU\left(r\right)}\end{pmatrix}\n\end{equation}
 :end:
 
 Oh no. This looks quite different from the polar Lagrange equations above. What
@@ -2724,11 +2540,9 @@ A similar trick recovers the second equation,given an extra factor of $r$:
           (* 'r (sin 'phi) (ref eq 0))))))
 #+end_src
 
-#+RESULTS[31292cb7054616c81374c2e2ffe2802e5f2ccddb]:
+#+RESULTS[d3ab8c7718cd80e8ae667d868a5b8ef64f8cc6cc]:
 :results:
-\begin{equation}
-\begin{pmatrix}\displaystyle{- m\,{\dot {\phi}}^{2}\,r + m\,\ddot r + DU\left(r\right)} \cr \cr \displaystyle{2\,m\,\dot {\phi}\,r\,\dot r + m\,\ddot {\phi}\,{r}^{2}}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{- m\,{\dot {\phi}}^{2}\,r + m\,\ddot r + DU\left(r\right)} \cr \cr \displaystyle{2\,m\,\dot {\phi}\,r\,\dot r + m\,\ddot {\phi}\,{r}^{2}}\end{pmatrix}\n\end{equation}
 :end:
 
 This was a powerful lesson. We're allowed to take a linear combination here
@@ -2748,29 +2562,14 @@ answer here.
 
 #+begin_src clojure :exports none
 (ns ch1.ex1-15
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [clojure.string :as string]
+            [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
-| #'ch1.ex1-15/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
-| #'ch1.ex1-15/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 This is one of the more important exercises in the chapter. The problem asks for
 a proof that it's possible to absorb a coordinate transformation directly into
@@ -2926,11 +2725,9 @@ that we expect from 1.77 in the book?
  ((compose C (Gamma qprime)) 't))
 #+end_src
 
-#+RESULTS[1f5f0208c9f584ce58b23339a309ac4e76ea26a5]:
+#+RESULTS[2b72ef2c7d9041ccdec7885dcc252c5362969303]:
 :results:
-\begin{equation}
-\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, q^\prime\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, q^\prime\left(t\right)\right)\,Dq^\prime\left(t\right) + \partial_0F\left(t, q^\prime\left(t\right)\right)}\end{pmatrix}\n\end{equation}
 :end:
 
 This looks correct. We can also transform the path before passing it to
@@ -2943,7 +2740,7 @@ $\Gamma$:
 #+end_src
 
 #+RESULTS:
-: #| to-q |#
+: #'ch1.ex1-15/to-q
 
 Subtract the two forms to see that they're equivalent:
 
@@ -2954,11 +2751,9 @@ Subtract the two forms to see that they're equivalent:
   't))
 #+end_src
 
-#+RESULTS[5f308ea5641c0b71d435390e6d78ce6f1f88c332]:
+#+RESULTS[2d8902854d6900eaf19d58d1b5ab9fb60bd831b4]:
 :results:
-\begin{equation}
-\begin{pmatrix}\displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{0}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{0}\end{pmatrix}\n\end{equation}
 :end:
 
 Now that we know $C$ is correct we can define $q$, the unprimed coordinate path
@@ -3019,15 +2814,12 @@ Example the value of $\partial_2C$ using our Scheme utilities:
 #+begin_src clojure :results wrap :exports both :cache yes
 (->tex-equation
  (((partial 2) C) (up 't 'xprime 'vprime))
- #_"eq:p2c"
- )
+ :label "eq:p2c")
 #+end_src
 
-#+RESULTS[d4b759f3fa4e55e9e5bc8f29d624d4bafcbebb98]:
+#+RESULTS[f3ea66e9d3343c80892faaabe92b413b063971f7]:
 :results:
-\begin{equation}
-\begin{pmatrix}\displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{xprime}\right)}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\label{eq:p2c}\n\begin{pmatrix}\displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{\partial_1F\left(t, x^\prime\right)}\end{pmatrix}\n\end{equation}
 :end:
 
 The first two components are 0, leaving us with:
@@ -3082,11 +2874,9 @@ Calculate $\partial_1C$ using our Scheme utilities:
  (((partial 1) C) (up 't 'xprime 'vprime)))
 #+end_src
 
-#+RESULTS[d3684aee5eb9d10b180f4d6a936a99f1f9cc8149]:
+#+RESULTS[f266bb8aec50be033302e0a5fbb06edae63c66a5]:
 :results:
-\begin{equation}
-\begin{pmatrix}\displaystyle{0} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{xprime}\right)} \cr \cr \displaystyle{\mathsf{vprime}\,\partial_1\left(\partial_1F\right)\left(t, \mathsf{xprime}\right) + \partial_1\left(\partial_0F\right)\left(t, \mathsf{xprime}\right)}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{0} \cr \cr \displaystyle{\partial_1F\left(t, x^\prime\right)} \cr \cr \displaystyle{v^\prime\,{\partial_1}^{2}F\left(t, x^\prime\right) + \left(\partial_0\,\partial_1\right)\left(F\right)\left(t, x^\prime\right)}\end{pmatrix}\n\end{equation}
 :end:
 
 Expand the chain rule out and remove 0 terms, as before:
@@ -3145,11 +2935,9 @@ First, consider $\partial_1 L' \circ \Gamma[q']$:
   't))
 #+end_src
 
-#+RESULTS[451c6ba40c7c34a322ecf96d069c8b0db385fc11]:
+#+RESULTS[a14cf0bec5b2aeb15eec4de504e22659b40491c0]:
 :results:
-\begin{equation}
-D\mathsf{qprime}\left(t\right)\,\partial_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial_1\left(\partial_1F\right)\left(t, \mathsf{qprime}\left(t\right)\right) + \partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial_1L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial_1\left(\partial_0F\right)\left(t, \mathsf{qprime}\left(t\right)\right)
-\end{equation}
+\begin{equation}\nDq^\prime\left(t\right)\,\partial_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, q^\prime\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, q^\prime\left(t\right)\right)\,Dq^\prime\left(t\right) + \partial_0F\left(t, q^\prime\left(t\right)\right)}\end{pmatrix}\right)\,{\partial_1}^{2}F\left(t, q^\prime\left(t\right)\right) + \partial_1F\left(t, q^\prime\left(t\right)\right)\,\partial_1L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, q^\prime\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, q^\prime\left(t\right)\right)\,Dq^\prime\left(t\right) + \partial_0F\left(t, q^\prime\left(t\right)\right)}\end{pmatrix}\right) + \partial_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, q^\prime\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, q^\prime\left(t\right)\right)\,Dq^\prime\left(t\right) + \partial_0F\left(t, q^\prime\left(t\right)\right)}\end{pmatrix}\right)\,\left(\partial_0\,\partial_1\right)\left(F\right)\left(t, q^\prime\left(t\right)\right)\n\end{equation}
 :end:
 
 
@@ -3159,11 +2947,10 @@ reference:
 
 #+begin_src clojure
 (defn ->eq [expr]
-  (println
-   (clojure.string/replace
-    (->tex-equation* expr)
-    (->TeX ((Gamma q) 't))
-    "\\circ \\Gamma[q]")))
+  (string/replace
+   (->tex-equation expr)
+   (->TeX (simplify ((Gamma q) 't)))
+   "\\Gamma[q]\\left(t\\right)"))
 #+end_src
 
 #+RESULTS:
@@ -3171,27 +2958,18 @@ reference:
 
 Try again:
 
-#+begin_src clojure :results wrap :exports both :cache yes
+#+begin_src clojure :results wrap :exports both
 (->eq
  ((compose ((partial 1) Lprime) (Gamma qprime))
   't))
 #+end_src
 
-#+RESULTS[aef7837374e06886cf6bf0bb9b099884deb1fcf9]:
+#+RESULTS[faf6828253b9f230c0a91ac86f744888da752daf]:
 :results:
-\begin{equation}
-D\mathsf{qprime}\left(t\right)\,\partial_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial_1\left(\partial_1F\right)\left(t, \mathsf{qprime}\left(t\right)\right) + \partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial_1L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial_1\left(\partial_0F\right)\left(t, \mathsf{qprime}\left(t\right)\right)
-\end{equation}
+\begin{equation}\nDq^\prime\left(t\right)\,\partial_2L\left(\Gamma[q]\left(t\right)\right)\,{\partial_1}^{2}F\left(t, q^\prime\left(t\right)\right) + \partial_1F\left(t, q^\prime\left(t\right)\right)\,\partial_1L\left(\Gamma[q]\left(t\right)\right) + \partial_2L\left(\Gamma[q]\left(t\right)\right)\,\left(\partial_0\,\partial_1\right)\left(F\right)\left(t, q^\prime\left(t\right)\right)\n\end{equation}
 :end:
 
-#+RESULTS[ee6c612cadd91730dd0142a4dd7476fda80d6e07]:
-\begin{equation}
-D{q}^\prime\left( t \right) {\partial}_{2}L\left( \circ \Gamma[q] \right) {{\partial}_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}_{1}F\left( t, {q}^\prime\left( t \right) \right) {\partial}_{1}L\left( \circ \Gamma[q] \right) + {\partial}_{2}L\left( \circ \Gamma[q] \right) \left( {\partial}_{0} {\partial}_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
-\end{equation}
-
-Ignore the parentheses around $\circ \Gamma[q]$ and this looks better.
-
-The $\partial_1 L \circ \Gamma[q]$ term of the unprimed Lagrange equations is
+The $\partial_1 L(\Gamma[q](t))$ term of the unprimed Lagrange equations is
 nestled inside the expansion above, multiplied by a factor $\partial_1F(t,
 q'(t))$:
 
@@ -3202,11 +2980,9 @@ q'(t))$:
     't)))
 #+end_src
 
-#+RESULTS[5f2c8a531cafcaf6e23b9f9cb3c38108b5d1e32d]:
+#+RESULTS[4d38189f9b821ce2a0fb1b2731fd8eff80329182]:
 :results:
-\begin{equation}
-\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial_1L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)
-\end{equation}
+\begin{equation}\n\partial_1F\left(t, q^\prime\left(t\right)\right)\,\partial_1L\left(\Gamma[q]\left(t\right)\right)\n\end{equation}
 :end:
 
 Next, consider the $D(\partial_2 L' \circ \Gamma[q'])$ term:
@@ -3217,13 +2993,10 @@ Next, consider the $D(\partial_2 L' \circ \Gamma[q'])$ term:
   't))
 #+end_src
 
-#+RESULTS[afbf11e581f00b2dac21d9451826285a9302249d]:
+#+RESULTS[3f03581cccc9ece6ad0694aaa2c6404e4445ed97]:
 :results:
-\begin{equation}
-\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,{\left(D\mathsf{qprime}\left(t\right)\right)}^{2}\,\partial_1\left(\partial_1F\right)\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial_2\left(\partial_2L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + {\left(\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\right)}^{2}\,D\mathsf{qprime}\left(t\right)\,\partial_2\left(\partial_1L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + {\left(\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\right)}^{2}\,\partial_2\left(\partial_2L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,{D}^{2}\mathsf{qprime}\left(t\right) + 2\,\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right)\,\partial_1\left(\partial_0F\right)\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial_2\left(\partial_2L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial_2\left(\partial_1L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial_2\left(\partial_2L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial_0\left(\partial_0F\right)\left(t, \mathsf{qprime}\left(t\right)\right) + D\mathsf{qprime}\left(t\right)\,\partial_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial_1\left(\partial_1F\right)\left(t, \mathsf{qprime}\left(t\right)\right) + \partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial_2\left(\partial_0L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial_1\left(\partial_0F\right)\left(t, \mathsf{qprime}\left(t\right)\right)
-\end{equation}
+\begin{equation}\n\partial_1F\left(t, q^\prime\left(t\right)\right)\,{\left(Dq^\prime\left(t\right)\right)}^{2}\,{\partial_1}^{2}F\left(t, q^\prime\left(t\right)\right)\,{\partial_2}^{2}L\left(\Gamma[q]\left(t\right)\right) + {\left(\partial_1F\left(t, q^\prime\left(t\right)\right)\right)}^{2}\,Dq^\prime\left(t\right)\,\left(\partial_1\,\partial_2\right)\left(L\right)\left(\Gamma[q]\left(t\right)\right) + {\left(\partial_1F\left(t, q^\prime\left(t\right)\right)\right)}^{2}\,{\partial_2}^{2}L\left(\Gamma[q]\left(t\right)\right)\,{D}^{2}q^\prime\left(t\right) + 2\,\partial_1F\left(t, q^\prime\left(t\right)\right)\,Dq^\prime\left(t\right)\,\left(\partial_0\,\partial_1\right)\left(F\right)\left(t, q^\prime\left(t\right)\right)\,{\partial_2}^{2}L\left(\Gamma[q]\left(t\right)\right) + \partial_0F\left(t, q^\prime\left(t\right)\right)\,\partial_1F\left(t, q^\prime\left(t\right)\right)\,\left(\partial_1\,\partial_2\right)\left(L\right)\left(\Gamma[q]\left(t\right)\right) + \partial_1F\left(t, q^\prime\left(t\right)\right)\,{\partial_2}^{2}L\left(\Gamma[q]\left(t\right)\right)\,{\partial_0}^{2}F\left(t, q^\prime\left(t\right)\right) + Dq^\prime\left(t\right)\,\partial_2L\left(\Gamma[q]\left(t\right)\right)\,{\partial_1}^{2}F\left(t, q^\prime\left(t\right)\right) + \partial_1F\left(t, q^\prime\left(t\right)\right)\,\left(\partial_0\,\partial_2\right)\left(L\right)\left(\Gamma[q]\left(t\right)\right) + \partial_2L\left(\Gamma[q]\left(t\right)\right)\,\left(\partial_0\,\partial_1\right)\left(F\right)\left(t, q^\prime\left(t\right)\right)\n\end{equation}
 :end:
-
 
 This, again, is total madness. We really want some way to control how Scheme
 expands terms.
@@ -3237,11 +3010,9 @@ Lagrange equations:
   't))
 #+end_src
 
-#+RESULTS[9f2447845d506ca6e263e7660b89392436f92c9b]:
+#+RESULTS[fe49bac2a687e3d14b31a41abfbb0ada1cbd5b03]:
 :results:
-\begin{equation}
-{\left(D\mathsf{qprime}\left(t\right)\right)}^{2}\,\partial_1\left(\partial_1F\right)\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial_2\left(\partial_2L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right)\,\partial_2\left(\partial_1L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial_2\left(\partial_2L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,{D}^{2}\mathsf{qprime}\left(t\right) + 2\,D\mathsf{qprime}\left(t\right)\,\partial_1\left(\partial_0F\right)\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial_2\left(\partial_2L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial_2\left(\partial_1L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial_2\left(\partial_2L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial_0\left(\partial_0F\right)\left(t, \mathsf{qprime}\left(t\right)\right) + \partial_2\left(\partial_0L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)
-\end{equation}
+\begin{equation}\n{\left(Dq^\prime\left(t\right)\right)}^{2}\,{\partial_1}^{2}F\left(t, q^\prime\left(t\right)\right)\,{\partial_2}^{2}L\left(\Gamma[q]\left(t\right)\right) + \partial_1F\left(t, q^\prime\left(t\right)\right)\,Dq^\prime\left(t\right)\,\left(\partial_1\,\partial_2\right)\left(L\right)\left(\Gamma[q]\left(t\right)\right) + \partial_1F\left(t, q^\prime\left(t\right)\right)\,{\partial_2}^{2}L\left(\Gamma[q]\left(t\right)\right)\,{D}^{2}q^\prime\left(t\right) + 2\,Dq^\prime\left(t\right)\,\left(\partial_0\,\partial_1\right)\left(F\right)\left(t, q^\prime\left(t\right)\right)\,{\partial_2}^{2}L\left(\Gamma[q]\left(t\right)\right) + \partial_0F\left(t, q^\prime\left(t\right)\right)\,\left(\partial_1\,\partial_2\right)\left(L\right)\left(\Gamma[q]\left(t\right)\right) + {\partial_2}^{2}L\left(\Gamma[q]\left(t\right)\right)\,{\partial_0}^{2}F\left(t, q^\prime\left(t\right)\right) + \left(\partial_0\,\partial_2\right)\left(L\right)\left(\Gamma[q]\left(t\right)\right)\n\end{equation}
 :end:
 
 Staring at these two equations, it becomes clear that the first contains the
@@ -3267,11 +3038,9 @@ Lagrange equations, scaled by this factor:
     't)))
 #+end_src
 
-#+RESULTS[4127490c1efb9f0f215d6d6d2ef970e154f15fd3]:
+#+RESULTS[08b204bd25cd80a7bfb6760bd8d35c3a90739743]:
 :results:
-\begin{equation}
-0
-\end{equation}
+\begin{equation}\n0\n\end{equation}
 :end:
 
 Done! It seems that the extra terms on each side exactly cancel. As with the pen
@@ -3303,29 +3072,13 @@ I'm leaving intuitive cake on the table.
 
 #+begin_src clojure
 (ns ch1.ex1-16
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
-| #'ch1.ex1-16/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
-| #'ch1.ex1-16/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 This exercise gives you practice in writing Lagrangians as compositions.
 
@@ -3436,11 +3189,9 @@ coordiantes. Confirm the rectangular Lagrangian by passing in a local tuple with
       (up 'v_x 'v_y 'v_z))))
 #+end_src
 
-#+RESULTS[48fe8f2fe324e25d9c77de63020225ecda580b2c]:
+#+RESULTS[9b6ec3b9f75263e7c2b7fa09a10ac997f802b72e]:
 :results:
-\begin{equation}
-\frac{1}{2}\,m\,{v_x}^{2} + \frac{1}{2}\,m\,{v_y}^{2} + \frac{1}{2}\,m\,{v_z}^{2} - U\left(\sqrt {{x}^{2} + {y}^{2} + {z}^{2}}\right)
-\end{equation}
+\begin{equation}\n\frac{1}{2}\,m\,{v_x}^{2} + \frac{1}{2}\,m\,{v_y}^{2} + \frac{1}{2}\,m\,{v_z}^{2} - U\left(\sqrt {{x}^{2} + {y}^{2} + {z}^{2}}\right)\n\end{equation}
 :end:
 
 Next, the spherical. Write down the coordinate transformation from spherical to
@@ -3467,11 +3218,9 @@ Here are the velocities calculated above by hand:
        (up 'rdot 'thetadot 'phidot)))))
 #+end_src
 
-#+RESULTS[d6615496a08456c35cb47bb26a0a49fd19595ec8]:
+#+RESULTS[b2c0978a0825f6416bb7690e463134976cbb5f81]:
 :results:
-\begin{equation}
-\begin{pmatrix}\displaystyle{- \dot {\phi}\,r\,\sin\left(\phi\right)\,\sin\left(\theta\right) + r\,\dot {\theta}\,\cos\left(\phi\right)\,\cos\left(\theta\right) + \dot r\,\cos\left(\phi\right)\,\sin\left(\theta\right)} \cr \cr \displaystyle{\dot {\phi}\,r\,\cos\left(\phi\right)\,\sin\left(\theta\right) + r\,\dot {\theta}\,\sin\left(\phi\right)\,\cos\left(\theta\right) + \dot r\,\sin\left(\phi\right)\,\sin\left(\theta\right)} \cr \cr \displaystyle{- r\,\dot {\theta}\,\sin\left(\theta\right) + \dot r\,\cos\left(\theta\right)}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{- \dot {\phi}\,r\,\sin\left(\phi\right)\,\sin\left(\theta\right) + r\,\dot {\theta}\,\cos\left(\phi\right)\,\cos\left(\theta\right) + \dot r\,\cos\left(\phi\right)\,\sin\left(\theta\right)} \cr \cr \displaystyle{\dot {\phi}\,r\,\cos\left(\phi\right)\,\sin\left(\theta\right) + r\,\dot {\theta}\,\sin\left(\phi\right)\,\cos\left(\theta\right) + \dot r\,\sin\left(\phi\right)\,\sin\left(\theta\right)} \cr \cr \displaystyle{- r\,\dot {\theta}\,\sin\left(\theta\right) + \dot r\,\cos\left(\theta\right)}\end{pmatrix}\n\end{equation}
 :end:
 
 
@@ -3497,11 +3246,9 @@ Confirm that this is equivalent to the analytic solution:
       (up 'rdot 'thetadot 'phidot))))
 #+end_src
 
-#+RESULTS[c3f51d64c327238e347eaaac92139019d829e6bb]:
+#+RESULTS[15cc4978958638c3420dcfefe6b5f3c1e49ef4cf]:
 :results:
-\begin{equation}
-\frac{1}{2}\,m\,{\dot {\phi}}^{2}\,{r}^{2}\,{\sin}^{2}\left(\theta\right) + \frac{1}{2}\,m\,{r}^{2}\,{\dot {\theta}}^{2} + \frac{1}{2}\,m\,{\dot r}^{2} - U\left(r\right)
-\end{equation}
+\begin{equation}\n\frac{1}{2}\,m\,{\dot {\phi}}^{2}\,{r}^{2}\,{\sin}^{2}\left(\theta\right) + \frac{1}{2}\,m\,{r}^{2}\,{\dot {\theta}}^{2} + \frac{1}{2}\,m\,{\dot r}^{2} - U\left(r\right)\n\end{equation}
 :end:
 
 *** Discussion
@@ -3527,29 +3274,13 @@ free you're in rotating spherical coords.
 
 #+begin_src clojure
 (ns ch1.ex1-17
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
-| #'ch1.ex1-17/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
-| #'ch1.ex1-17/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 This, and the next three exercises, are here to give you practice in the real
 art, of difficulty, of any dynamics problem. It's easy to change coordinates. So
@@ -3607,9 +3338,6 @@ the beginning of the composition.
 #+end_src
 
 #+RESULTS:
-| #'ch1.ex1-17/turns->x-theta |
-| #'ch1.ex1-17/x-theta->rect  |
-| #'ch1.ex1-17/turns->rect*   |
 
 The transformations are identical:
 
@@ -3620,11 +3348,9 @@ The transformations are identical:
   (up 't 'n 'ndot)))
 #+end_src
 
-#+RESULTS[d80c62cca2ab8d7539d44d2f9d8eec3a2b753ae7]:
+#+RESULTS[3c62091db7f0c1925b9500d98ab490a4272c1040]:
 :results:
-\begin{equation}
-\begin{pmatrix}\displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{0}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{0}\end{pmatrix}\n\end{equation}
 :end:
 
 Define the Lagrangian:
@@ -3641,8 +3367,6 @@ Define the Lagrangian:
 #+end_src
 
 #+RESULTS:
-| #'ch1.ex1-17/L-rectangular |
-| #'ch1.ex1-17/L-turns       |
 
 The potential is a uniform gravitational acceleration:
 
@@ -3663,11 +3387,9 @@ Final Lagrangian:
   (up 't 'n 'ndot)))
 #+end_src
 
-#+RESULTS[6b86a52ae07d6c47901b0c000b33b045bfd8c437]:
+#+RESULTS[5fd23110114f9beb52584fe2f969645da1381033]:
 :results:
-\begin{equation}
-\frac{{d}^{2}\,{h}^{2}\,m\,{\dot n}^{2}\,{\pi}^{2} - d\,g\,{h}^{2}\,m\,\sin\left(2\,n\,\pi\right) + m\,{\dot n}^{2}}{2\,{h}^{2}}
-\end{equation}
+\begin{equation}\n\frac{{d}^{2}\,{h}^{2}\,m\,{\dot n}^{2}\,{\pi}^{2} - d\,g\,{h}^{2}\,m\,\sin\left(2\,n\,\pi\right) + m\,{\dot n}^{2}}{2\,{h}^{2}}\n\end{equation}
 :end:
 
 Lagrange equations of motion:
@@ -3679,11 +3401,9 @@ Lagrange equations of motion:
    (((Lagrange-equations L) n) 't)))
 #+end_src
 
-#+RESULTS[352aa53da0936b44bcb5d807075be020c3741e81]:
+#+RESULTS[13cc5e8cac93945c9b58962eb2af907c5b386781]:
 :results:
-\begin{equation}
-\frac{{d}^{2}\,{h}^{2}\,m\,{\pi}^{2}\,{D}^{2}n\left(t\right) + d\,g\,{h}^{2}\,m\,\pi\,\cos\left(2\,\pi\,n\left(t\right)\right) + m\,{D}^{2}n\left(t\right)}{{h}^{2}}
-\end{equation}
+\begin{equation}\n\frac{{d}^{2}\,{h}^{2}\,m\,{\pi}^{2}\,{D}^{2}n\left(t\right) + d\,g\,{h}^{2}\,m\,\pi\,\cos\left(2\,\pi\,n\left(t\right)\right) + m\,{D}^{2}n\left(t\right)}{{h}^{2}}\n\end{equation}
 :end:
 
 ** Exercise 1.18: Bead on a triaxial surface
@@ -3693,29 +3413,13 @@ Lagrange equations of motion:
 
 #+begin_src clojure
 (ns ch1.ex1-18
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
-| #'ch1.ex1-18/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
-| #'ch1.ex1-18/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 #+begin_quote
 A bead of mass $m$ moves without friction on a triaxial ellipsoidal surface. In
@@ -3770,11 +3474,9 @@ Final Lagrangian:
    ((L-central-triaxial 'm 'a 'b 'c) local)))
 #+end_src
 
-#+RESULTS[fcd78ebc3bbb3ac9713437c365f52ef1d1318e68]:
+#+RESULTS[2d6f5b64206ae399aae3d9e63eca6d7612c3303f]:
 :results:
-\begin{equation}
-\frac{1}{2}\,{a}^{2}\,m\,{\dot {\phi}}^{2}\,{\sin}^{2}\left(\phi\right)\,{\sin}^{2}\left(\theta\right) - {a}^{2}\,m\,\dot {\phi}\,\dot {\theta}\,\cos\left(\phi\right)\,\sin\left(\phi\right)\,\sin\left(\theta\right)\,\cos\left(\theta\right) + \frac{1}{2}\,{a}^{2}\,m\,{\dot {\theta}}^{2}\,{\cos}^{2}\left(\phi\right)\,{\cos}^{2}\left(\theta\right) + \frac{1}{2}\,{b}^{2}\,m\,{\dot {\phi}}^{2}\,{\cos}^{2}\left(\phi\right)\,{\sin}^{2}\left(\theta\right) + {b}^{2}\,m\,\dot {\phi}\,\dot {\theta}\,\cos\left(\phi\right)\,\sin\left(\phi\right)\,\sin\left(\theta\right)\,\cos\left(\theta\right) + \frac{1}{2}\,{b}^{2}\,m\,{\dot {\theta}}^{2}\,{\sin}^{2}\left(\phi\right)\,{\cos}^{2}\left(\theta\right) + \frac{1}{2}\,{c}^{2}\,m\,{\dot {\theta}}^{2}\,{\sin}^{2}\left(\theta\right)
-\end{equation}
+\begin{equation}\n\frac{1}{2}\,{a}^{2}\,m\,{\dot {\phi}}^{2}\,{\sin}^{2}\left(\theta\right)\,{\sin}^{2}\left(\phi\right) - {a}^{2}\,m\,\dot {\phi}\,\dot {\theta}\,\cos\left(\phi\right)\,\cos\left(\theta\right)\,\sin\left(\theta\right)\,\sin\left(\phi\right) + \frac{1}{2}\,{a}^{2}\,m\,{\dot {\theta}}^{2}\,{\cos}^{2}\left(\phi\right)\,{\cos}^{2}\left(\theta\right) + \frac{1}{2}\,{b}^{2}\,m\,{\dot {\phi}}^{2}\,{\cos}^{2}\left(\phi\right)\,{\sin}^{2}\left(\theta\right) + {b}^{2}\,m\,\dot {\phi}\,\dot {\theta}\,\cos\left(\phi\right)\,\cos\left(\theta\right)\,\sin\left(\theta\right)\,\sin\left(\phi\right) + \frac{1}{2}\,{b}^{2}\,m\,{\dot {\theta}}^{2}\,{\cos}^{2}\left(\theta\right)\,{\sin}^{2}\left(\phi\right) + \frac{1}{2}\,{c}^{2}\,m\,{\dot {\theta}}^{2}\,{\sin}^{2}\left(\theta\right)\n\end{equation}
 :end:
 
 I'm sure there's some simplification in there for us. But why?
@@ -3790,11 +3492,9 @@ Lagrange equations of motion:
     't)))
 #+end_src
 
-#+RESULTS[b269741f5838a9198c2eb167c0b1df70c4046a37]:
+#+RESULTS[79d491438704f1fa2248abc2f2cca80d22b213a5]:
 :results:
-\begin{equation}
-\begin{bmatrix}\displaystyle{- {a}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right)\,{\cos}^{2}\left(\phi\left(t\right)\right) - {a}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right)\,{\cos}^{2}\left(\phi\left(t\right)\right) -2\,{a}^{2}\,m\,D\theta\left(t\right)\,D\phi\left(t\right)\,{\cos}^{2}\left(\theta\left(t\right)\right)\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) - {b}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right)\,{\sin}^{2}\left(\phi\left(t\right)\right) - {b}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right)\,{\sin}^{2}\left(\phi\left(t\right)\right) + 2\,{b}^{2}\,m\,D\theta\left(t\right)\,D\phi\left(t\right)\,{\cos}^{2}\left(\theta\left(t\right)\right)\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) - {a}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) + {a}^{2}\,m\,{D}^{2}\theta\left(t\right)\,{\cos}^{2}\left(\theta\left(t\right)\right)\,{\cos}^{2}\left(\phi\left(t\right)\right) + {b}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) + {b}^{2}\,m\,{D}^{2}\theta\left(t\right)\,{\cos}^{2}\left(\theta\left(t\right)\right)\,{\sin}^{2}\left(\phi\left(t\right)\right) + {c}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right) + {c}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right)} \cr \cr \displaystyle{{a}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) + {a}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) + 2\,{a}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right)\,{\sin}^{2}\left(\phi\left(t\right)\right) - {b}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) - {b}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) + 2\,{b}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right)\,{\cos}^{2}\left(\phi\left(t\right)\right) + {a}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)\,{\sin}^{2}\left(\phi\left(t\right)\right) - {a}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right)\,\cos\left(\theta\left(t\right)\right)\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) + {b}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)\,{\cos}^{2}\left(\phi\left(t\right)\right) + {b}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right)\,\cos\left(\theta\left(t\right)\right)\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right)}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{- {a}^{2}\,m\,{\cos}^{2}\left(\phi\left(t\right)\right)\,\cos\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,\sin\left(\theta\left(t\right)\right) - {a}^{2}\,m\,{\cos}^{2}\left(\phi\left(t\right)\right)\,\cos\left(\theta\left(t\right)\right)\,\sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2} -2\,{a}^{2}\,m\,\cos\left(\phi\left(t\right)\right)\,{\cos}^{2}\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,D\phi\left(t\right)\,\sin\left(\phi\left(t\right)\right) + 2\,{b}^{2}\,m\,\cos\left(\phi\left(t\right)\right)\,{\cos}^{2}\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,D\phi\left(t\right)\,\sin\left(\phi\left(t\right)\right) - {b}^{2}\,m\,\cos\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,\sin\left(\theta\left(t\right)\right)\,{\sin}^{2}\left(\phi\left(t\right)\right) - {b}^{2}\,m\,\cos\left(\theta\left(t\right)\right)\,\sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,{\sin}^{2}\left(\phi\left(t\right)\right) + {a}^{2}\,m\,{\cos}^{2}\left(\phi\left(t\right)\right)\,{\cos}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right) - {a}^{2}\,m\,\cos\left(\phi\left(t\right)\right)\,\cos\left(\theta\left(t\right)\right)\,\sin\left(\theta\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right)\,{D}^{2}\phi\left(t\right) + {b}^{2}\,m\,\cos\left(\phi\left(t\right)\right)\,\cos\left(\theta\left(t\right)\right)\,\sin\left(\theta\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right)\,{D}^{2}\phi\left(t\right) + {b}^{2}\,m\,{\cos}^{2}\left(\theta\left(t\right)\right)\,{\sin}^{2}\left(\phi\left(t\right)\right)\,{D}^{2}\theta\left(t\right) + {c}^{2}\,m\,\cos\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,\sin\left(\theta\left(t\right)\right) + {c}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right)} \cr \cr \displaystyle{{a}^{2}\,m\,\cos\left(\phi\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,{\sin}^{2}\left(\theta\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) + {a}^{2}\,m\,\cos\left(\phi\left(t\right)\right)\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\sin\left(\phi\left(t\right)\right) + 2\,{a}^{2}\,m\,\cos\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,\sin\left(\theta\left(t\right)\right)\,D\phi\left(t\right)\,{\sin}^{2}\left(\phi\left(t\right)\right) + 2\,{b}^{2}\,m\,{\cos}^{2}\left(\phi\left(t\right)\right)\,\cos\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,\sin\left(\theta\left(t\right)\right)\,D\phi\left(t\right) - {b}^{2}\,m\,\cos\left(\phi\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,{\sin}^{2}\left(\theta\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) - {b}^{2}\,m\,\cos\left(\phi\left(t\right)\right)\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\sin\left(\phi\left(t\right)\right) - {a}^{2}\,m\,\cos\left(\phi\left(t\right)\right)\,\cos\left(\theta\left(t\right)\right)\,\sin\left(\theta\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right)\,{D}^{2}\theta\left(t\right) + {a}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{\sin}^{2}\left(\phi\left(t\right)\right)\,{D}^{2}\phi\left(t\right) + {b}^{2}\,m\,{\cos}^{2}\left(\phi\left(t\right)\right)\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right) + {b}^{2}\,m\,\cos\left(\phi\left(t\right)\right)\,\cos\left(\theta\left(t\right)\right)\,\sin\left(\theta\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right)\,{D}^{2}\theta\left(t\right)}\end{bmatrix}\n\end{equation}
 :end:
 
 This is fairly horrifying. This really demands animation, as I bet it looks
@@ -3811,29 +3511,13 @@ The system description is:
 
 #+begin_src clojure
 (ns ch1.ex1-19
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
-| #'ch1.ex1-19/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
-| #'ch1.ex1-19/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 #+begin_quote
 The two-bar linkage shown in figure 1.3 is constrained to move in the plane. It
@@ -3949,11 +3633,9 @@ Gravitational potential:
    ((L-double-linkage 'l_1 'l_2 'm_1 'm_2 'm_3 U) local)))
 #+end_src
 
-#+RESULTS[7e314cc3b3cb84abd7876d1fe94a09e71d080c76]:
+#+RESULTS[774c280417796b62ee8e1c67f93caad5998b0e2c]:
 :results:
-\begin{equation}
-{l_1}^{2}\,m_1\,{\dot {\theta}}^{2} + 2\,l_1\,m_1\,\dot {\theta}\,{\dot x}_2\,\cos\left(\theta\right) + 2\,l_1\,m_1\,\dot {\theta}\,{\dot y}_2\,\sin\left(\theta\right) + {l_2}^{2}\,m_3\,{\dot {\phi}}^{2} + 2\,l_2\,m_3\,\dot {\phi}\,{\dot x}_2\,\cos\left(\phi\right) + 2\,l_2\,m_3\,\dot {\phi}\,{\dot y}_2\,\sin\left(\phi\right) + g\,l_1\,m_1\,\cos\left(\theta\right) + g\,l_2\,m_3\,\cos\left(\phi\right) - g\,m_1\,y_2 - g\,m_2\,y_2 - g\,m_3\,y_2 + m_1\,{{\dot x}_2}^{2} + m_1\,{{\dot y}_2}^{2} + m_2\,{{\dot x}_2}^{2} + m_2\,{{\dot y}_2}^{2} + m_3\,{{\dot x}_2}^{2} + m_3\,{{\dot y}_2}^{2}
-\end{equation}
+\begin{equation}\n{l_1}^{2}\,m_1\,{\dot {\theta}}^{2} + 2\,l_1\,m_1\,\dot {\theta}\,{\dot x}_2\,\cos\left(\theta\right) + 2\,l_1\,m_1\,\dot {\theta}\,{\dot y}_2\,\sin\left(\theta\right) + {l_2}^{2}\,m_3\,{\dot {\phi}}^{2} + 2\,l_2\,m_3\,\dot {\phi}\,{\dot x}_2\,\cos\left(\phi\right) + 2\,l_2\,m_3\,\dot {\phi}\,{\dot y}_2\,\sin\left(\phi\right) + g\,l_1\,m_1\,\cos\left(\theta\right) + g\,l_2\,m_3\,\cos\left(\phi\right) - g\,m_1\,y_2 - g\,m_2\,y_2 - g\,m_3\,y_2 + m_1\,{{\dot x}_2}^{2} + m_1\,{{\dot y}_2}^{2} + m_2\,{{\dot x}_2}^{2} + m_2\,{{\dot y}_2}^{2} + m_3\,{{\dot x}_2}^{2} + m_3\,{{\dot y}_2}^{2}\n\end{equation}
 :end:
 
 Lagrange equations of motion:
@@ -3970,11 +3652,9 @@ Lagrange equations of motion:
     't)))
 #+end_src
 
-#+RESULTS[8111d855bca7c3ac2cb695bd8f2a5d56bf96c50a]:
+#+RESULTS[39b88b443a8dd7df4fec651e2f3d3c9adb5508c6]:
 :results:
-\begin{equation}
-\begin{bmatrix}\displaystyle{g\,l_1\,m_1\,\sin\left(\theta\left(t\right)\right) + 2\,{l_1}^{2}\,m_1\,{D}^{2}\theta\left(t\right) + 2\,l_1\,m_1\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}y_2\left(t\right) + 2\,l_1\,m_1\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}x_2\left(t\right)} \cr \cr \displaystyle{g\,l_2\,m_3\,\sin\left(\phi\left(t\right)\right) + 2\,{l_2}^{2}\,m_3\,{D}^{2}\phi\left(t\right) + 2\,l_2\,m_3\,\cos\left(\phi\left(t\right)\right)\,{D}^{2}x_2\left(t\right) + 2\,l_2\,m_3\,\sin\left(\phi\left(t\right)\right)\,{D}^{2}y_2\left(t\right)} \cr \cr \displaystyle{-2\,l_1\,m_1\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2} -2\,l_2\,m_3\,{\left(D\phi\left(t\right)\right)}^{2}\,\sin\left(\phi\left(t\right)\right) + 2\,l_1\,m_1\,{D}^{2}\theta\left(t\right)\,\cos\left(\theta\left(t\right)\right) + 2\,l_2\,m_3\,{D}^{2}\phi\left(t\right)\,\cos\left(\phi\left(t\right)\right) + 2\,m_1\,{D}^{2}x_2\left(t\right) + 2\,m_2\,{D}^{2}x_2\left(t\right) + 2\,m_3\,{D}^{2}x_2\left(t\right)} \cr \cr \displaystyle{2\,l_1\,m_1\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right) + 2\,l_2\,m_3\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\phi\left(t\right)\right) + 2\,l_1\,m_1\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right) + 2\,l_2\,m_3\,{D}^{2}\phi\left(t\right)\,\sin\left(\phi\left(t\right)\right) + g\,m_1 + g\,m_2 + g\,m_3 + 2\,m_1\,{D}^{2}y_2\left(t\right) + 2\,m_2\,{D}^{2}y_2\left(t\right) + 2\,m_3\,{D}^{2}y_2\left(t\right)}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{g\,l_1\,m_1\,\sin\left(\theta\left(t\right)\right) + 2\,{l_1}^{2}\,m_1\,{D}^{2}\theta\left(t\right) + 2\,l_1\,m_1\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}x_2\left(t\right) + 2\,l_1\,m_1\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}y_2\left(t\right)} \cr \cr \displaystyle{g\,l_2\,m_3\,\sin\left(\phi\left(t\right)\right) + 2\,{l_2}^{2}\,m_3\,{D}^{2}\phi\left(t\right) + 2\,l_2\,m_3\,\cos\left(\phi\left(t\right)\right)\,{D}^{2}x_2\left(t\right) + 2\,l_2\,m_3\,\sin\left(\phi\left(t\right)\right)\,{D}^{2}y_2\left(t\right)} \cr \cr \displaystyle{-2\,l_1\,m_1\,{\left(D\theta\left(t\right)\right)}^{2}\,\sin\left(\theta\left(t\right)\right) -2\,l_2\,m_3\,{\left(D\phi\left(t\right)\right)}^{2}\,\sin\left(\phi\left(t\right)\right) + 2\,l_1\,m_1\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right) + 2\,l_2\,m_3\,\cos\left(\phi\left(t\right)\right)\,{D}^{2}\phi\left(t\right) + 2\,m_1\,{D}^{2}x_2\left(t\right) + 2\,m_2\,{D}^{2}x_2\left(t\right) + 2\,m_3\,{D}^{2}x_2\left(t\right)} \cr \cr \displaystyle{2\,l_1\,m_1\,\cos\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2} + 2\,l_2\,m_3\,\cos\left(\phi\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2} + 2\,l_1\,m_1\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right) + 2\,l_2\,m_3\,\sin\left(\phi\left(t\right)\right)\,{D}^{2}\phi\left(t\right) + g\,m_1 + g\,m_2 + g\,m_3 + 2\,m_1\,{D}^{2}y_2\left(t\right) + 2\,m_2\,{D}^{2}y_2\left(t\right) + 2\,m_3\,{D}^{2}y_2\left(t\right)}\end{bmatrix}\n\end{equation}
 :end:
 
 Kill some clear factors:
@@ -3995,11 +3675,9 @@ Kill some clear factors:
        (ref eqs 3))))
 #+end_src
 
-#+RESULTS[47708c83042996fe022ee86787fc9dcb3ce03f71]:
+#+RESULTS[0f6456b282199d25577f98b3fb8e4d48dc79d9fc]:
 :results:
-\begin{equation}
-\begin{pmatrix}\displaystyle{g\,\sin\left(\theta\left(t\right)\right) + 2\,l_1\,{D}^{2}\theta\left(t\right) + 2\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}y_2\left(t\right) + 2\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}x_2\left(t\right)} \cr \cr \displaystyle{g\,\sin\left(\phi\left(t\right)\right) + 2\,l_2\,{D}^{2}\phi\left(t\right) + 2\,\cos\left(\phi\left(t\right)\right)\,{D}^{2}x_2\left(t\right) + 2\,\sin\left(\phi\left(t\right)\right)\,{D}^{2}y_2\left(t\right)} \cr \cr \displaystyle{- l_1\,m_1\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2} - l_2\,m_3\,{\left(D\phi\left(t\right)\right)}^{2}\,\sin\left(\phi\left(t\right)\right) + l_1\,m_1\,{D}^{2}\theta\left(t\right)\,\cos\left(\theta\left(t\right)\right) + l_2\,m_3\,{D}^{2}\phi\left(t\right)\,\cos\left(\phi\left(t\right)\right) + m_1\,{D}^{2}x_2\left(t\right) + m_2\,{D}^{2}x_2\left(t\right) + m_3\,{D}^{2}x_2\left(t\right)} \cr \cr \displaystyle{2\,l_1\,m_1\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right) + 2\,l_2\,m_3\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\phi\left(t\right)\right) + 2\,l_1\,m_1\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right) + 2\,l_2\,m_3\,{D}^{2}\phi\left(t\right)\,\sin\left(\phi\left(t\right)\right) + g\,m_1 + g\,m_2 + g\,m_3 + 2\,m_1\,{D}^{2}y_2\left(t\right) + 2\,m_2\,{D}^{2}y_2\left(t\right) + 2\,m_3\,{D}^{2}y_2\left(t\right)}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{g\,\sin\left(\theta\left(t\right)\right) + 2\,l_1\,{D}^{2}\theta\left(t\right) + 2\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}x_2\left(t\right) + 2\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}y_2\left(t\right)} \cr \cr \displaystyle{g\,\sin\left(\phi\left(t\right)\right) + 2\,l_2\,{D}^{2}\phi\left(t\right) + 2\,\cos\left(\phi\left(t\right)\right)\,{D}^{2}x_2\left(t\right) + 2\,\sin\left(\phi\left(t\right)\right)\,{D}^{2}y_2\left(t\right)} \cr \cr \displaystyle{- l_1\,m_1\,{\left(D\theta\left(t\right)\right)}^{2}\,\sin\left(\theta\left(t\right)\right) - l_2\,m_3\,{\left(D\phi\left(t\right)\right)}^{2}\,\sin\left(\phi\left(t\right)\right) + l_1\,m_1\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right) + l_2\,m_3\,\cos\left(\phi\left(t\right)\right)\,{D}^{2}\phi\left(t\right) + m_1\,{D}^{2}x_2\left(t\right) + m_2\,{D}^{2}x_2\left(t\right) + m_3\,{D}^{2}x_2\left(t\right)} \cr \cr \displaystyle{2\,l_1\,m_1\,\cos\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2} + 2\,l_2\,m_3\,\cos\left(\phi\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2} + 2\,l_1\,m_1\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right) + 2\,l_2\,m_3\,\sin\left(\phi\left(t\right)\right)\,{D}^{2}\phi\left(t\right) + g\,m_1 + g\,m_2 + g\,m_3 + 2\,m_1\,{D}^{2}y_2\left(t\right) + 2\,m_2\,{D}^{2}y_2\left(t\right) + 2\,m_3\,{D}^{2}y_2\left(t\right)}\end{pmatrix}\n\end{equation}
 :end:
 
 This was not as gnarly as the previous problem. Perhaps I did something wrong
@@ -4012,29 +3690,13 @@ there. We'll see when we get animation.
 
 #+begin_src clojure
 (ns ch1.ex1-20
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
-| #'ch1.ex1-20/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
-| #'ch1.ex1-20/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 #+begin_quote
 Consider a pendulum of length $l$ attached to a support that is free to move
@@ -4132,11 +3794,9 @@ fixed gravitationally it wouldn't change the equations of motion.
    ((L-sliding-pend 'l 'm_1 'm_2 U) local)))
 #+end_src
 
-#+RESULTS[fc22b20384e52b4ad23139d2b1c43d2a54603e0b]:
+#+RESULTS[e52b23ca8e418fe1eeac4cfb66e9e3dc68e52201]:
 :results:
-\begin{equation}
-{l}^{2}\,m_2\,{\dot {\theta}}^{2} + 2\,l\,m_2\,\dot {\theta}\,{\dot x}_1\,\cos\left(\theta\right) + g\,l\,m_2\,\cos\left(\theta\right) - g\,l\,m_2 + m_1\,{{\dot x}_1}^{2} + m_2\,{{\dot x}_1}^{2}
-\end{equation}
+\begin{equation}\n{l}^{2}\,m_2\,{\dot {\theta}}^{2} + 2\,l\,m_2\,\dot {\theta}\,{\dot x}_1\,\cos\left(\theta\right) + g\,l\,m_2\,\cos\left(\theta\right) - g\,l\,m_2 + m_1\,{{\dot x}_1}^{2} + m_2\,{{\dot x}_1}^{2}\n\end{equation}
 :end:
 
 Lagrange equations of motion:
@@ -4151,11 +3811,9 @@ Lagrange equations of motion:
     't)))
 #+end_src
 
-#+RESULTS[c0c8e336bd998f7713af3c7bdedd859cbf0262f0]:
+#+RESULTS[7973aa8ff319b1baac4007de886efd0c57be2755]:
 :results:
-\begin{equation}
-\begin{bmatrix}\displaystyle{-2\,l\,m_2\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2} + 2\,l\,m_2\,{D}^{2}\theta\left(t\right)\,\cos\left(\theta\left(t\right)\right) + 2\,m_1\,{D}^{2}x_1\left(t\right) + 2\,m_2\,{D}^{2}x_1\left(t\right)} \cr \cr \displaystyle{g\,l\,m_2\,\sin\left(\theta\left(t\right)\right) + 2\,{l}^{2}\,m_2\,{D}^{2}\theta\left(t\right) + 2\,l\,m_2\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}x_1\left(t\right)}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{-2\,l\,m_2\,{\left(D\theta\left(t\right)\right)}^{2}\,\sin\left(\theta\left(t\right)\right) + 2\,l\,m_2\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right) + 2\,m_1\,{D}^{2}x_1\left(t\right) + 2\,m_2\,{D}^{2}x_1\left(t\right)} \cr \cr \displaystyle{g\,l\,m_2\,\sin\left(\theta\left(t\right)\right) + 2\,{l}^{2}\,m_2\,{D}^{2}\theta\left(t\right) + 2\,l\,m_2\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}x_1\left(t\right)}\end{bmatrix}\n\end{equation}
 :end:
 
 Cleaner:
@@ -4172,11 +3830,9 @@ Cleaner:
        (/ (ref eqs 1) 'l 'm_2))))
 #+end_src
 
-#+RESULTS[2c1a674857979a2bacccb0bc8ff0e2de94f13774]:
+#+RESULTS[a02acd1154f7366f72a3c949950babf07917532f]:
 :results:
-\begin{equation}
-\begin{pmatrix}\displaystyle{-2\,l\,m_2\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2} + 2\,l\,m_2\,{D}^{2}\theta\left(t\right)\,\cos\left(\theta\left(t\right)\right) + 2\,m_1\,{D}^{2}x_1\left(t\right) + 2\,m_2\,{D}^{2}x_1\left(t\right)} \cr \cr \displaystyle{g\,\sin\left(\theta\left(t\right)\right) + 2\,l\,{D}^{2}\theta\left(t\right) + 2\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}x_1\left(t\right)}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{-2\,l\,m_2\,{\left(D\theta\left(t\right)\right)}^{2}\,\sin\left(\theta\left(t\right)\right) + 2\,l\,m_2\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right) + 2\,m_1\,{D}^{2}x_1\left(t\right) + 2\,m_2\,{D}^{2}x_1\left(t\right)} \cr \cr \displaystyle{g\,\sin\left(\theta\left(t\right)\right) + 2\,l\,{D}^{2}\theta\left(t\right) + 2\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}x_1\left(t\right)}\end{pmatrix}\n\end{equation}
 :end:
 
 ** Exercise 1.21: A dumbbell
@@ -4202,29 +3858,13 @@ that this move is allowed. Here's the setup:
 
 #+begin_src clojure
 (ns ch1.ex1-21
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
-| #'ch1.ex1-21/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
-| #'ch1.ex1-21/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 The idea here is to take the distance between the particles $l$ and treat it as
 a new dimension $c$.
@@ -4251,7 +3891,7 @@ define:
   (* (/ 1 2) m (square v)))
 #+end_src
 
-#+RESULTS:
+#+RESULTS: KE-particle
 : #'ch1.ex1-21/KE-particle
 
 This next function, =extract-particle=, takes a number of components -- 2 for a
@@ -4273,7 +3913,7 @@ extract a sub-local-tuple for that particle from a flattened list.
       (up t (extract q) (extract v)))))
 #+end_src
 
-#+RESULTS:
+#+RESULTS: extract-particle
 : #'ch1.ex1-21/extract-particle
 
 *** Part A: Newton's Equations
@@ -4356,11 +3996,9 @@ This shows the lagrangian itself, which answers part b:
    (f 't)))
 #+end_src
 
-#+RESULTS[d2368821bb607531a6f2c19404301d2f48270db5]:
+#+RESULTS[e63be69cd32356758d422b2755c95ce3365d7f22]:
 :results:
-\begin{equation}
-\frac{l\,m_0\,{\left(Dx_0\left(t\right)\right)}^{2} + l\,m_0\,{\left(Dy_0\left(t\right)\right)}^{2} + l\,m_1\,{\left(Dx_1\left(t\right)\right)}^{2} + l\,m_1\,{\left(Dy_1\left(t\right)\right)}^{2} + {l}^{2}\,F\left(t\right) - F\left(t\right)\,{\left(x_1\left(t\right)\right)}^{2} + 2\,F\left(t\right)\,x_1\left(t\right)\,x_0\left(t\right) - F\left(t\right)\,{\left(x_0\left(t\right)\right)}^{2} - F\left(t\right)\,{\left(y_1\left(t\right)\right)}^{2} + 2\,F\left(t\right)\,y_1\left(t\right)\,y_0\left(t\right) - F\left(t\right)\,{\left(y_0\left(t\right)\right)}^{2}}{2\,l}
-\end{equation}
+\begin{equation}\n\frac{l\,m_0\,{\left(Dx_0\left(t\right)\right)}^{2} + l\,m_0\,{\left(Dy_0\left(t\right)\right)}^{2} + l\,m_1\,{\left(Dx_1\left(t\right)\right)}^{2} + l\,m_1\,{\left(Dy_1\left(t\right)\right)}^{2} + {l}^{2}\,F\left(t\right) - F\left(t\right)\,{\left(x_1\left(t\right)\right)}^{2} + 2\,F\left(t\right)\,x_1\left(t\right)\,x_0\left(t\right) - F\left(t\right)\,{\left(x_0\left(t\right)\right)}^{2} - F\left(t\right)\,{\left(y_1\left(t\right)\right)}^{2} + 2\,F\left(t\right)\,y_1\left(t\right)\,y_0\left(t\right) - F\left(t\right)\,{\left(y_0\left(t\right)\right)}^{2}}{2\,l}\n\end{equation}
 :end:
 
 Here are the Lagrange equations, which, if you squint, are like Newton's
@@ -4373,11 +4011,9 @@ equations from part a.
    (f 't)))
 #+end_src
 
-#+RESULTS[d0d0bf751a301e9187d5f12783654c2a8d47bb5f]:
+#+RESULTS[028e6fcf4180d74f1a284c4de767a179b5597459]:
 :results:
-\begin{equation}
-\begin{bmatrix}\displaystyle{\frac{l\,m_0\,{D}^{2}x_0\left(t\right) - F\left(t\right)\,x_1\left(t\right) + F\left(t\right)\,x_0\left(t\right)}{l}} \cr \cr \displaystyle{\frac{l\,m_0\,{D}^{2}y_0\left(t\right) - F\left(t\right)\,y_1\left(t\right) + F\left(t\right)\,y_0\left(t\right)}{l}} \cr \cr \displaystyle{\frac{l\,m_1\,{D}^{2}x_1\left(t\right) + F\left(t\right)\,x_1\left(t\right) - F\left(t\right)\,x_0\left(t\right)}{l}} \cr \cr \displaystyle{\frac{l\,m_1\,{D}^{2}y_1\left(t\right) + F\left(t\right)\,y_1\left(t\right) - F\left(t\right)\,y_0\left(t\right)}{l}} \cr \cr \displaystyle{\frac{- {l}^{2} + {\left(x_1\left(t\right)\right)}^{2} -2\,x_1\left(t\right)\,x_0\left(t\right) + {\left(x_0\left(t\right)\right)}^{2} + {\left(y_1\left(t\right)\right)}^{2} -2\,y_1\left(t\right)\,y_0\left(t\right) + {\left(y_0\left(t\right)\right)}^{2}}{2\,l}}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{\frac{l\,m_0\,{D}^{2}x_0\left(t\right) - F\left(t\right)\,x_1\left(t\right) + F\left(t\right)\,x_0\left(t\right)}{l}} \cr \cr \displaystyle{\frac{l\,m_0\,{D}^{2}y_0\left(t\right) - F\left(t\right)\,y_1\left(t\right) + F\left(t\right)\,y_0\left(t\right)}{l}} \cr \cr \displaystyle{\frac{l\,m_1\,{D}^{2}x_1\left(t\right) + F\left(t\right)\,x_1\left(t\right) - F\left(t\right)\,x_0\left(t\right)}{l}} \cr \cr \displaystyle{\frac{l\,m_1\,{D}^{2}y_1\left(t\right) + F\left(t\right)\,y_1\left(t\right) - F\left(t\right)\,y_0\left(t\right)}{l}} \cr \cr \displaystyle{\frac{- {l}^{2} + {\left(x_1\left(t\right)\right)}^{2} -2\,x_1\left(t\right)\,x_0\left(t\right) + {\left(x_0\left(t\right)\right)}^{2} + {\left(y_1\left(t\right)\right)}^{2} -2\,y_1\left(t\right)\,y_0\left(t\right) + {\left(y_0\left(t\right)\right)}^{2}}{2\,l}}\end{bmatrix}\n\end{equation}
 :end:
 
 *** Part C: Coordinate Change
@@ -4421,11 +4057,9 @@ Then the coordinate change applied to the local tuple:
    (C local)))
 #+end_src
 
-#+RESULTS[347455a1bf6c85254eb86c4139b220b16c1aba78]:
+#+RESULTS[da7af001803256839a245be72183aa93c38421b0]:
 :results:
-\begin{equation}
-\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{\frac{- c\,m_1\,\cos\left(\theta\right) + m_0\,x_{cm} + m_1\,x_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\frac{- c\,m_1\,\sin\left(\theta\right) + m_0\,y_{cm} + m_1\,y_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\frac{c\,m_0\,\cos\left(\theta\right) + m_0\,x_{cm} + m_1\,x_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\frac{c\,m_0\,\sin\left(\theta\right) + m_0\,y_{cm} + m_1\,y_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{F}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{\frac{c\,m_1\,\dot {\theta}\,\sin\left(\theta\right) - \dot c\,m_1\,\cos\left(\theta\right) + m_0\,{\dot x}_{cm} + m_1\,{\dot x}_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\frac{- c\,m_1\,\dot {\theta}\,\cos\left(\theta\right) - \dot c\,m_1\,\sin\left(\theta\right) + m_0\,{\dot y}_{cm} + m_1\,{\dot y}_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\frac{- c\,m_0\,\dot {\theta}\,\sin\left(\theta\right) + \dot c\,m_0\,\cos\left(\theta\right) + m_0\,{\dot x}_{cm} + m_1\,{\dot x}_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\frac{c\,m_0\,\dot {\theta}\,\cos\left(\theta\right) + \dot c\,m_0\,\sin\left(\theta\right) + m_0\,{\dot y}_{cm} + m_1\,{\dot y}_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\dot F}\end{pmatrix}}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{\frac{- c\,m_1\,\cos\left(\theta\right) + m_0\,x_{cm} + m_1\,x_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\frac{- c\,m_1\,\sin\left(\theta\right) + m_0\,y_{cm} + m_1\,y_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\frac{c\,m_0\,\cos\left(\theta\right) + m_0\,x_{cm} + m_1\,x_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\frac{c\,m_0\,\sin\left(\theta\right) + m_0\,y_{cm} + m_1\,y_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{F}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{\frac{c\,m_1\,\dot {\theta}\,\sin\left(\theta\right) - \dot c\,m_1\,\cos\left(\theta\right) + m_0\,{\dot x}_{cm} + m_1\,{\dot x}_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\frac{- c\,m_1\,\dot {\theta}\,\cos\left(\theta\right) - \dot c\,m_1\,\sin\left(\theta\right) + m_0\,{\dot y}_{cm} + m_1\,{\dot y}_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\frac{- c\,m_0\,\dot {\theta}\,\sin\left(\theta\right) + \dot c\,m_0\,\cos\left(\theta\right) + m_0\,{\dot x}_{cm} + m_1\,{\dot x}_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\frac{c\,m_0\,\dot {\theta}\,\cos\left(\theta\right) + \dot c\,m_0\,\sin\left(\theta\right) + m_0\,{\dot y}_{cm} + m_1\,{\dot y}_{cm}}{m_0 + m_1}} \cr \cr \displaystyle{\dot F}\end{pmatrix}}\end{pmatrix}\n\end{equation}
 :end:
 
 Then the Lagrangian in the new coordinates;
@@ -4453,11 +4087,9 @@ This shows the lagrangian itself, after the coordinate transformation:
    (f 't)))
 #+end_src
 
-#+RESULTS[8b78e339b654aa73cfb638fdc47564b178adbd47]:
+#+RESULTS[62d1e8b27b38151e2129a897c3452f40326a4b41]:
 :results:
-\begin{equation}
-\frac{l\,m_0\,m_1\,{\left(D\theta\left(t\right)\right)}^{2}\,{\left(c\left(t\right)\right)}^{2} + l\,{m_0}^{2}\,{\left(Dx_{cm}\left(t\right)\right)}^{2} + l\,{m_0}^{2}\,{\left(Dy_{cm}\left(t\right)\right)}^{2} + 2\,l\,m_0\,m_1\,{\left(Dx_{cm}\left(t\right)\right)}^{2} + l\,m_0\,m_1\,{\left(Dc\left(t\right)\right)}^{2} + 2\,l\,m_0\,m_1\,{\left(Dy_{cm}\left(t\right)\right)}^{2} + l\,{m_1}^{2}\,{\left(Dx_{cm}\left(t\right)\right)}^{2} + l\,{m_1}^{2}\,{\left(Dy_{cm}\left(t\right)\right)}^{2} + {l}^{2}\,m_0\,F\left(t\right) + {l}^{2}\,m_1\,F\left(t\right) - m_0\,F\left(t\right)\,{\left(c\left(t\right)\right)}^{2} - m_1\,F\left(t\right)\,{\left(c\left(t\right)\right)}^{2}}{2\,l\,m_0 + 2\,l\,m_1}
-\end{equation}
+\begin{equation}\n\frac{l\,m_0\,m_1\,{\left(D\theta\left(t\right)\right)}^{2}\,{\left(c\left(t\right)\right)}^{2} + l\,{m_0}^{2}\,{\left(Dx_{cm}\left(t\right)\right)}^{2} + l\,{m_0}^{2}\,{\left(Dy_{cm}\left(t\right)\right)}^{2} + 2\,l\,m_0\,m_1\,{\left(Dx_{cm}\left(t\right)\right)}^{2} + l\,m_0\,m_1\,{\left(Dc\left(t\right)\right)}^{2} + 2\,l\,m_0\,m_1\,{\left(Dy_{cm}\left(t\right)\right)}^{2} + l\,{m_1}^{2}\,{\left(Dx_{cm}\left(t\right)\right)}^{2} + l\,{m_1}^{2}\,{\left(Dy_{cm}\left(t\right)\right)}^{2} + {l}^{2}\,m_0\,F\left(t\right) + {l}^{2}\,m_1\,F\left(t\right) - m_0\,F\left(t\right)\,{\left(c\left(t\right)\right)}^{2} - m_1\,F\left(t\right)\,{\left(c\left(t\right)\right)}^{2}}{2\,l\,m_0 + 2\,l\,m_1}\n\end{equation}
 :end:
 
 Here are the Lagrange equations:
@@ -4474,11 +4106,9 @@ Here are the Lagrange equations:
    (f 't)))
 #+end_src
 
-#+RESULTS[3d9819d33ed9d856299f5d9565cb90bf0aaa263f]:
+#+RESULTS[98aa5afaaf2ad861c1a1acdf437cdf60d5da212e]:
 :results:
-\begin{equation}
-\begin{bmatrix}\displaystyle{m_0\,{D}^{2}x_{cm}\left(t\right) + m_1\,{D}^{2}x_{cm}\left(t\right)} \cr \cr \displaystyle{m_0\,{D}^{2}y_{cm}\left(t\right) + m_1\,{D}^{2}y_{cm}\left(t\right)} \cr \cr \displaystyle{\frac{2\,m_0\,m_1\,D\theta\left(t\right)\,c\left(t\right)\,Dc\left(t\right) + m_0\,m_1\,{D}^{2}\theta\left(t\right)\,{\left(c\left(t\right)\right)}^{2}}{m_0 + m_1}} \cr \cr \displaystyle{\frac{- l\,m_0\,m_1\,{\left(D\theta\left(t\right)\right)}^{2}\,c\left(t\right) + l\,m_0\,m_1\,{D}^{2}c\left(t\right) + m_0\,F\left(t\right)\,c\left(t\right) + m_1\,F\left(t\right)\,c\left(t\right)}{l\,m_0 + l\,m_1}} \cr \cr \displaystyle{\frac{- {l}^{2} + {\left(c\left(t\right)\right)}^{2}}{2\,l}}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{m_0\,{D}^{2}x_{cm}\left(t\right) + m_1\,{D}^{2}x_{cm}\left(t\right)} \cr \cr \displaystyle{m_0\,{D}^{2}y_{cm}\left(t\right) + m_1\,{D}^{2}y_{cm}\left(t\right)} \cr \cr \displaystyle{\frac{2\,m_0\,m_1\,D\theta\left(t\right)\,Dc\left(t\right)\,c\left(t\right) + m_0\,m_1\,{D}^{2}\theta\left(t\right)\,{\left(c\left(t\right)\right)}^{2}}{m_0 + m_1}} \cr \cr \displaystyle{\frac{- l\,m_0\,m_1\,{\left(D\theta\left(t\right)\right)}^{2}\,c\left(t\right) + l\,m_0\,m_1\,{D}^{2}c\left(t\right) + m_0\,F\left(t\right)\,c\left(t\right) + m_1\,F\left(t\right)\,c\left(t\right)}{l\,m_0 + l\,m_1}} \cr \cr \displaystyle{\frac{- {l}^{2} + {\left(c\left(t\right)\right)}^{2}}{2\,l}}\end{bmatrix}\n\end{equation}
 :end:
 
 That final equation states that $c(t) = l$. Amazing!
@@ -4507,11 +4137,9 @@ $l$ to get simplified equations:
    (f 't)))
 #+end_src
 
-#+RESULTS[1d72de7d5c5f3f3c79cf20a41e64e48aa44e9dec]:
+#+RESULTS[2b3634b4f1f5384f5746863913dc914a5beed55a]:
 :results:
-\begin{equation}
-\begin{bmatrix}\displaystyle{m_0\,{D}^{2}x_{cm}\left(t\right) + m_1\,{D}^{2}x_{cm}\left(t\right)} \cr \cr \displaystyle{m_0\,{D}^{2}y_{cm}\left(t\right) + m_1\,{D}^{2}y_{cm}\left(t\right)} \cr \cr \displaystyle{\frac{{l}^{2}\,m_0\,m_1\,{D}^{2}\theta\left(t\right)}{m_0 + m_1}} \cr \cr \displaystyle{\frac{- l\,m_0\,m_1\,{\left(D\theta\left(t\right)\right)}^{2} + m_0\,F\left(t\right) + m_1\,F\left(t\right)}{m_0 + m_1}} \cr \cr \displaystyle{0}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{m_0\,{D}^{2}x_{cm}\left(t\right) + m_1\,{D}^{2}x_{cm}\left(t\right)} \cr \cr \displaystyle{m_0\,{D}^{2}y_{cm}\left(t\right) + m_1\,{D}^{2}y_{cm}\left(t\right)} \cr \cr \displaystyle{\frac{{l}^{2}\,m_0\,m_1\,{D}^{2}\theta\left(t\right)}{m_0 + m_1}} \cr \cr \displaystyle{\frac{- l\,m_0\,m_1\,{\left(D\theta\left(t\right)\right)}^{2} + m_0\,F\left(t\right) + m_1\,F\left(t\right)}{m_0 + m_1}} \cr \cr \displaystyle{0}\end{bmatrix}\n\end{equation}
 :end:
 
 This is saying that the acceleration on the center of mass is 0.
@@ -4554,11 +4182,9 @@ We can verify this with Scheme by subtracting the two equations:
          (* m 'l (square ((D theta) 't)))))))
 #+end_src
 
-#+RESULTS[302f96b7def456d623132eb3eff0160eeec5782e]:
+#+RESULTS[1b67911389f24da3bebd3865dd367d428450c35d]:
 :results:
-\begin{equation}
-0
-\end{equation}
+\begin{equation}\n0\n\end{equation}
 :end:
 
 *** Part E: New Lagrangian
@@ -4606,8 +4232,10 @@ $l$:
           (+ y_cm (* m1-distance (sin theta)))))))
 #+end_src
 
-#+RESULTS[aee3cbebd833662ba2610e81cef9e42936dcb703]:
-#| cm-theta->rect* |#
+#+RESULTS[3bad9e32d2f15dcf0db2e30f2a5c510d3e4bff2f]:
+:results:
+#'ch1.ex1-21/cm-theta->rect*
+:end:
 
 The Lagrangian:
 
@@ -4636,11 +4264,9 @@ Equations:
     't)))
 #+end_src
 
-#+RESULTS[56daae7aa9a507dbf47cb5c1718ab63fe0b0bf47]:
+#+RESULTS[ae923ace856a4a56c391744494ded6318400c590]:
 :results:
-\begin{equation}
-\begin{bmatrix}\displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{\frac{- l\,m_0\,m_1\,{\left(D\theta\left(t\right)\right)}^{2} + m_0\,F\left(t\right) + m_1\,F\left(t\right)}{m_0 + m_1}} \cr \cr \displaystyle{0}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{\frac{- l\,m_0\,m_1\,{\left(D\theta\left(t\right)\right)}^{2} + m_0\,F\left(t\right) + m_1\,F\left(t\right)}{m_0 + m_1}} \cr \cr \displaystyle{0}\end{bmatrix}\n\end{equation}
 :end:
 
 The only remaining equation is \eqref{eq:constraint-force} from above. This
@@ -4653,29 +4279,13 @@ remains because the simplified Lagrangian ignores the $F$ term.
 
 #+begin_src clojure
 (ns ch1.ex1-22
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
-| #'ch1.ex1-22/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
-| #'ch1.ex1-22/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 #+begin_quote
 Show that the Lagrangian (1.93) can be used to describe the driven pendulum
@@ -4752,9 +4362,9 @@ coordinates, rather than extracting them from the local tuple.
 #+end_src
 
 #+RESULTS: L-driven-free
-| #'ch1.ex1-24/extract-particle                 |
-| #'ch1.ex1-24/KE-particle                      |
-| class clojure.lang.Compiler$CompilerException |
+| #'ch1.ex1-22/extract-particle |
+| #'ch1.ex1-22/KE-particle      |
+| #'ch1.ex1-22/L-driven-free    |
 
 Here is the now-familiar equation for a uniform gravitational potential, acting
 on the $y$ coordinate:
@@ -4784,11 +4394,9 @@ coordinates $x$, $y$ and $F$:
    (f 't)))
 #+end_src
 
-#+RESULTS[d6d85683a3f6ea985c97b9668fc1e7ab706a91f8]:
+#+RESULTS[2cd131df0455b4e3fb3acb962dea15a93d575c8b]:
 :results:
-\begin{equation}
-\begin{bmatrix}\displaystyle{\frac{l\,m\,{D}^{2}x\left(t\right) + x\left(t\right)\,F\left(t\right)}{l}} \cr \cr \displaystyle{\frac{g\,l\,m + l\,m\,{D}^{2}y\left(t\right) + y\left(t\right)\,F\left(t\right) - F\left(t\right)\,y_s\left(t\right)}{l}} \cr \cr \displaystyle{\frac{- {l}^{2} + {\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2} -2\,y\left(t\right)\,y_s\left(t\right) + {\left(y_s\left(t\right)\right)}^{2}}{2\,l}}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{\frac{l\,m\,{D}^{2}x\left(t\right) + F\left(t\right)\,x\left(t\right)}{l}} \cr \cr \displaystyle{\frac{g\,l\,m + l\,m\,{D}^{2}y\left(t\right) + F\left(t\right)\,y\left(t\right) - F\left(t\right)\,y_s\left(t\right)}{l}} \cr \cr \displaystyle{\frac{- {l}^{2} + {\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2} -2\,y\left(t\right)\,y_s\left(t\right) + {\left(y_s\left(t\right)\right)}^{2}}{2\,l}}\end{bmatrix}\n\end{equation}
 :end:
 
 The first two equations of motion match the equations we derived in part A,
@@ -4818,11 +4426,9 @@ Verified, with some extra terms to force the simplification:
          'l))))
 #+end_src
 
-#+RESULTS[8b5ed990be36d75f0e25a36aa7cb75b4da19e03a]:
+#+RESULTS[a2f1246086899f66989df89d2d5953a8d4754fd4]:
 :results:
-\begin{equation}
-0
-\end{equation}
+\begin{equation}\n0\n\end{equation}
 :end:
 
 *** Part C: Coordinate Change
@@ -4872,11 +4478,9 @@ we're using a constant function for $c(t)$ that always returns $l$.)
    (f 't)))
 #+end_src
 
-#+RESULTS[309d62d5c69997b9e151991d8f68e04511e6ad29]:
+#+RESULTS[25db361716cdd35170096bc46f904682cd966e63]:
 :results:
-\begin{equation}
-\frac{1}{2}\,{l}^{2}\,m\,{\left(D\theta\left(t\right)\right)}^{2} + l\,m\,\sin\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,Dy_s\left(t\right) + g\,l\,m\,\cos\left(\theta\left(t\right)\right) - g\,m\,y_s\left(t\right) + \frac{1}{2}\,m\,{\left(Dy_s\left(t\right)\right)}^{2}
-\end{equation}
+\begin{equation}\n\frac{1}{2}\,{l}^{2}\,m\,{\left(D\theta\left(t\right)\right)}^{2} + l\,m\,D\theta\left(t\right)\,\sin\left(\theta\left(t\right)\right)\,Dy_s\left(t\right) + g\,l\,m\,\cos\left(\theta\left(t\right)\right) - g\,m\,y_s\left(t\right) + \frac{1}{2}\,m\,{\left(Dy_s\left(t\right)\right)}^{2}\n\end{equation}
 :end:
 
 Looks just like equation 1.88.
@@ -4894,11 +4498,9 @@ Next, examine the Lagrange equations, using the same substitution of $c(t) = l$:
    (f 't)))
 #+end_src
 
-#+RESULTS[2f4e5344fe096110b5375d768b5ec95981ce34ac]:
+#+RESULTS[a95bb7fd61ed17b40db111d8ae58f6f373f4fefd]:
 :results:
-\begin{equation}
-\begin{bmatrix}\displaystyle{g\,l\,m\,\sin\left(\theta\left(t\right)\right) + {l}^{2}\,m\,{D}^{2}\theta\left(t\right) + l\,m\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}y_s\left(t\right)} \cr \cr \displaystyle{- l\,m\,{\left(D\theta\left(t\right)\right)}^{2} - g\,m\,\cos\left(\theta\left(t\right)\right) - m\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}y_s\left(t\right) + F\left(t\right)} \cr \cr \displaystyle{0}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{g\,l\,m\,\sin\left(\theta\left(t\right)\right) + {l}^{2}\,m\,{D}^{2}\theta\left(t\right) + l\,m\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}y_s\left(t\right)} \cr \cr \displaystyle{- l\,m\,{\left(D\theta\left(t\right)\right)}^{2} - g\,m\,\cos\left(\theta\left(t\right)\right) - m\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}y_s\left(t\right) + F\left(t\right)} \cr \cr \displaystyle{0}\end{bmatrix}\n\end{equation}
 :end:
 
 The third equation is 0 because of the substitution of constant $c(t) = l$. The
@@ -4914,29 +4516,13 @@ function of the other coordinates and the support position.
 
 #+begin_src clojure
 (ns ch1.ex1-23
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
-| #'ch1.ex1-23/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
-| #'ch1.ex1-23/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 TODO: Expand out the explicit Lagrangian, using a coordinate transformation, and
 do the manual substitution...
@@ -4952,29 +4538,13 @@ $y_s(t) = l$, we can read off the constraint forces for the undriven pendulum.
 
 #+begin_src clojure
 (ns ch1.ex1-24
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
-| #'ch1.ex1-24/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
-| #'ch1.ex1-24/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 Take some definitions that we need:
 
@@ -5015,11 +4585,9 @@ the support position function to be =(lambda (t) 'l)=:
 #+end_src
 
 
-#+RESULTS[cb25190a3517f2c5140e4f3c5f7feaf98caaeadf]:
+#+RESULTS[eeda156187217137720636cbb99eb9ad2b26bf17]:
 :results:
-\begin{equation}
-- l\,m\,{\left(D\theta\left(t\right)\right)}^{2} - g\,m\,\cos\left(\theta\left(t\right)\right) + F\left(t\right)
-\end{equation}
+\begin{equation}\n- l\,m\,{\left(D\theta\left(t\right)\right)}^{2} - g\,m\,\cos\left(\theta\left(t\right)\right) + F\left(t\right)\n\end{equation}
 :end:
 
 Solve for $F(t)$, the tension on the pendulum linkage:
@@ -5036,30 +4604,13 @@ F(t) = m (g \cos \theta + l \dot{\theta}^2)
 
 #+begin_src clojure
 (ns ch1.ex1-25
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
 
 ** Exercise 1.26: Properties of $D_t$
 :PROPERTIES:
@@ -5068,29 +4619,13 @@ F(t) = m (g \cos \theta + l \dot{\theta}^2)
 
 #+begin_src clojure
 (ns ch1.ex1-26
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
-| #'ch1.ex1-26/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
-| #'ch1.ex1-26/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 ** Exercise 1.27: Lagrange equations for total time derivatives
 :PROPERTIES:
@@ -5099,30 +4634,13 @@ F(t) = m (g \cos \theta + l \dot{\theta}^2)
 
 #+begin_src clojure
 (ns ch1.ex1-27
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
 
 ** Exercise 1.28: Total Time Derivatives
 :PROPERTIES:
@@ -5131,29 +4649,13 @@ F(t) = m (g \cos \theta + l \dot{\theta}^2)
 
 #+begin_src clojure
 (ns ch1.ex1-28
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
-| #'ch1.ex1-28/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
-| #'ch1.ex1-28/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 *** part A
 
@@ -5371,29 +4873,13 @@ not symmetric.
 
 #+begin_src clojure :exports none
 (ns ch1.ex1-29
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
-| #'ch1.ex1-29/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                               |
-| #'ch1.ex1-29/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                |
 
 I'll do this for a single particle, since it's annoying to get the sum going
 for many; and the lagrangian is additive, so no problem.
@@ -5425,11 +4911,9 @@ First, confirm that if we have a constant, we get what we expected from paper.
   (->tex-equation (f 't)))
 #+end_src
 
-#+RESULTS[92401efb05c9e5c5f907eaeacdfd349a99c25533]:
+#+RESULTS[6d80ea55bf15d0e07af7448b1de2198d6e742243]:
 :results:
-\begin{equation}
-\frac{1}{2}\,{{\Delta}_v}^{2}\,m + {\Delta}_v\,m\,D\mathsf{xprime}\left(t\right) + \frac{1}{2}\,m\,{\left(D\mathsf{xprime}\left(t\right)\right)}^{2}
-\end{equation}
+\begin{equation}\n\frac{1}{2}\,{{\Delta}_v}^{2}\,m + {\Delta}_v\,m\,Dx^\prime\left(t\right) + \frac{1}{2}\,m\,{\left(Dx^\prime\left(t\right)\right)}^{2}\n\end{equation}
 :end:
 
 We can change this a little to see the extra terms; substract off the free
@@ -5445,11 +4929,9 @@ particle Lagrangian, to see the extra stuff.
   (->tex-equation (f 't)))
 #+end_src
 
-#+RESULTS[dbd808acbafa7aeae5940f2fa7adddf4081f74c5]:
+#+RESULTS[6bd06cb88d4150ef03c736094abd817782efe2a4]:
 :results:
-\begin{equation}
-\frac{1}{2}\,{{\Delta}_v}^{2}\,m + {\Delta}_v\,m\,D\mathsf{xprime}\left(t\right)
-\end{equation}
+\begin{equation}\n\frac{1}{2}\,{{\Delta}_v}^{2}\,m + {\Delta}_v\,m\,Dx^\prime\left(t\right)\n\end{equation}
 :end:
 
 Here's the gnarly version with both entries as actual functions. Can this be a
@@ -5468,11 +4950,9 @@ not allowed.
   (->tex-equation (f 't)))
 #+end_src
 
-#+RESULTS[3aa25b5514b22239dfb4232a0abd79833eff29ab]:
+#+RESULTS[18dc1bcd401ff67e0be067f790f2c168f2185c00]:
 :results:
-\begin{equation}
-\frac{1}{2}\,m\,{t}^{2}\,{\left(D{\Delta}_v\left(t\right)\right)}^{2} + m\,t\,D\mathsf{xprime}\left(t\right)\,D{\Delta}_v\left(t\right) + m\,t\,{\Delta}_v\left(t\right)\,D{\Delta}_v\left(t\right) + m\,t\,D{\Delta}_x\left(t\right)\,D{\Delta}_v\left(t\right) + m\,D\mathsf{xprime}\left(t\right)\,{\Delta}_v\left(t\right) + m\,D\mathsf{xprime}\left(t\right)\,D{\Delta}_x\left(t\right) + \frac{1}{2}\,m\,{\left({\Delta}_v\left(t\right)\right)}^{2} + m\,{\Delta}_v\left(t\right)\,D{\Delta}_x\left(t\right) + \frac{-1}{2}\,m\,{\left(D{\Delta}_v\left(t\right)\right)}^{2}
-\end{equation}
+\begin{equation}\n\frac{1}{2}\,m\,{t}^{2}\,{\left(D{\Delta}_v\left(t\right)\right)}^{2} + m\,t\,Dx^\prime\left(t\right)\,D{\Delta}_v\left(t\right) + m\,t\,D{\Delta}_x\left(t\right)\,D{\Delta}_v\left(t\right) + m\,t\,{\Delta}_v\left(t\right)\,D{\Delta}_v\left(t\right) + m\,Dx^\prime\left(t\right)\,D{\Delta}_x\left(t\right) + m\,Dx^\prime\left(t\right)\,{\Delta}_v\left(t\right) + m\,D{\Delta}_x\left(t\right)\,{\Delta}_v\left(t\right) + \frac{1}{2}\,m\,{\left({\Delta}_v\left(t\right)\right)}^{2} + \frac{-1}{2}\,m\,{\left(D{\Delta}_v\left(t\right)\right)}^{2}\n\end{equation}
 :end:
 
 Let's simplify by making the $\Delta_v$ constant and see if there's anything so
@@ -5497,11 +4977,9 @@ derivative and see what happens:
     't)))
 #+end_src
 
-#+RESULTS[c69796e7a6c18d350def3f016364a0f66bc44275]:
+#+RESULTS[a52a9e889d54c2a0db79254a45db420e5ecffbdf]:
 :results:
-\begin{equation}
-{\Delta}_v\,m\,D{\Delta}_x\left(t\right) + m\,D\mathsf{xprime}\left(t\right)\,D{\Delta}_x\left(t\right)
-\end{equation}
+\begin{equation}\n{\Delta}_v\,m\,D{\Delta}_x\left(t\right) + m\,Dx^\prime\left(t\right)\,D{\Delta}_x\left(t\right)\n\end{equation}
 :end:
 
 Take a look. there is a quadratic velocity term in here! We have $D \Delta_x(t)
@@ -5517,30 +4995,13 @@ Lagrangian value.
 
 #+begin_src clojure
 (ns ch1.ex1-30
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
 
 ** Exercise 1.31: Foucault pendulum evolution
 :PROPERTIES:
@@ -5549,30 +5010,13 @@ Lagrangian value.
 
 #+begin_src clojure
 (ns ch1.ex1-31
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
 
 ** Exercise 1.32: Time-dependent constraints
 :PROPERTIES:
@@ -5581,30 +5025,13 @@ Lagrangian value.
 
 #+begin_src clojure
 (ns ch1.ex1-32
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
 
 ** Exercise 1.33: Falling off a log
 :PROPERTIES:
@@ -5613,30 +5040,13 @@ Lagrangian value.
 
 #+begin_src clojure
 (ns ch1.ex1-33
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
 
 ** Exercise 1.34: Driven spherical pendulum
 :PROPERTIES:
@@ -5645,30 +5055,13 @@ Lagrangian value.
 
 #+begin_src clojure
 (ns ch1.ex1-34
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
 
 ** Exercise 1.35: Restricted equations of motion
 :PROPERTIES:
@@ -5677,30 +5070,13 @@ Lagrangian value.
 
 #+begin_src clojure
 (ns ch1.ex1-35
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
 
 ** Exercise 1.36: Noether integral
 :PROPERTIES:
@@ -5709,30 +5085,13 @@ Lagrangian value.
 
 #+begin_src clojure
 (ns ch1.ex1-36
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
 
 ** Exercise 1.37: Velocity transformation
 :PROPERTIES:
@@ -5741,30 +5100,13 @@ Lagrangian value.
 
 #+begin_src clojure
 (ns ch1.ex1-37
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
 
 ** Exercise 1.38: Properties of $E$
 :PROPERTIES:
@@ -5773,30 +5115,13 @@ Lagrangian value.
 
 #+begin_src clojure
 (ns ch1.ex1-38
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
 
 ** Exercise 1.39: Combining Lagrangians
 :PROPERTIES:
@@ -5805,30 +5130,13 @@ Lagrangian value.
 
 #+begin_src clojure
 (ns ch1.ex1-39
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
 
 ** Exercise 1.40: Bead on a triaxial surface
 :PROPERTIES:
@@ -5837,30 +5145,13 @@ Lagrangian value.
 
 #+begin_src clojure
 (ns ch1.ex1-40
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
 
 ** Exercise 1.41: Motion of a tiny golf ball
 :PROPERTIES:
@@ -5869,30 +5160,13 @@ Lagrangian value.
 
 #+begin_src clojure
 (ns ch1.ex1-41
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
 
 ** Exercise 1.42: Augmented Lagrangian
 :PROPERTIES:
@@ -5901,30 +5175,13 @@ Lagrangian value.
 
 #+begin_src clojure
 (ns ch1.ex1-42
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
 
 ** Exercise 1.43: A numerical investigation
 :PROPERTIES:
@@ -5933,30 +5190,13 @@ Lagrangian value.
 
 #+begin_src clojure
 (ns ch1.ex1-43
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
 
 ** Exercise 1.44: Double pendulum behavior
 :PROPERTIES:
@@ -5965,30 +5205,13 @@ Lagrangian value.
 
 #+begin_src clojure
 (ns ch1.ex1-44
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-: ;Loading "src/ch1/utils.cljc"...
-: ;  Loading "src/ch1/exdisplay.cljc"... done
-: ;... done
-: #| check-f |#
 
 
 * Rigid Bodies
@@ -6111,29 +5334,13 @@ let's redo them on the machine.
 
 #+begin_src clojure :exports none
 (ns ch1.ex9-1
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
-| #'ch1.ex9-1/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                                |
-| #'ch1.ex9-1/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                 |
 
 ***** Compute $\partial_0 F(x, y)$ and $\partial_1 F(x, y)$
 
@@ -6164,11 +5371,9 @@ First, let's define the functions we need.
    (f 'x 'y)))
 #+end_src
 
-#+RESULTS[c3bf3ad567f028b1677f9cc8d62f1a6f97ee8abe]:
+#+RESULTS[001293adfac6814bb5fa4a4ab4ceb7075b07b1ea]:
 :results:
-\begin{equation}
-\begin{bmatrix}\displaystyle{2\,x\,{y}^{3}} \cr \cr \displaystyle{3\,{x}^{2}\,{y}^{2}}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{2\,x\,{y}^{3}} \cr \cr \displaystyle{3\,{x}^{2}\,{y}^{2}}\end{bmatrix}\n\end{equation}
 :end:
 
 Or with the $D$ symbol:
@@ -6178,11 +5383,9 @@ Or with the $D$ symbol:
  ((D F) 'x 'y))
 #+end_src
 
-#+RESULTS[8d696e3f24120cfbd568683f92ebdd7032efcb5d]:
+#+RESULTS[8e59ef099a4c489230981a00528990c427fb1b3b]:
 :results:
-\begin{equation}
-\begin{bmatrix}\displaystyle{2\,x\,{y}^{3}} \cr \cr \displaystyle{3\,{x}^{2}\,{y}^{2}}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{2\,x\,{y}^{3}} \cr \cr \displaystyle{3\,{x}^{2}\,{y}^{2}}\end{bmatrix}\n\end{equation}
 :end:
 
 Or, we could show that they're equivalent this way:
@@ -6194,11 +5397,9 @@ Or, we could show that they're equivalent this way:
       (f 'x 'y))))
 #+end_src
 
-#+RESULTS[6d4c38fd412bd39afe95140f0884842dd2b09142]:
+#+RESULTS[2d5601a2843aa1ada78f63b1d06e6b664efa4eaf]:
 :results:
-\begin{equation}
-\begin{bmatrix}\displaystyle{0} \cr \cr \displaystyle{0}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{0} \cr \cr \displaystyle{0}\end{bmatrix}\n\end{equation}
 :end:
 
 ***** Compute $\partial_0 F(F(x, y), y)$ and $\partial_1 F(F(x, y), y)$
@@ -6210,11 +5411,9 @@ $H$ is already that composition, so:
  ((D H) 'x 'y))
 #+end_src
 
-#+RESULTS[a05f78c71d33d44a8a212479682bdd829a067b8f]:
+#+RESULTS[bcb361fdc07aaa6e6f83fd0f9d68ac6e5f9d273c]:
 :results:
-\begin{equation}
-\begin{bmatrix}\displaystyle{4\,{x}^{3}\,{y}^{9}} \cr \cr \displaystyle{9\,{x}^{4}\,{y}^{8}}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{4\,{x}^{3}\,{y}^{9}} \cr \cr \displaystyle{9\,{x}^{4}\,{y}^{8}}\end{bmatrix}\n\end{equation}
 :end:
 
 ***** Compute $\partial_0 G(x, y)$ and $\partial_1 G(x, y)$
@@ -6224,11 +5423,9 @@ $H$ is already that composition, so:
  ((D G) 'x 'y))
 #+end_src
 
-#+RESULTS[459066205bb9b26a3738baaa5eb88506ee123770]:
+#+RESULTS[dc3b867b40a8dcd243eb2aab263976aea840c2e3]:
 :results:
-\begin{equation}
-\begin{bmatrix}\displaystyle{\begin{pmatrix}\displaystyle{2\,x\,{y}^{3}} \cr \cr \displaystyle{0}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{3\,{x}^{2}\,{y}^{2}} \cr \cr \displaystyle{1}\end{pmatrix}}\end{bmatrix}
-\end{equation}
+\begin{equation}\n\begin{bmatrix}\displaystyle{\begin{pmatrix}\displaystyle{2\,x\,{y}^{3}} \cr \cr \displaystyle{0}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{3\,{x}^{2}\,{y}^{2}} \cr \cr \displaystyle{1}\end{pmatrix}}\end{bmatrix}\n\end{equation}
 :end:
 
 ***** Compute $DF(a, b)$, $DG(3, 5)$ and $DH(3a^2, 5b^3)$
@@ -6240,11 +5437,9 @@ $H$ is already that composition, so:
      ((D H) (* 3 (square 'a)) (* 5 (cube 'b)))))
 #+end_src
 
-#+RESULTS[61a932b835a8c894cd73f0755d78807f618cae2b]:
+#+RESULTS[3ce59ceba90b48f2c2de09f59c2325c438b6e8a7]:
 :results:
-\begin{equation}
-\begin{pmatrix}\displaystyle{\begin{bmatrix}\displaystyle{2\,a\,{b}^{3}} \cr \cr \displaystyle{3\,{a}^{2}\,{b}^{2}}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{\begin{pmatrix}\displaystyle{750} \cr \cr \displaystyle{0}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{675} \cr \cr \displaystyle{1}\end{pmatrix}}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{210937500\,{a}^{6}\,{b}^{27}} \cr \cr \displaystyle{284765625\,{a}^{8}\,{b}^{24}}\end{bmatrix}}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{\begin{bmatrix}\displaystyle{2\,a\,{b}^{3}} \cr \cr \displaystyle{3\,{a}^{2}\,{b}^{2}}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{\begin{pmatrix}\displaystyle{750} \cr \cr \displaystyle{0}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{675} \cr \cr \displaystyle{1}\end{pmatrix}}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{210937500\,{a}^{6}\,{b}^{27}} \cr \cr \displaystyle{284765625\,{a}^{8}\,{b}^{24}}\end{bmatrix}}\end{pmatrix}\n\end{equation}
 :end:
 
 ** Exercise 9.2: Computing Derivatives
@@ -6254,29 +5449,13 @@ $H$ is already that composition, so:
 
 #+begin_src clojure :exports none
 (ns ch1.ex9-2
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 #+end_src
 
 #+RESULTS:
-| {:level :fatal, :ns-whitelist [], :ns-blacklist [], :ns-log-level [], :middleware [], :timestamp-opts {:pattern :iso8601, :locale :jvm-default, :timezone :utc}, :output-fn #function[taoensso.timbre/default-output-fn], :appenders {:println {:enabled? true, :async? false, :min-level , :rate-limit , :output-fn :inherit, :fn #function[taoensso.timbre.appenders.core/println-appender/fn--11570]}}} |
-| #'ch1.ex9-2/->tex-equation*                                                                                                                                                                                                                                                                                                                                                                                |
-| #'ch1.ex9-2/->tex-equation                                                                                                                                                                                                                                                                                                                                                                                 |
 
 A further exercise is to try defining the functions so that they use explicit
 tuples, so you can compose them:
@@ -6306,11 +5485,9 @@ nice formatted exercise output. Let's do the final exercise, for fun:
      ((D H*) (up (* 3 (square 'a)) (* 5 (cube 'b))))))
 #+end_src
 
-#+RESULTS[773a57c47d9567bae4db718e63c27c47ff94b5fa]:
+#+RESULTS[0e1bcc856f4bbdb2781d63d7a399a171b5535cfb]:
 :results:
-\begin{equation}
-\begin{pmatrix}\displaystyle{\begin{bmatrix}\displaystyle{2\,a\,{b}^{3}} \cr \cr \displaystyle{3\,{a}^{2}\,{b}^{2}}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{\begin{pmatrix}\displaystyle{750} \cr \cr \displaystyle{0}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{675} \cr \cr \displaystyle{1}\end{pmatrix}}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{210937500\,{a}^{6}\,{b}^{27}} \cr \cr \displaystyle{284765625\,{a}^{8}\,{b}^{24}}\end{bmatrix}}\end{pmatrix}
-\end{equation}
+\begin{equation}\n\begin{pmatrix}\displaystyle{\begin{bmatrix}\displaystyle{2\,a\,{b}^{3}} \cr \cr \displaystyle{3\,{a}^{2}\,{b}^{2}}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{\begin{pmatrix}\displaystyle{750} \cr \cr \displaystyle{0}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{675} \cr \cr \displaystyle{1}\end{pmatrix}}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{210937500\,{a}^{6}\,{b}^{27}} \cr \cr \displaystyle{284765625\,{a}^{8}\,{b}^{24}}\end{bmatrix}}\end{pmatrix}\n\end{equation}
 :end:
 
 * Org-Mode Demo
@@ -6337,23 +5514,10 @@ This is some good stuff.
 
 #+begin_src clojure :results output :noweb yes :comments both
 (ns ch1.demo
-  (:refer-clojure :exclude [+ - * / zero? ref partial])
-  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
-            [sicmutils.expression.render :as render]
-            [taoensso.timbre :refer [set-level!]]))
+  (:refer-clojure :exclude [+ - * / compare zero? ref partial])
+  (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]))
 
 (e/bootstrap-repl!)
-(set-level! :fatal)
-
-(defn ->tex-equation* [e]
-  (let [eq (render/->TeX (simplify e))]
-    (str "\\begin{equation}\n"
-         eq
-         "\n\\end{equation}")))
-
-(defn ->tex-equation [e]
-  (println
-   (->tex-equation* e)))
 
 <<p->r>>
 
@@ -6370,10 +5534,6 @@ And another, that gets us from spherical to rectangular.
       (* r (cos theta))))
 #+end_src
 
-#+RESULTS[f4f039075baf66ba4fe071844815bfcffe281eaa]:
-: ;Loading "src/ch1/utils.cljc"... done
-: #| "" |#
-
 This block will generate a LaTeX version of the code I've supplied:
 
 #+begin_src clojure :results wrap :exports both :cache yes
@@ -6384,19 +5544,21 @@ This block will generate a LaTeX version of the code I've supplied:
  :label "eq:masterpiece")
 #+end_src
 
-#+RESULTS[61f1eb11a14638204fb44bfc8e6b572ea379df1f]:
+#+RESULTS[4dd3e9d29f8b6da47db9bba024d2b7774c3bb5cb]:
 :results:
-class clojure.lang.ArityException
+\begin{equation}\n\label{eq:masterpiece}c\left(t\right) + Dz\left(t\right)\n\end{equation}
 :end:
 
 You can even reference these with equation numbers, like Equation \eqref{eq:masterpiece} above.
 
-#+begin_src clojure :results value :exports both :cache yes
+#+begin_src clojure :results wrap :exports both :cache yes
 (up 1 2 't)
 #+end_src
 
-#+RESULTS[d71d450663a7baa1a74c0b54d9635bfc15f40e25]:
+#+RESULTS[60deb28bb683bfaf60a2bf23f458f2b3f11a4fa0]:
+:results:
 | up | 1 | 2 | t |
+:end:
 
 *** Equations
 

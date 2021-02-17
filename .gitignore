@@ -7,6 +7,7 @@ ltximg
 *.tex
 sicm.pdf
 sicm_clojure.pdf
+_minted*
 
 # For output from auctex.
 auto

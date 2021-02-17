@@ -5,12 +5,10 @@ This is an example of how we might structure an org-mode file that can export ou
 First, let's get some code loaded up and written. Here's a block that converts polar coordinates to rectangular coordinates.
 
 ```clojure
-(define (p->r local)
-  (let* ((polar-tuple (coordinate local))
-         (r (ref polar-tuple 0))
-         (phi (ref polar-tuple 1))
-         (x (* r (cos phi)))
-         (y (* r (sin phi))))
+(defn p->r [local]
+  (let [[r phi] (coordinate local)
+        x (* r (cos phi))
+        y (* r (sin phi))]
     (up x y)))
 ```
 
@@ -36,35 +34,25 @@ This is some good stuff.
   (println
    (->tex-equation* e)))
 
-(define (p->r local)
-  (let* ((polar-tuple (coordinate local))
-         (r (ref polar-tuple 0))
-         (phi (ref polar-tuple 1))
-         (x (* r (cos phi)))
-         (y (* r (sin phi))))
+(defn p->r [local]
+  (let [[r phi] (coordinate local)
+        x (* r (cos phi))
+        y (* r (sin phi))]
     (up x y)))
 
-(define (spherical->rect local)
-  (let* ((spherical-tuple (coordinate local))
-         (r (ref spherical-tuple 0))
-         (theta (ref spherical-tuple 1))
-         (phi (ref spherical-tuple 2)))
-    (up (* r (sin theta) (cos phi))
-        (* r (sin theta) (sin phi))
-        (* r (cos theta)))))
+(defn spherical->rect [[_ [r theta phi]]]
+  (up (* r (sin theta) (cos phi))
+      (* r (sin theta) (sin phi))
+      (* r (cos theta))))
 ```
 
 And another, that gets us from spherical to rectangular.
 
 ```clojure
-(define (spherical->rect local)
-  (let* ((spherical-tuple (coordinate local))
-         (r (ref spherical-tuple 0))
-         (theta (ref spherical-tuple 1))
-         (phi (ref spherical-tuple 2)))
-    (up (* r (sin theta) (cos phi))
-        (* r (sin theta) (sin phi))
-        (* r (cos theta)))))
+(defn spherical->rect [[_ [r theta phi]]]
+  (up (* r (sin theta) (cos phi))
+      (* r (sin theta) (sin phi))
+      (* r (cos theta))))
 ```
 
     ;Loading "src/ch1/utils.cljc"... done
@@ -77,13 +65,10 @@ This block will generate a LaTeX version of the code I've supplied:
  ((+ (literal-function 'c)
      (D (literal-function 'z)))
   't)
- "eq:masterpiece")
+ :label "eq:masterpiece")
 ```
 
-\begin{equation}
-c\left( t \right) + Dz\left( t \right)
-\label{eq:masterpiece}
-\end{equation}
+class clojure.lang.ArityException
 
 You can even reference these with equation numbers, like Equation \eqref{eq:masterpiece} above.
 
@@ -91,9 +76,9 @@ You can even reference these with equation numbers, like Equation \eqref{eq:mast
 (up 1 2 't)
 ```
 
-    #|
-    (up 1 2 t)
-    |#
+|    |    |    |    |
+|--- |--- |--- |--- |
+| up | 1 | 2 | t |
 
 # Equations<a id="sec-1"></a>
 
