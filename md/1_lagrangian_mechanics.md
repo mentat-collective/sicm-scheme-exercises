@@ -213,6 +213,11 @@ Here's the function again, generated from code, with general \\(t\_1\\):
  ((total-distance 'x_1 'y_1 'x_2 'y_2) 'x_p))
 ```
 
+<div class="latex" id="orge581878">
+\begin{equation}\n\sqrt {{x_1}^{2} + 2\,x_1\,x_p + {x_p}^{2} + {y_1}^{2}} + \sqrt {{x_1}^{2} -2\,x_1\,x_2 + 2\,x_1\,x_p + {x_2}^{2} -2\,x_2\,x_p + {x_p}^{2} + {y_2}^{2}}\n\end{equation}
+
+</div>
+
 To find the \\(x\_p\\) that minimizes the total distance,
 
 -   take the derivative with respect to \\(x\_p\\),
@@ -237,7 +242,7 @@ Here are the sum components:
  ((total-distance* 0 'y_1 'x_2 'y_2) 'x_p))
 ```
 
-<div class="results" id="org926bd8b">
+<div class="results" id="orgd075247">
 \begin{equation}\n\begin{pmatrix}\displaystyle{\sqrt {{x_p}^{2} + {y_1}^{2}}} \cr \cr \displaystyle{\sqrt {{x_2}^{2} -2\,x_2\,x_p + {x_p}^{2} + {y_2}^{2}}}\end{pmatrix}\n\end{equation}
 
 </div>
@@ -251,7 +256,7 @@ Taking a derivative is easy with `scmutils`. Just wrap the function in `D`:
    (derivative 'x_p)))
 ```
 
-<div class="results" id="orge0c975d">
+<div class="results" id="org450f155">
 \begin{equation}\n\begin{pmatrix}\displaystyle{\frac{x_p}{\sqrt {{x_p}^{2} + {y_1}^{2}}}} \cr \cr \displaystyle{\frac{- x_2 + x_p}{\sqrt {{x_2}^{2} -2\,x_2\,x_p + {x_p}^{2} + {y_2}^{2}}}}\end{pmatrix}\n\end{equation}
 
 </div>
