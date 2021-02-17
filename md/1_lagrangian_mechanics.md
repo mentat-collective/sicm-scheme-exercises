@@ -213,10 +213,6 @@ Here's the function again, generated from code, with general \\(t\_1\\):
  ((total-distance 'x_1 'y_1 'x_2 'y_2) 'x_p))
 ```
 
-\begin{equation}
-\sqrt {{x\_1}^{2} + 2\,x\_1\,x\_p + {x\_p}^{2} + {y\_1}^{2}} + \sqrt {{x\_1}^{2} -2\,x\_1\,x\_2 + 2\,x\_1\,x\_p + {x\_2}^{2} -2\,x\_2\,x\_p + {x\_p}^{2} + {y\_2}^{2}}
-\end{equation}
-
 To find the \\(x\_p\\) that minimizes the total distance,
 
 -   take the derivative with respect to \\(x\_p\\),
@@ -241,9 +237,10 @@ Here are the sum components:
  ((total-distance* 0 'y_1 'x_2 'y_2) 'x_p))
 ```
 
-\begin{equation}
-\begin{pmatrix}\displaystyle{\sqrt {{x\_p}^{2} + {y\_1}^{2}}} \cr \cr \displaystyle{\sqrt {{x\_2}^{2} -2\,x\_2\,x\_p + {x\_p}^{2} + {y\_2}^{2}}}\end{pmatrix}
-\end{equation}
+<div class="results" id="org926bd8b">
+\begin{equation}\n\begin{pmatrix}\displaystyle{\sqrt {{x_p}^{2} + {y_1}^{2}}} \cr \cr \displaystyle{\sqrt {{x_2}^{2} -2\,x_2\,x_p + {x_p}^{2} + {y_2}^{2}}}\end{pmatrix}\n\end{equation}
+
+</div>
 
 Taking a derivative is easy with `scmutils`. Just wrap the function in `D`:
 
@@ -254,9 +251,10 @@ Taking a derivative is easy with `scmutils`. Just wrap the function in `D`:
    (derivative 'x_p)))
 ```
 
-\begin{equation}
-\begin{pmatrix}\displaystyle{\frac{x\_p}{\sqrt {{x\_p}^{2} + {y\_1}^{2}}}} \cr \cr \displaystyle{\frac{- x\_2 + x\_p}{\sqrt {{x\_2}^{2} -2\,x\_2\,x\_p + {x\_p}^{2} + {y\_2}^{2}}}}\end{pmatrix}
-\end{equation}
+<div class="results" id="orge0c975d">
+\begin{equation}\n\begin{pmatrix}\displaystyle{\frac{x_p}{\sqrt {{x_p}^{2} + {y_1}^{2}}}} \cr \cr \displaystyle{\frac{- x_2 + x_p}{\sqrt {{x_2}^{2} -2\,x_2\,x_p + {x_p}^{2} + {y_2}^{2}}}}\end{pmatrix}\n\end{equation}
+
+</div>
 
 The first component is the base of base \\(x\_p\\) of the left triangle over the total length. This ratio is equal to \\(\cos \theta\_1\\):
 
@@ -963,7 +961,7 @@ The key is equation 1.22 in the book:
 
 Given \\(g(\epsilon) = f[q + \epsilon \eta]\\). Through the magic of automatic differentiation we can simply write:
 
-```clojurescript
+```clojure
 (defn delta [eta]
   (fn [f]
     (fn [q]
@@ -978,7 +976,7 @@ It's almost spooky, that \\(D\\) can somehow figure out what to do here.
 
 Part B's problem description gave us a path-dependent function similar to this one:
 
-```clojurescript
+```clojure
 (defn litfn [sym]
   (fn [q]
     (let [Local '(UP Real (UP* Real 2) (UP* Real 2))
@@ -992,7 +990,7 @@ I've modified it slightly to take in a symbol, since we'll need to generate mult
 
 The textbook also gives us this function from \\(t \to (x, y)\\) to test out the properties above. I've added an \\(\eta\\) of the same type signature that we can use to add variation to the path.
 
-```clojurescript
+```clojure
 (def q (literal-function 'q (-> Real (UP Real Real))))
 (def eta (literal-function 'eta (-> Real (UP Real Real))))
 ```
@@ -1003,7 +1001,7 @@ These weren't easy to write down, but they really do constitute proofs. If you t
 
 Equation \eqref{eq:var-prod} states the product rule for variations. Here it is in code. I've implemented the right and left sides and subtracted them. As expected, the result is 0:
 
-```clojurescript
+```clojure
 (let [f     (litfn 'f)
       g     (litfn 'g)
       de    (delta eta)
@@ -1022,14 +1020,15 @@ Equation \eqref{eq:var-prod} states the product rule for variations. Here it is 
 
 The sum rule is similar. Here's the Scheme implementation of equation \eqref{eq:var-sum}:
 
-```clojurescript
+```clojure
 (let [f     (litfn 'f)
       g     (litfn 'g)
       de    (delta eta)
       left  ((de (+ f g)) q)
       right (+ ((de f) q)
                ((de g) q))]
-  ((- left right) 't))
+  (->tex-equation
+   ((- left right) 't)))
 ```
 
 \begin{equation}
@@ -1279,27 +1278,27 @@ This exercise asks us to derive [Kepler's third law](https://en.wikipedia.org/wi
 Here's the Lagrangian for "central force", in polar coordinates. This is rotational kinetic energy, minus some arbitrary potential \\(V\\) that depends on the distance \\(r\\) between the two particles.
 
 ```clojure
-(define ((L-central-polar m V) local)
-  (let ((q (coordinate local))
-        (qdot (velocity local)))
-    (let ((r (ref q 0))     (phi (ref q 1))
-          (rdot (ref qdot 0)) (phidot (ref qdot 1)))
-      (- (* 1/2 m
-            (+ (square rdot) (square (* r phidot))))
-         (V r)))))
+(defn L-central-polar [m V]
+  (fn [[_ [r phi] [rdot phidot]]]
+    (let [T (* (/ 1 2)
+               m
+               (+ (square rdot)
+                  (square (* r phidot))))]
+      (- T (V r)))))
 ```
 
 This function defines gravitational potential energy:
 
 ```clojure
-(define ((gravitational-energy G m1 m2) r)
-  (- (/ (* G m1 m2) r)))
+(defn gravitational-energy [G m1 m2]
+  (fn [r]
+    (- (/ (* G m1 m2) r))))
 ```
 
 What is the mass \\(m\\) in the Lagrangian above? It's the "[reduced mass](https://en.wikipedia.org/wiki/Reduced_mass)", totally unjustified at this point in the book:
 
 ```clojure
-(define (reduced-mass m1 m2)
+(defn reduced-mass [m1 m2]
   (/ (* m1 m2)
      (+ m1 m2)))
 ```
@@ -1309,23 +1308,24 @@ If you want to see why the reduced mass has the form it does, check out [this de
 The Lagrangian is written in terms of some angle \\(\phi\\) and \\(r\\), the distance between the two particles. \\(q\\) defines a circular path:
 
 ```clojure
-(define ((q r omega) t)
-  (let ((phi (* omega t)))
-    (up r phi)))
+(defn q [r omega]
+  (fn [t]
+    (let [phi (* omega t)]
+      (up r phi))))
 ```
 
 Write the Lagrange equations, given \\(r = a\\) and \\(\omega = n\\):
 
 ```clojure
-(let ((eqfn (Lagrange-equations
-             (L-central-polar (reduced-mass 'm1 'm2)
-                              (gravitational-energy 'G 'm1 'm2)))))
+(let [eqfn (Lagrange-equations
+            (L-central-polar (reduced-mass 'm1 'm2)
+                             (gravitational-energy 'G 'm1 'm2)))]
   (->tex-equation
    ((eqfn (q 'a 'n)) 't)))
 ```
 
 \begin{equation}
-\begin{bmatrix} \displaystyle{ {{ - {a}^{3} \cdot m1 \cdot m2 \cdot {n}^{2} + G {m1}^{2} \cdot m2 + G \cdot m1 \cdot {m2}^{2}}\over {{a}^{2} \cdot m1 + {a}^{2} \cdot m2}}} \cr \cr \displaystyle{ 0}\end{bmatrix}
+\begin{bmatrix}\displaystyle{\frac{- {a}^{3}\,\mathsf{m1}\,\mathsf{m2}\,{n}^{2} + G\,{\mathsf{m1}}^{2}\,\mathsf{m2} + G\,\mathsf{m1}\,{\mathsf{m2}}^{2}}{{a}^{2}\,\mathsf{m1} + {a}^{2}\,\mathsf{m2}}}&\displaystyle{0}\end{bmatrix}
 \end{equation}
 
 These two entries are *residuals*, equal to zero. Stare at the top residual and you might notice that you can can factor out:
@@ -1336,9 +1336,10 @@ These two entries are *residuals*, equal to zero. Stare at the top residual and 
 Manually factor these out:
 
 ```clojure
-(let ((eqfn (Lagrange-equations
-             (L-central-polar (reduced-mass 'm1 'm2)
-                              (gravitational-energy 'G 'm1 'm2)))))
+(let [eqfn (Lagrange-equations
+            (L-central-polar
+             (reduced-mass 'm1 'm2)
+             (gravitational-energy 'G 'm1 'm2)))]
   (->tex-equation
    (* ((eqfn (q 'a 'n)) 't)
       (/ (square 'a)
@@ -1346,7 +1347,7 @@ Manually factor these out:
 ```
 
 \begin{equation}
-\begin{bmatrix} \displaystyle{  - {a}^{3} {n}^{2} + G \cdot m1 + G \cdot m2} \cr \cr \displaystyle{ 0}\end{bmatrix}
+\begin{bmatrix}\displaystyle{- {a}^{3}\,{n}^{2} + G\,\mathsf{m1} + G\,\mathsf{m2}}&\displaystyle{0}\end{bmatrix}
 \end{equation}
 
 And, boom, with some cleanup, we see Kepler's third law:
@@ -1368,10 +1369,10 @@ Before we begin, here is a function that will display an up-tuple of:
 -   The Lagrange equations for the system.
 
 ```clojure
-(define (lagrange-equation-steps L q)
-  (let* ((p1 (compose ((partial 1) L) (Gamma q)))
-         (p2 (compose ((partial 2) L) (Gamma q)))
-         (dp2 (D p2)))
+(defn lagrange-equation-steps [L q]
+  (let [p1 (compose ((partial 1) L) (Gamma q))
+        p2 (compose ((partial 2) L) (Gamma q))
+        dp2 (D p2)]
     (->tex-equation
      ((up p1 p2 dp2 (- dp2 p1))
       't))))
@@ -1396,10 +1397,9 @@ From the book:
 Here is the Lagrangian described by the exercise:
 
 ```clojure
-(define ((L-pendulum m g l) local)
-  (let ((theta (coordinate local))
-        (theta_dot (velocity local)))
-    (+ (* 1/2 m (square l) (square theta_dot))
+(defn L-pendulum [m g l]
+  (fn [[_ theta thetadot]]
+    (+ (* (/ 1 2) m (square l) (square thetadot))
        (* m g l (cos theta)))))
 ```
 
@@ -1412,22 +1412,22 @@ And the steps that lead us to Lagrange's equations:
 ```
 
 \begin{equation}
-\begin{pmatrix} \displaystyle{ \left( - 1 \right) g l m \sin\left( \theta\left( t \right) \right)} \cr \cr \displaystyle{ {l}^{2} m D\theta\left( t \right)} \cr \cr \displaystyle{ {l}^{2} m {D}^{2}\theta\left( t \right)} \cr \cr \displaystyle{ g l m \sin\left( \theta\left( t \right) \right) + {l}^{2} m {D}^{2}\theta\left( t \right)}\end{pmatrix}
+\begin{pmatrix}\displaystyle{- g\,l\,m\,\sin\left(\theta\left(t\right)\right)} \cr \cr \displaystyle{{l}^{2}\,m\,D\theta\left(t\right)} \cr \cr \displaystyle{{l}^{2}\,m\,{D}^{2}\theta\left(t\right)} \cr \cr \displaystyle{g\,l\,m\,\sin\left(\theta\left(t\right)\right) + {l}^{2}\,m\,{D}^{2}\theta\left(t\right)}\end{pmatrix}
 \end{equation}
 
 The final entry is the Lagrange equation, equal to \\(0\\). Divide out the shared factors of \\(m\\) and \\(l\\):
 
 ```clojure
-(let* ((L (L-pendulum 'm 'g 'l))
-       (theta (literal-function 'theta))
-       (eqs ((Lagrange-equations L) theta)))
+(let [L (L-pendulum 'm 'g 'l)
+      theta (literal-function 'theta)
+      eqs ((Lagrange-equations L) theta)]
   (->tex-equation
    ((/ eqs (* 'm 'l))
     't)))
 ```
 
 \begin{equation}
-g \sin\left( \theta\left( t \right) \right) + l {D}^{2}\theta\left( t \right)
+g\,\sin\left(\theta\left(t\right)\right) + l\,{D}^{2}\theta\left(t\right)
 \end{equation}
 
 This is the [familiar equation of motion](https://en.wikipedia.org/wiki/Pendulum_(mathematics)) for a planar pendum.
@@ -1445,9 +1445,11 @@ I have no intuition for *what* this potential is, by the way. One term, \\({x^2 
 Define the Lagrangian to be the difference of the kinetic energy and some potential \\(V\\) that has access to the coordinates:
 
 ```clojure
-(define (((L-2d-potential m) V) local)
-  (- (* 1/2 m (square (velocity local)))
-     (V (coordinate local))))
+(defn L-2d-potential [m]
+  (fn [V]
+    (fn [local]
+      (- (* (/ 1 2) m (square (velocity local)))
+         (V (coordinate local))))))
 ```
 
 Thanks to the tuple algebra of `scmutils`, This form of the Lagrangian is general enough that it would work for any number of dimensions in rectangular space, given some potential \\(V\\). `square` takes a dot product, so we end up with a kinetic energy term for every spatial dimension.
@@ -1457,14 +1459,12 @@ Note this for later, as this idea will become useful when the book reaches the d
 Next define the potential from the problem description:
 
 ```clojure
-(define (V q)
-  (let ((x (ref q 0))
-        (y (ref q 1)))
-    (- (+ (/ (+ (square x)
-                (square y))
-             2)
-          (* (square x) y))
-       (/ (cube y) 3))))
+(defn V [[x y]]
+  (- (+ (/ (+ (square x)
+              (square y))
+           2)
+        (* (square x) y))
+     (/ (cube y) 3)))
 ```
 
 Our helpful function generates the Lagrange equations, along with each intermediate step:
@@ -1477,7 +1477,7 @@ Our helpful function generates the Lagrange equations, along with each intermedi
 ```
 
 \begin{equation}
-\begin{pmatrix} \displaystyle{ \begin{bmatrix} \displaystyle{  - 2 y\left( t \right) x\left( t \right) - x\left( t \right)} \cr \cr \displaystyle{ {\left( y\left( t \right) \right)}^{2} - {\left( x\left( t \right) \right)}^{2} - y\left( t \right)}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ m Dx\left( t \right)} \cr \cr \displaystyle{ m Dy\left( t \right)}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ m {D}^{2}x\left( t \right)} \cr \cr \displaystyle{ m {D}^{2}y\left( t \right)}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ m {D}^{2}x\left( t \right) + 2 y\left( t \right) x\left( t \right) + x\left( t \right)} \cr \cr \displaystyle{ m {D}^{2}y\left( t \right) - {\left( y\left( t \right) \right)}^{2} + {\left( x\left( t \right) \right)}^{2} + y\left( t \right)}\end{bmatrix}}\end{pmatrix}
+\begin{pmatrix}\displaystyle{\begin{bmatrix}\displaystyle{-2\,x\left(t\right)\,y\left(t\right) - x\left(t\right)}&\displaystyle{- {\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2} - y\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{m\,Dx\left(t\right)}&\displaystyle{m\,Dy\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{m\,{D}^{2}x\left(t\right)}&\displaystyle{m\,{D}^{2}y\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{m\,{D}^{2}x\left(t\right) + 2\,x\left(t\right)\,y\left(t\right) + x\left(t\right)}&\displaystyle{m\,{D}^{2}y\left(t\right) + {\left(x\left(t\right)\right)}^{2} - {\left(y\left(t\right)\right)}^{2} + y\left(t\right)}\end{bmatrix}}\end{pmatrix}
 \end{equation}
 
 The final down-tuple gives us the Lagrange equations that \\(x\\) and \\(y\\) (respectively) must satisfy.
@@ -1496,13 +1496,9 @@ So the particle has some generalized kinetic energy with terms for:
 Here is the Lagrangian:
 
 ```clojure
-(define ((L-sphere m R) local)
-  (let* ((q (coordinate local))
-         (qdot (velocity local))
-         (theta (ref q 0))
-         (alpha (ref qdot 0))
-         (beta (ref qdot 1)))
-    (* 1/2 m (square R)
+(defn L-sphere [m R]
+  (fn [[_ [theta] [alpha beta]]]
+    (* (/ 1 2) m (square R)
        (+ (square alpha)
           (square (* beta (sin theta)))))))
 ```
@@ -1517,7 +1513,7 @@ Here is the full derivation:
 ```
 
 \begin{equation}
-\begin{pmatrix} \displaystyle{ \begin{bmatrix} \displaystyle{ {R}^{2} m \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) {\left( D\phi\left( t \right) \right)}^{2}} \cr \cr \displaystyle{ 0}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ {R}^{2} m D\theta\left( t \right)} \cr \cr \displaystyle{ {R}^{2} m {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} D\phi\left( t \right)}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{ {R}^{2} m {D}^{2}\theta\left( t \right)} \cr \cr \displaystyle{ 2 {R}^{2} m \sin\left( \theta\left( t \right) \right) D\theta\left( t \right) \cos\left( \theta\left( t \right) \right) D\phi\left( t \right) + {R}^{2} m {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} {D}^{2}\phi\left( t \right)}\end{bmatrix}} \cr \cr \displaystyle{ \begin{bmatrix} \displaystyle{  - {R}^{2} m \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) {\left( D\phi\left( t \right) \right)}^{2} + {R}^{2} m {D}^{2}\theta\left( t \right)} \cr \cr \displaystyle{ 2 {R}^{2} m \sin\left( \theta\left( t \right) \right) D\theta\left( t \right) \cos\left( \theta\left( t \right) \right) D\phi\left( t \right) + {R}^{2} m {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} {D}^{2}\phi\left( t \right)}\end{bmatrix}}\end{pmatrix}
+\begin{pmatrix}\displaystyle{\begin{bmatrix}\displaystyle{{R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right)}&\displaystyle{0}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{{R}^{2}\,m\,D\theta\left(t\right)}&\displaystyle{{R}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,D\phi\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{{R}^{2}\,m\,{D}^{2}\theta\left(t\right)}&\displaystyle{2\,{R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right) + {R}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)}\end{bmatrix}} \cr \cr \displaystyle{\begin{bmatrix}\displaystyle{- {R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right) + {R}^{2}\,m\,{D}^{2}\theta\left(t\right)}&\displaystyle{2\,{R}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right) + {R}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)}\end{bmatrix}}\end{pmatrix}
 \end{equation}
 
 The final Lagrange residuals have a few terms that we can divide out. Scheme doesn't know that these are meant to be residuals, so it won't cancel out factors that we can see by eye are missing.
@@ -1525,20 +1521,20 @@ The final Lagrange residuals have a few terms that we can divide out. Scheme doe
 Isolate the Lagrange equations from the derivation and manually simplify each equation by dividing out, respectively, \\(mR^2\\) and \\(mR^2 \sin \theta\\):
 
 ```clojure
-(let* ((L (L-sphere 'm 'R))
-       (theta (literal-function 'theta))
-       (q (up theta (literal-function 'phi)))
-       (le ((Lagrange-equations L) q)))
-  (let ((eq1 (ref le 0))
-        (eq2 (ref le 1)))
-    (->tex-equation
-     ((up (/ eq1 (* 'm (square 'R)))
-          (/ eq2 (* (sin theta) 'm (square 'R))))
-      't))))
+(let [L     (L-sphere 'm 'R)
+      theta (literal-function 'theta)
+      q     (up theta (literal-function 'phi))
+      le    ((Lagrange-equations L) q)
+      eq1   (ref le 0)
+      eq2   (ref le 1)]
+  (->tex-equation
+   ((up (/ eq1 (* 'm (square 'R)))
+        (/ eq2 (* (sin theta) 'm (square 'R))))
+    't)))
 ```
 
 \begin{equation}
-\begin{pmatrix} \displaystyle{  - \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) {\left( D\phi\left( t \right) \right)}^{2} + {D}^{2}\theta\left( t \right)} \cr \cr \displaystyle{ 2 D\theta\left( t \right) \cos\left( \theta\left( t \right) \right) D\phi\left( t \right) + \sin\left( \theta\left( t \right) \right) {D}^{2}\phi\left( t \right)}\end{pmatrix}
+\begin{pmatrix}\displaystyle{- \sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right) + {D}^{2}\theta\left(t\right)} \cr \cr \displaystyle{2\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right) + \sin\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)}\end{pmatrix}
 \end{equation}
 
 These are the Lagrange equations for \\(\theta\\) and \\(\phi\\), respectively.
@@ -1556,11 +1552,12 @@ From the book:
 Now that we know the math, the implementation is a straightforward extension of the `Lagrange-equations` procedure presented in the book:
 
 ```clojure
-(define ((Lagrange-equations3 L) q)
-  (let ((state-path (Gamma q 4)))
-    (+ ((square D) (compose ((partial 3) L) state-path))
-       (- (D (compose ((partial 2) L) state-path)))
-       (compose ((partial 1) L) state-path))))
+(defn Lagrange-equations3 [L]
+  (fn [q]
+    (let [state-path (Gamma q 4)]
+      (+ ((square D) (compose ((partial 3) L) state-path))
+         (- (D (compose ((partial 2) L) state-path)))
+         (compose ((partial 1) L) state-path)))))
 ```
 
 ## Part B: Applying HO-Lagrangians<a id="sec-14-2"></a>
@@ -1578,11 +1575,10 @@ Now it's time to use the new function. From the book:
 Here is the Lagrangian described in the problem:
 
 ```clojure
-(define ((L-1-13 m k) local)
-  (let ((x (coordinate local))
-        (a (acceleration local)))
-    (- (* -1/2 m x a)
-       (* 1/2 k (square x)))))
+(defn L-1-13 [m k]
+  (fn [[_ x _ a]]
+    (- (* (/ -1 2) m x a)
+       (* (/ 1 2) k (square x)))))
 ```
 
 Use the new function to generate the Lagrange equations. This call includes a factor of \\(-1\\) to make the equation look nice:
@@ -1594,7 +1590,7 @@ Use the new function to generate the Lagrange equations. This call includes a fa
 ```
 
 \begin{equation}
-k x\left( t \right) + m {D}^{2}x\left( t \right)
+k\,x\left(t\right) + m\,{D}^{2}x\left(t\right)
 \end{equation}
 
 This looks like the equation of motion for a [classical harmonic oscillator](https://en.wikipedia.org/wiki/Harmonic_oscillator). Again, I leave this problem with no new physical intuition for what is going on here, or what type of system would need an acceleration dependent Lagrangian. I suspect that we could build a harmonic oscillator for Lagrange equations of any order by properly tuning the Lagrangian. But I don't know why this would be helpful.
@@ -1616,38 +1612,26 @@ There are two ideas playing together here. Each term takes an element from:
 -   an alternating sequence of \\(1\\) and \\(-1\\)
 -   a sequence of increasing-index \\(D^i(\partial\_i L \circ \Gamma[q])\\) terms
 
-The alternating \\(1, -1\\) sequence is similar to a more general idea: take any ordered collection arranged in a cycle, start at some point and walk around the cycle for \\(n\\) steps.
-
-If you need to take \\(n\\) steps along a cycle of length \\(l\\), you'll end up traveling around the cycle between \\(n \over l\\) and \\({n \over l} + 1\\) times.
-
-`alternate` generates a list of \\(n\\) total elements generated by walking around the ordered cycle of supplied `elems`:
+The alternating \\(1, -1\\) sequence is similar to a more general idea: take any ordered collection arranged in a cycle, start at some point and walk around the cycle for \\(n\\) steps. In Clojure this can be expressed as
 
 ```clojure
-(define (cycle n elems)
-  (apply append (make-list n elems)))
-
-(define (alternating n elems)
-  (let* ((l (length elems))
-         (times (quotient (+ n (-1+ l)) l)))
-    (list-head (cycle times elems) n)))
+(cycle [1 -1])
 ```
 
-Now, the general `Lagrange-equations*` implementation.
-
-This function defines an internal function `term` that generates the $i$th term of the derivative combination described above. This sequence is zipped with the sequence of \\(1, -1\\), and `fold-left` generates the sum.
+Now, the general `Lagrange-equations*` implementation:
 
 ```clojure
-(define ((Lagrange-equations* L n) q)
-  (let ((state-path (Gamma q (1+ n))))
-    (define (term i)
-      ((expt D i)
-       (compose ((partial (1+ i)) L) state-path)))
-    (let ((terms (map term (iota n))))
-      (fold-left (lambda (acc pair)
-                   (+ acc (apply * pair)))
-                 0
-                 (zip (alternating n '(1 -1))
-                      (reverse terms))))))
+(defn Lagrange-equations* [L n]
+  (fn [q]
+    (let [state-path (Gamma q (inc n))
+          terms (map (fn [coef i]
+                       (* coef
+                          ((expt D i)
+                           (compose ((partial (inc i)) L)
+                                    state-path))))
+                     (cycle [1 -1])
+                     (range n))]
+      (reduce + terms))))
 ```
 
 Generate the Lagrange equations from part b once more to check that we get the same result:
@@ -1659,7 +1643,7 @@ Generate the Lagrange equations from part b once more to check that we get the s
 ```
 
 \begin{equation}
-k x\left( t \right) + m {D}^{2}x\left( t \right)
+k\,x\left(t\right) + m\,{D}^{2}x\left(t\right)
 \end{equation}
 
 There it is again, the harmonic oscillator. I don't have any intuition for higher order Lagrangians, so I can't cook up any further examples to test the implementation.
@@ -1687,21 +1671,17 @@ Fair warning: this is much more painful than transforming the Lagrangian *before
 Here are the two Lagrangians from the book:
 
 ```clojure
-(define ((L-central-rectangular m U) local)
-  (let ((q (coordinate local))
-        (v (velocity local)))
-    (- (* 1/2 m (square v))
+(defn L-central-rectangular [m U]
+  (fn [[_ q v]]
+    (- (* (/ 1 2) m (square v))
        (U (sqrt (square q))))))
 
-(define ((L-central-polar m U) local)
-  (let ((q (coordinate local))
-        (qdot (velocity local)))
-    (let ((r (ref q 0)) (phi (ref q 1))
-          (rdot (ref qdot 0)) (phidot (ref qdot 1)))
-      (- (* 1/2 m
-            (+ (square rdot)
-               (square (* r phidot))) )
-         (U r)))))
+(defn L-central-polar [m U]
+  (fn [[_ [r phi] [rdot phidot]]]
+    (- (* (/ 1 2) m
+          (+ (square rdot)
+             (square (* r phidot))) )
+       (U r))))
 ```
 
 Here are the rectangular equations of motion:
@@ -1712,13 +1692,11 @@ Here are the rectangular equations of motion:
     (L-central-rectangular 'm (literal-function 'U)))
    (up (literal-function 'x)
        (literal-function 'y)))
-  't)
- "eq:rect-equations")
+  't))
 ```
 
 \begin{equation}
-\begin{bmatrix} \displaystyle{ {{m {D}^{2}x\left( t \right) \sqrt{{\left( x\left( t \right) \right)}^{2} + {\left( y\left( t \right) \right)}^{2}} + x\left( t \right) DU\left( \sqrt{{\left( x\left( t \right) \right)}^{2} + {\left( y\left( t \right) \right)}^{2}} \right)}\over {\sqrt{{\left( x\left( t \right) \right)}^{2} + {\left( y\left( t \right) \right)}^{2}}}}} \cr \cr \displaystyle{ {{m \sqrt{{\left( x\left( t \right) \right)}^{2} + {\left( y\left( t \right) \right)}^{2}} {D}^{2}y\left( t \right) + y\left( t \right) DU\left( \sqrt{{\left( x\left( t \right) \right)}^{2} + {\left( y\left( t \right) \right)}^{2}} \right)}\over {\sqrt{{\left( x\left( t \right) \right)}^{2} + {\left( y\left( t \right) \right)}^{2}}}}}\end{bmatrix}
-\label{eq:rect-equations}
+\begin{bmatrix}\displaystyle{\frac{m\,{D}^{2}x\left(t\right)\,\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}} + x\left(t\right)\,DU\left(\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}\right)}{\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}}} \cr \cr \displaystyle{\frac{m\,{D}^{2}y\left(t\right)\,\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}} + y\left(t\right)\,DU\left(\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}\right)}{\sqrt {{\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2}}}}\end{bmatrix}
 \end{equation}
 
 And the polar Lagrange equations:
@@ -1733,7 +1711,7 @@ And the polar Lagrange equations:
 ```
 
 \begin{equation}
-\begin{bmatrix} \displaystyle{  - m r\left( t \right) {\left( D\phi\left( t \right) \right)}^{2} + m {D}^{2}r\left( t \right) + DU\left( r\left( t \right) \right)} \cr \cr \displaystyle{ m {D}^{2}\phi\left( t \right) {\left( r\left( t \right) \right)}^{2} + 2 m r\left( t \right) D\phi\left( t \right) Dr\left( t \right)}\end{bmatrix}
+\begin{bmatrix}\displaystyle{- m\,{\left(D\phi\left(t\right)\right)}^{2}\,r\left(t\right) + m\,{D}^{2}r\left(t\right) + DU\left(r\left(t\right)\right)} \cr \cr \displaystyle{2\,m\,D\phi\left(t\right)\,r\left(t\right)\,Dr\left(t\right) + m\,{D}^{2}\phi\left(t\right)\,{\left(r\left(t\right)\right)}^{2}}\end{bmatrix}
 \end{equation}
 
 Once again, our goal is to show that, if you can write down coordinate transformations for the coordinates, velocities and accelerations and substitute them in to one set of Lagrange equations, the other will appear.
@@ -1761,33 +1739,42 @@ The rectangular equations of motion have second derivatives, so we need to keep 
 Write the coordinate transformation for polar coordinates to rectangular in Scheme:
 
 ```clojure
-(define (p->r local)
-  (let* ((polar-tuple (coordinate local))
-         (r (ref polar-tuple 0))
-         (phi (ref polar-tuple 1))
-         (x (* r (cos phi)))
-         (y (* r (sin phi))))
+(defn p->r [[_ [r phi]]]
+  (let [x (* r (cos phi))
+        y (* r (sin phi))]
     (up x y)))
 ```
 
 Now use `F->C`, first described on page 46. This is a function that takes a coordinate transformation like `p->r` and returns a *new* function that can convert an entire local tuple from one coordinate system to another; the \\(C\\) discussed above.
 
-The version that the book presents on page 46 can only generate a velocity transformation given a coordinate transformation, but `scmutils` contains a more general version that will convert as many path elements as you pass to it.
+The version that the book presents on page 46 can only generate a velocity transformation given a coordinate transformation, but `scmutils` contains a more general version that will convert as many path elements as you pass to it:
+
+```clojure
+(defn F->C* [F]
+  (fn [local]
+    (let [n (count local)
+          f-bar (fn [q-prime]
+                  (let [q (compose F (Gamma q-prime))]
+                    (Gamma q n)))]
+      ((Gamma-bar f-bar) local))))
+```
 
 Here are the rectangular positions, velocities and accelerations, written in polar coordinates:
 
+    #'ch1.ex1-14/F->C*
+
 ```clojure
-(let ((convert-path (F->C p->r))
-      (polar-path (up 't
-                      (up 'r 'phi)
-                      (up 'rdot 'phidot)
-                      (up 'rdotdot 'phidotdot))))
+(let [convert-path (F->C* p->r)
+      polar-path (up 't
+                     (up 'r 'phi)
+                     (up 'rdot 'phidot)
+                     (up 'rdotdot 'phidotdot))]
   (->tex-equation
    (convert-path polar-path)))
 ```
 
 \begin{equation}
-\begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{ r \cos\left( \phi \right)} \cr \cr \displaystyle{ r \sin\left( \phi \right)}\end{pmatrix}} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{  - \dot{\phi} r \sin\left( \phi \right) + \dot{r} \cos\left( \phi \right)} \cr \cr \displaystyle{ \dot{\phi} r \cos\left( \phi \right) + \dot{r} \sin\left( \phi \right)}\end{pmatrix}} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{  - {\dot{\phi}}^{2} r \cos\left( \phi \right) - 2 \dot{\phi} \dot{r} \sin\left( \phi \right) - \ddot{\phi} r \sin\left( \phi \right) + \ddot{r} \cos\left( \phi \right)} \cr \cr \displaystyle{  - {\dot{\phi}}^{2} r \sin\left( \phi \right) + 2 \dot{\phi} \dot{r} \cos\left( \phi \right) + \ddot{\phi} r \cos\left( \phi \right) + \ddot{r} \sin\left( \phi \right)}\end{pmatrix}}\end{pmatrix}
+\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{r\,\cos\left(\phi\right)} \cr \cr \displaystyle{r\,\sin\left(\phi\right)}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{- \dot {\phi}\,r\,\sin\left(\phi\right) + \dot r\,\cos\left(\phi\right)} \cr \cr \displaystyle{\dot {\phi}\,r\,\cos\left(\phi\right) + \dot r\,\sin\left(\phi\right)}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{- {\dot {\phi}}^{2}\,r\,\cos\left(\phi\right) -2\,\dot {\phi}\,\dot r\,\sin\left(\phi\right) - \ddot {\phi}\,r\,\sin\left(\phi\right) + \ddot r\,\cos\left(\phi\right)} \cr \cr \displaystyle{- {\dot {\phi}}^{2}\,r\,\sin\left(\phi\right) + 2\,\dot {\phi}\,\dot r\,\cos\left(\phi\right) + \ddot {\phi}\,r\,\cos\left(\phi\right) + \ddot r\,\sin\left(\phi\right)}\end{pmatrix}}\end{pmatrix}
 \end{equation}
 
 Ordinarily, it would be too heartbreaking to substitute these in to the rectangular equations of motion. The fact that we have Scheme on our side gives me the strength to proceed.
@@ -1795,20 +1782,8 @@ Ordinarily, it would be too heartbreaking to substitute these in to the rectangu
 Write the rectangular Lagrange equations as a function of the local tuple, so we can call it directly:
 
 ```clojure
-(define (rect-equations local)
-  (let* ((q (coordinate local))
-         (x (ref q 0))
-         (y (ref q 1))
-
-         (v (velocity local))
-         (xdot (ref v 0))
-         (ydot (ref v 1))
-
-         (a (acceleration local))
-         (xdotdot (ref a 0))
-         (ydotdot (ref a 1))
-
-         (U (literal-function 'U)))
+(defn rect-equations [[_ [x y] [xdot ydot] [xdotdot ydotdot]]]
+  (let [U (literal-function 'U)]
     (up (/ (+ (* 'm xdotdot (sqrt (+ (square x) (square y))))
               (* x ((D U) (sqrt (+ (square x) (square y))))))
            (sqrt (+ (square x) (square y))))
@@ -1820,33 +1795,33 @@ Write the rectangular Lagrange equations as a function of the local tuple, so we
 Verify that these are, in fact, the rectangular equations of motion by passing in a symbolic rectangular local tuple:
 
 ```clojure
-(let ((rect-path (up 't
-                     (up 'x 'y)
-                     (up 'xdot 'ydot)
-                     (up 'xdotdot 'ydotdot))))
+(let [rect-path (up 't
+                    (up 'x 'y)
+                    (up 'xdot 'ydot)
+                    (up 'xdotdot 'ydotdot))]
   (->tex-equation
    (rect-equations rect-path)))
 ```
 
 \begin{equation}
-\begin{pmatrix} \displaystyle{ {{m \ddot{x} \sqrt{{x}^{2} + {y}^{2}} + x DU\left( \sqrt{{x}^{2} + {y}^{2}} \right)}\over {\sqrt{{x}^{2} + {y}^{2}}}}} \cr \cr \displaystyle{ {{m \ddot{y} \sqrt{{x}^{2} + {y}^{2}} + y DU\left( \sqrt{{x}^{2} + {y}^{2}} \right)}\over {\sqrt{{x}^{2} + {y}^{2}}}}}\end{pmatrix}
+\begin{pmatrix}\displaystyle{\frac{m\,\ddot x\,\sqrt {{x}^{2} + {y}^{2}} + x\,DU\left(\sqrt {{x}^{2} + {y}^{2}}\right)}{\sqrt {{x}^{2} + {y}^{2}}}} \cr \cr \displaystyle{\frac{m\,\ddot y\,\sqrt {{x}^{2} + {y}^{2}} + y\,DU\left(\sqrt {{x}^{2} + {y}^{2}}\right)}{\sqrt {{x}^{2} + {y}^{2}}}}\end{pmatrix}
 \end{equation}
 
 Now use the `p->r` conversion to substitute each of the rectangular values above with their associated polar values:
 
 ```clojure
-(let* ((convert-path (F->C p->r))
-       (polar-path (up 't
-                       (up 'r 'phi)
-                       (up 'rdot 'phidot)
-                       (up 'rdotdot 'phidotdot)))
-       (local (convert-path polar-path)))
+(let [convert-path (F->C* p->r)
+      polar-path (up 't
+                     (up 'r 'phi)
+                     (up 'rdot 'phidot)
+                     (up 'rdotdot 'phidotdot))
+      local (convert-path polar-path)]
   (->tex-equation
    (rect-equations local)))
 ```
 
 \begin{equation}
-\begin{pmatrix} \displaystyle{  - m {\dot{\phi}}^{2} r \cos\left( \phi \right) - 2 m \dot{\phi} \dot{r} \sin\left( \phi \right) - m \ddot{\phi} r \sin\left( \phi \right) + m \ddot{r} \cos\left( \phi \right) + DU\left( r \right) \cos\left( \phi \right)} \cr \cr \displaystyle{  - m {\dot{\phi}}^{2} r \sin\left( \phi \right) + 2 m \dot{\phi} \dot{r} \cos\left( \phi \right) + m \ddot{\phi} r \cos\left( \phi \right) + m \ddot{r} \sin\left( \phi \right) + DU\left( r \right) \sin\left( \phi \right)}\end{pmatrix}
+\begin{pmatrix}\displaystyle{- m\,{\dot {\phi}}^{2}\,r\,\cos\left(\phi\right) -2\,m\,\dot {\phi}\,\dot r\,\sin\left(\phi\right) - m\,\ddot {\phi}\,r\,\sin\left(\phi\right) + m\,\ddot r\,\cos\left(\phi\right) + \cos\left(\phi\right)\,DU\left(r\right)} \cr \cr \displaystyle{- m\,{\dot {\phi}}^{2}\,r\,\sin\left(\phi\right) + 2\,m\,\dot {\phi}\,\dot r\,\cos\left(\phi\right) + m\,\ddot {\phi}\,r\,\cos\left(\phi\right) + m\,\ddot r\,\sin\left(\phi\right) + \sin\left(\phi\right)\,DU\left(r\right)}\end{pmatrix}
 \end{equation}
 
 Oh no. This looks quite different from the polar Lagrange equations above. What is the problem?
@@ -1862,13 +1837,13 @@ I realized that I could recover the first equation through a linear combination 
 A similar trick recovers the second equation,given an extra factor of \\(r\\):
 
 ```clojure
-(let* ((convert-path (F->C p->r))
-       (polar-path (up 't
-                       (up 'r 'phi)
-                       (up 'rdot 'phidot)
-                       (up 'rdotdot 'phidotdot)))
-       (local (convert-path polar-path))
-       (eq (rect-equations local)))
+(let [convert-path (F->C* p->r)
+      polar-path (up 't
+                     (up 'r 'phi)
+                     (up 'rdot 'phidot)
+                     (up 'rdotdot 'phidotdot))
+      local (convert-path polar-path)
+      eq (rect-equations local)]
   (->tex-equation
    (up (+ (* (cos 'phi) (ref eq 0))
           (* (sin 'phi) (ref eq 1)))
@@ -1877,7 +1852,7 @@ A similar trick recovers the second equation,given an extra factor of \\(r\\):
 ```
 
 \begin{equation}
-\begin{pmatrix} \displaystyle{  - m {\dot{\phi}}^{2} r + m \ddot{r} + DU\left( r \right)} \cr \cr \displaystyle{ 2 m \dot{\phi} r \dot{r} + m \ddot{\phi} {r}^{2}}\end{pmatrix}
+\begin{pmatrix}\displaystyle{- m\,{\dot {\phi}}^{2}\,r + m\,\ddot r + DU\left(r\right)} \cr \cr \displaystyle{2\,m\,\dot {\phi}\,r\,\dot r + m\,\ddot {\phi}\,{r}^{2}}\end{pmatrix}
 \end{equation}
 
 This was a powerful lesson. We're allowed to take a linear combination here because each equation is a residual, equal to zero. \\(a0 + b0 = 0\\) for any \\(a\\) and \\(b\\), so any combination we generate is still a valid residual.
@@ -1963,10 +1938,8 @@ Equation (1.77) in the book describes how to implement \\(C\\) given some arbitr
 The following function is a slight redefinition that allows us to use an \\(F\\) that takes an explicit \\((t, x')\\), instead of the entire local tuple:
 
 ```clojure
-(define ((F->C* F) local)
-  (let ((t (time local))
-        (x (coordinate local))
-        (v (velocity local)))
+(defn F->C* [F]
+  (fn [[t x v]]
     (up t
         (F t x)
         (+ (((partial 0) F) t x)
@@ -1979,15 +1952,15 @@ Next we define \\(F\\), \\(C\\) and \\(L\\) as described above, as well as `qpri
 The types here all imply that the path has one real coordinate. I did this to make the types easier to understand; the derivation applies equally well to paths with many dimensions.
 
 ```clojure
-(define F
+(def F
   (literal-function 'F (-> (X Real Real) Real)))
 
-(define C (F->C* F))
+(def C (F->C* F))
 
-(define L
+(def L
   (literal-function 'L (-> (UP Real Real Real) Real)))
 
-(define qprime
+(def qprime
   (literal-function 'qprime))
 ```
 
@@ -1999,34 +1972,35 @@ When we apply \\(C\\) to the primed local tuple, do we get the transformed tuple
 ```
 
 \begin{equation}
-\begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix}
+\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}
 \end{equation}
 
 This looks correct. We can also transform the path before passing it to \\(\Gamma\\):
 
 ```clojure
-(define ((to-q F qp) t)
-  (F t (qp t)))
+(defn to-q [F qp]
+  (fn [t]
+    (F t (qp t))))
 ```
 
 Subtract the two forms to see that they're equivalent:
 
 ```clojure
-(->tex-equations
+(->tex-equation
  ((- (compose C (Gamma qprime))
      (Gamma (to-q F qprime)))
   't))
 ```
 
 \begin{equation}
-\begin{pmatrix} \displaystyle{ 0} \cr \cr \displaystyle{ 0} \cr \cr \displaystyle{ 0}\end{pmatrix}
+\begin{pmatrix}\displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{0}\end{pmatrix}
 \end{equation}
 
 Now that we know \\(C\\) is correct we can define \\(q\\), the unprimed coordinate path function, and `Lprime`:
 
 ```clojure
-(define q (to-q F qprime))
-(define Lprime (compose L C))
+(def q (to-q F qprime))
+(def Lprime (compose L C))
 ```
 
 ## Derivation<a id="sec-16-4"></a>
@@ -2065,12 +2039,12 @@ Example the value of \\(\partial\_2C\\) using our Scheme utilities:
 ```clojure
 (->tex-equation
  (((partial 2) C) (up 't 'xprime 'vprime))
- "eq:p2c")
+ #_"eq:p2c"
+ )
 ```
 
 \begin{equation}
-\begin{pmatrix} \displaystyle{ 0} \cr \cr \displaystyle{ 0} \cr \cr \displaystyle{ {\partial}\_{1}F\left( t, {x}^\prime \right)}\end{pmatrix}
-\label{eq:p2c}
+\begin{pmatrix}\displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{xprime}\right)}\end{pmatrix}
 \end{equation}
 
 The first two components are 0, leaving us with:
@@ -2124,7 +2098,7 @@ Calculate \\(\partial\_1C\\) using our Scheme utilities:
 ```
 
 \begin{equation}
-\begin{pmatrix} \displaystyle{ 0} \cr \cr \displaystyle{ {\partial}\_{1}F\left( t, {x}^\prime \right)} \cr \cr \displaystyle{ {v}^\prime {{\partial}\_{1}}^{2}\left( F \right)\left( t, {x}^\prime \right) + \left( {\partial}\_{0} {\partial}\_{1} \right)\left( F \right)\left( t, {x}^\prime \right)}\end{pmatrix}
+\begin{pmatrix}\displaystyle{0} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{xprime}\right)} \cr \cr \displaystyle{\mathsf{vprime}\,\partial\_1\left(\partial\_1F\right)\left(t, \mathsf{xprime}\right) + \partial\_1\left(\partial\_0F\right)\left(t, \mathsf{xprime}\right)}\end{pmatrix}
 \end{equation}
 
 Expand the chain rule out and remove 0 terms, as before:
@@ -2176,17 +2150,18 @@ First, consider \\(\partial\_1 L' \circ \Gamma[q']\\):
 ```
 
 \begin{equation}
-D{q}^\prime\left( t \right) {\partial}\_{2}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) {{\partial}\_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) + {\partial}\_{2}L\left( \begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ F\left( t, {q}^\prime\left( t \right) \right)} \cr \cr \displaystyle{ D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right)}\end{pmatrix} \right) \left( {\partial}\_{0} {\partial}\_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
+D\mathsf{qprime}\left(t\right)\,\partial\_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial\_1\left(\partial\_1F\right)\left(t, \mathsf{qprime}\left(t\right)\right) + \partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial\_1L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial\_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial\_1\left(\partial\_0F\right)\left(t, \mathsf{qprime}\left(t\right)\right)
 \end{equation}
 
 This is completely insane, and already unhelpful. The argument to \\(L\\), we know, is actually \\(\Gamma[q]\\). Make a function that will replace the tuple with that reference:
 
 ```clojure
-(define (->eq expr)
-  (write-string
-   (replace-all (->tex-equation* expr)
-                (->tex* ((Gamma q) 't))
-                "\\circ \\Gamma[q]")))
+(defn ->eq [expr]
+  (println
+   (clojure.string/replace
+    (->tex-equation* expr)
+    (->TeX ((Gamma q) 't))
+    "\\circ \\Gamma[q]")))
 ```
 
 Try again:
@@ -2198,6 +2173,10 @@ Try again:
 ```
 
 \begin{equation}
+D\mathsf{qprime}\left(t\right)\,\partial\_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial\_1\left(\partial\_1F\right)\left(t, \mathsf{qprime}\left(t\right)\right) + \partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial\_1L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial\_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial\_1\left(\partial\_0F\right)\left(t, \mathsf{qprime}\left(t\right)\right)
+\end{equation}
+
+\begin{equation}
 D{q}^\prime\left( t \right) {\partial}\_{2}L\left( \circ \Gamma[q] \right) {{\partial}\_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}L\left( \circ \Gamma[q] \right) + {\partial}\_{2}L\left( \circ \Gamma[q] \right) \left( {\partial}\_{0} {\partial}\_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
 \end{equation}
 
@@ -2206,14 +2185,14 @@ Ignore the parentheses around \\(\circ \Gamma[q]\\) and this looks better.
 The \\(\partial\_1 L \circ \Gamma[q]\\) term of the unprimed Lagrange equations is nestled inside the expansion above, multiplied by a factor \\(\partial\_1F(t, q'(t))\\):
 
 ```clojure
-(let* ((factor (((partial 1) F) 't (qprime 't))))
+(let [factor (((partial 1) F) 't (qprime 't))]
   (->eq
    ((* factor (compose ((partial 1) L) (Gamma q)))
     't)))
 ```
 
 \begin{equation}
-{\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}L\left( \circ \Gamma[q] \right)
+\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial\_1L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)
 \end{equation}
 
 Next, consider the \\(D(\partial\_2 L' \circ \Gamma[q'])\\) term:
@@ -2225,7 +2204,7 @@ Next, consider the \\(D(\partial\_2 L' \circ \Gamma[q'])\\) term:
 ```
 
 \begin{equation}
-{\left( D{q}^\prime\left( t \right) \right)}^{2} {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) {{\partial}\_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) {{\partial}\_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) + D{q}^\prime\left( t \right) {\left( {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} \left( {\partial}\_{1} {\partial}\_{2} \right)\left( L \right)\left( \circ \Gamma[q] \right) + 2 D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \left( {\partial}\_{0} {\partial}\_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right) {{\partial}\_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) + {\left( {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \right)}^{2} {D}^{2}{q}^\prime\left( t \right) {{\partial}\_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \left( {\partial}\_{1} {\partial}\_{2} \right)\left( L \right)\left( \circ \Gamma[q] \right) + D{q}^\prime\left( t \right) {\partial}\_{2}L\left( \circ \Gamma[q] \right) {{\partial}\_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) {{\partial}\_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) {{\partial}\_{0}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \left( {\partial}\_{0} {\partial}\_{2} \right)\left( L \right)\left( \circ \Gamma[q] \right) + {\partial}\_{2}L\left( \circ \Gamma[q] \right) \left( {\partial}\_{0} {\partial}\_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right)
+\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,{\left(D\mathsf{qprime}\left(t\right)\right)}^{2}\,\partial\_1\left(\partial\_1F\right)\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial\_2\left(\partial\_2L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + {\left(\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\right)}^{2}\,D\mathsf{qprime}\left(t\right)\,\partial\_2\left(\partial\_1L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + {\left(\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\right)}^{2}\,\partial\_2\left(\partial\_2L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,{D}^{2}\mathsf{qprime}\left(t\right) + 2\,\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right)\,\partial\_1\left(\partial\_0F\right)\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial\_2\left(\partial\_2L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial\_2\left(\partial\_1L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial\_2\left(\partial\_2L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial\_0\left(\partial\_0F\right)\left(t, \mathsf{qprime}\left(t\right)\right) + D\mathsf{qprime}\left(t\right)\,\partial\_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial\_1\left(\partial\_1F\right)\left(t, \mathsf{qprime}\left(t\right)\right) + \partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial\_2\left(\partial\_0L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial\_2L\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial\_1\left(\partial\_0F\right)\left(t, \mathsf{qprime}\left(t\right)\right)
 \end{equation}
 
 This, again, is total madness. We really want some way to control how Scheme expands terms.
@@ -2239,7 +2218,7 @@ But we know what we're looking for. Expand out the matching term of the unprimed
 ```
 
 \begin{equation}
-{\left( D{q}^\prime\left( t \right) \right)}^{2} {{\partial}\_{1}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) {{\partial}\_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) + D{q}^\prime\left( t \right) {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) \left( {\partial}\_{1} {\partial}\_{2} \right)\left( L \right)\left( \circ \Gamma[q] \right) + 2 D{q}^\prime\left( t \right) \left( {\partial}\_{0} {\partial}\_{1} \right)\left( F \right)\left( t, {q}^\prime\left( t \right) \right) {{\partial}\_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) + {\partial}\_{1}F\left( t, {q}^\prime\left( t \right) \right) {D}^{2}{q}^\prime\left( t \right) {{\partial}\_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) + {\partial}\_{0}F\left( t, {q}^\prime\left( t \right) \right) \left( {\partial}\_{1} {\partial}\_{2} \right)\left( L \right)\left( \circ \Gamma[q] \right) + {{\partial}\_{2}}^{2}\left( L \right)\left( \circ \Gamma[q] \right) {{\partial}\_{0}}^{2}\left( F \right)\left( t, {q}^\prime\left( t \right) \right) + \left( {\partial}\_{0} {\partial}\_{2} \right)\left( L \right)\left( \circ \Gamma[q] \right)
+{\left(D\mathsf{qprime}\left(t\right)\right)}^{2}\,\partial\_1\left(\partial\_1F\right)\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial\_2\left(\partial\_2L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right)\,\partial\_2\left(\partial\_1L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial\_2\left(\partial\_2L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,{D}^{2}\mathsf{qprime}\left(t\right) + 2\,D\mathsf{qprime}\left(t\right)\,\partial\_1\left(\partial\_0F\right)\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial\_2\left(\partial\_2L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)\,\partial\_2\left(\partial\_1L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right) + \partial\_2\left(\partial\_2L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)\,\partial\_0\left(\partial\_0F\right)\left(t, \mathsf{qprime}\left(t\right)\right) + \partial\_2\left(\partial\_0L\right)\left(\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{F\left(t, \mathsf{qprime}\left(t\right)\right)} \cr \cr \displaystyle{\partial\_1F\left(t, \mathsf{qprime}\left(t\right)\right)\,D\mathsf{qprime}\left(t\right) + \partial\_0F\left(t, \mathsf{qprime}\left(t\right)\right)}\end{pmatrix}\right)
 \end{equation}
 
 Staring at these two equations, it becomes clear that the first contains the second, multiplied by \\(\partial\_1F(t, q'(t))\\), the same factor that appeared in the expansion of the \\(\partial\_1 L \circ \Gamma[q]\\) term.
@@ -2247,16 +2226,16 @@ Staring at these two equations, it becomes clear that the first contains the sec
 Try writing out the primed Lagrange equations, and subtracting the unprimed Lagrange equations, scaled by this factor:
 
 ```clojure
-(let* ((primed-lagrange
-        (- (D (compose ((partial 2) Lprime) (Gamma qprime)))
-           (compose ((partial 1) Lprime) (Gamma qprime))))
+(let [primed-lagrange
+      (- (D (compose ((partial 2) Lprime) (Gamma qprime)))
+         (compose ((partial 1) Lprime) (Gamma qprime)))
 
-       (lagrange
-        (- (D (compose ((partial 2) L) (Gamma q)))
-           (compose ((partial 1) L) (Gamma q))))
+      lagrange
+      (- (D (compose ((partial 2) L) (Gamma q)))
+         (compose ((partial 1) L) (Gamma q)))
 
-       (factor
-        (compose coordinate ((partial 1) C) (Gamma qprime))))
+      factor
+      (compose coordinate ((partial 1) C) (Gamma qprime))]
   (->tex-equation
    ((- primed-lagrange (* factor lagrange))
     't)))
@@ -2375,10 +2354,9 @@ L' = {1 \over 2} m (r^2 \dot{\phi}^2 \sin^2\phi + r^2 \dot{\theta}^2 + \dot{r}^2
 To show the rectangular Lagrangian, get the procedure from page 41:
 
 ```clojure
-(define ((L-central-rectangular m U) local)
-  (let ((q (coordinate local))
-        (v (velocity local)))
-    (- (* 1/2 m (square v))
+(defn L-central-rectangular [m U]
+  (fn [[_ q v]]
+    (- (* (/ 1 2) m (square v))
        (U (sqrt (square q))))))
 ```
 
@@ -2393,20 +2371,16 @@ This is already written in a form that can handle an arbitrary number of coordia
 ```
 
 \begin{equation}
-{{1}\over {2}} m {{v}\_{x}}^{2} + {{1}\over {2}} m {{v}\_{y}}^{2} + {{1}\over {2}} m {{v}\_{z}}^{2} - U\left( \sqrt{{x}^{2} + {y}^{2} + {z}^{2}} \right)
+\frac{1}{2}\,m\,{v\_x}^{2} + \frac{1}{2}\,m\,{v\_y}^{2} + \frac{1}{2}\,m\,{v\_z}^{2} - U\left(\sqrt {{x}^{2} + {y}^{2} + {z}^{2}}\right)
 \end{equation}
 
 Next, the spherical. Write down the coordinate transformation from spherical to rectangular coordinates as a Scheme procedure:
 
 ```clojure
-(define (spherical->rect local)
-  (let* ((q (coordinate local))
-         (r (ref q 0))
-         (theta (ref q 1))
-         (phi (ref q 2)))
-    (up (* r (sin theta) (cos phi))
-        (* r (sin theta) (sin phi))
-        (* r (cos theta)))))
+(defn spherical->rect [[_ [r theta phi]]]
+  (up (* r (sin theta) (cos phi))
+      (* r (sin theta) (sin phi))
+      (* r (cos theta))))
 ```
 
 Here are the velocities calculated above by hand:
@@ -2421,13 +2395,13 @@ Here are the velocities calculated above by hand:
 ```
 
 \begin{equation}
-\begin{pmatrix} \displaystyle{  - \dot{\phi} r \sin\left( \phi \right) \sin\left( \theta \right) + r \dot{\theta} \cos\left( \phi \right) \cos\left( \theta \right) + \dot{r} \cos\left( \phi \right) \sin\left( \theta \right)} \cr \cr \displaystyle{ \dot{\phi} r \cos\left( \phi \right) \sin\left( \theta \right) + r \dot{\theta} \sin\left( \phi \right) \cos\left( \theta \right) + \dot{r} \sin\left( \phi \right) \sin\left( \theta \right)} \cr \cr \displaystyle{  - r \dot{\theta} \sin\left( \theta \right) + \dot{r} \cos\left( \theta \right)}\end{pmatrix}
+\begin{pmatrix}\displaystyle{- \dot {\phi}\,r\,\sin\left(\phi\right)\,\sin\left(\theta\right) + r\,\dot {\theta}\,\cos\left(\phi\right)\,\cos\left(\theta\right) + \dot r\,\cos\left(\phi\right)\,\sin\left(\theta\right)} \cr \cr \displaystyle{\dot {\phi}\,r\,\cos\left(\phi\right)\,\sin\left(\theta\right) + r\,\dot {\theta}\,\sin\left(\phi\right)\,\cos\left(\theta\right) + \dot r\,\sin\left(\phi\right)\,\sin\left(\theta\right)} \cr \cr \displaystyle{- r\,\dot {\theta}\,\sin\left(\theta\right) + \dot r\,\cos\left(\theta\right)}\end{pmatrix}
 \end{equation}
 
 Now that we have \\(L\\) and \\(C\\), we can compose them to get \\(L'\\), our spherical Lagrangian:
 
 ```clojure
-(define (L-central-spherical m U)
+(defn L-central-spherical [m U]
   (compose (L-central-rectangular m U)
            (F->C spherical->rect)))
 ```
@@ -2443,7 +2417,7 @@ Confirm that this is equivalent to the analytic solution:
 ```
 
 \begin{equation}
-{{1}\over {2}} m {\dot{\phi}}^{2} {r}^{2} {\left( \sin\left( \theta \right) \right)}^{2} + {{1}\over {2}} m {r}^{2} {\dot{\theta}}^{2} + {{1}\over {2}} m {\dot{r}}^{2} - U\left( r \right)
+\frac{1}{2}\,m\,{\dot {\phi}}^{2}\,{r}^{2}\,{\sin}^{2}\left(\theta\right) + \frac{1}{2}\,m\,{r}^{2}\,{\dot {\theta}}^{2} + \frac{1}{2}\,m\,{\dot r}^{2} - U\left(r\right)
 \end{equation}
 
 ## Discussion<a id="sec-17-3"></a>
@@ -2457,7 +2431,7 @@ Later, the authors add in a very simple-to-write coordinate transform that has o
 # Exercise 1.17: Bead on a helical wire<a id="sec-18"></a>
 
 ```clojure
-(ns ch1.ex1-3
+(ns ch1.ex1-17
   (:refer-clojure :exclude [+ - * / zero? ref partial])
   (:require [sicmutils.env :as e #?@(:cljs [:include-macros true])]
             [sicmutils.expression.render :as render]
@@ -2486,29 +2460,30 @@ I'll replace this with a better picture later, but this is the setup:
 ![img](https://github.com/sicmutils/sicm-exercises/raw/master/images/Lagrangian_Mechanics/2020-06-25_11-03-55_screenshot.png)
 
 ```clojure
-(define ((turns->rect d h) local)
-  (let* ((turns (coordinate local))
-         (theta (* turns 2 'pi)))
-    (up (/ turns h)
-        (* (/ d 2) (cos theta))
-        (* (/ d 2) (sin theta)))))
+(defn turns->rect [d h]
+  (fn [local]
+    (let [turns (coordinate local)
+          theta (* turns 2 'pi)]
+      (up (/ turns h)
+          (* (/ d 2) (cos theta))
+          (* (/ d 2) (sin theta))))))
 ```
 
 Or you could do this. Remember, these transformations need to be functions of a local tuple, so if you're going to compose them, remember to put `coordinate` at the beginning of the composition.
 
 ```clojure
-(define ((turns->x-theta h) q)
-  (up (/ q h)
-      (* q 2 'pi)))
+(defn turns->x-theta [h]
+  (fn [q]
+    (up (/ q h)
+        (* q 2 'pi))))
 
-(define ((x-theta->rect d) q)
-  (let* ((x (ref q 0))
-         (theta (ref q 1)))
+(defn x-theta->rect [d]
+  (fn [[x theta]]
     (up x
         (* (/ d 2) (cos theta))
         (* (/ d 2) (sin theta)))))
 
-(define (turns->rect* d h)
+(defn turns->rect* [d h]
   (compose (x-theta->rect d)
            (turns->x-theta h)
            coordinate))
@@ -2524,19 +2499,18 @@ The transformations are identical:
 ```
 
 \begin{equation}
-\begin{pmatrix} \displaystyle{ 0} \cr \cr \displaystyle{ 0} \cr \cr \displaystyle{ 0}\end{pmatrix}
+\begin{pmatrix}\displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{0}\end{pmatrix}
 \end{equation}
 
 Define the Lagrangian:
 
 ```clojure
-(define ((L-rectangular m U) local)
-  (let ((q (coordinate local))
-        (v (velocity local)))
-    (- (* 1/2 m (square v))
+(defn L-rectangular [m U]
+  (fn [[_ q v]]
+    (- (* (/ 1 2) m (square v))
        (U q))))
 
-(define (L-turns m d h U)
+(defn L-turns [m d h U]
   (compose (L-rectangular m U)
            (F->C (turns->rect d h))))
 ```
@@ -2544,8 +2518,9 @@ Define the Lagrangian:
 The potential is a uniform gravitational acceleration:
 
 ```clojure
-(define ((U-grav m g) q)
-  (* m g (ref q 2)))
+(defn U-grav [m g]
+  (fn [q]
+    (* m g (ref q 2))))
 ```
 
 Final Lagrangian:
@@ -2557,20 +2532,20 @@ Final Lagrangian:
 ```
 
 \begin{equation}
-{{{{1}\over {2}} {d}^{2} {h}^{2} m {\dot{n}}^{2} {\pi}^{2} - {{1}\over {2}} d g {h}^{2} m \sin\left( 2 n \pi \right) + {{1}\over {2}} m {\dot{n}}^{2}}\over {{h}^{2}}}
+\frac{{d}^{2}\,{h}^{2}\,m\,{\dot n}^{2}\,{\pi}^{2} - d\,g\,{h}^{2}\,m\,\sin\left(2\,n\,\pi\right) + m\,{\dot n}^{2}}{2\,{h}^{2}}
 \end{equation}
 
 Lagrange equations of motion:
 
 ```clojure
-(let* ((L (L-turns 'm 'd 'h (U-grav 'm 'g)))
-       (n (literal-function 'n)))
+(let [L (L-turns 'm 'd 'h (U-grav 'm 'g))
+      n (literal-function 'n)]
   (->tex-equation
    (((Lagrange-equations L) n) 't)))
 ```
 
 \begin{equation}
-{{{d}^{2} {h}^{2} m {\pi}^{2} {D}^{2}n\left( t \right) + d g {h}^{2} m \pi \cos\left( 2 \pi n\left( t \right) \right) + m {D}^{2}n\left( t \right)}\over {{h}^{2}}}
+\frac{{d}^{2}\,{h}^{2}\,m\,{\pi}^{2}\,{D}^{2}n\left(t\right) + d\,g\,{h}^{2}\,m\,\pi\,\cos\left(2\,\pi\,n\left(t\right)\right) + m\,{D}^{2}n\left(t\right)}{{h}^{2}}
 \end{equation}
 
 # Exercise 1.18: Bead on a triaxial surface<a id="sec-19"></a>
@@ -2607,10 +2582,8 @@ Lagrange equations of motion:
 The transformation to elliptical coordinates is very similar to the spherical coordinate transformation, but with a fixed \\(a\\), \\(b\\) and \\(c\\) coefficient for each rectangular dimension, and no more radial degree of freedom:
 
 ```clojure
-(define ((elliptical->rect a b c) local)
-  (let* ((q (coordinate local))
-         (theta (ref q 0))
-         (phi (ref q 1)))
+(defn elliptical->rect [a b c]
+  (fn [[_ [theta phi]]]
     (up (* a (sin theta) (cos phi))
         (* b (sin theta) (sin phi))
         (* c (cos theta)))))
@@ -2619,11 +2592,11 @@ The transformation to elliptical coordinates is very similar to the spherical co
 Next, the Lagrangian:
 
 ```clojure
-(define ((L-free-particle m) local)
-  (* 1/2 m (square
-            (velocity local))))
+(defn L-free-particle [m]
+  (fn [[_ _ v]]
+    (* (/ 1 2) m (square v))))
 
-(define (L-central-triaxial m a b c)
+(defn L-central-triaxial [m a b c]
   (compose (L-free-particle m)
            (F->C (elliptical->rect a b c))))
 ```
@@ -2631,15 +2604,15 @@ Next, the Lagrangian:
 Final Lagrangian:
 
 ```clojure
-(let ((local (up 't
-                 (up 'theta 'phi)
-                 (up 'thetadot 'phidot))))
+(let [local (up 't
+                (up 'theta 'phi)
+                (up 'thetadot 'phidot))]
   (->tex-equation
    ((L-central-triaxial 'm 'a 'b 'c) local)))
 ```
 
 \begin{equation}
-{{1}\over {2}} {a}^{2} m {\dot{\phi}}^{2} {\left( \sin\left( \phi \right) \right)}^{2} {\left( \sin\left( \theta \right) \right)}^{2} - {a}^{2} m \dot{\phi} \dot{\theta} \sin\left( \phi \right) \sin\left( \theta \right) \cos\left( \phi \right) \cos\left( \theta \right) + {{1}\over {2}} {a}^{2} m {\dot{\theta}}^{2} {\left( \cos\left( \phi \right) \right)}^{2} {\left( \cos\left( \theta \right) \right)}^{2} + {{1}\over {2}} {b}^{2} m {\dot{\phi}}^{2} {\left( \sin\left( \theta \right) \right)}^{2} {\left( \cos\left( \phi \right) \right)}^{2} + {b}^{2} m \dot{\phi} \dot{\theta} \sin\left( \phi \right) \sin\left( \theta \right) \cos\left( \phi \right) \cos\left( \theta \right) + {{1}\over {2}} {b}^{2} m {\dot{\theta}}^{2} {\left( \sin\left( \phi \right) \right)}^{2} {\left( \cos\left( \theta \right) \right)}^{2} + {{1}\over {2}} {c}^{2} m {\dot{\theta}}^{2} {\left( \sin\left( \theta \right) \right)}^{2}
+\frac{1}{2}\,{a}^{2}\,m\,{\dot {\phi}}^{2}\,{\sin}^{2}\left(\phi\right)\,{\sin}^{2}\left(\theta\right) - {a}^{2}\,m\,\dot {\phi}\,\dot {\theta}\,\cos\left(\phi\right)\,\sin\left(\phi\right)\,\sin\left(\theta\right)\,\cos\left(\theta\right) + \frac{1}{2}\,{a}^{2}\,m\,{\dot {\theta}}^{2}\,{\cos}^{2}\left(\phi\right)\,{\cos}^{2}\left(\theta\right) + \frac{1}{2}\,{b}^{2}\,m\,{\dot {\phi}}^{2}\,{\cos}^{2}\left(\phi\right)\,{\sin}^{2}\left(\theta\right) + {b}^{2}\,m\,\dot {\phi}\,\dot {\theta}\,\cos\left(\phi\right)\,\sin\left(\phi\right)\,\sin\left(\theta\right)\,\cos\left(\theta\right) + \frac{1}{2}\,{b}^{2}\,m\,{\dot {\theta}}^{2}\,{\sin}^{2}\left(\phi\right)\,{\cos}^{2}\left(\theta\right) + \frac{1}{2}\,{c}^{2}\,m\,{\dot {\theta}}^{2}\,{\sin}^{2}\left(\theta\right)
 \end{equation}
 
 I'm sure there's some simplification in there for us. But why?
@@ -2647,16 +2620,16 @@ I'm sure there's some simplification in there for us. But why?
 Lagrange equations of motion:
 
 ```clojure
-(let* ((L (L-central-triaxial 'm 'a 'b 'c))
-       (theta (literal-function 'theta))
-       (phi (literal-function 'phi)))
+(let [L (L-central-triaxial 'm 'a 'b 'c)
+      theta (literal-function 'theta)
+      phi (literal-function 'phi)]
   (->tex-equation
    (((Lagrange-equations L) (up theta phi))
     't)))
 ```
 
 \begin{equation}
-\begin{bmatrix} \displaystyle{  - 2 {a}^{2} m \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) D\theta\left( t \right) D\phi\left( t \right) {\left( \cos\left( \theta\left( t \right) \right) \right)}^{2} - {a}^{2} m {\left( \cos\left( \phi\left( t \right) \right) \right)}^{2} {\left( D\theta\left( t \right) \right)}^{2} \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) - {a}^{2} m {\left( \cos\left( \phi\left( t \right) \right) \right)}^{2} {\left( D\phi\left( t \right) \right)}^{2} \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) - {b}^{2} m {\left( \sin\left( \phi\left( t \right) \right) \right)}^{2} {\left( D\theta\left( t \right) \right)}^{2} \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) - {b}^{2} m {\left( \sin\left( \phi\left( t \right) \right) \right)}^{2} {\left( D\phi\left( t \right) \right)}^{2} \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) + 2 {b}^{2} m \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) D\theta\left( t \right) D\phi\left( t \right) {\left( \cos\left( \theta\left( t \right) \right) \right)}^{2} - {a}^{2} m {D}^{2}\phi\left( t \right) \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) + {a}^{2} m {\left( \cos\left( \phi\left( t \right) \right) \right)}^{2} {\left( \cos\left( \theta\left( t \right) \right) \right)}^{2} {D}^{2}\theta\left( t \right) + {b}^{2} m {D}^{2}\phi\left( t \right) \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) + {b}^{2} m {\left( \sin\left( \phi\left( t \right) \right) \right)}^{2} {\left( \cos\left( \theta\left( t \right) \right) \right)}^{2} {D}^{2}\theta\left( t \right) + {c}^{2} m {\left( D\theta\left( t \right) \right)}^{2} \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) + {c}^{2} m {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} {D}^{2}\theta\left( t \right)} \cr \cr \displaystyle{ 2 {a}^{2} m {\left( \sin\left( \phi\left( t \right) \right) \right)}^{2} D\theta\left( t \right) D\phi\left( t \right) \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) + {a}^{2} m \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) {\left( D\theta\left( t \right) \right)}^{2} {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} + {a}^{2} m \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) {\left( D\phi\left( t \right) \right)}^{2} {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} - {b}^{2} m \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) {\left( D\theta\left( t \right) \right)}^{2} {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} - {b}^{2} m \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) {\left( D\phi\left( t \right) \right)}^{2} {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} + 2 {b}^{2} m {\left( \cos\left( \phi\left( t \right) \right) \right)}^{2} D\theta\left( t \right) D\phi\left( t \right) \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) + {a}^{2} m {D}^{2}\phi\left( t \right) {\left( \sin\left( \phi\left( t \right) \right) \right)}^{2} {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} - {a}^{2} m \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) {D}^{2}\theta\left( t \right) + {b}^{2} m {D}^{2}\phi\left( t \right) {\left( \cos\left( \phi\left( t \right) \right) \right)}^{2} {\left( \sin\left( \theta\left( t \right) \right) \right)}^{2} + {b}^{2} m \sin\left( \phi\left( t \right) \right) \cos\left( \phi\left( t \right) \right) \sin\left( \theta\left( t \right) \right) \cos\left( \theta\left( t \right) \right) {D}^{2}\theta\left( t \right)}\end{bmatrix}
+\begin{bmatrix}\displaystyle{- {a}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right)\,{\cos}^{2}\left(\phi\left(t\right)\right) - {a}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right)\,{\cos}^{2}\left(\phi\left(t\right)\right) -2\,{a}^{2}\,m\,D\theta\left(t\right)\,D\phi\left(t\right)\,{\cos}^{2}\left(\theta\left(t\right)\right)\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) - {b}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right)\,{\sin}^{2}\left(\phi\left(t\right)\right) - {b}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right)\,{\sin}^{2}\left(\phi\left(t\right)\right) + 2\,{b}^{2}\,m\,D\theta\left(t\right)\,D\phi\left(t\right)\,{\cos}^{2}\left(\theta\left(t\right)\right)\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) - {a}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) + {a}^{2}\,m\,{D}^{2}\theta\left(t\right)\,{\cos}^{2}\left(\theta\left(t\right)\right)\,{\cos}^{2}\left(\phi\left(t\right)\right) + {b}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) + {b}^{2}\,m\,{D}^{2}\theta\left(t\right)\,{\cos}^{2}\left(\theta\left(t\right)\right)\,{\sin}^{2}\left(\phi\left(t\right)\right) + {c}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right) + {c}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right)} \cr \cr \displaystyle{{a}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) + {a}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) + 2\,{a}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right)\,{\sin}^{2}\left(\phi\left(t\right)\right) - {b}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) - {b}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) + 2\,{b}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,D\phi\left(t\right)\,\cos\left(\theta\left(t\right)\right)\,{\cos}^{2}\left(\phi\left(t\right)\right) + {a}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)\,{\sin}^{2}\left(\phi\left(t\right)\right) - {a}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right)\,\cos\left(\theta\left(t\right)\right)\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right) + {b}^{2}\,m\,{\sin}^{2}\left(\theta\left(t\right)\right)\,{D}^{2}\phi\left(t\right)\,{\cos}^{2}\left(\phi\left(t\right)\right) + {b}^{2}\,m\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right)\,\cos\left(\theta\left(t\right)\right)\,\cos\left(\phi\left(t\right)\right)\,\sin\left(\phi\left(t\right)\right)}\end{bmatrix}
 \end{equation}
 
 This is fairly horrifying. This really demands animation, as I bet it looks cool, but it's not comprehensible in this form.
@@ -2719,12 +2692,8 @@ Sketch out why this makes sense. Each angle is positive CCW for consistency, sin
 Write the coordinate transformation in scheme.
 
 ```clojure
-(define ((double-linkage->rect l1 l2) local)
-  (let* ((q (coordinate local))
-         (theta (ref q 0))
-         (phi (ref q 1))
-         (x2 (ref q 2))
-         (y2 (ref q 3)))
+(defn double-linkage->rect [l1 l2]
+  (fn [[_ [theta phi x2 y2]]]
     (up (+ x2 (* l1 (sin theta)))
         (- y2 (* l1 (cos theta)))
         x2
@@ -2736,27 +2705,21 @@ Write the coordinate transformation in scheme.
 Next, the Lagrangian given rectangular coordinates, assuming no constraints. Remember, we have a uniform gravitational field pointing down; this means that each of the components has a potential dragging on it.
 
 ```clojure
-(define ((L-double-linkage-rect m1 m2 m3 U) local)
-  (let* ((v (velocity local))
-         (vx1 (ref v 0))
-         (vy1 (ref v 1))
-         (vx2 (ref v 2))
-         (vy2 (ref v 3))
-         (vx3 (ref v 4))
-         (vy3 (ref v 5)))
+(defn L-double-linkage-rect [m1 m2 m3 U]
+  (fn [[_ q [vx1 vy1 vx2 vy2 vx3 vy3]]]
     (- (+ (* m1 (+ (square vx1)
                    (square vy1)))
           (* m2 (+ (square vx2)
                    (square vy2)))
           (* m3 (+ (square vx3)
                    (square vy3))))
-       (U (coordinate local)))))
+       (U q))))
 ```
 
 And the composition:
 
 ```clojure
-(define (L-double-linkage l1 l2 m1 m2 m3 U)
+(defn L-double-linkage [l1 l2 m1 m2 m3 U]
   (compose (L-double-linkage-rect m1 m2 m3 U)
            (F->C (double-linkage->rect l1 l2))))
 ```
@@ -2764,57 +2727,55 @@ And the composition:
 Gravitational potential:
 
 ```clojure
-(define ((U-gravity g m1 m2 m3) q)
-  (let* ((y1 (ref q 1))
-         (y2 (ref q 3))
-         (y3 (ref q 5)))
+(defn U-gravity [g m1 m2 m3]
+  (fn [[_ y1 _ y2 _ y3]]
     (* g (+ (* m1 y1)
             (* m2 y2)
             (* m3 y3)))))
 ```
 
 ```clojure
-(let ((local (up 't
-                 (up 'theta 'phi 'x_2 'y_2)
-                 (up 'thetadot 'phidot 'xdot_2 'ydot_2)))
-      (U (U-gravity 'g 'm_1 'm_2 'm_3)))
+(let [local (up 't
+                (up 'theta 'phi 'x_2 'y_2)
+                (up 'thetadot 'phidot 'xdot_2 'ydot_2))
+      U (U-gravity 'g 'm_1 'm_2 'm_3)]
   (->tex-equation
    ((L-double-linkage 'l_1 'l_2 'm_1 'm_2 'm_3 U) local)))
 ```
 
 \begin{equation}
-{{l}\_{1}}^{2} {m}\_{1} {\dot{\theta}}^{2} + 2 {l}\_{1} {m}\_{1} \dot{\theta} {\dot{x}}\_{2} \cos\left( \theta \right) + 2 {l}\_{1} {m}\_{1} \dot{\theta} {\dot{y}}\_{2} \sin\left( \theta \right) + {{l}\_{2}}^{2} {m}\_{3} {\dot{\phi}}^{2} + 2 {l}\_{2} {m}\_{3} \dot{\phi} {\dot{x}}\_{2} \cos\left( \phi \right) + 2 {l}\_{2} {m}\_{3} \dot{\phi} {\dot{y}}\_{2} \sin\left( \phi \right) + g {l}\_{1} {m}\_{1} \cos\left( \theta \right) + g {l}\_{2} {m}\_{3} \cos\left( \phi \right) - g {m}\_{1} {y}\_{2} - g {m}\_{2} {y}\_{2} - g {m}\_{3} {y}\_{2} + {m}\_{1} {{\dot{x}}\_{2}}^{2} + {m}\_{1} {{\dot{y}}\_{2}}^{2} + {m}\_{2} {{\dot{x}}\_{2}}^{2} + {m}\_{2} {{\dot{y}}\_{2}}^{2} + {m}\_{3} {{\dot{x}}\_{2}}^{2} + {m}\_{3} {{\dot{y}}\_{2}}^{2}
+{l\_1}^{2}\,m\_1\,{\dot {\theta}}^{2} + 2\,l\_1\,m\_1\,\dot {\theta}\,{\dot x}\_2\,\cos\left(\theta\right) + 2\,l\_1\,m\_1\,\dot {\theta}\,{\dot y}\_2\,\sin\left(\theta\right) + {l\_2}^{2}\,m\_3\,{\dot {\phi}}^{2} + 2\,l\_2\,m\_3\,\dot {\phi}\,{\dot x}\_2\,\cos\left(\phi\right) + 2\,l\_2\,m\_3\,\dot {\phi}\,{\dot y}\_2\,\sin\left(\phi\right) + g\,l\_1\,m\_1\,\cos\left(\theta\right) + g\,l\_2\,m\_3\,\cos\left(\phi\right) - g\,m\_1\,y\_2 - g\,m\_2\,y\_2 - g\,m\_3\,y\_2 + m\_1\,{{\dot x}\_2}^{2} + m\_1\,{{\dot y}\_2}^{2} + m\_2\,{{\dot x}\_2}^{2} + m\_2\,{{\dot y}\_2}^{2} + m\_3\,{{\dot x}\_2}^{2} + m\_3\,{{\dot y}\_2}^{2}
 \end{equation}
 
 Lagrange equations of motion:
 
 ```clojure
-(let* ((U (U-gravity 'g 'm_1 'm_2 'm_3))
-       (L (L-double-linkage 'l_1 'l_2 'm_1 'm_2 'm_3 U))
-       (theta (literal-function 'theta))
-       (phi (literal-function 'phi))
-       (x2 (literal-function 'x_2))
-       (y2 (literal-function 'y_2)))
+(let [U (U-gravity 'g 'm_1 'm_2 'm_3)
+      L (L-double-linkage 'l_1 'l_2 'm_1 'm_2 'm_3 U)
+      theta (literal-function 'theta)
+      phi (literal-function 'phi)
+      x2 (literal-function 'x_2)
+      y2 (literal-function 'y_2)]
   (->tex-equation
    (((Lagrange-equations L) (up theta phi x2 y2))
     't)))
 ```
 
 \begin{equation}
-\begin{bmatrix} \displaystyle{ g {l}\_{1} {m}\_{1} \sin\left( \theta\left( t \right) \right) + 2 {{l}\_{1}}^{2} {m}\_{1} {D}^{2}\theta\left( t \right) + 2 {l}\_{1} {m}\_{1} \sin\left( \theta\left( t \right) \right) {D}^{2}{y}\_{2}\left( t \right) + 2 {l}\_{1} {m}\_{1} \cos\left( \theta\left( t \right) \right) {D}^{2}{x}\_{2}\left( t \right)} \cr \cr \displaystyle{ g {l}\_{2} {m}\_{3} \sin\left( \phi\left( t \right) \right) + 2 {{l}\_{2}}^{2} {m}\_{3} {D}^{2}\phi\left( t \right) + 2 {l}\_{2} {m}\_{3} \sin\left( \phi\left( t \right) \right) {D}^{2}{y}\_{2}\left( t \right) + 2 {l}\_{2} {m}\_{3} \cos\left( \phi\left( t \right) \right) {D}^{2}{x}\_{2}\left( t \right)} \cr \cr \displaystyle{  - 2 {l}\_{1} {m}\_{1} \sin\left( \theta\left( t \right) \right) {\left( D\theta\left( t \right) \right)}^{2} - 2 {l}\_{2} {m}\_{3} \sin\left( \phi\left( t \right) \right) {\left( D\phi\left( t \right) \right)}^{2} + 2 {l}\_{1} {m}\_{1} {D}^{2}\theta\left( t \right) \cos\left( \theta\left( t \right) \right) + 2 {l}\_{2} {m}\_{3} {D}^{2}\phi\left( t \right) \cos\left( \phi\left( t \right) \right) + 2 {m}\_{1} {D}^{2}{x}\_{2}\left( t \right) + 2 {m}\_{2} {D}^{2}{x}\_{2}\left( t \right) + 2 {m}\_{3} {D}^{2}{x}\_{2}\left( t \right)} \cr \cr \displaystyle{ 2 {l}\_{1} {m}\_{1} {\left( D\theta\left( t \right) \right)}^{2} \cos\left( \theta\left( t \right) \right) + 2 {l}\_{2} {m}\_{3} {\left( D\phi\left( t \right) \right)}^{2} \cos\left( \phi\left( t \right) \right) + 2 {l}\_{1} {m}\_{1} {D}^{2}\theta\left( t \right) \sin\left( \theta\left( t \right) \right) + 2 {l}\_{2} {m}\_{3} {D}^{2}\phi\left( t \right) \sin\left( \phi\left( t \right) \right) + g {m}\_{1} + g {m}\_{2} + g {m}\_{3} + 2 {m}\_{1} {D}^{2}{y}\_{2}\left( t \right) + 2 {m}\_{2} {D}^{2}{y}\_{2}\left( t \right) + 2 {m}\_{3} {D}^{2}{y}\_{2}\left( t \right)}\end{bmatrix}
+\begin{bmatrix}\displaystyle{g\,l\_1\,m\_1\,\sin\left(\theta\left(t\right)\right) + 2\,{l\_1}^{2}\,m\_1\,{D}^{2}\theta\left(t\right) + 2\,l\_1\,m\_1\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}y\_2\left(t\right) + 2\,l\_1\,m\_1\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}x\_2\left(t\right)} \cr \cr \displaystyle{g\,l\_2\,m\_3\,\sin\left(\phi\left(t\right)\right) + 2\,{l\_2}^{2}\,m\_3\,{D}^{2}\phi\left(t\right) + 2\,l\_2\,m\_3\,\cos\left(\phi\left(t\right)\right)\,{D}^{2}x\_2\left(t\right) + 2\,l\_2\,m\_3\,\sin\left(\phi\left(t\right)\right)\,{D}^{2}y\_2\left(t\right)} \cr \cr \displaystyle{-2\,l\_1\,m\_1\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2} -2\,l\_2\,m\_3\,{\left(D\phi\left(t\right)\right)}^{2}\,\sin\left(\phi\left(t\right)\right) + 2\,l\_1\,m\_1\,{D}^{2}\theta\left(t\right)\,\cos\left(\theta\left(t\right)\right) + 2\,l\_2\,m\_3\,{D}^{2}\phi\left(t\right)\,\cos\left(\phi\left(t\right)\right) + 2\,m\_1\,{D}^{2}x\_2\left(t\right) + 2\,m\_2\,{D}^{2}x\_2\left(t\right) + 2\,m\_3\,{D}^{2}x\_2\left(t\right)} \cr \cr \displaystyle{2\,l\_1\,m\_1\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right) + 2\,l\_2\,m\_3\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\phi\left(t\right)\right) + 2\,l\_1\,m\_1\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right) + 2\,l\_2\,m\_3\,{D}^{2}\phi\left(t\right)\,\sin\left(\phi\left(t\right)\right) + g\,m\_1 + g\,m\_2 + g\,m\_3 + 2\,m\_1\,{D}^{2}y\_2\left(t\right) + 2\,m\_2\,{D}^{2}y\_2\left(t\right) + 2\,m\_3\,{D}^{2}y\_2\left(t\right)}\end{bmatrix}
 \end{equation}
 
 Kill some clear factors:
 
 ```clojure
-(let* ((U (U-gravity 'g 'm_1 'm_2 'm_3))
-       (L (L-double-linkage 'l_1 'l_2 'm_1 'm_2 'm_3 U))
-       (theta (literal-function 'theta))
-       (phi (literal-function 'phi))
-       (x2 (literal-function 'x_2))
-       (y2 (literal-function 'y_2))
-       (eqs (((Lagrange-equations L) (up theta phi x2 y2))
-             't)))
+(let [U (U-gravity 'g 'm_1 'm_2 'm_3)
+      L (L-double-linkage 'l_1 'l_2 'm_1 'm_2 'm_3 U)
+      theta (literal-function 'theta)
+      phi (literal-function 'phi)
+      x2 (literal-function 'x_2)
+      y2 (literal-function 'y_2)
+      eqs (((Lagrange-equations L) (up theta phi x2 y2))
+           't)]
   (->tex-equation
    (up (/ (ref eqs 0) 'l_1 'm_1)
        (/ (ref eqs 1) 'l_2 'm_3)
@@ -2823,7 +2784,7 @@ Kill some clear factors:
 ```
 
 \begin{equation}
-\begin{pmatrix} \displaystyle{ g \sin\left( \theta\left( t \right) \right) + 2 {l}\_{1} {D}^{2}\theta\left( t \right) + 2 \sin\left( \theta\left( t \right) \right) {D}^{2}{y}\_{2}\left( t \right) + 2 \cos\left( \theta\left( t \right) \right) {D}^{2}{x}\_{2}\left( t \right)} \cr \cr \displaystyle{ g \sin\left( \phi\left( t \right) \right) + 2 {l}\_{2} {D}^{2}\phi\left( t \right) + 2 \sin\left( \phi\left( t \right) \right) {D}^{2}{y}\_{2}\left( t \right) + 2 \cos\left( \phi\left( t \right) \right) {D}^{2}{x}\_{2}\left( t \right)} \cr \cr \displaystyle{  - {l}\_{1} {m}\_{1} \sin\left( \theta\left( t \right) \right) {\left( D\theta\left( t \right) \right)}^{2} - {l}\_{2} {m}\_{3} \sin\left( \phi\left( t \right) \right) {\left( D\phi\left( t \right) \right)}^{2} + {l}\_{1} {m}\_{1} {D}^{2}\theta\left( t \right) \cos\left( \theta\left( t \right) \right) + {l}\_{2} {m}\_{3} {D}^{2}\phi\left( t \right) \cos\left( \phi\left( t \right) \right) + {m}\_{1} {D}^{2}{x}\_{2}\left( t \right) + {m}\_{2} {D}^{2}{x}\_{2}\left( t \right) + {m}\_{3} {D}^{2}{x}\_{2}\left( t \right)} \cr \cr \displaystyle{ 2 {l}\_{1} {m}\_{1} {\left( D\theta\left( t \right) \right)}^{2} \cos\left( \theta\left( t \right) \right) + 2 {l}\_{2} {m}\_{3} {\left( D\phi\left( t \right) \right)}^{2} \cos\left( \phi\left( t \right) \right) + 2 {l}\_{1} {m}\_{1} {D}^{2}\theta\left( t \right) \sin\left( \theta\left( t \right) \right) + 2 {l}\_{2} {m}\_{3} {D}^{2}\phi\left( t \right) \sin\left( \phi\left( t \right) \right) + g {m}\_{1} + g {m}\_{2} + g {m}\_{3} + 2 {m}\_{1} {D}^{2}{y}\_{2}\left( t \right) + 2 {m}\_{2} {D}^{2}{y}\_{2}\left( t \right) + 2 {m}\_{3} {D}^{2}{y}\_{2}\left( t \right)}\end{pmatrix}
+\begin{pmatrix}\displaystyle{g\,\sin\left(\theta\left(t\right)\right) + 2\,l\_1\,{D}^{2}\theta\left(t\right) + 2\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}y\_2\left(t\right) + 2\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}x\_2\left(t\right)} \cr \cr \displaystyle{g\,\sin\left(\phi\left(t\right)\right) + 2\,l\_2\,{D}^{2}\phi\left(t\right) + 2\,\cos\left(\phi\left(t\right)\right)\,{D}^{2}x\_2\left(t\right) + 2\,\sin\left(\phi\left(t\right)\right)\,{D}^{2}y\_2\left(t\right)} \cr \cr \displaystyle{- l\_1\,m\_1\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2} - l\_2\,m\_3\,{\left(D\phi\left(t\right)\right)}^{2}\,\sin\left(\phi\left(t\right)\right) + l\_1\,m\_1\,{D}^{2}\theta\left(t\right)\,\cos\left(\theta\left(t\right)\right) + l\_2\,m\_3\,{D}^{2}\phi\left(t\right)\,\cos\left(\phi\left(t\right)\right) + m\_1\,{D}^{2}x\_2\left(t\right) + m\_2\,{D}^{2}x\_2\left(t\right) + m\_3\,{D}^{2}x\_2\left(t\right)} \cr \cr \displaystyle{2\,l\_1\,m\_1\,{\left(D\theta\left(t\right)\right)}^{2}\,\cos\left(\theta\left(t\right)\right) + 2\,l\_2\,m\_3\,{\left(D\phi\left(t\right)\right)}^{2}\,\cos\left(\phi\left(t\right)\right) + 2\,l\_1\,m\_1\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}\theta\left(t\right) + 2\,l\_2\,m\_3\,{D}^{2}\phi\left(t\right)\,\sin\left(\phi\left(t\right)\right) + g\,m\_1 + g\,m\_2 + g\,m\_3 + 2\,m\_1\,{D}^{2}y\_2\left(t\right) + 2\,m\_2\,{D}^{2}y\_2\left(t\right) + 2\,m\_3\,{D}^{2}y\_2\left(t\right)}\end{pmatrix}
 \end{equation}
 
 This was not as gnarly as the previous problem. Perhaps I did something wrong there. We'll see when we get animation.
@@ -2878,10 +2839,8 @@ Draw these on the picture to make it clearer.
 Write the coordinate transformation in scheme.
 
 ```clojure
-(define ((sliding-pend->rect l) local)
-  (let* ((q (coordinate local))
-         (x1 (ref q 0))
-         (theta (ref q 1)))
+(defn sliding-pend->rect [l]
+  (fn [[_ [x1 theta]]]
     (up x1
         l
         (+ x1 (* l (sin theta)))
@@ -2891,23 +2850,19 @@ Write the coordinate transformation in scheme.
 Next, the Lagrangian given rectangular coordinates, assuming no constraints:
 
 ```clojure
-(define ((L-sliding-pend-rect m1 m2 U) local)
-  (let* ((v (velocity local))
-         (vx1 (ref v 0))
-         (vy1 (ref v 1))
-         (vx2 (ref v 2))
-         (vy2 (ref v 3)))
+(defn L-sliding-pend-rect [m1 m2 U]
+  (fn [[_ q [vx1 vy1 vx2 vy2]]]
     (- (+ (* m1 (+ (square vx1)
                    (square vy1)))
           (* m2 (+ (square vx2)
                    (square vy2))))
-       (U (coordinate local)))))
+       (U q))))
 ```
 
 And the composition:
 
 ```clojure
-(define (L-sliding-pend l m1 m2 U)
+(defn L-sliding-pend [l m1 m2 U]
   (compose (L-sliding-pend-rect m1 m2 U)
            (F->C (sliding-pend->rect l))))
 ```
@@ -2915,56 +2870,57 @@ And the composition:
 Gravitational potential. I could include the cart here, but since we know it's fixed gravitationally it wouldn't change the equations of motion.
 
 ```clojure
-(define ((U-gravity g m2) q)
-  (let* ((y2 (ref q 3)))
-    (* m2 g y2)))
+(defn U-gravity [g m2]
+  (fn [q]
+    (let [y2 (ref q 3)]
+      (* m2 g y2))))
 ```
 
 ```clojure
-(let ((local (up 't
-                 (up 'x_1 'theta)
-                 (up 'xdot_1 'thetadot)))
-      (U (U-gravity 'g 'm_2)))
+(let [local (up 't
+                (up 'x_1 'theta)
+                (up 'xdot_1 'thetadot))
+      U (U-gravity 'g 'm_2)]
   (->tex-equation
    ((L-sliding-pend 'l 'm_1 'm_2 U) local)))
 ```
 
 \begin{equation}
-{l}^{2} {m}\_{2} {\dot{\theta}}^{2} + 2 l {m}\_{2} \dot{\theta} {\dot{x}}\_{1} \cos\left( \theta \right) + g l {m}\_{2} \cos\left( \theta \right) - g l {m}\_{2} + {m}\_{1} {{\dot{x}}\_{1}}^{2} + {m}\_{2} {{\dot{x}}\_{1}}^{2}
+{l}^{2}\,m\_2\,{\dot {\theta}}^{2} + 2\,l\,m\_2\,\dot {\theta}\,{\dot x}\_1\,\cos\left(\theta\right) + g\,l\,m\_2\,\cos\left(\theta\right) - g\,l\,m\_2 + m\_1\,{{\dot x}\_1}^{2} + m\_2\,{{\dot x}\_1}^{2}
 \end{equation}
 
 Lagrange equations of motion:
 
 ```clojure
-(let* ((U (U-gravity 'g 'm_2))
-       (L (L-sliding-pend 'l 'm_1 'm_2 U))
-       (x1 (literal-function 'x_1))
-       (theta (literal-function 'theta)))
+(let [U (U-gravity 'g 'm_2)
+      L (L-sliding-pend 'l 'm_1 'm_2 U)
+      x1 (literal-function 'x_1)
+      theta (literal-function 'theta)]
   (->tex-equation
    (((Lagrange-equations L) (up x1 theta))
     't)))
 ```
 
 \begin{equation}
-\begin{bmatrix} \displaystyle{  - 2 l {m}\_{2} \sin\left( \theta\left( t \right) \right) {\left( D\theta\left( t \right) \right)}^{2} + 2 l {m}\_{2} {D}^{2}\theta\left( t \right) \cos\left( \theta\left( t \right) \right) + 2 {m}\_{1} {D}^{2}{x}\_{1}\left( t \right) + 2 {m}\_{2} {D}^{2}{x}\_{1}\left( t \right)} \cr \cr \displaystyle{ g l {m}\_{2} \sin\left( \theta\left( t \right) \right) + 2 {l}^{2} {m}\_{2} {D}^{2}\theta\left( t \right) + 2 l {m}\_{2} {D}^{2}{x}\_{1}\left( t \right) \cos\left( \theta\left( t \right) \right)}\end{bmatrix}
+\begin{bmatrix}\displaystyle{-2\,l\,m\_2\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2} + 2\,l\,m\_2\,{D}^{2}\theta\left(t\right)\,\cos\left(\theta\left(t\right)\right) + 2\,m\_1\,{D}^{2}x\_1\left(t\right) + 2\,m\_2\,{D}^{2}x\_1\left(t\right)} \cr \cr \displaystyle{g\,l\,m\_2\,\sin\left(\theta\left(t\right)\right) + 2\,{l}^{2}\,m\_2\,{D}^{2}\theta\left(t\right) + 2\,l\,m\_2\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}x\_1\left(t\right)}\end{bmatrix}
 \end{equation}
 
 Cleaner:
 
 ```clojure
-(let* ((U (U-gravity 'g 'm_2))
-       (L (L-sliding-pend 'l 'm_1 'm_2 U))
-       (x1 (literal-function 'x_1))
-       (theta (literal-function 'theta))
-       (eqs (((Lagrange-equations L) (up x1 theta))
-             't)))
+(let [U (U-gravity 'g 'm_2)
+      L (L-sliding-pend 'l 'm_1 'm_2 U)
+      x1 (literal-function 'x_1)
+      theta (literal-function 'theta)
+      eqs (((Lagrange-equations L) (up x1 theta))
+           't)]
   (->tex-equation
    (up (ref eqs 0)
        (/ (ref eqs 1) 'l 'm_2))))
 ```
 
 \begin{equation}
-\begin{pmatrix} \displaystyle{  - 2 l {m}\_{2} \sin\left( \theta\left( t \right) \right) {\left( D\theta\left( t \right) \right)}^{2} + 2 l {m}\_{2} {D}^{2}\theta\left( t \right) \cos\left( \theta\left( t \right) \right) + 2 {m}\_{1} {D}^{2}{x}\_{1}\left( t \right) + 2 {m}\_{2} {D}^{2}{x}\_{1}\left( t \right)} \cr \cr \displaystyle{ g \sin\left( \theta\left( t \right) \right) + 2 l {D}^{2}\theta\left( t \right) + 2 {D}^{2}{x}\_{1}\left( t \right) \cos\left( \theta\left( t \right) \right)}\end{pmatrix}
+\begin{pmatrix}\displaystyle{-2\,l\,m\_2\,\sin\left(\theta\left(t\right)\right)\,{\left(D\theta\left(t\right)\right)}^{2} + 2\,l\,m\_2\,{D}^{2}\theta\left(t\right)\,\cos\left(\theta\left(t\right)\right) + 2\,m\_1\,{D}^{2}x\_1\left(t\right) + 2\,m\_2\,{D}^{2}x\_1\left(t\right)} \cr \cr \displaystyle{g\,\sin\left(\theta\left(t\right)\right) + 2\,l\,{D}^{2}\theta\left(t\right) + 2\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}x\_1\left(t\right)}\end{pmatrix}
 \end{equation}
 
 # Exercise 1.21: A dumbbell<a id="sec-22"></a>
@@ -3011,23 +2967,28 @@ Many exercises have been dealing with multiple particles so far. Let's introduce
 If we have the velocity and mass of a particle, its kinetic energy is easy to define:
 
 ```clojure
-(define (KE-particle m v)
-  (* 1/2 m (square v)))
+(defn KE-particle [m v]
+  (* (/ 1 2) m (square v)))
 ```
+
+    #'ch1.ex1-21/KE-particle
 
 This next function, `extract-particle`, takes a number of components &#x2013; 2 for a particle with 2 components, 3 for a particle in space, etc &#x2013; and returns a function of `local` and `i`, a particle index. This function can be used to extract a sub-local-tuple for that particle from a flattened list.
 
 ```clojure
-(define ((extract-particle pieces) local i)
-  (let* ((indices (apply up (iota pieces (* i pieces))))
-         (extract (lambda (tuple)
-                    (vector-map (lambda (i)
-                                  (ref tuple i))
-                                indices))))
-    (up (time local)
-        (extract (coordinate local))
-        (extract (velocity local)))))
+(defn extract-particle [pieces]
+  (fn [[t q v] i]
+    (let [indices (take pieces
+                        (iterate
+                         inc (* i pieces)))
+          extract (fn [tuple]
+                    (mapv (fn [i]
+                            (ref tuple i))
+                          indices))]
+      (up t (extract q) (extract v)))))
 ```
+
+    #'ch1.ex1-21/extract-particle
 
 ## Part A: Newton's Equations<a id="sec-22-2"></a>
 
@@ -3048,39 +3009,30 @@ TODO: Write these down from the notebook.
 Here is how we model constraint forces. Each pair of particles has some constraint potential acting between them:
 
 ```clojure
-(define (U-constraint q0 q1 F l)
+(defn U-constraint [q0 q1 F l]
   (* (/ F (* 2 l))
      (- (square (- q1 q0))
         (square l))))
 ```
 
-    #| U-constraint |#
-
 And here's a Lagrangian for two free particles, subject to a constraint potential \\(F\\) acting between them.
 
 ```clojure
-(define ((L-free-constrained m0 m1 l) local)
-  (let* ((extract (extract-particle 2))
-         (p0 (extract local 0))
-         (q0 (coordinate p0))
-         (qdot0 (velocity p0))
-
-         (p1 (extract local 1))
-         (q1 (coordinate p1))
-         (qdot1 (velocity p1))
-
-         (F (ref (coordinate local) 4)))
-    (- (+ (KE-particle m0 qdot0)
-          (KE-particle m1 qdot1))
-       (U-constraint q0 q1 F l))))
+(defn L-free-constrained [m0 m1 l]
+  (fn [local]
+    (let [extract      (extract-particle 2)
+          [_ q0 qdot0] (extract local 0)
+          [_ q1 qdot1] (extract local 1)
+          F (ref (coordinate local) 4)]
+      (- (+ (KE-particle m0 qdot0)
+            (KE-particle m1 qdot1))
+         (U-constraint q0 q1 F l)))))
 ```
-
-    #| L-free-constrained |#
 
 Finally, the path. This is rectangular coordinates for each piece, plus \\(F\\) between them.
 
 ```clojure
-(define q-rect
+(def q-rect
   (up (literal-function 'x_0)
       (literal-function 'y_0)
       (literal-function 'x_1)
@@ -3091,27 +3043,27 @@ Finally, the path. This is rectangular coordinates for each piece, plus \\(F\\) 
 This shows the lagrangian itself, which answers part b:
 
 ```clojure
-(let* ((L (L-free-constrained 'm_0 'm_1 'l))
-       (f (compose L (Gamma q-rect))))
+(let [L (L-free-constrained 'm_0 'm_1 'l)
+      f (compose L (Gamma q-rect))]
   (->tex-equation
    (f 't)))
 ```
 
 \begin{equation}
-{{{{1}\over {2}} l {m}\_{0} {\left( D{x}\_{0}\left( t \right) \right)}^{2} + {{1}\over {2}} l {m}\_{0} {\left( D{y}\_{0}\left( t \right) \right)}^{2} + {{1}\over {2}} l {m}\_{1} {\left( D{x}\_{1}\left( t \right) \right)}^{2} + {{1}\over {2}} l {m}\_{1} {\left( D{y}\_{1}\left( t \right) \right)}^{2} + {{1}\over {2}} {l}^{2} F\left( t \right) - {{1}\over {2}} F\left( t \right) {\left( {x}\_{1}\left( t \right) \right)}^{2} + F\left( t \right) {x}\_{1}\left( t \right) {x}\_{0}\left( t \right) - {{1}\over {2}} F\left( t \right) {\left( {x}\_{0}\left( t \right) \right)}^{2} - {{1}\over {2}} F\left( t \right) {\left( {y}\_{1}\left( t \right) \right)}^{2} + F\left( t \right) {y}\_{1}\left( t \right) {y}\_{0}\left( t \right) - {{1}\over {2}} F\left( t \right) {\left( {y}\_{0}\left( t \right) \right)}^{2}}\over {l}}
+\frac{l\,m\_0\,{\left(Dx\_0\left(t\right)\right)}^{2} + l\,m\_0\,{\left(Dy\_0\left(t\right)\right)}^{2} + l\,m\_1\,{\left(Dx\_1\left(t\right)\right)}^{2} + l\,m\_1\,{\left(Dy\_1\left(t\right)\right)}^{2} + {l}^{2}\,F\left(t\right) - F\left(t\right)\,{\left(x\_1\left(t\right)\right)}^{2} + 2\,F\left(t\right)\,x\_1\left(t\right)\,x\_0\left(t\right) - F\left(t\right)\,{\left(x\_0\left(t\right)\right)}^{2} - F\left(t\right)\,{\left(y\_1\left(t\right)\right)}^{2} + 2\,F\left(t\right)\,y\_1\left(t\right)\,y\_0\left(t\right) - F\left(t\right)\,{\left(y\_0\left(t\right)\right)}^{2}}{2\,l}
 \end{equation}
 
 Here are the Lagrange equations, which, if you squint, are like Newton's equations from part a.
 
 ```clojure
-(let* ((L (L-free-constrained 'm_0 'm_1 'l))
-       (f ((Lagrange-equations L) q-rect)))
+(let [L (L-free-constrained 'm_0 'm_1 'l)
+      f ((Lagrange-equations L) q-rect)]
   (->tex-equation
    (f 't)))
 ```
 
 \begin{equation}
-\begin{bmatrix} \displaystyle{ {{l {m}\_{0} {D}^{2}{x}\_{0}\left( t \right) - F\left( t \right) {x}\_{1}\left( t \right) + F\left( t \right) {x}\_{0}\left( t \right)}\over {l}}} \cr \cr \displaystyle{ {{l {m}\_{0} {D}^{2}{y}\_{0}\left( t \right) - F\left( t \right) {y}\_{1}\left( t \right) + F\left( t \right) {y}\_{0}\left( t \right)}\over {l}}} \cr \cr \displaystyle{ {{l {m}\_{1} {D}^{2}{x}\_{1}\left( t \right) + F\left( t \right) {x}\_{1}\left( t \right) - F\left( t \right) {x}\_{0}\left( t \right)}\over {l}}} \cr \cr \displaystyle{ {{l {m}\_{1} {D}^{2}{y}\_{1}\left( t \right) + F\left( t \right) {y}\_{1}\left( t \right) - F\left( t \right) {y}\_{0}\left( t \right)}\over {l}}} \cr \cr \displaystyle{ {{ - {{1}\over {2}} {l}^{2} + {{1}\over {2}} {\left( {x}\_{1}\left( t \right) \right)}^{2} - {x}\_{1}\left( t \right) {x}\_{0}\left( t \right) + {{1}\over {2}} {\left( {x}\_{0}\left( t \right) \right)}^{2} + {{1}\over {2}} {\left( {y}\_{1}\left( t \right) \right)}^{2} - {y}\_{1}\left( t \right) {y}\_{0}\left( t \right) + {{1}\over {2}} {\left( {y}\_{0}\left( t \right) \right)}^{2}}\over {l}}}\end{bmatrix}
+\begin{bmatrix}\displaystyle{\frac{l\,m\_0\,{D}^{2}x\_0\left(t\right) - F\left(t\right)\,x\_1\left(t\right) + F\left(t\right)\,x\_0\left(t\right)}{l}} \cr \cr \displaystyle{\frac{l\,m\_0\,{D}^{2}y\_0\left(t\right) - F\left(t\right)\,y\_1\left(t\right) + F\left(t\right)\,y\_0\left(t\right)}{l}} \cr \cr \displaystyle{\frac{l\,m\_1\,{D}^{2}x\_1\left(t\right) + F\left(t\right)\,x\_1\left(t\right) - F\left(t\right)\,x\_0\left(t\right)}{l}} \cr \cr \displaystyle{\frac{l\,m\_1\,{D}^{2}y\_1\left(t\right) + F\left(t\right)\,y\_1\left(t\right) - F\left(t\right)\,y\_0\left(t\right)}{l}} \cr \cr \displaystyle{\frac{- {l}^{2} + {\left(x\_1\left(t\right)\right)}^{2} -2\,x\_1\left(t\right)\,x\_0\left(t\right) + {\left(x\_0\left(t\right)\right)}^{2} + {\left(y\_1\left(t\right)\right)}^{2} -2\,y\_1\left(t\right)\,y\_0\left(t\right) + {\left(y\_0\left(t\right)\right)}^{2}}{2\,l}}\end{bmatrix}
 \end{equation}
 
 ## Part C: Coordinate Change<a id="sec-22-4"></a>
@@ -3123,42 +3075,37 @@ This is a coordinate change that is very careful not to reduce the degrees of fr
 First, the coordinate change:
 
 ```clojure
-(define ((cm-theta->rect m0 m1) local)
-  (let* ((q (coordinate local))
-         (x_cm (ref q 0))
-         (y_cm (ref q 1))
-         (theta (ref q 2))
-         (c (ref q 3))
-         (F (ref q 4))
-         (total-mass (+ m0 m1))
-         (m0-distance (* c (/ m1 total-mass)))
-         (m1-distance (* c (/ m0 total-mass))))
-    (up (- x_cm (* m0-distance (cos theta)))
-        (- y_cm (* m0-distance (sin theta)))
-        (+ x_cm (* m1-distance (cos theta)))
-        (+ y_cm (* m1-distance (sin theta)))
-        F)))
+(defn cm-theta->rect [m0 m1]
+  (fn [[_ [x_cm y_cm theta c F]]]
+    (let [total-mass (+ m0 m1)
+          m0-distance (* c (/ m1 total-mass))
+          m1-distance (* c (/ m0 total-mass))]
+      (up (- x_cm (* m0-distance (cos theta)))
+          (- y_cm (* m0-distance (sin theta)))
+          (+ x_cm (* m1-distance (cos theta)))
+          (+ y_cm (* m1-distance (sin theta)))
+          F))))
 ```
 
 Then the coordinate change applied to the local tuple:
 
 ```clojure
-(let ((local (up 't
-                 (up 'x_cm 'y_cm 'theta 'c 'F)
-                 (up 'xdot_cm 'ydot_cm 'thetadot 'cdot 'Fdot)))
-      (C (F->C (cm-theta->rect 'm_0 'm_1))))
+(let [local (up 't
+                (up 'x_cm 'y_cm 'theta 'c 'F)
+                (up 'xdot_cm 'ydot_cm 'thetadot 'cdot 'Fdot))
+      C (F->C (cm-theta->rect 'm_0 'm_1))]
   (->tex-equation
    (C local)))
 ```
 
 \begin{equation}
-\begin{pmatrix} \displaystyle{ t} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{ {{ - c {m}\_{1} \cos\left( \theta \right) + {m}\_{0} {x}\_{cm} + {m}\_{1} {x}\_{cm}}\over {{m}\_{0} + {m}\_{1}}}} \cr \cr \displaystyle{ {{ - c {m}\_{1} \sin\left( \theta \right) + {m}\_{0} {y}\_{cm} + {m}\_{1} {y}\_{cm}}\over {{m}\_{0} + {m}\_{1}}}} \cr \cr \displaystyle{ {{c {m}\_{0} \cos\left( \theta \right) + {m}\_{0} {x}\_{cm} + {m}\_{1} {x}\_{cm}}\over {{m}\_{0} + {m}\_{1}}}} \cr \cr \displaystyle{ {{c {m}\_{0} \sin\left( \theta \right) + {m}\_{0} {y}\_{cm} + {m}\_{1} {y}\_{cm}}\over {{m}\_{0} + {m}\_{1}}}} \cr \cr \displaystyle{ F}\end{pmatrix}} \cr \cr \displaystyle{ \begin{pmatrix} \displaystyle{ {{c {m}\_{1} \dot{\theta} \sin\left( \theta \right) - \dot{c} {m}\_{1} \cos\left( \theta \right) + {m}\_{0} {\dot{x}}\_{cm} + {m}\_{1} {\dot{x}}\_{cm}}\over {{m}\_{0} + {m}\_{1}}}} \cr \cr \displaystyle{ {{ - c {m}\_{1} \dot{\theta} \cos\left( \theta \right) - \dot{c} {m}\_{1} \sin\left( \theta \right) + {m}\_{0} {\dot{y}}\_{cm} + {m}\_{1} {\dot{y}}\_{cm}}\over {{m}\_{0} + {m}\_{1}}}} \cr \cr \displaystyle{ {{ - c {m}\_{0} \dot{\theta} \sin\left( \theta \right) + \dot{c} {m}\_{0} \cos\left( \theta \right) + {m}\_{0} {\dot{x}}\_{cm} + {m}\_{1} {\dot{x}}\_{cm}}\over {{m}\_{0} + {m}\_{1}}}} \cr \cr \displaystyle{ {{c {m}\_{0} \dot{\theta} \cos\left( \theta \right) + \dot{c} {m}\_{0} \sin\left( \theta \right) + {m}\_{0} {\dot{y}}\_{cm} + {m}\_{1} {\dot{y}}\_{cm}}\over {{m}\_{0} + {m}\_{1}}}} \cr \cr \displaystyle{ \dot{F}}\end{pmatrix}}\end{pmatrix}
+\begin{pmatrix}\displaystyle{t} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{\frac{- c\,m\_1\,\cos\left(\theta\right) + m\_0\,x\_{cm} + m\_1\,x\_{cm}}{m\_0 + m\_1}} \cr \cr \displaystyle{\frac{- c\,m\_1\,\sin\left(\theta\right) + m\_0\,y\_{cm} + m\_1\,y\_{cm}}{m\_0 + m\_1}} \cr \cr \displaystyle{\frac{c\,m\_0\,\cos\left(\theta\right) + m\_0\,x\_{cm} + m\_1\,x\_{cm}}{m\_0 + m\_1}} \cr \cr \displaystyle{\frac{c\,m\_0\,\sin\left(\theta\right) + m\_0\,y\_{cm} + m\_1\,y\_{cm}}{m\_0 + m\_1}} \cr \cr \displaystyle{F}\end{pmatrix}} \cr \cr \displaystyle{\begin{pmatrix}\displaystyle{\frac{c\,m\_1\,\dot {\theta}\,\sin\left(\theta\right) - \dot c\,m\_1\,\cos\left(\theta\right) + m\_0\,{\dot x}\_{cm} + m\_1\,{\dot x}\_{cm}}{m\_0 + m\_1}} \cr \cr \displaystyle{\frac{- c\,m\_1\,\dot {\theta}\,\cos\left(\theta\right) - \dot c\,m\_1\,\sin\left(\theta\right) + m\_0\,{\dot y}\_{cm} + m\_1\,{\dot y}\_{cm}}{m\_0 + m\_1}} \cr \cr \displaystyle{\frac{- c\,m\_0\,\dot {\theta}\,\sin\left(\theta\right) + \dot c\,m\_0\,\cos\left(\theta\right) + m\_0\,{\dot x}\_{cm} + m\_1\,{\dot x}\_{cm}}{m\_0 + m\_1}} \cr \cr \displaystyle{\frac{c\,m\_0\,\dot {\theta}\,\cos\left(\theta\right) + \dot c\,m\_0\,\sin\left(\theta\right) + m\_0\,{\dot y}\_{cm} + m\_1\,{\dot y}\_{cm}}{m\_0 + m\_1}} \cr \cr \displaystyle{\dot F}\end{pmatrix}}\end{pmatrix}
 \end{equation}
 
 Then the Lagrangian in the new coordinates;
 
 ```clojure
-(define (L-free-constrained* m0 m1 l)
+(defn L-free-constrained* [m0 m1 l]
   (compose (L-free-constrained m0 m1 l)
            (F->C (cm-theta->rect m0 m1))))
 ```
@@ -3166,37 +3113,37 @@ Then the Lagrangian in the new coordinates;
 This shows the lagrangian itself, after the coordinate transformation:
 
 ```clojure
-(let* ((q (up (literal-function 'x_cm)
-              (literal-function 'y_cm)
-              (literal-function 'theta)
-              (literal-function 'c)
-              (literal-function 'F)))
-       (L (L-free-constrained* 'm_0 'm_1 'l))
-       (f (compose L (Gamma q))))
+(let [q (up (literal-function 'x_cm)
+            (literal-function 'y_cm)
+            (literal-function 'theta)
+            (literal-function 'c)
+            (literal-function 'F))
+      L (L-free-constrained* 'm_0 'm_1 'l)
+      f (compose L (Gamma q))]
   (->tex-equation
    (f 't)))
 ```
 
 \begin{equation}
-{{l {m}\_{0} {m}\_{1} {\left( c\left( t \right) \right)}^{2} {\left( D\theta\left( t \right) \right)}^{2} + l {{m}\_{0}}^{2} {\left( D{x}\_{cm}\left( t \right) \right)}^{2} + l {{m}\_{0}}^{2} {\left( D{y}\_{cm}\left( t \right) \right)}^{2} + 2 l {m}\_{0} {m}\_{1} {\left( D{x}\_{cm}\left( t \right) \right)}^{2} + 2 l {m}\_{0} {m}\_{1} {\left( D{y}\_{cm}\left( t \right) \right)}^{2} + l {m}\_{0} {m}\_{1} {\left( Dc\left( t \right) \right)}^{2} + l {{m}\_{1}}^{2} {\left( D{x}\_{cm}\left( t \right) \right)}^{2} + l {{m}\_{1}}^{2} {\left( D{y}\_{cm}\left( t \right) \right)}^{2} + {l}^{2} {m}\_{0} F\left( t \right) + {l}^{2} {m}\_{1} F\left( t \right) - {m}\_{0} F\left( t \right) {\left( c\left( t \right) \right)}^{2} - {m}\_{1} F\left( t \right) {\left( c\left( t \right) \right)}^{2}}\over {2 l {m}\_{0} + 2 l {m}\_{1}}}
+\frac{l\,m\_0\,m\_1\,{\left(D\theta\left(t\right)\right)}^{2}\,{\left(c\left(t\right)\right)}^{2} + l\,{m\_0}^{2}\,{\left(Dx\_{cm}\left(t\right)\right)}^{2} + l\,{m\_0}^{2}\,{\left(Dy\_{cm}\left(t\right)\right)}^{2} + 2\,l\,m\_0\,m\_1\,{\left(Dx\_{cm}\left(t\right)\right)}^{2} + l\,m\_0\,m\_1\,{\left(Dc\left(t\right)\right)}^{2} + 2\,l\,m\_0\,m\_1\,{\left(Dy\_{cm}\left(t\right)\right)}^{2} + l\,{m\_1}^{2}\,{\left(Dx\_{cm}\left(t\right)\right)}^{2} + l\,{m\_1}^{2}\,{\left(Dy\_{cm}\left(t\right)\right)}^{2} + {l}^{2}\,m\_0\,F\left(t\right) + {l}^{2}\,m\_1\,F\left(t\right) - m\_0\,F\left(t\right)\,{\left(c\left(t\right)\right)}^{2} - m\_1\,F\left(t\right)\,{\left(c\left(t\right)\right)}^{2}}{2\,l\,m\_0 + 2\,l\,m\_1}
 \end{equation}
 
 Here are the Lagrange equations:
 
 ```clojure
-(let* ((q (up (literal-function 'x_cm)
-              (literal-function 'y_cm)
-              (literal-function 'theta)
-              (literal-function 'c)
-              (literal-function 'F)))
-       (L (L-free-constrained* 'm_0 'm_1 'l))
-       (f ((Lagrange-equations L) q)))
+(let [q (up (literal-function 'x_cm)
+            (literal-function 'y_cm)
+            (literal-function 'theta)
+            (literal-function 'c)
+            (literal-function 'F))
+      L (L-free-constrained* 'm_0 'm_1 'l)
+      f ((Lagrange-equations L) q)]
   (->tex-equation
    (f 't)))
 ```
 
 \begin{equation}
-\begin{bmatrix} \displaystyle{ {m}\_{0} {D}^{2}{x}\_{cm}\left( t \right) + {m}\_{1} {D}^{2}{x}\_{cm}\left( t \right)} \cr \cr \displaystyle{ {m}\_{0} {D}^{2}{y}\_{cm}\left( t \right) + {m}\_{1} {D}^{2}{y}\_{cm}\left( t \right)} \cr \cr \displaystyle{ {{2 {m}\_{0} {m}\_{1} Dc\left( t \right) c\left( t \right) D\theta\left( t \right) + {m}\_{0} {m}\_{1} {\left( c\left( t \right) \right)}^{2} {D}^{2}\theta\left( t \right)}\over {{m}\_{0} + {m}\_{1}}}} \cr \cr \displaystyle{ {{ - l {m}\_{0} {m}\_{1} c\left( t \right) {\left( D\theta\left( t \right) \right)}^{2} + l {m}\_{0} {m}\_{1} {D}^{2}c\left( t \right) + {m}\_{0} F\left( t \right) c\left( t \right) + {m}\_{1} F\left( t \right) c\left( t \right)}\over {l {m}\_{0} + l {m}\_{1}}}} \cr \cr \displaystyle{ {{ - {{1}\over {2}} {l}^{2} + {{1}\over {2}} {\left( c\left( t \right) \right)}^{2}}\over {l}}}\end{bmatrix}
+\begin{bmatrix}\displaystyle{m\_0\,{D}^{2}x\_{cm}\left(t\right) + m\_1\,{D}^{2}x\_{cm}\left(t\right)} \cr \cr \displaystyle{m\_0\,{D}^{2}y\_{cm}\left(t\right) + m\_1\,{D}^{2}y\_{cm}\left(t\right)} \cr \cr \displaystyle{\frac{2\,m\_0\,m\_1\,D\theta\left(t\right)\,c\left(t\right)\,Dc\left(t\right) + m\_0\,m\_1\,{D}^{2}\theta\left(t\right)\,{\left(c\left(t\right)\right)}^{2}}{m\_0 + m\_1}} \cr \cr \displaystyle{\frac{- l\,m\_0\,m\_1\,{\left(D\theta\left(t\right)\right)}^{2}\,c\left(t\right) + l\,m\_0\,m\_1\,{D}^{2}c\left(t\right) + m\_0\,F\left(t\right)\,c\left(t\right) + m\_1\,F\left(t\right)\,c\left(t\right)}{l\,m\_0 + l\,m\_1}} \cr \cr \displaystyle{\frac{- {l}^{2} + {\left(c\left(t\right)\right)}^{2}}{2\,l}}\end{bmatrix}
 \end{equation}
 
 That final equation states that \\(c(t) = l\\). Amazing!
@@ -3208,19 +3155,19 @@ That final equation states that \\(c(t) = l\\). Amazing!
 We can substitute the constant value of \\(c\\) using a function that always returns \\(l\\) to get simplified equations:
 
 ```clojure
-(let* ((q (up (literal-function 'x_cm)
-              (literal-function 'y_cm)
-              (literal-function 'theta)
-              (lambda (t) 'l)
-              (literal-function 'F)))
-       (L (L-free-constrained* 'm_0 'm_1 'l))
-       (f ((Lagrange-equations L) q)))
+(let [q (up (literal-function 'x_cm)
+            (literal-function 'y_cm)
+            (literal-function 'theta)
+            (fn [t] 'l)
+            (literal-function 'F))
+      L (L-free-constrained* 'm_0 'm_1 'l)
+      f ((Lagrange-equations L) q)]
   (->tex-equation
    (f 't)))
 ```
 
 \begin{equation}
-\begin{bmatrix} \displaystyle{ {m}\_{0} {D}^{2}{x}\_{cm}\left( t \right) + {m}\_{1} {D}^{2}{x}\_{cm}\left( t \right)} \cr \cr \displaystyle{ {m}\_{0} {D}^{2}{y}\_{cm}\left( t \right) + {m}\_{1} {D}^{2}{y}\_{cm}\left( t \right)} \cr \cr \displaystyle{ {{{l}^{2} {m}\_{0} {m}\_{1} {D}^{2}\theta\left( t \right)}\over {{m}\_{0} + {m}\_{1}}}} \cr \cr \displaystyle{ {{ - l {m}\_{0} {m}\_{1} {\left( D\theta\left( t \right) \right)}^{2} + {m}\_{0} F\left( t \right) + {m}\_{1} F\left( t \right)}\over {{m}\_{0} + {m}\_{1}}}} \cr \cr \displaystyle{ 0}\end{bmatrix}
+\begin{bmatrix}\displaystyle{m\_0\,{D}^{2}x\_{cm}\left(t\right) + m\_1\,{D}^{2}x\_{cm}\left(t\right)} \cr \cr \displaystyle{m\_0\,{D}^{2}y\_{cm}\left(t\right) + m\_1\,{D}^{2}y\_{cm}\left(t\right)} \cr \cr \displaystyle{\frac{{l}^{2}\,m\_0\,m\_1\,{D}^{2}\theta\left(t\right)}{m\_0 + m\_1}} \cr \cr \displaystyle{\frac{- l\,m\_0\,m\_1\,{\left(D\theta\left(t\right)\right)}^{2} + m\_0\,F\left(t\right) + m\_1\,F\left(t\right)}{m\_0 + m\_1}} \cr \cr \displaystyle{0}\end{bmatrix}
 \end{equation}
 
 This is saying that the acceleration on the center of mass is 0.
@@ -3228,7 +3175,7 @@ This is saying that the acceleration on the center of mass is 0.
 The fourth equation, the equation of motion for the \\(c(t)\\), is interesting here. We need to pull in the definition of "reduced mass" from exercise 1.11:
 
 ```clojure
-(define (reduced-mass m1 m2)
+(defn reduced-mass [m1 m2]
   (/ (* m1 m2)
      (+ m1 m2)))
 ```
@@ -3243,17 +3190,16 @@ F(t) = m l \dot{\theta}^2
 We can verify this with Scheme by subtracting the two equations:
 
 ```clojure
-(let* ((F (literal-function 'F))
-       (theta (literal-function 'theta))
-       (q (up (literal-function 'x_cm)
-              (literal-function 'y_cm)
-              theta
-              (lambda (t) 'l)
-              F))
-       (L (L-free-constrained* 'm_0 'm_1 'l))
-       (f ((Lagrange-equations L) q))
-
-       (m (reduced-mass 'm_0 'm_1)))
+(let [F (literal-function 'F)
+      theta (literal-function 'theta)
+      q (up (literal-function 'x_cm)
+            (literal-function 'y_cm)
+            theta
+            (fn [_] 'l)
+            F)
+      L (L-free-constrained* 'm_0 'm_1 'l)
+      f ((Lagrange-equations L) q)
+      m (reduced-mass 'm_0 'm_1)]
   (->tex-equation
    (- (ref (f 't) 3)
       (- (F 't)
@@ -3275,35 +3221,27 @@ But let's go at it, for fun.
 Here's the Lagrangian of 2 free particles:
 
 ```clojure
-(define ((L-free2 m0 m1) local)
-  (let* ((extract (extract-particle 2))
-
-         (p0 (extract local 0))
-         (q0 (coordinate p0))
-         (qdot0 (velocity p0))
-
-         (p1 (extract local 1))
-         (q1 (coordinate p1))
-         (qdot1 (velocity p1)))
-    (+ (KE-particle m0 qdot0)
-       (KE-particle m1 qdot1))))
+(defn L-free2 [m0 m1]
+  (fn [local]
+    (let [extract (extract-particle 2)
+          [_ q0 qdot0] (extract local 0)
+          [_ q1 qdot1] (extract local 1)]
+      (+ (KE-particle m0 qdot0)
+         (KE-particle m1 qdot1)))))
 ```
 
 Then a version of `cm-theta->rect` where we ignore \\(F\\), and sub in a constant \\(l\\):
 
 ```clojure
-(define ((cm-theta->rect* m0 m1 l) local)
-  (let* ((q (coordinate local))
-         (x_cm (ref q 0))
-         (y_cm (ref q 1))
-         (theta (ref q 2))
-         (total-mass (+ m0 m1))
-         (m0-distance (* l (/ m1 total-mass)))
-         (m1-distance (* l (/ m0 total-mass))))
-    (up (- x_cm (* m0-distance (cos theta)))
-        (- y_cm (* m0-distance (sin theta)))
-        (+ x_cm (* m1-distance (cos theta)))
-        (+ y_cm (* m1-distance (sin theta))))))
+(defn cm-theta->rect* [m0 m1 l]
+  (fn [[_ [x_cm y_cm theta]]]
+    (let [total-mass (+ m0 m1)
+          m0-distance (* l (/ m1 total-mass))
+          m1-distance (* l (/ m0 total-mass))]
+      (up (- x_cm (* m0-distance (cos theta)))
+          (- y_cm (* m0-distance (sin theta)))
+          (+ x_cm (* m1-distance (cos theta)))
+          (+ y_cm (* m1-distance (sin theta)))))))
 ```
 
 \#| cm-theta->rect\* |#
@@ -3311,7 +3249,7 @@ Then a version of `cm-theta->rect` where we ignore \\(F\\), and sub in a constan
 The Lagrangian:
 
 ```clojure
-(define (L-free-constrained2 m0 m1 l)
+(defn L-free-constrained2 [m0 m1 l]
   (compose (L-free2 m0 m1)
            (F->C (cm-theta->rect* m0 m1 l))))
 ```
@@ -3319,13 +3257,13 @@ The Lagrangian:
 Equations:
 
 ```clojure
-(let* ((q (up (literal-function 'x_cm)
-              (literal-function 'y_cm)
-              (literal-function 'theta)
-              (lambda (t) 'l)
-              (literal-function 'F)))
-       (L1 (L-free-constrained* 'm_0 'm_1 'l))
-       (L2 (L-free-constrained2 'm_0 'm_1 'l)))
+(let [q (up (literal-function 'x_cm)
+            (literal-function 'y_cm)
+            (literal-function 'theta)
+            (fn [_] 'l)
+            (literal-function 'F))
+      L1 (L-free-constrained* 'm_0 'm_1 'l)
+      L2 (L-free-constrained2 'm_0 'm_1 'l)]
   (->tex-equation
    ((- ((Lagrange-equations L1) q)
        ((Lagrange-equations L2) q))
@@ -3333,7 +3271,7 @@ Equations:
 ```
 
 \begin{equation}
-\begin{bmatrix} \displaystyle{ 0} \cr \cr \displaystyle{ 0} \cr \cr \displaystyle{ 0} \cr \cr \displaystyle{ {{ - l {m}\_{0} {m}\_{1} {\left( D\theta\left( t \right) \right)}^{2} + {m}\_{0} F\left( t \right) + {m}\_{1} F\left( t \right)}\over {{m}\_{0} + {m}\_{1}}}} \cr \cr \displaystyle{ 0}\end{bmatrix}
+\begin{bmatrix}\displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{0} \cr \cr \displaystyle{\frac{- l\,m\_0\,m\_1\,{\left(D\theta\left(t\right)\right)}^{2} + m\_0\,F\left(t\right) + m\_1\,F\left(t\right)}{m\_0 + m\_1}} \cr \cr \displaystyle{0}\end{bmatrix}
 \end{equation}
 
 The only remaining equation is \eqref{eq:constraint-force} from above. This remains because the simplified Lagrangian ignores the \\(F\\) term.
@@ -3391,7 +3329,7 @@ The assumption here is that the pendulum support sits at \\((0, y\_s(t))\\).
 Now write the Lagrangian for the driven pendulum in rectangular coordinates. The constraint force takes the same shape as in exercise 1.21:
 
 ```clojure
-(define (U-constraint q0 q1 F l)
+(defn U-constraint [q0 q1 F l]
   (* (/ F (* 2 l))
      (- (square (- q1 q0))
         (square l))))
@@ -3400,46 +3338,57 @@ Now write the Lagrangian for the driven pendulum in rectangular coordinates. The
 The Lagrangian is similar, but only involves a single particle &#x2013; the pendulum bob. We can generate the constraint force by directly building the support's coordinates, rather than extracting them from the local tuple.
 
 ```clojure
-(define ((L-driven-free m l y U) local)
-  (let* ((extract (extract-particle 2))
-         (bob (extract local 0))
-         (q (coordinate bob))
-         (qdot (velocity bob))
-         (F (ref (coordinate local) 2)))
-    (- (KE-particle m qdot)
-       (U q)
-       (U-constraint (up 0 (y (time local)))
-                     q
-                     F
-                     l))))
+(defn extract-particle [pieces]
+  (fn [[t q v] i]
+    (let [indices (take pieces
+                        (iterate
+                         inc (* i pieces)))
+          extract (fn [tuple]
+                    (mapv (fn [i]
+                            (ref tuple i))
+                          indices))]
+      (up t (extract q) (extract v)))))
+
+(defn KE-particle [m v]
+  (* (/ 1 2) m (square v)))
+
+(defn L-driven-free [m l y U]
+  (fn [local]
+    (let [extract (extract-particle 2)
+          [_ q qdot] (extract local 0)
+          F (ref (coordinate local) 2)]
+      (- (KE-particle m qdot)
+         (U q)
+         (U-constraint (up 0 (y (state->t local)))
+                       q
+                       F
+                       l)))))
 ```
 
 Here is the now-familiar equation for a uniform gravitational potential, acting on the \\(y\\) coordinate:
 
 ```clojure
-(define ((U-gravity g m) q)
-  (let* ((y (ref q 1)))
+(defn U-gravity [g m]
+  (fn [[_ y]]
     (* m g y)))
 ```
-
-    #| U-gravity |#
 
 Now use the new Lagrangian to generate equations of motion for the three coordinates \\(x\\), \\(y\\) and \\(F\\):
 
 ```clojure
-(let* ((q (up (literal-function 'x)
-              (literal-function 'y)
-              (literal-function 'F)))
-       (U (U-gravity 'g 'm))
-       (y (literal-function 'y_s))
-       (L (L-driven-free 'm 'l y U))
-       (f ((Lagrange-equations L) q)))
+(let [q (up (literal-function 'x)
+            (literal-function 'y)
+            (literal-function 'F))
+      U (U-gravity 'g 'm)
+      y (literal-function 'y_s)
+      L (L-driven-free 'm 'l y U)
+      f ((Lagrange-equations L) q)]
   (->tex-equation
    (f 't)))
 ```
 
 \begin{equation}
-\begin{bmatrix} \displaystyle{ {{l m {D}^{2}x\left( t \right) + F\left( t \right) x\left( t \right)}\over {l}}} \cr \cr \displaystyle{ {{g l m + l m {D}^{2}y\left( t \right) - F\left( t \right) {y}\_{s}\left( t \right) + F\left( t \right) y\left( t \right)}\over {l}}} \cr \cr \displaystyle{ {{ - {{1}\over {2}} {l}^{2} + {{1}\over {2}} {\left( {y}\_{s}\left( t \right) \right)}^{2} - {y}\_{s}\left( t \right) y\left( t \right) + {{1}\over {2}} {\left( y\left( t \right) \right)}^{2} + {{1}\over {2}} {\left( x\left( t \right) \right)}^{2}}\over {l}}}\end{bmatrix}
+\begin{bmatrix}\displaystyle{\frac{l\,m\,{D}^{2}x\left(t\right) + x\left(t\right)\,F\left(t\right)}{l}} \cr \cr \displaystyle{\frac{g\,l\,m + l\,m\,{D}^{2}y\left(t\right) + y\left(t\right)\,F\left(t\right) - F\left(t\right)\,y\_s\left(t\right)}{l}} \cr \cr \displaystyle{\frac{- {l}^{2} + {\left(x\left(t\right)\right)}^{2} + {\left(y\left(t\right)\right)}^{2} -2\,y\left(t\right)\,y\_s\left(t\right) + {\left(y\_s\left(t\right)\right)}^{2}}{2\,l}}\end{bmatrix}
 \end{equation}
 
 The first two equations of motion match the equations we derived in part A, using Newton's equations. The third states that
@@ -3451,19 +3400,20 @@ l^2 = x(t)^2 + (y\_s(t) - y(t))^&2
 Verified, with some extra terms to force the simplification:
 
 ```clojure
-(let* ((q (up (literal-function 'x)
-              (literal-function 'y)
-              (literal-function 'F)))
-       (U (U-gravity 'g 'm))
-       (y (literal-function 'y_s))
-       (L (L-driven-free 'm 'l y U))
-       (f ((Lagrange-equations L) q))
-       (eq (ref (f 't) 2)))
+(let [q (up (literal-function 'x)
+            (literal-function 'y)
+            (literal-function 'F))
+      U (U-gravity 'g 'm)
+      y (literal-function 'y_s)
+      L (L-driven-free 'm 'l y U)
+      f ((Lagrange-equations L) q)
+      eq (ref (f 't) 2)]
   (->tex-equation
    (- eq
-      (/ (* 1/2 (- (+ (square ((literal-function 'x) 't))
-                      (square ((- y (literal-function 'y)) 't)))
-                   (square 'l)))
+      (/ (* (/ 1 2)
+            (- (+ (square ((literal-function 'x) 't))
+                  (square ((- y (literal-function 'y)) 't)))
+               (square 'l)))
          'l))))
 ```
 
@@ -3478,43 +3428,36 @@ Now we want to verify that we get the same Lagrangian and equations of motion as
 To analyze the constraint forces, we have to do the same trick as in exercise 1.21 and use a coordinate \\(c(t) = l\\). The new coordinates are \\((\theta, c, F)\\):
 
 ```clojure
-(define ((driven-polar->rect y) local)
-  (let* ((q (coordinate local))
-         (theta (ref q 0))
-         (c (ref q 1))
-         (F (ref q 2)))
+(defn driven-polar->rect [y]
+  (fn [[t [theta c F]]]
     (up (* c (sin theta))
-        (- (y (time local)) (* c (cos theta)))
+        (- (y t) (* c (cos theta)))
         F)))
 ```
-
-    #| driven-polar->rect |#
 
 Compose the coordinate change with the rectangular Lagrangian:
 
 ```clojure
-(define (L-driven-pend m l y U)
+(defn L-driven-pend [m l y U]
   (compose (L-driven-free m l y U)
            (F->C (driven-polar->rect y))))
 ```
 
-    #| L-driven-pend |#
-
 Examine the Lagrangian itself, after the coordinate transformation. (Notice that we're using a constant function for \\(c(t)\\) that always returns \\(l\\).)
 
 ```clojure
-(let* ((q (up (literal-function 'theta)
-              (lambda (t) 'l)
-              (literal-function 'F)))
-       (y (literal-function 'y_s))
-       (L (L-driven-pend 'm 'l y (U-gravity 'g 'm)))
-       (f (compose L (Gamma q))))
+(let [q (up (literal-function 'theta)
+            (fn [_] 'l)
+            (literal-function 'F))
+      y (literal-function 'y_s)
+      L (L-driven-pend 'm 'l y (U-gravity 'g 'm))
+      f (compose L (Gamma q))]
   (->tex-equation
    (f 't)))
 ```
 
 \begin{equation}
-{{1}\over {2}} {l}^{2} m {\left( D\theta\left( t \right) \right)}^{2} + l m D{y}\_{s}\left( t \right) \sin\left( \theta\left( t \right) \right) D\theta\left( t \right) + g l m \cos\left( \theta\left( t \right) \right) - g m {y}\_{s}\left( t \right) + {{1}\over {2}} m {\left( D{y}\_{s}\left( t \right) \right)}^{2}
+\frac{1}{2}\,{l}^{2}\,m\,{\left(D\theta\left(t\right)\right)}^{2} + l\,m\,\sin\left(\theta\left(t\right)\right)\,D\theta\left(t\right)\,Dy\_s\left(t\right) + g\,l\,m\,\cos\left(\theta\left(t\right)\right) - g\,m\,y\_s\left(t\right) + \frac{1}{2}\,m\,{\left(Dy\_s\left(t\right)\right)}^{2}
 \end{equation}
 
 Looks just like equation 1.88.
@@ -3522,18 +3465,18 @@ Looks just like equation 1.88.
 Next, examine the Lagrange equations, using the same substitution of \\(c(t) = l\\):
 
 ```clojure
-(let* ((q (up (literal-function 'theta)
-              (lambda (t) 'l)
-              (literal-function 'F)))
-       (y (literal-function 'y_s))
-       (L (L-driven-pend 'm 'l y (U-gravity 'g 'm)))
-       (f ((Lagrange-equations L) q)))
+(let [q (up (literal-function 'theta)
+            (fn [_] 'l)
+            (literal-function 'F))
+      y (literal-function 'y_s)
+      L (L-driven-pend 'm 'l y (U-gravity 'g 'm))
+      f ((Lagrange-equations L) q)]
   (->tex-equation
    (f 't)))
 ```
 
 \begin{equation}
-\begin{bmatrix} \displaystyle{ g l m \sin\left( \theta\left( t \right) \right) + {l}^{2} m {D}^{2}\theta\left( t \right) + l m {D}^{2}{y}\_{s}\left( t \right) \sin\left( \theta\left( t \right) \right)} \cr \cr \displaystyle{  - l m {\left( D\theta\left( t \right) \right)}^{2} - g m \cos\left( \theta\left( t \right) \right) - m {D}^{2}{y}\_{s}\left( t \right) \cos\left( \theta\left( t \right) \right) + F\left( t \right)} \cr \cr \displaystyle{ 0}\end{bmatrix}
+\begin{bmatrix}\displaystyle{g\,l\,m\,\sin\left(\theta\left(t\right)\right) + {l}^{2}\,m\,{D}^{2}\theta\left(t\right) + l\,m\,\sin\left(\theta\left(t\right)\right)\,{D}^{2}y\_s\left(t\right)} \cr \cr \displaystyle{- l\,m\,{\left(D\theta\left(t\right)\right)}^{2} - g\,m\,\cos\left(\theta\left(t\right)\right) - m\,\cos\left(\theta\left(t\right)\right)\,{D}^{2}y\_s\left(t\right) + F\left(t\right)} \cr \cr \displaystyle{0}\end{bmatrix}
 \end{equation}
 
 The third equation is 0 because of the substitution of constant \\(c(t) = l\\). The first equation of motion, for \\(\theta\\), is identical to the equation on page 52.
@@ -3593,33 +3536,48 @@ This is a special case of a solution we found in exercise 1.22. In that exercise
 Take some definitions that we need:
 
 ```clojure
-(define ((L-driven-free m l y U) local)
-  (let* ((extract (extract-particle 2))
-         (bob (extract local 0))
-         (q (coordinate bob))
-         (qdot (velocity bob))
-         (F (ref (coordinate local) 2)))
-    (- (KE-particle m qdot)
-       (U q)
-       (U-constraint (up 0 (y (time local)))
-                     q
-                     F
-                     l))))
+(defn U-constraint [q0 q1 F l]
+  (* (/ F (* 2 l))
+     (- (square (- q1 q0))
+        (square l))))
 
-(define ((U-gravity g m) q)
-  (let* ((y (ref q 1)))
+(defn extract-particle [pieces]
+  (fn [[t q v] i]
+    (let [indices (take pieces
+                        (iterate
+                         inc (* i pieces)))
+          extract (fn [tuple]
+                    (mapv (fn [i]
+                            (ref tuple i))
+                          indices))]
+      (up t (extract q) (extract v)))))
+
+(defn KE-particle [m v]
+  (* (/ 1 2) m (square v)))
+
+(defn L-driven-free [m l y U]
+  (fn [local]
+    (let [extract (extract-particle 2)
+          [_ q qdot] (extract local 0)
+          F (ref (coordinate local) 2)]
+      (- (KE-particle m qdot)
+         (U q)
+         (U-constraint (up 0 (y (state->t local)))
+                       q
+                       F
+                       l)))))
+
+(defn U-gravity [g m]
+  (fn [[_ y]]
     (* m g y)))
 
-(define ((driven-polar->rect y) local)
-  (let* ((q (coordinate local))
-         (theta (ref q 0))
-         (c (ref q 1))
-         (F (ref q 2)))
+(defn driven-polar->rect [y]
+  (fn [[t [theta c F]]]
     (up (* c (sin theta))
-        (- (y (time local)) (* c (cos theta)))
+        (- (y t) (* c (cos theta)))
         F)))
 
-(define (L-driven-pend m l y U)
+(defn L-driven-pend [m l y U]
   (compose (L-driven-free m l y U)
            (F->C (driven-polar->rect y))))
 ```
@@ -3627,18 +3585,18 @@ Take some definitions that we need:
 The second equation of motion, for the \\(c\\) coordinate, gives us an equation in terms of tension. Substitute in a constant pendulum support position by defining the support position function to be `(lambda (t) 'l)`:
 
 ```clojure
-(let* ((q (up (literal-function 'theta)
-              (lambda (t) 'l)
-              (literal-function 'F)))
-       (y (lambda (t) 'l))
-       (L (L-driven-pend 'm 'l y (U-gravity 'g 'm)))
-       (f ((Lagrange-equations L) q)))
+(let [q (up (literal-function 'theta)
+            (fn [_] 'l)
+            (literal-function 'F))
+      y (fn [_] 'l)
+      L (L-driven-pend 'm 'l y (U-gravity 'g 'm))
+      f ((Lagrange-equations L) q)]
   (->tex-equation
    (ref (f 't) 1)))
 ```
 
 \begin{equation}
- - l m {\left( D\theta\left( t \right) \right)}^{2} - g m \cos\left( \theta\left( t \right) \right) + F\left( t \right)
+- l\,m\,{\left(D\theta\left(t\right)\right)}^{2} - g\,m\,\cos\left(\theta\left(t\right)\right) + F\left(t\right)
 \end{equation}
 
 Solve for \\(F(t)\\), the tension on the pendulum linkage:
@@ -3741,11 +3699,13 @@ F(t) = m (g \cos \theta + l \dot{\theta}^2)
 
 ## part A<a id="sec-29-1"></a>
 
+TODO: Port the check-f stuff from utils.scm.
+
 nice, easy to guess.
 
 ```clojure
-(define ((FA m) local)
-  (let ((x (coordinate local)))
+(defn FA [m]
+  (fn [[_ x]]
     (* m x)))
 ```
 
@@ -3763,35 +3723,41 @@ NOT a total time derivative.
 Define G directly:
 
 ```clojure
-(define ((GB m) local)
-  (let* ((t (time local))
-         (v_x (velocity local))
-         (GB0 0)
-         (GB1 (* m (cos t))))
-    (+ GB0 (* GB1 v_x))))
+(defn GB [m]
+  (fn [[t _ v_x]]
+    (let [GB0 0
+          GB1 (* m (cos t))]
+      (+ GB0 (* GB1 v_x)))))
 ```
 
 And show the full G, for fun:
 
 ```clojure
-(let ((f (compose (GB 'm) (Gamma (literal-function 'x)))))
-  (se (f 't)))
+(let [f (compose (GB 'm) (Gamma (literal-function 'x)))]
+  (->tex-equation
+   (f 't)))
 ```
+
+\begin{equation}
+m\,Dx\left(t\right)\,\cos\left(t\right)
+\end{equation}
 
 It's easier to confirm that this is not a total time derivative by checking the partials.
 
 ```clojure
-(define (GB-properties m)
-  (let ((GB0 (lambda (local) 0))
-        (GB1 (lambda (local)
-               (* m (cos (time local))))))
-    (G-properties GB0 GB1 (literal-function 'x))))
+(defn GB-properties [m]
+  (let [GB0 (fn [local] 0)
+        GB1 (fn [[t]]
+              (* m (cos t)))]
+    (G-properties
+     GB0 GB1 (literal-function 'x))))
 ```
 
 It's clear here that the second and third tuple entries aren't equal, so we don't have a total time derivative.
 
 ```clojure
-(se (GB-properties 'm))
+(->tex-equation
+ (GB-properties 'm))
 ```
 
 ## Part C<a id="sec-29-3"></a>
@@ -3799,27 +3765,24 @@ It's clear here that the second and third tuple entries aren't equal, so we don'
 no problem, we've got a total time derivative on our hands.
 
 ```clojure
-(define (FC local)
-  (let ((t (time local))
-        (x (coordinate local)))
-    (* x (cos t))))
+(defn FC [[t x]]
+  (* x (cos t)))
 
 (check-f FC (literal-function 'x))
 
-(define GC-properties
-  (let ((GC0 (lambda (local)
-               (* -1
-                  (coordinate local)
-                  (sin (time local)))))
-        (GC1 (lambda (local)
-               (cos (time local)))))
-    (G-properties GC0 GC1 (literal-function 'x))))
+(def GC-properties
+  (let [GC0 (fn [[t q]]
+              (* -1 q (sin t)))
+        GC1 (fn [[t]]
+              (cos t))]
+    (G-properties
+     GC0 GC1 (literal-function 'x))))
 ```
 
 Boom, the second and third entries are equal, as we'd expect.
 
 ```clojure
-(se GC-properties)
+(->tex-equation GC-properties)
 ```
 
 ## Part D<a id="sec-29-4"></a>
@@ -3827,19 +3790,19 @@ Boom, the second and third entries are equal, as we'd expect.
 This is NOT a total time derivative; you can tell by taking the partials of each side, G0 and G1, as we'll see here.
 
 ```clojure
-(define GD-properties
-  (let ((GD0 (lambda (local)
-               (* (coordinate local)
-                  (sin (time local)))))
-        (GD1 (lambda (local)
-               (cos (time local)))))
-    (G-properties GD0 GD1 (literal-function 'x))))
+(def GD-properties
+  (let [GD0 (fn [[t q]]
+              (* q (sin t)))
+        GD1 (fn [[t]]
+              (cos t))]
+    (G-properties
+     GD0 GD1 (literal-function 'x))))
 ```
 
 The partials for each side don't match.
 
 ```clojure
-(se GD-properties)
+(->tex-equation GD-properties)
 ```
 
 ## Part E<a id="sec-29-5"></a>
@@ -3851,13 +3814,9 @@ OH, but the secret is that Qdot is also a tuple, so you contract them together.
 Here's the function F that we can use to derive it:
 
 ```clojure
-(define (FE local)
-  (let* ((t (time local))
-         (q (coordinate local))
-         (x (ref q 0))
-         (y (ref q 1)))
-    (* (+ (square x) (square y))
-       (cos t))))
+(defn FE [[t [x y]]]
+  (* (+ (square x) (square y))
+     (cos t)))
 ```
 
 Boom, total time derivative!
@@ -3870,30 +3829,22 @@ Boom, total time derivative!
 And let's show that we pass the tests by decomposing this into G0 and G1:
 
 ```clojure
-(define GE-properties
-  (let (
-        ;; any piece of the function without a velocity multiplied.
-        (GE0 (lambda (local)
-               (let* ((t (time local))
-                      (q (coordinate local))
-                      (x (ref q 0))
-                      (y (ref q 1)))
-                 (* -1
-                    (+ (square x) (square y))
-                    (sin t)))))
+(def GE-properties
+  (let [;; any piece of the function without a velocity multiplied.
+        GE0 (fn [[t [x y]]]
+              (* -1
+                 (+ (square x) (square y))
+                 (sin t)))
 
         ;; The pieces multiplied by velocities, split into a down tuple of
         ;; components, one for each of the coordinate components.
-        (GE1 (lambda (local)
-               (let* ((t (time local))
-                      (q (coordinate local))
-                      (x (ref q 0))
-                      (y (ref q 1)))
-                 (down
-                  (* 2 x (cos t))
-                  (* 2 y (cos t)))))))
-    (G-properties GE0 GE1 (up (literal-function 'x)
-                              (literal-function 'y)))))
+        GE1 (fn [[t [x y]]]
+              (down
+               (* 2 x (cos t))
+               (* 2 y (cos t))))]
+    (G-properties
+     GE0 GE1 (up (literal-function 'x)
+                 (literal-function 'y)))))
 ```
 
 BOOM!
@@ -3901,7 +3852,7 @@ BOOM!
 We've recovered F; the partials are equal, and the final matrix is symmetric.
 
 ```clojure
-(se GE-properties)
+(->tex-equation GE-properties)
 ```
 
 ## Part F<a id="sec-29-6"></a>
@@ -3909,30 +3860,22 @@ We've recovered F; the partials are equal, and the final matrix is symmetric.
 This one is interesting, since the second partial is a tuple. This is not so obvious to me, so first let's check the properties:
 
 ```clojure
-(define GF-properties
-  (let (
-        ;; any piece of the function without a velocity multiplied.
-        (GF0 (lambda (local)
-               (let* ((t (time local))
-                      (q (coordinate local))
-                      (x (ref q 0))
-                      (y (ref q 1)))
-                 (* -1
-                    (+ (square x) (square y))
-                    (sin t)))))
+(def GF-properties
+  (let [;; any piece of the function without a velocity multiplied.
+        GF0 (fn [[t [x y]]]
+              (* -1
+                 (+ (square x) (square y))
+                 (sin t)))
 
         ;; The pieces multiplied by velocities, split into a down tuple of
         ;; components, one for each of the coordinate components.
-        (GF1 (lambda (local)
-               (let* ((t (time local))
-                      (q (coordinate local))
-                      (x (ref q 0))
-                      (y (ref q 1)))
-                 (down
-                  (+ (cube y) (* 2 x (cos t)))
-                  (+ x (* 2 y (cos t))))))))
-    (G-properties GF0 GF1 (up (literal-function 'x)
-                              (literal-function 'y)))))
+        G (fn [[t [x y]]]
+            (down
+             (+ (cube y) (* 2 x (cos t)))
+             (+ x (* 2 y (cos t)))))]
+    (G-properties
+     GF0 GF1 (up (literal-function 'x)
+                 (literal-function 'y)))))
 ```
 
 AND it looks like we DO have a total time derivative, maybe. We certainly pass the first test here, since the second and third tuple entries are equal.
@@ -3940,7 +3883,7 @@ AND it looks like we DO have a total time derivative, maybe. We certainly pass t
 BUT we fail the second test; the hessian that we get from ((partial 1) G1) is not symmetric.
 
 ```clojure
-(se GF-properties)
+(->tex-equation GF-properties)
 ```
 
 # Exercise 1.29: Galilean Invariance<a id="sec-30"></a>
@@ -3948,15 +3891,16 @@ BUT we fail the second test; the hessian that we get from ((partial 1) G1) is no
 I'll do this for a single particle, since it's annoying to get the sum going for many; and the lagrangian is additive, so no problem.
 
 ```clojure
-(define (uniform-translate-shift->rect local)
-  (let* ((t (time local))
-         (q (coordinate local))
-         (xprime (ref q 0))
-         (delta_x (ref q 1))
-         (delta_v (ref q 2)))
-    (+ xprime delta_x (* t delta_v))))
+(defn L-free-particle [mass]
+  (fn [local]
+    (let [v (velocity local)]
+      (* (/ 1 2) mass (square v)))))
 
-(define (L-translate-shift m)
+(defn uniform-translate-shift->rect
+  [[t [xprime delta_x delta_v]]]
+  (+ xprime delta_x (* t delta_v)))
+
+(defn L-translate-shift [m]
   (compose (L-free-particle m)
            (F->C uniform-translate-shift->rect)))
 ```
@@ -3964,63 +3908,71 @@ I'll do this for a single particle, since it's annoying to get the sum going for
 First, confirm that if we have a constant, we get what we expected from paper.
 
 ```clojure
-(let* ((q (up (literal-function 'xprime)
-              (lambda (t) 'Delta_x)
-              (lambda (t) 'Delta_v)))
-       (f (compose (L-translate-shift 'm) (Gamma q))))
+(let [q (up (literal-function 'xprime)
+            (fn [_] 'Delta_x)
+            (fn [_] 'Delta_v))
+      f (compose (L-translate-shift 'm) (Gamma q))]
   (->tex-equation (f 't)))
 ```
 
-\\[\begin{equation} {{1}\over {2}} {{\Delta}\_{v}}^{2} m + {\Delta}\_{v} m D{x}^\prime\left( t \right) + {{1}\over {2}} m {\left( D{x}^\prime\left( t \right) \right)}^{2} \end{equation}\\]
+\begin{equation}
+\frac{1}{2}\,{{\Delta}\_v}^{2}\,m + {\Delta}\_v\,m\,D\mathsf{xprime}\left(t\right) + \frac{1}{2}\,m\,{\left(D\mathsf{xprime}\left(t\right)\right)}^{2}
+\end{equation}
 
-We can change this a little to see the extra terms; substract off the free particle lagrangian, to see the extra stuff.
+We can change this a little to see the extra terms; substract off the free particle Lagrangian, to see the extra stuff.
 
 ```clojure
-(let* ((q (up (literal-function 'xprime)
-              (lambda (t) 'Delta_x)
-              (lambda (t) 'Delta_v)))
-       (L (- (L-translate-shift 'm)
-             (L-free-particle 'm)))
-       (f (compose L (Gamma q))))
+(let [q (up (literal-function 'xprime)
+            (fn [_] 'Delta_x)
+            (fn [_] 'Delta_v))
+      L (- (L-translate-shift 'm)
+           (L-free-particle 'm))
+      f (compose L (Gamma q))]
   (->tex-equation (f 't)))
 ```
 
-\\[\begin{equation} {{1}\over {2}} {{\Delta}\_{v}}^{2} m + {\Delta}\_{v} m D{x}^\prime\left( t \right) \end{equation}\\]
+\begin{equation}
+\frac{1}{2}\,{{\Delta}\_v}^{2}\,m + {\Delta}\_v\,m\,D\mathsf{xprime}\left(t\right)
+\end{equation}
 
 Here's the gnarly version with both entries as actual functions. Can this be a total time derivative? It CANNOT be, because we have a \\((D \Delta\_v(t))^2\\) term in there, and we know that total time derivatives have to be linear in the velocities. The function \\(F\\) would have had to have a velocity in it, which is not allowed.
 
 ```clojure
-(let* ((q (up (literal-function 'xprime)
-              (literal-function 'Delta_x)
-              (literal-function 'Delta_v)))
-       (L (- (L-translate-shift 'm)
-             (L-free-particle 'm)))
-       (f (compose L (Gamma q))))
+(let [q (up (literal-function 'xprime)
+            (literal-function 'Delta_x)
+            (literal-function 'Delta_v))
+      L (- (L-translate-shift 'm)
+           (L-free-particle 'm))
+      f (compose L (Gamma q))]
   (->tex-equation (f 't)))
 ```
 
-\\[ \begin{equation} {{1}\over {2}} m {t}^{2} {\left( D{\Delta}\_{v}\left( t \right) \right)}^{2} + m t D{x}^\prime\left( t \right) D{\Delta}\_{v}\left( t \right) + m t D{\Delta}\_{v}\left( t \right) {\Delta}\_{v}\left( t \right) + m t D{\Delta}\_{v}\left( t \right) D{\Delta}\_{x}\left( t \right) + m D{x}^\prime\left( t \right) {\Delta}\_{v}\left( t \right) + m D{x}^\prime\left( t \right) D{\Delta}\_{x}\left( t \right) - {{1}\over {2}} m {\left( D{\Delta}\_{v}\left( t \right) \right)}^{2} + {{1}\over {2}} m {\left( {\Delta}\_{v}\left( t \right) \right)}^{2} + m {\Delta}\_{v}\left( t \right) D{\Delta}\_{x}\left( t \right) \end{equation} \\]
+\begin{equation}
+\frac{1}{2}\,m\,{t}^{2}\,{\left(D{\Delta}\_v\left(t\right)\right)}^{2} + m\,t\,D\mathsf{xprime}\left(t\right)\,D{\Delta}\_v\left(t\right) + m\,t\,{\Delta}\_v\left(t\right)\,D{\Delta}\_v\left(t\right) + m\,t\,D{\Delta}\_x\left(t\right)\,D{\Delta}\_v\left(t\right) + m\,D\mathsf{xprime}\left(t\right)\,{\Delta}\_v\left(t\right) + m\,D\mathsf{xprime}\left(t\right)\,D{\Delta}\_x\left(t\right) + \frac{1}{2}\,m\,{\left({\Delta}\_v\left(t\right)\right)}^{2} + m\,{\Delta}\_v\left(t\right)\,D{\Delta}\_x\left(t\right) + \frac{-1}{2}\,m\,{\left(D{\Delta}\_v\left(t\right)\right)}^{2}
+\end{equation}
 
 Let's simplify by making the \\(\Delta\_v\\) constant and see if there's anything so obvious about \\(\Delta\_x\\).
 
 We know that we have a total derivative when \\(\Delta\_x\\) is constant, and we know that total time derivatives are linear, so let's substract off the total time derivative and see what happens:
 
 ```clojure
-(let* ((q (lambda (dx)
-            (up (literal-function 'xprime)
-                dx
-                (lambda (t) 'Delta_v))))
-       (L (- (L-translate-shift 'm)
-             (L-free-particle 'm)))
-       (f (lambda (dx)
-            (compose L (Gamma (q dx))))))
+(let [q (fn [dx]
+          (up (literal-function 'xprime)
+              dx
+              (fn [_] 'Delta_v)))
+      L (- (L-translate-shift 'm)
+           (L-free-particle 'm))
+      f (fn [dx]
+          (compose L (Gamma (q dx))))]
   (->tex-equation
    ((- (f (literal-function 'Delta_x))
-       (f (lambda (t) 'Delta_x)))
+       (f (fn [_] 'Delta_x)))
     't)))
 ```
 
-\\[\begin{equation} {\Delta}\_{v} m D{\Delta}\_{x}\left( t \right) + m D{x}^\prime\left( t \right) D{\Delta}\_{x}\left( t \right) \end{equation}\\]
+\begin{equation}
+{\Delta}\_v\,m\,D{\Delta}\_x\left(t\right) + m\,D\mathsf{xprime}\left(t\right)\,D{\Delta}\_x\left(t\right)
+\end{equation}
 
 Take a look. there is a quadratic velocity term in here! We have \\(D \Delta\_x(t) D x'(t)\\). This is not allowed in a total time derivative.
 
