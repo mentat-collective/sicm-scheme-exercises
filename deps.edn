@@ -1,5 +1,2 @@
 {:paths ["src"]
- :deps
- {sicmutils/sicmutils
-  {:local/root "../sicmutils"}
-  #_{:mvn/version "0.15.0"}}}
+ :deps {sicmutils/sicmutils {:mvn/version "0.19.2"}}}

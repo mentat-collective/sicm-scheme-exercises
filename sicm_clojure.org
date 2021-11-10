@@ -5533,7 +5533,7 @@ And another, that gets us from spherical to rectangular.
 
 This block will generate a LaTeX version of the code I've supplied:
 
-#+begin_src clojure :results wrap :exports both :cache yes
+#+begin_src clojure :results wrap
 (->tex-equation
  ((+ (literal-function 'c)
      (D (literal-function 'z)))
