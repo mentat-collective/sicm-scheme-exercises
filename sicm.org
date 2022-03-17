@@ -4,7 +4,7 @@
 #+startup: indent
 #+date: 2020-05-26
 
-Welcome to my tour of Structure and Iynterpretation of Classical Mechanics. I'm
+Welcome to my tour of Structure and Interpretation of Classical Mechanics. I'm
 working on this book to develop my sense of the best way to do research in
 public; this book is heavy on math, programming and visualization, and should
 stress the normal tools.
@@ -249,7 +249,6 @@ For practice, we can also define this function in Scheme.
 #+end_src
 
 #+RESULTS:
-: #| total-distance |#
 
 Here's the function again, generated from code, with general $t_1$:
 
@@ -3203,7 +3202,7 @@ To show the rectangular Lagrangian, get the procedure from page 41:
 #+end_src
 
 This is already written in a form that can handle an arbitrary number of
-coordiantes. Confirm the rectangular Lagrangian by passing in a local tuple with
+coordinates. Confirm the rectangular Lagrangian by passing in a local tuple with
 3 dimensional coordinates and velocities:
 
 #+begin_src scheme :results value raw :exports both :cache yes
@@ -3299,7 +3298,7 @@ free you're in rotating spherical coords.
 
 ** Exercise 1.17: Bead on a helical wire
 :PROPERTIES:
-:header-args+: :tangle ch1/ex1-16.scm :comments org
+:header-args+: :tangle ch1/ex1-17.scm :comments org
 :END:
 
 #+begin_src scheme
