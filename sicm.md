@@ -186,7 +186,7 @@
 - [Org-Mode Demo](#sec-9)
     - [Equations](#sec-9-0-1)
 
-Welcome to my tour of Structure and Iynterpretation of Classical Mechanics. I'm working on this book to develop my sense of the best way to do research in public; this book is heavy on math, programming and visualization, and should stress the normal tools.
+Welcome to my tour of Structure and Interpretation of Classical Mechanics. I'm working on this book to develop my sense of the best way to do research in public; this book is heavy on math, programming and visualization, and should stress the normal tools.
 
 I'm attempting to take notes in on org-mode file, and generate all my code from there.
 
