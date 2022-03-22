@@ -625,8 +625,8 @@ points:
 \begin{equation}
   \label{eq:2}
   \begin{aligned}
-    S[q](t_a, t_b) & = \int_{t_a}^{t_b} L(t, x, v) dx \cr
-    & = \int_{t_a}^{t_b} {1 \over 2}mv(t)^2 dx \cr
+    S[q](t_a, t_b) & = \int_{t_a}^{t_b} L(t, x, v) dt \cr
+    & = \int_{t_a}^{t_b} {1 \over 2}mv(t)^2 dt \cr
     & = {m \over 2}{v(t)^2 t} \Bigr|_{t_a}^{t_b} \cr
     & = {m \over 2}{v(t_b)^2 t_b - v(t_a)^2 t_a}
   \end{aligned}
@@ -1556,7 +1556,7 @@ argument to $L$:
 
 \begin{equation}
   \begin{aligned}
-    S[q](t_a, t_b) & = \int_{t_a}^{t_b} L(t, x(t), v(t), a(t)) dx \cr
+    S[q](t_a, t_b) & = \int_{t_a}^{t_b} L(t, x(t), v(t), a(t)) dt \cr
     & = \int_{t_a}^{t_b} (L \circ \Gamma[q])
   \end{aligned}
 \end{equation}
